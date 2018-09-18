@@ -75,51 +75,51 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
     }
 
     static final class OutputCanceller<R> implements FlowableSubscriber<R>, Subscription {
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final MulticastProcessor<?> processor;
 
-        Subscription s;
+        Subscription upstream;
 
         OutputCanceller(Subscriber<? super R> actual, MulticastProcessor<?> processor) {
-            this.actual = actual;
+            this.downstream = actual;
             this.processor = processor;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(R t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             processor.dispose();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             processor.dispose();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             processor.dispose();
         }
     }
@@ -142,7 +142,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         final boolean delayError;
 
-        final AtomicReference<Subscription> s;
+        final AtomicReference<Subscription> upstream;
 
         volatile SimpleQueue<T> queue;
 
@@ -159,13 +159,13 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             this.limit = prefetch - (prefetch >> 2); // request after 75% consumption
             this.delayError = delayError;
             this.wip = new AtomicInteger();
-            this.s = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<Subscription>();
             this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this.s, s)) {
+            if (SubscriptionHelper.setOnce(this.upstream, s)) {
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> qs = (QueueSubscription<T>) s;
@@ -194,7 +194,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         public void dispose() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             if (wip.getAndIncrement() == 0) {
                 SimpleQueue<T> q = queue;
                 if (q != null) {
@@ -205,7 +205,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(s.get());
+            return SubscriptionHelper.isCancelled(upstream.get());
         }
 
         @Override
@@ -214,7 +214,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 return;
             }
             if (sourceMode == QueueSubscription.NONE && !queue.offer(t)) {
-                s.get().cancel();
+                upstream.get().cancel();
                 onError(new MissingBackpressureException());
                 return;
             }
@@ -372,7 +372,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            SubscriptionHelper.cancel(s);
+                            SubscriptionHelper.cancel(upstream);
                             errorAll(ex);
                             return;
                         }
@@ -401,7 +401,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                                 if (msr != Long.MAX_VALUE) {
                                     ms.emitted++;
                                 }
-                                ms.actual.onNext(v);
+                                ms.downstream.onNext(v);
                             } else {
                                 subscribersChange = true;
                             }
@@ -411,7 +411,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
                         if (canRequest && ++upstreamConsumed == localLimit) {
                             upstreamConsumed = 0;
-                            s.get().request(localLimit);
+                            upstream.get().request(localLimit);
                         }
 
                         MulticastSubscription<T>[] freshArray = subs.get();
@@ -465,7 +465,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         void errorAll(Throwable ex) {
             for (MulticastSubscription<T> ms : subscribers.getAndSet(TERMINATED)) {
                 if (ms.get() != Long.MIN_VALUE) {
-                    ms.actual.onError(ex);
+                    ms.downstream.onError(ex);
                 }
             }
         }
@@ -474,7 +474,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         void completeAll() {
             for (MulticastSubscription<T> ms : subscribers.getAndSet(TERMINATED)) {
                 if (ms.get() != Long.MIN_VALUE) {
-                    ms.actual.onComplete();
+                    ms.downstream.onComplete();
                 }
             }
         }
@@ -486,14 +486,14 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         private static final long serialVersionUID = 8664815189257569791L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final MulticastProcessor<T> parent;
 
         long emitted;
 
         MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 

@@ -58,7 +58,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
         private static final long serialVersionUID = 7565982551505011832L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final BiFunction<S, ? super Emitter<T>, S> generator;
         final Consumer<? super S> disposeState;
 
@@ -73,7 +73,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         GeneratorSubscription(Subscriber<? super T> actual,
                 BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
-            this.actual = actual;
+            this.downstream = actual;
             this.generator = generator;
             this.disposeState = disposeState;
             this.state = initialState;
@@ -171,7 +171,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                         onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                     } else {
                         hasNext = true;
-                        actual.onNext(t);
+                        downstream.onNext(t);
                     }
                 }
             }
@@ -186,7 +186,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
                 }
                 terminate = true;
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
 
@@ -194,7 +194,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         public void onComplete() {
             if (!terminate) {
                 terminate = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

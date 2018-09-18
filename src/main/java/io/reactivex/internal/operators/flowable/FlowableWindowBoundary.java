@@ -94,8 +94,8 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
         }
 
         @Override
-        public void onSubscribe(Subscription d) {
-            SubscriptionHelper.setOnce(upstream, d, Long.MAX_VALUE);
+        public void onSubscribe(Subscription s) {
+            SubscriptionHelper.setOnce(upstream, s, Long.MAX_VALUE);
         }
 
         @Override

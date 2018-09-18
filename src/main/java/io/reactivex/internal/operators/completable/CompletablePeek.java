@@ -46,21 +46,20 @@ public final class CompletablePeek extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
+    protected void subscribeActual(final CompletableObserver observer) {
 
-        source.subscribe(new CompletableObserverImplementation(s));
+        source.subscribe(new CompletableObserverImplementation(observer));
     }
 
     final class CompletableObserverImplementation implements CompletableObserver, Disposable {
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        CompletableObserverImplementation(CompletableObserver actual) {
-            this.actual = actual;
+        CompletableObserverImplementation(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
-
 
         @Override
         public void onSubscribe(final Disposable d) {
@@ -69,19 +68,19 @@ public final class CompletablePeek extends Completable {
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 d.dispose();
-                this.d = DisposableHelper.DISPOSED;
-                EmptyDisposable.error(ex, actual);
+                this.upstream = DisposableHelper.DISPOSED;
+                EmptyDisposable.error(ex, downstream);
                 return;
             }
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            if (d == DisposableHelper.DISPOSED) {
+            if (upstream == DisposableHelper.DISPOSED) {
                 RxJavaPlugins.onError(e);
                 return;
             }
@@ -93,14 +92,14 @@ public final class CompletablePeek extends Completable {
                 e = new CompositeException(e, ex);
             }
 
-            actual.onError(e);
+            downstream.onError(e);
 
             doAfter();
         }
 
         @Override
         public void onComplete() {
-            if (d == DisposableHelper.DISPOSED) {
+            if (upstream == DisposableHelper.DISPOSED) {
                 return;
             }
 
@@ -109,11 +108,11 @@ public final class CompletablePeek extends Completable {
                 onTerminate.run();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
-            actual.onComplete();
+            downstream.onComplete();
 
             doAfter();
         }
@@ -135,12 +134,12 @@ public final class CompletablePeek extends Completable {
                 Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

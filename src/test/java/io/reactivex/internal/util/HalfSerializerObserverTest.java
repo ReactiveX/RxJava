@@ -34,12 +34,12 @@ public class HalfSerializerObserverTest {
 
         final Observer[] a = { null };
 
-        final TestObserver ts = new TestObserver();
+        final TestObserver to = new TestObserver();
 
-        Observer s = new Observer() {
+        Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable s) {
-                ts.onSubscribe(s);
+            public void onSubscribe(Disposable d) {
+                to.onSubscribe(d);
             }
 
             @Override
@@ -47,27 +47,27 @@ public class HalfSerializerObserverTest {
                 if (t.equals(1)) {
                     HalfSerializer.onNext(a[0], 2, wip, error);
                 }
-                ts.onNext(t);
+                to.onNext(t);
             }
 
             @Override
             public void onError(Throwable t) {
-                ts.onError(t);
+                to.onError(t);
             }
 
             @Override
             public void onComplete() {
-                ts.onComplete();
+                to.onComplete();
             }
         };
 
-        a[0] = s;
+        a[0] = observer;
 
-        s.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposables.empty());
 
-        HalfSerializer.onNext(s, 1, wip, error);
+        HalfSerializer.onNext(observer, 1, wip, error);
 
-        ts.assertValue(1).assertNoErrors().assertNotComplete();
+        to.assertValue(1).assertNoErrors().assertNotComplete();
     }
 
     @Test
@@ -78,12 +78,12 @@ public class HalfSerializerObserverTest {
 
         final Observer[] a = { null };
 
-        final TestObserver ts = new TestObserver();
+        final TestObserver to = new TestObserver();
 
-        Observer s = new Observer() {
+        Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable s) {
-                ts.onSubscribe(s);
+            public void onSubscribe(Disposable d) {
+                to.onSubscribe(d);
             }
 
             @Override
@@ -91,27 +91,27 @@ public class HalfSerializerObserverTest {
                 if (t.equals(1)) {
                     HalfSerializer.onError(a[0], new TestException(), wip, error);
                 }
-                ts.onNext(t);
+                to.onNext(t);
             }
 
             @Override
             public void onError(Throwable t) {
-                ts.onError(t);
+                to.onError(t);
             }
 
             @Override
             public void onComplete() {
-                ts.onComplete();
+                to.onComplete();
             }
         };
 
-        a[0] = s;
+        a[0] = observer;
 
-        s.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposables.empty());
 
-        HalfSerializer.onNext(s, 1, wip, error);
+        HalfSerializer.onNext(observer, 1, wip, error);
 
-        ts.assertFailure(TestException.class, 1);
+        to.assertFailure(TestException.class, 1);
     }
 
     @Test
@@ -122,12 +122,12 @@ public class HalfSerializerObserverTest {
 
         final Observer[] a = { null };
 
-        final TestObserver ts = new TestObserver();
+        final TestObserver to = new TestObserver();
 
-        Observer s = new Observer() {
+        Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable s) {
-                ts.onSubscribe(s);
+            public void onSubscribe(Disposable d) {
+                to.onSubscribe(d);
             }
 
             @Override
@@ -135,27 +135,27 @@ public class HalfSerializerObserverTest {
                 if (t.equals(1)) {
                     HalfSerializer.onComplete(a[0], wip, error);
                 }
-                ts.onNext(t);
+                to.onNext(t);
             }
 
             @Override
             public void onError(Throwable t) {
-                ts.onError(t);
+                to.onError(t);
             }
 
             @Override
             public void onComplete() {
-                ts.onComplete();
+                to.onComplete();
             }
         };
 
-        a[0] = s;
+        a[0] = observer;
 
-        s.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposables.empty());
 
-        HalfSerializer.onNext(s, 1, wip, error);
+        HalfSerializer.onNext(observer, 1, wip, error);
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     @Test
@@ -166,38 +166,38 @@ public class HalfSerializerObserverTest {
 
         final Observer[] a = { null };
 
-        final TestObserver ts = new TestObserver();
+        final TestObserver to = new TestObserver();
 
-        Observer s = new Observer() {
+        Observer observer = new Observer() {
             @Override
-            public void onSubscribe(Disposable s) {
-                ts.onSubscribe(s);
+            public void onSubscribe(Disposable d) {
+                to.onSubscribe(d);
             }
 
             @Override
             public void onNext(Object t) {
-                ts.onNext(t);
+                to.onNext(t);
             }
 
             @Override
             public void onError(Throwable t) {
-                ts.onError(t);
+                to.onError(t);
                 HalfSerializer.onError(a[0], new IOException(), wip, error);
             }
 
             @Override
             public void onComplete() {
-                ts.onComplete();
+                to.onComplete();
             }
         };
 
-        a[0] = s;
+        a[0] = observer;
 
-        s.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposables.empty());
 
-        HalfSerializer.onError(s, new TestException(), wip, error);
+        HalfSerializer.onError(observer, new TestException(), wip, error);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test

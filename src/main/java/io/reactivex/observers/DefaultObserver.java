@@ -62,11 +62,13 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * @param <T> the value type
  */
 public abstract class DefaultObserver<T> implements Observer<T> {
-    private Disposable s;
+
+    private Disposable upstream;
+
     @Override
-    public final void onSubscribe(@NonNull Disposable s) {
-        if (EndConsumerHelper.validate(this.s, s, getClass())) {
-            this.s = s;
+    public final void onSubscribe(@NonNull Disposable d) {
+        if (EndConsumerHelper.validate(this.upstream, d, getClass())) {
+            this.upstream = d;
             onStart();
         }
     }
@@ -75,9 +77,9 @@ public abstract class DefaultObserver<T> implements Observer<T> {
      * Cancels the upstream's disposable.
      */
     protected final void cancel() {
-        Disposable s = this.s;
-        this.s = DisposableHelper.DISPOSED;
-        s.dispose();
+        Disposable upstream = this.upstream;
+        this.upstream = DisposableHelper.DISPOSED;
+        upstream.dispose();
     }
     /**
      * Called once the subscription has been set on this observer; override this

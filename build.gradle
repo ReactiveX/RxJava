@@ -9,7 +9,7 @@ buildscript {
   dependencies {
     classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
     classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
-    classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.4"
+    classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
     classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
   }
@@ -91,6 +91,7 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
+    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
 
     options.links(
         "https://docs.oracle.com/javase/7/docs/api/",
@@ -201,6 +202,7 @@ jmh {
     jmhVersion = jmhLibVersion
     humanOutputFile = null
     includeTests = false
+    jvmArgs = ["-Djmh.ignoreLock=true"]
     jvmArgsAppend = ["-Djmh.separateClasspathJAR=true"]
 
     if (project.hasProperty("jmh")) {
@@ -369,3 +371,4 @@ if (rootProject.hasProperty("releaseMode")) {
    }
 }
 
+apply from: file("gradle/javadoc_cleanup.gradle")

@@ -295,7 +295,6 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //        assertEquals(1, to.getOnErrorEvents().size());
 //    }
 
-
     // FIXME subscriber methods are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException
@@ -367,6 +366,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         AsyncSubject<Object> as = AsyncSubject.create();
@@ -385,7 +385,6 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-
 
     @Test
     public void fusionLive() {

@@ -24,7 +24,7 @@ public final class BlockingFirstObserver<T> extends BlockingBaseObserver<T> {
     public void onNext(T t) {
         if (value == null) {
             value = t;
-            d.dispose();
+            upstream.dispose();
             countDown();
         }
     }

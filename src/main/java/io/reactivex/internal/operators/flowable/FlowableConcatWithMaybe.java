@@ -26,8 +26,9 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 /**
  * Subscribe to a main Flowable first, then when it completes normally, subscribe to a Maybe,
  * signal its success value followed by a completion or signal its error or completion signal as is.
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the main source and output type
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstream<T, T> {
 
@@ -69,12 +70,12 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -85,10 +86,10 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         @Override
         public void onComplete() {
             if (inMaybe) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 inMaybe = true;
-                s = SubscriptionHelper.CANCELLED;
+                upstream = SubscriptionHelper.CANCELLED;
                 MaybeSource<? extends T> ms = other;
                 other = null;
                 ms.subscribe(this);

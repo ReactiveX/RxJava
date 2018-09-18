@@ -31,6 +31,7 @@ public final class FlowableRange extends Flowable<Integer> {
         this.start = start;
         this.end = start + count;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super Integer> s) {
         if (s instanceof ConditionalSubscriber) {
@@ -94,12 +95,10 @@ public final class FlowableRange extends Flowable<Integer> {
             }
         }
 
-
         @Override
         public final void cancel() {
             cancelled = true;
         }
-
 
         abstract void fastPath();
 
@@ -108,20 +107,19 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeSubscription extends BaseRangeSubscription {
 
-
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final Subscriber<? super Integer> actual;
+        final Subscriber<? super Integer> downstream;
 
         RangeSubscription(Subscriber<? super Integer> actual, int index, int end) {
             super(index, end);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             int f = end;
-            Subscriber<? super Integer> a = actual;
+            Subscriber<? super Integer> a = downstream;
 
             for (int i = index; i != f; i++) {
                 if (cancelled) {
@@ -140,7 +138,7 @@ public final class FlowableRange extends Flowable<Integer> {
             long e = 0;
             int f = end;
             int i = index;
-            Subscriber<? super Integer> a = actual;
+            Subscriber<? super Integer> a = downstream;
 
             for (;;) {
 
@@ -177,20 +175,19 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeConditionalSubscription extends BaseRangeSubscription {
 
-
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final ConditionalSubscriber<? super Integer> actual;
+        final ConditionalSubscriber<? super Integer> downstream;
 
         RangeConditionalSubscription(ConditionalSubscriber<? super Integer> actual, int index, int end) {
             super(index, end);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             int f = end;
-            ConditionalSubscriber<? super Integer> a = actual;
+            ConditionalSubscriber<? super Integer> a = downstream;
 
             for (int i = index; i != f; i++) {
                 if (cancelled) {
@@ -209,7 +206,7 @@ public final class FlowableRange extends Flowable<Integer> {
             long e = 0;
             int f = end;
             int i = index;
-            ConditionalSubscriber<? super Integer> a = actual;
+            ConditionalSubscriber<? super Integer> a = downstream;
 
             for (;;) {
 

@@ -129,9 +129,8 @@ public final class PublishSubject<T> extends Subject<T> {
         subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);
     }
 
-
     @Override
-    public void subscribeActual(Observer<? super T> t) {
+    protected void subscribeActual(Observer<? super T> t) {
         PublishDisposable<T> ps = new PublishDisposable<T>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
@@ -216,21 +215,17 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         if (subscribers.get() == TERMINATED) {
-            s.dispose();
+            d.dispose();
         }
     }
 
     @Override
     public void onNext(T t) {
         ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-
-        if (subscribers.get() == TERMINATED) {
-            return;
-        }
-        for (PublishDisposable<T> s : subscribers.get()) {
-            s.onNext(t);
+        for (PublishDisposable<T> pd : subscribers.get()) {
+            pd.onNext(t);
         }
     }
 
@@ -244,8 +239,8 @@ public final class PublishSubject<T> extends Subject<T> {
         }
         error = t;
 
-        for (PublishDisposable<T> s : subscribers.getAndSet(TERMINATED)) {
-            s.onError(t);
+        for (PublishDisposable<T> pd : subscribers.getAndSet(TERMINATED)) {
+            pd.onError(t);
         }
     }
 
@@ -255,8 +250,8 @@ public final class PublishSubject<T> extends Subject<T> {
         if (subscribers.get() == TERMINATED) {
             return;
         }
-        for (PublishDisposable<T> s : subscribers.getAndSet(TERMINATED)) {
-            s.onComplete();
+        for (PublishDisposable<T> pd : subscribers.getAndSet(TERMINATED)) {
+            pd.onComplete();
         }
     }
 
@@ -294,7 +289,7 @@ public final class PublishSubject<T> extends Subject<T> {
 
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         /** The subject state. */
         final PublishSubject<T> parent;
 
@@ -304,13 +299,13 @@ public final class PublishSubject<T> extends Subject<T> {
          * @param parent the parent PublishProcessor
          */
         PublishDisposable(Observer<? super T> actual, PublishSubject<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
         public void onNext(T t) {
             if (!get()) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
@@ -318,13 +313,13 @@ public final class PublishSubject<T> extends Subject<T> {
             if (get()) {
                 RxJavaPlugins.onError(t);
             } else {
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
 
         public void onComplete() {
             if (!get()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

@@ -28,6 +28,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     public FlowableFromArray(T[] array) {
         this.array = array;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
@@ -92,12 +93,10 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             }
         }
 
-
         @Override
         public final void cancel() {
             cancelled = true;
         }
-
 
         abstract void fastPath();
 
@@ -106,21 +105,20 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArraySubscription<T> extends BaseArraySubscription<T> {
 
-
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         ArraySubscription(Subscriber<? super T> actual, T[] array) {
             super(array);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             T[] arr = array;
             int f = arr.length;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
 
             for (int i = index; i != f; i++) {
                 if (cancelled) {
@@ -146,7 +144,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             T[] arr = array;
             int f = arr.length;
             int i = index;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
 
             for (;;) {
 
@@ -190,21 +188,20 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArrayConditionalSubscription<T> extends BaseArraySubscription<T> {
 
-
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         ArrayConditionalSubscription(ConditionalSubscriber<? super T> actual, T[] array) {
             super(array);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             T[] arr = array;
             int f = arr.length;
-            ConditionalSubscriber<? super T> a = actual;
+            ConditionalSubscriber<? super T> a = downstream;
 
             for (int i = index; i != f; i++) {
                 if (cancelled) {
@@ -230,7 +227,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             T[] arr = array;
             int f = arr.length;
             int i = index;
-            ConditionalSubscriber<? super T> a = actual;
+            ConditionalSubscriber<? super T> a = downstream;
 
             for (;;) {
 

@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
@@ -23,10 +22,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
+ * <p>History: 2.0.1 - experimental
  * @param <T> the value type
- * @since 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class SingleDoAfterSuccess<T> extends Single<T> {
 
     final SingleSource<T> source;
@@ -39,35 +38,35 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        source.subscribe(new DoAfterObserver<T>(s, onAfterSuccess));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(new DoAfterObserver<T>(observer, onAfterSuccess));
     }
 
     static final class DoAfterObserver<T> implements SingleObserver<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Consumer<? super T> onAfterSuccess;
 
-        Disposable d;
+        Disposable upstream;
 
         DoAfterObserver(SingleObserver<? super T> actual, Consumer<? super T> onAfterSuccess) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onAfterSuccess = onAfterSuccess;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onSuccess(t);
+            downstream.onSuccess(t);
 
             try {
                 onAfterSuccess.accept(t);
@@ -80,17 +79,17 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

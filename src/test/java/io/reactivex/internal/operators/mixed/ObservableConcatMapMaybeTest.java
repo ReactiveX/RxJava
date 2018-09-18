@@ -240,10 +240,10 @@ public class ObservableConcatMapMaybeTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onNext(1);
-                    s.onError(new TestException("outer"));
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onError(new TestException("outer"));
                 }
             }
             .concatMapMaybe(
@@ -398,5 +398,52 @@ public class ObservableConcatMapMaybeTest {
         operator.dispose();
 
         assertTrue(operator.queue.isEmpty());
+    }
+
+    @Test
+    public void checkUnboundedInnerQueue() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Observable
+                .fromArray(ms, Maybe.just(2), Maybe.just(3), Maybe.just(4))
+                .concatMapMaybe(Functions.<Maybe<Integer>>identity(), 2)
+                .test();
+
+        to.assertEmpty();
+
+        ms.onSuccess(1);
+
+        to.assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void innerSuccessDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            final MaybeSubject<Integer> ms = MaybeSubject.create();
+
+            final TestObserver<Integer> to = Observable.just(1)
+                    .hide()
+                    .concatMapMaybe(Functions.justFunction(ms))
+                    .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ms.onSuccess(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            to.assertNoErrors();
+        }
     }
 }

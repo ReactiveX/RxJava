@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -34,13 +33,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps each upstream item into a {@link MaybeSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
  * terminate.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream element type
  * @param <R> the output element type
- *
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
     final Flowable<T> source;
@@ -218,6 +215,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;

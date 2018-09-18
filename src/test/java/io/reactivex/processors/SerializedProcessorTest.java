@@ -38,6 +38,7 @@ public class SerializedProcessorTest {
         ts.assertValue("hello");
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueRelay() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
@@ -56,6 +57,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueEmpty() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
@@ -73,6 +76,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueError() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
@@ -91,6 +96,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testPublishSubjectValueRelay() {
         PublishProcessor<Integer> async = PublishProcessor.create();
@@ -115,6 +121,7 @@ public class SerializedProcessorTest {
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
     }
+
     @Test
     public void testPublishSubjectValueError() {
         PublishProcessor<Integer> async = PublishProcessor.create();
@@ -128,6 +135,7 @@ public class SerializedProcessorTest {
         assertSame(te, serial.getThrowable());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectValueRelay() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
@@ -146,6 +154,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectValueRelayIncomplete() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
@@ -163,6 +173,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
@@ -179,6 +191,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
@@ -196,6 +210,8 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectError() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
@@ -233,6 +249,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -250,6 +267,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBounded() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -269,6 +287,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -287,6 +306,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -303,6 +323,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -337,6 +358,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectError() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -373,6 +395,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectBoundedError() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);

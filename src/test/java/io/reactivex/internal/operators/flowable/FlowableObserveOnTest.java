@@ -21,12 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -46,13 +47,13 @@ public class FlowableObserveOnTest {
      */
     @Test
     public void testObserveOn() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -61,10 +62,10 @@ public class FlowableObserveOnTest {
         // FIXME null values not allowed
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(observer);
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        InOrder inOrder = inOrder(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
 
         obs.observeOn(Schedulers.computation()).subscribe(ts);
 
@@ -76,12 +77,12 @@ public class FlowableObserveOnTest {
             fail("failed with exception");
         }
 
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(1)).onNext("null");
-        inOrder.verify(observer, times(1)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(1)).onNext("four");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(1)).onNext("null");
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(1)).onNext("four");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -92,7 +93,7 @@ public class FlowableObserveOnTest {
 //        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -127,45 +128,45 @@ public class FlowableObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(observer);
+        }).subscribe(subscriber);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
         }
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(5)).onNext(any(String.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(5)).onNext(any(String.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void observeOnTheSameSchedulerTwice() {
         Scheduler scheduler = ImmediateThinScheduler.INSTANCE;
 
-        Flowable<Integer> o = Flowable.just(1, 2, 3);
-        Flowable<Integer> o2 = o.observeOn(scheduler);
+        Flowable<Integer> f = Flowable.just(1, 2, 3);
+        Flowable<Integer> f2 = f.observeOn(scheduler);
 
-        Subscriber<Object> observer1 = TestHelper.mockSubscriber();
-        Subscriber<Object> observer2 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber1 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber2 = TestHelper.mockSubscriber();
 
-        InOrder inOrder1 = inOrder(observer1);
-        InOrder inOrder2 = inOrder(observer2);
+        InOrder inOrder1 = inOrder(subscriber1);
+        InOrder inOrder2 = inOrder(subscriber2);
 
-        o2.subscribe(observer1);
-        o2.subscribe(observer2);
+        f2.subscribe(subscriber1);
+        f2.subscribe(subscriber2);
 
-        inOrder1.verify(observer1, times(1)).onNext(1);
-        inOrder1.verify(observer1, times(1)).onNext(2);
-        inOrder1.verify(observer1, times(1)).onNext(3);
-        inOrder1.verify(observer1, times(1)).onComplete();
-        verify(observer1, never()).onError(any(Throwable.class));
+        inOrder1.verify(subscriber1, times(1)).onNext(1);
+        inOrder1.verify(subscriber1, times(1)).onNext(2);
+        inOrder1.verify(subscriber1, times(1)).onNext(3);
+        inOrder1.verify(subscriber1, times(1)).onComplete();
+        verify(subscriber1, never()).onError(any(Throwable.class));
         inOrder1.verifyNoMoreInteractions();
 
-        inOrder2.verify(observer2, times(1)).onNext(1);
-        inOrder2.verify(observer2, times(1)).onNext(2);
-        inOrder2.verify(observer2, times(1)).onNext(3);
-        inOrder2.verify(observer2, times(1)).onComplete();
-        verify(observer2, never()).onError(any(Throwable.class));
+        inOrder2.verify(subscriber2, times(1)).onNext(1);
+        inOrder2.verify(subscriber2, times(1)).onNext(2);
+        inOrder2.verify(subscriber2, times(1)).onNext(3);
+        inOrder2.verify(subscriber2, times(1)).onComplete();
+        verify(subscriber2, never()).onError(any(Throwable.class));
         inOrder2.verifyNoMoreInteractions();
     }
 
@@ -174,34 +175,34 @@ public class FlowableObserveOnTest {
         TestScheduler scheduler1 = new TestScheduler();
         TestScheduler scheduler2 = new TestScheduler();
 
-        Flowable<Integer> o = Flowable.just(1, 2, 3);
-        Flowable<Integer> o1 = o.observeOn(scheduler1);
-        Flowable<Integer> o2 = o.observeOn(scheduler2);
+        Flowable<Integer> f = Flowable.just(1, 2, 3);
+        Flowable<Integer> f1 = f.observeOn(scheduler1);
+        Flowable<Integer> f2 = f.observeOn(scheduler2);
 
-        Subscriber<Object> observer1 = TestHelper.mockSubscriber();
-        Subscriber<Object> observer2 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber1 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber2 = TestHelper.mockSubscriber();
 
-        InOrder inOrder1 = inOrder(observer1);
-        InOrder inOrder2 = inOrder(observer2);
+        InOrder inOrder1 = inOrder(subscriber1);
+        InOrder inOrder2 = inOrder(subscriber2);
 
-        o1.subscribe(observer1);
-        o2.subscribe(observer2);
+        f1.subscribe(subscriber1);
+        f2.subscribe(subscriber2);
 
         scheduler1.advanceTimeBy(1, TimeUnit.SECONDS);
         scheduler2.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        inOrder1.verify(observer1, times(1)).onNext(1);
-        inOrder1.verify(observer1, times(1)).onNext(2);
-        inOrder1.verify(observer1, times(1)).onNext(3);
-        inOrder1.verify(observer1, times(1)).onComplete();
-        verify(observer1, never()).onError(any(Throwable.class));
+        inOrder1.verify(subscriber1, times(1)).onNext(1);
+        inOrder1.verify(subscriber1, times(1)).onNext(2);
+        inOrder1.verify(subscriber1, times(1)).onNext(3);
+        inOrder1.verify(subscriber1, times(1)).onComplete();
+        verify(subscriber1, never()).onError(any(Throwable.class));
         inOrder1.verifyNoMoreInteractions();
 
-        inOrder2.verify(observer2, times(1)).onNext(1);
-        inOrder2.verify(observer2, times(1)).onNext(2);
-        inOrder2.verify(observer2, times(1)).onNext(3);
-        inOrder2.verify(observer2, times(1)).onComplete();
-        verify(observer2, never()).onError(any(Throwable.class));
+        inOrder2.verify(subscriber2, times(1)).onNext(1);
+        inOrder2.verify(subscriber2, times(1)).onNext(2);
+        inOrder2.verify(subscriber2, times(1)).onNext(3);
+        inOrder2.verify(subscriber2, times(1)).onComplete();
+        verify(subscriber2, never()).onError(any(Throwable.class));
         inOrder2.verifyNoMoreInteractions();
     }
 
@@ -366,27 +367,26 @@ public class FlowableObserveOnTest {
 
         Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.observeOn(testScheduler).subscribe(o);
+        source.observeOn(testScheduler).subscribe(subscriber);
 
-        inOrder.verify(o, never()).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onError(any(TestException.class));
 
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onError(any(TestException.class));
-        inOrder.verify(o, never()).onNext(anyInt());
-        inOrder.verify(o, never()).onComplete();
+        inOrder.verify(subscriber).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onComplete();
     }
 
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
 
-        final Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
 
         Flowable.just(1, 2, 3)
                 .observeOn(testScheduler)
@@ -395,11 +395,11 @@ public class FlowableObserveOnTest {
         ts.dispose();
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        final InOrder inOrder = inOrder(observer);
+        final InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, never()).onNext(anyInt());
-        inOrder.verify(observer, never()).onError(any(Exception.class));
-        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onError(any(Exception.class));
+        inOrder.verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -538,13 +538,13 @@ public class FlowableObserveOnTest {
         Flowable<Integer> flowable = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(Subscriber<? super Integer> o) {
-                o.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < Flowable.bufferSize() + 10; i++) {
-                    o.onNext(i);
+                    subscriber.onNext(i);
                 }
                 latch.countDown();
-                o.onComplete();
+                subscriber.onComplete();
             }
 
         });
@@ -601,7 +601,7 @@ public class FlowableObserveOnTest {
     @Test
     public void testOnErrorCutsAheadOfOnNext() {
         for (int i = 0; i < 50; i++) {
-            final PublishProcessor<Long> subject = PublishProcessor.create();
+            final PublishProcessor<Long> processor = PublishProcessor.create();
 
             final AtomicLong counter = new AtomicLong();
             TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
@@ -626,11 +626,11 @@ public class FlowableObserveOnTest {
                 }
 
             });
-            subject.observeOn(Schedulers.computation()).subscribe(ts);
+            processor.observeOn(Schedulers.computation()).subscribe(ts);
 
             // this will blow up with backpressure
             while (counter.get() < 102400) {
-                subject.onNext(counter.get());
+                processor.onNext(counter.get());
                 counter.incrementAndGet();
             }
 
@@ -794,7 +794,6 @@ public class FlowableObserveOnTest {
         // FIXME observeOn requests bufferSize at first always
         assertEquals(Arrays.asList(128L), requests);
     }
-
 
     @Test
     public void testErrorDelayed() {
@@ -1151,8 +1150,8 @@ public class FlowableObserveOnTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.observeOn(new TestScheduler());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.observeOn(new TestScheduler());
             }
         });
     }
@@ -1164,12 +1163,12 @@ public class FlowableObserveOnTest {
             TestScheduler scheduler = new TestScheduler();
             TestSubscriber<Integer> ts = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onComplete();
-                    observer.onNext(1);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .observeOn(scheduler)
@@ -1307,19 +1306,19 @@ public class FlowableObserveOnTest {
 
         us.observeOn(Schedulers.single())
         .subscribe(new FlowableSubscriber<Integer>() {
-            Subscription d;
+            Subscription upstream;
             int count;
             @Override
-            public void onSubscribe(Subscription d) {
-                this.d = d;
-                ((QueueSubscription<?>)d).requestFusion(QueueFuseable.ANY);
+            public void onSubscribe(Subscription s) {
+                this.upstream = s;
+                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
             public void onNext(Integer value) {
                 if (++count == 1) {
                     us.onNext(2);
-                    d.cancel();
+                    upstream.cancel();
                     cdl.countDown();
                 }
             }
@@ -1344,11 +1343,11 @@ public class FlowableObserveOnTest {
     public void nonFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
@@ -1395,11 +1394,11 @@ public class FlowableObserveOnTest {
     public void conditionalNonFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
 
                 oo.sourceMode = QueueFuseable.SYNC;
                 oo.requested.lazySet(1);
@@ -1447,11 +1446,11 @@ public class FlowableObserveOnTest {
     public void asycFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
@@ -1498,11 +1497,11 @@ public class FlowableObserveOnTest {
     public void conditionalAsyncFusedPollThrows() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
 
                 @SuppressWarnings("unchecked")
-                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)subscriber;
 
                 oo.sourceMode = QueueFuseable.ASYNC;
                 oo.requested.lazySet(1);
@@ -1782,5 +1781,164 @@ public class FlowableObserveOnTest {
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5);
+    }
+
+    public static final class DisposeTrackingScheduler extends Scheduler {
+
+        public final AtomicInteger disposedCount = new AtomicInteger();
+
+        @Override
+        public Worker createWorker() {
+            return new TrackingWorker();
+        }
+
+        final class TrackingWorker extends Scheduler.Worker {
+
+            @Override
+            public void dispose() {
+                disposedCount.getAndIncrement();
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return false;
+            }
+
+            @Override
+            public Disposable schedule(Runnable run, long delay,
+                    TimeUnit unit) {
+                run.run();
+                return Disposables.empty();
+            }
+        }
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).hide().observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelySyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyAsyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
+        up.onComplete();
+
+        Flowable.concat(
+                up.observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    static final class TestSubscriberFusedCanceling
+            extends TestSubscriber<Integer> {
+
+        public TestSubscriberFusedCanceling() {
+            super();
+            initialFusionMode = QueueFuseable.ANY;
+        }
+
+        @Override
+        public void onComplete() {
+            cancel();
+            super.onComplete();
+        }
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInAsyncOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        TestSubscriber<Integer> ts = new TestSubscriberFusedCanceling();
+
+        Flowable.just(1).hide().observeOn(s).subscribe(ts);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelySyncInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyAsyncInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
+        up.onComplete();
+
+        Flowable.concat(
+                up.observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInAsyncOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        TestSubscriber<Integer> ts = new TestSubscriberFusedCanceling();
+
+        Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()).subscribe(ts);
+
+        assertEquals(1, s.disposedCount.get());
     }
 }

@@ -38,7 +38,7 @@ public class QueueDrainObserverTest {
             }
 
             @Override
-            public void onSubscribe(Disposable s) {
+            public void onSubscribe(Disposable d) {
             }
 
             @Override
@@ -65,7 +65,7 @@ public class QueueDrainObserverTest {
             }
 
             @Override
-            public void onSubscribe(Disposable s) {
+            public void onSubscribe(Disposable d) {
             }
 
             @Override

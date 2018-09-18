@@ -16,9 +16,11 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.Test;
@@ -27,7 +29,9 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -58,13 +62,13 @@ public class FlowableFromCallableTest {
 
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer).onNext("test_value");
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext("test_value");
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -77,13 +81,13 @@ public class FlowableFromCallableTest {
 
         Flowable<Object> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer).onError(throwable);
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(throwable);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,9 +118,9 @@ public class FlowableFromCallableTest {
 
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<String> outer = new TestSubscriber<String>(observer);
+        TestSubscriber<String> outer = new TestSubscriber<String>(subscriber);
 
         fromCallableFlowable
                 .subscribeOn(Schedulers.computation())
@@ -135,8 +139,8 @@ public class FlowableFromCallableTest {
         verify(func).call();
 
         // Observer must not be notified at all
-        verify(observer).onSubscribe(any(Subscription.class));
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe(any(Subscription.class));
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -150,13 +154,13 @@ public class FlowableFromCallableTest {
             }
         });
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer).onSubscribe(any(Subscription.class));
-        verify(observer).onError(checkedException);
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe(any(Subscription.class));
+        verify(subscriber).onError(checkedException);
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -237,5 +241,28 @@ public class FlowableFromCallableTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test(timeout = 5000)
+    public void undeliverableUponCancellation() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            Flowable.fromCallable(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    ts.cancel();
+                    throw new TestException();
+                }
+            })
+            .subscribe(ts);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

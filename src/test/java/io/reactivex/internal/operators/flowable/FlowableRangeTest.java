@@ -33,21 +33,21 @@ public class FlowableRangeTest {
 
     @Test
     public void testRangeStartAt2Count3() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.range(2, 3).subscribe(observer);
+        Flowable.range(2, 3).subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(4);
-        verify(observer, never()).onNext(5);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, times(1)).onNext(4);
+        verify(subscriber, never()).onNext(5);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testRangeUnsubscribe() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         final AtomicInteger count = new AtomicInteger();
 
@@ -57,14 +57,14 @@ public class FlowableRangeTest {
                 count.incrementAndGet();
             }
         })
-        .take(3).subscribe(observer);
+        .take(3).subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, never()).onNext(4);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, never()).onNext(4);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
         assertEquals(3, count.get());
     }
 
@@ -95,14 +95,14 @@ public class FlowableRangeTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        Flowable<Integer> o = Flowable.range(1, Flowable.bufferSize());
+        Flowable<Integer> f = Flowable.range(1, Flowable.bufferSize());
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(1);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValue(1);
 
@@ -123,14 +123,14 @@ public class FlowableRangeTest {
             list.add(i);
         }
 
-        Flowable<Integer> o = Flowable.range(1, list.size());
+        Flowable<Integer> f = Flowable.range(1, list.size());
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValueSequence(list);
         ts.assertTerminated();
@@ -164,18 +164,21 @@ public class FlowableRangeTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
+
     @Test
     public void testWithBackpressure1() {
         for (int i = 0; i < 100; i++) {
             testWithBackpressureOneByOne(i);
         }
     }
+
     @Test
     public void testWithBackpressureAllAtOnce() {
         for (int i = 0; i < 100; i++) {
             testWithBackpressureAllAtOnce(i);
         }
     }
+
     @Test
     public void testWithBackpressureRequestWayMore() {
         Flowable<Integer> source = Flowable.range(50, 100);
@@ -260,6 +263,7 @@ public class FlowableRangeTest {
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
+
     @Test(timeout = 1000)
     public void testNearMaxValueWithBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
@@ -269,7 +273,6 @@ public class FlowableRangeTest {
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
-
 
     @Test
     public void negativeCount() {

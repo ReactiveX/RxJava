@@ -67,26 +67,26 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
     }
 
     static final class ZipIterableSubscriber<T, U, V> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super V> actual;
+        final Subscriber<? super V> downstream;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ZipIterableSubscriber(Subscriber<? super V> actual, Iterator<U> iterator,
                 BiFunction<? super T, ? super U, ? extends V> zipper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.iterator = iterator;
             this.zipper = zipper;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -113,7 +113,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
                 return;
             }
 
-            actual.onNext(v);
+            downstream.onNext(v);
 
             boolean b;
 
@@ -126,16 +126,16 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
 
             if (!b) {
                 done = true;
-                s.cancel();
-                actual.onComplete();
+                upstream.cancel();
+                downstream.onComplete();
             }
         }
 
         void error(Throwable e) {
             Exceptions.throwIfFatal(e);
             done = true;
-            s.cancel();
-            actual.onError(e);
+            upstream.cancel();
+            downstream.onError(e);
         }
 
         @Override
@@ -145,7 +145,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -154,17 +154,17 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
     }

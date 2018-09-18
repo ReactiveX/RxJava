@@ -78,6 +78,7 @@ public class ToFlowablePerf {
     public Object flowable() {
         return flowable.blockingGet();
     }
+
     @Benchmark
     public Object flowableInner() {
         return flowableInner.blockingLast();

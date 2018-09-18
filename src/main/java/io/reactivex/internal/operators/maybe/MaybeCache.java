@@ -89,7 +89,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
         this.value = value;
         for (CacheDisposable<T> inner : observers.getAndSet(TERMINATED)) {
             if (!inner.isDisposed()) {
-                inner.actual.onSuccess(value);
+                inner.downstream.onSuccess(value);
             }
         }
     }
@@ -100,7 +100,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
         this.error = e;
         for (CacheDisposable<T> inner : observers.getAndSet(TERMINATED)) {
             if (!inner.isDisposed()) {
-                inner.actual.onError(e);
+                inner.downstream.onError(e);
             }
         }
     }
@@ -110,7 +110,7 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     public void onComplete() {
         for (CacheDisposable<T> inner : observers.getAndSet(TERMINATED)) {
             if (!inner.isDisposed()) {
-                inner.actual.onComplete();
+                inner.downstream.onComplete();
             }
         }
     }
@@ -175,11 +175,11 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
 
         private static final long serialVersionUID = -5791853038359966195L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         CacheDisposable(MaybeObserver<? super T> actual, MaybeCache<T> parent) {
             super(parent);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override

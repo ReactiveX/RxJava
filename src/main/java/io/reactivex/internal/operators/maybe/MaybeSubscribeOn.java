@@ -63,10 +63,10 @@ public final class MaybeSubscribeOn<T> extends AbstractMaybeWithUpstream<T, T> {
 
         private static final long serialVersionUID = 8571289934935992137L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        SubscribeOnMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        SubscribeOnMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
             this.task = new SequentialDisposable();
         }
 
@@ -88,17 +88,17 @@ public final class MaybeSubscribeOn<T> extends AbstractMaybeWithUpstream<T, T> {
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

@@ -68,7 +68,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
     abstract static class BaseFilterSubscriber<T> implements ConditionalSubscriber<T>, Subscription {
         final Predicate<? super T> predicate;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
@@ -78,37 +78,37 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
 
         @Override
         public final void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public final void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public final void onNext(T t) {
             if (!tryOnNext(t) && !done) {
-                s.request(1);
+                upstream.request(1);
             }
         }
     }
 
     static final class ParallelFilterSubscriber<T> extends BaseFilterSubscriber<T> {
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         ParallelFilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
             super(predicate);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -127,7 +127,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 }
 
                 if (b) {
-                    actual.onNext(t);
+                    downstream.onNext(t);
                     return true;
                 }
             }
@@ -141,33 +141,33 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!done) {
                 done = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }
 
     static final class ParallelFilterConditionalSubscriber<T> extends BaseFilterSubscriber<T> {
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         ParallelFilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> predicate) {
             super(predicate);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -186,7 +186,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 }
 
                 if (b) {
-                    return actual.tryOnNext(t);
+                    return downstream.tryOnNext(t);
                 }
             }
             return false;
@@ -199,14 +199,14 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!done) {
                 done = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }}

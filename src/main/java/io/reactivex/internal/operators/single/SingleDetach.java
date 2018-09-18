@@ -14,17 +14,15 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * Breaks the references between the upstream and downstream when the Maybe terminates.
- *
+ * <p>History: 2.1.5 - experimental
  * @param <T> the value type
- * @since 2.1.5 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class SingleDetach<T> extends Single<T> {
 
     final SingleSource<T> source;
@@ -40,51 +38,51 @@ public final class SingleDetach<T> extends Single<T> {
 
     static final class DetachSingleObserver<T> implements SingleObserver<T>, Disposable {
 
-        SingleObserver<? super T> actual;
+        SingleObserver<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        DetachSingleObserver(SingleObserver<? super T> actual) {
-            this.actual = actual;
+        DetachSingleObserver(SingleObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            actual = null;
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            downstream = null;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            SingleObserver<? super T> a = actual;
+            upstream = DisposableHelper.DISPOSED;
+            SingleObserver<? super T> a = downstream;
             if (a != null) {
-                actual = null;
+                downstream = null;
                 a.onSuccess(value);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            SingleObserver<? super T> a = actual;
+            upstream = DisposableHelper.DISPOSED;
+            SingleObserver<? super T> a = downstream;
             if (a != null) {
-                actual = null;
+                downstream = null;
                 a.onError(e);
             }
         }

@@ -92,46 +92,46 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2, 3).firstElement().toFlowable();
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3).firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstWithOneElementFlowable() {
-        Flowable<Integer> observable = Flowable.just(1).firstElement().toFlowable();
+        Flowable<Integer> flowable = Flowable.just(1).firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstWithEmptyFlowable() {
-        Flowable<Integer> observable = Flowable.<Integer> empty().firstElement().toFlowable();
+        Flowable<Integer> flowable = Flowable.<Integer> empty().firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onComplete();
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstWithPredicateFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -140,18 +140,18 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstWithPredicateAndOneElementFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2)
+        Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -160,18 +160,18 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstWithPredicateAndEmptyFlowable() {
-        Flowable<Integer> observable = Flowable.just(1)
+        Flowable<Integer> flowable = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -180,59 +180,59 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onComplete();
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2, 3)
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3)
                 .first(4).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultWithOneElementFlowable() {
-        Flowable<Integer> observable = Flowable.just(1).first(2).toFlowable();
+        Flowable<Integer> flowable = Flowable.just(1).first(2).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultWithEmptyFlowable() {
-        Flowable<Integer> observable = Flowable.<Integer> empty()
+        Flowable<Integer> flowable = Flowable.<Integer> empty()
                 .first(1).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultWithPredicateFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -241,18 +241,18 @@ public class FlowableFirstTest {
                 })
                 .first(8).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElementFlowable() {
-        Flowable<Integer> observable = Flowable.just(1, 2)
+        Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -261,18 +261,18 @@ public class FlowableFirstTest {
                 })
                 .first(4).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testFirstOrDefaultWithPredicateAndEmptyFlowable() {
-        Flowable<Integer> observable = Flowable.just(1)
+        Flowable<Integer> flowable = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -281,12 +281,12 @@ public class FlowableFirstTest {
                 })
                 .first(2).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -332,9 +332,9 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirst() {
-        Maybe<Integer> observable = Flowable.just(1, 2, 3).firstElement();
+        Maybe<Integer> maybe = Flowable.just(1, 2, 3).firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm, times(1)).onSuccess(1);
@@ -343,9 +343,9 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstWithOneElement() {
-        Maybe<Integer> observable = Flowable.just(1).firstElement();
+        Maybe<Integer> maybe = Flowable.just(1).firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm, times(1)).onSuccess(1);
@@ -354,9 +354,9 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstWithEmpty() {
-        Maybe<Integer> observable = Flowable.<Integer> empty().firstElement();
+        Maybe<Integer> maybe = Flowable.<Integer> empty().firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm).onComplete();
@@ -366,7 +366,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstWithPredicate() {
-        Maybe<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
+        Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -375,7 +375,7 @@ public class FlowableFirstTest {
                 })
                 .firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm, times(1)).onSuccess(2);
@@ -384,7 +384,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstWithPredicateAndOneElement() {
-        Maybe<Integer> observable = Flowable.just(1, 2)
+        Maybe<Integer> maybe = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -393,7 +393,7 @@ public class FlowableFirstTest {
                 })
                 .firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm, times(1)).onSuccess(2);
@@ -402,7 +402,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstWithPredicateAndEmpty() {
-        Maybe<Integer> observable = Flowable.just(1)
+        Maybe<Integer> maybe = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -411,7 +411,7 @@ public class FlowableFirstTest {
                 })
                 .firstElement();
 
-        observable.subscribe(wm);
+        maybe.subscribe(wm);
 
         InOrder inOrder = inOrder(wm);
         inOrder.verify(wm).onComplete();
@@ -421,10 +421,10 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefault() {
-        Single<Integer> observable = Flowable.just(1, 2, 3)
+        Single<Integer> single = Flowable.just(1, 2, 3)
                 .first(4);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(1);
@@ -433,9 +433,9 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefaultWithOneElement() {
-        Single<Integer> observable = Flowable.just(1).first(2);
+        Single<Integer> single = Flowable.just(1).first(2);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(1);
@@ -444,10 +444,10 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefaultWithEmpty() {
-        Single<Integer> observable = Flowable.<Integer> empty()
+        Single<Integer> single = Flowable.<Integer> empty()
                 .first(1);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(1);
@@ -456,7 +456,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicate() {
-        Single<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
+        Single<Integer> single = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -465,7 +465,7 @@ public class FlowableFirstTest {
                 })
                 .first(8);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(2);
@@ -474,7 +474,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElement() {
-        Single<Integer> observable = Flowable.just(1, 2)
+        Single<Integer> single = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -483,7 +483,7 @@ public class FlowableFirstTest {
                 })
                 .first(4);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(2);
@@ -492,7 +492,7 @@ public class FlowableFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicateAndEmpty() {
-        Single<Integer> observable = Flowable.just(1)
+        Single<Integer> single = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer t1) {
@@ -501,7 +501,7 @@ public class FlowableFirstTest {
                 })
                 .first(2);
 
-        observable.subscribe(wo);
+        single.subscribe(wo);
 
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(2);

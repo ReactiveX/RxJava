@@ -37,46 +37,46 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
     static final class IsEmptyMaybeObserver<T>
     implements MaybeObserver<T>, Disposable {
 
-        final MaybeObserver<? super Boolean> actual;
+        final MaybeObserver<? super Boolean> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        IsEmptyMaybeObserver(MaybeObserver<? super Boolean> actual) {
-            this.actual = actual;
+        IsEmptyMaybeObserver(MaybeObserver<? super Boolean> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(false);
+            downstream.onSuccess(false);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onSuccess(true);
+            downstream.onSuccess(true);
         }
     }
 }

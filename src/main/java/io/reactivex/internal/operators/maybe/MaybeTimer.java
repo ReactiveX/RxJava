@@ -47,15 +47,15 @@ public final class MaybeTimer extends Maybe<Long> {
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
         private static final long serialVersionUID = 2875964065294031672L;
-        final MaybeObserver<? super Long> actual;
+        final MaybeObserver<? super Long> downstream;
 
-        TimerDisposable(final MaybeObserver<? super Long> actual) {
-            this.actual = actual;
+        TimerDisposable(final MaybeObserver<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void run() {
-            actual.onSuccess(0L);
+            downstream.onSuccess(0L);
         }
 
         @Override

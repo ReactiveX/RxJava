@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -25,12 +24,11 @@ import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.
+ * <p>History: 2.0.2 - experimental
  * @param <T> the input value type
  * @param <R> the result value type
- * 
- * @since 2.0.2 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
     final MaybeSource<T> source;
@@ -43,8 +41,8 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> actual) {
-        source.subscribe(new FlatMapMaybeObserver<T, R>(actual, mapper));
+    protected void subscribeActual(MaybeObserver<? super R> downstream) {
+        source.subscribe(new FlatMapMaybeObserver<T, R>(downstream, mapper));
     }
 
     static final class FlatMapMaybeObserver<T, R>
@@ -53,12 +51,12 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
         private static final long serialVersionUID = 4827726964688405508L;
 
-        final MaybeObserver<? super R> actual;
+        final MaybeObserver<? super R> downstream;
 
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
         FlatMapMaybeObserver(MaybeObserver<? super R> actual, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
@@ -75,7 +73,7 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -91,17 +89,17 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
                 return;
             }
 
-            ss.subscribe(new FlatMapSingleObserver<R>(this, actual));
+            ss.subscribe(new FlatMapSingleObserver<R>(this, downstream));
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 
@@ -109,11 +107,11 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
         final AtomicReference<Disposable> parent;
 
-        final MaybeObserver<? super R> actual;
+        final MaybeObserver<? super R> downstream;
 
-        FlatMapSingleObserver(AtomicReference<Disposable> parent, MaybeObserver<? super R> actual) {
+        FlatMapSingleObserver(AtomicReference<Disposable> parent, MaybeObserver<? super R> downstream) {
             this.parent = parent;
-            this.actual = actual;
+            this.downstream = downstream;
         }
 
         @Override
@@ -123,12 +121,12 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
         @Override
         public void onSuccess(final R value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(final Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 }

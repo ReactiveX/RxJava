@@ -57,7 +57,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
         private static final long serialVersionUID = 3240706908776709697L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Action onOverflow;
 
@@ -69,7 +69,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
         final Deque<T> deque;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean cancelled;
 
@@ -78,7 +78,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
         OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
                 BackpressureOverflowStrategy strategy, long bufferSize) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onOverflow = onOverflow;
             this.strategy = strategy;
             this.bufferSize = bufferSize;
@@ -88,10 +88,10 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -134,12 +134,12 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                         onOverflow.run();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        s.cancel();
+                        upstream.cancel();
                         onError(ex);
                     }
                 }
             } else if (callError) {
-                s.cancel();
+                upstream.cancel();
                 onError(new MissingBackpressureException());
             } else {
                 drain();
@@ -174,7 +174,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
 
             if (getAndIncrement() == 0) {
                 clear(deque);
@@ -194,7 +194,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
             int missed = 1;
             Deque<T> dq = deque;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             for (;;) {
                 long r = requested.get();
                 long e = 0L;

@@ -50,7 +50,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         final Callable<U> bufferSupplier;
         final Publisher<B> boundary;
 
-        Subscription s;
+        Subscription upstream;
 
         Disposable other;
 
@@ -65,10 +65,10 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validate(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.upstream, s)) {
                 return;
             }
-            this.s = s;
+            this.upstream = s;
 
             U b;
 
@@ -78,7 +78,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 Exceptions.throwIfFatal(e);
                 cancelled = true;
                 s.cancel();
-                EmptySubscription.error(e, actual);
+                EmptySubscription.error(e, downstream);
                 return;
             }
 
@@ -87,7 +87,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
             other = bs;
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
 
             if (!cancelled) {
                 s.request(Long.MAX_VALUE);
@@ -110,7 +110,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         @Override
         public void onError(Throwable t) {
             cancel();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -126,7 +126,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
+                QueueDrainHelper.drainMaxLoop(queue, downstream, false, this, this);
             }
         }
 
@@ -140,7 +140,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             if (!cancelled) {
                 cancelled = true;
                 other.dispose();
-                s.cancel();
+                upstream.cancel();
 
                 if (enter()) {
                     queue.clear();
@@ -157,7 +157,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -185,7 +185,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
-            actual.onNext(v);
+            downstream.onNext(v);
             return true;
         }
 

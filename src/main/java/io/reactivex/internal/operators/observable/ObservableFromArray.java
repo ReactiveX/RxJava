@@ -23,11 +23,12 @@ public final class ObservableFromArray<T> extends Observable<T> {
     public ObservableFromArray(T[] array) {
         this.array = array;
     }
-    @Override
-    public void subscribeActual(Observer<? super T> s) {
-        FromArrayDisposable<T> d = new FromArrayDisposable<T>(s, array);
 
-        s.onSubscribe(d);
+    @Override
+    public void subscribeActual(Observer<? super T> observer) {
+        FromArrayDisposable<T> d = new FromArrayDisposable<T>(observer, array);
+
+        observer.onSubscribe(d);
 
         if (d.fusionMode) {
             return;
@@ -38,7 +39,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
 
     static final class FromArrayDisposable<T> extends BasicQueueDisposable<T> {
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final T[] array;
 
@@ -49,7 +50,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
         volatile boolean disposed;
 
         FromArrayDisposable(Observer<? super T> actual, T[] array) {
-            this.actual = actual;
+            this.downstream = actual;
             this.array = array;
         }
 
@@ -101,13 +102,13 @@ public final class ObservableFromArray<T> extends Observable<T> {
             for (int i = 0; i < n && !isDisposed(); i++) {
                 T value = a[i];
                 if (value == null) {
-                    actual.onError(new NullPointerException("The " + i + "th element is null"));
+                    downstream.onError(new NullPointerException("The " + i + "th element is null"));
                     return;
                 }
-                actual.onNext(value);
+                downstream.onNext(value);
             }
             if (!isDisposed()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

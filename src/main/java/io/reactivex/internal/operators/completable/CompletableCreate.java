@@ -31,9 +31,9 @@ public final class CompletableCreate extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        Emitter parent = new Emitter(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(CompletableObserver observer) {
+        Emitter parent = new Emitter(observer);
+        observer.onSubscribe(parent);
 
         try {
             source.subscribe(parent);
@@ -49,10 +49,10 @@ public final class CompletableCreate extends Completable {
 
         private static final long serialVersionUID = -2467358622224974244L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Emitter(CompletableObserver actual) {
-            this.actual = actual;
+        Emitter(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -61,7 +61,7 @@ public final class CompletableCreate extends Completable {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onComplete();
+                        downstream.onComplete();
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -87,7 +87,7 @@ public final class CompletableCreate extends Completable {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onError(t);
+                        downstream.onError(t);
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -117,6 +117,11 @@ public final class CompletableCreate extends Completable {
         @Override
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s{%s}", getClass().getSimpleName(), super.toString());
         }
     }
 }

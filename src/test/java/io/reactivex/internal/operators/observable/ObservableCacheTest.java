@@ -154,6 +154,7 @@ public class ObservableCacheTest {
             assertEquals(10000, to2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
@@ -219,7 +220,6 @@ public class ObservableCacheTest {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .cache();
-
 
         TestObserver<Integer> to = new TestObserver<Integer>();
         source.subscribe(to);

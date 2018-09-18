@@ -28,33 +28,33 @@ public class ObservableTakeLastOneTest {
 
     @Test
     public void testLastOfManyReturnsLast() {
-        TestObserver<Integer> s = new TestObserver<Integer>();
-        Observable.range(1, 10).takeLast(1).subscribe(s);
-        s.assertValue(10);
-        s.assertNoErrors();
-        s.assertTerminated();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.range(1, 10).takeLast(1).subscribe(to);
+        to.assertValue(10);
+        to.assertNoErrors();
+        to.assertTerminated();
         // NO longer assertable
 //        s.assertUnsubscribed();
     }
 
     @Test
     public void testLastOfEmptyReturnsEmpty() {
-        TestObserver<Object> s = new TestObserver<Object>();
-        Observable.empty().takeLast(1).subscribe(s);
-        s.assertNoValues();
-        s.assertNoErrors();
-        s.assertTerminated();
+        TestObserver<Object> to = new TestObserver<Object>();
+        Observable.empty().takeLast(1).subscribe(to);
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertTerminated();
         // NO longer assertable
 //      s.assertUnsubscribed();
     }
 
     @Test
     public void testLastOfOneReturnsLast() {
-        TestObserver<Integer> s = new TestObserver<Integer>();
-        Observable.just(1).takeLast(1).subscribe(s);
-        s.assertValue(1);
-        s.assertNoErrors();
-        s.assertTerminated();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.just(1).takeLast(1).subscribe(to);
+        to.assertValue(1);
+        to.assertNoErrors();
+        to.assertTerminated();
         // NO longer assertable
 //      s.assertUnsubscribed();
     }

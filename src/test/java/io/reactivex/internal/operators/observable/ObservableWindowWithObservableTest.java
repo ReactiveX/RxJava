@@ -76,7 +76,6 @@ public class ObservableWindowWithObservableTest {
         }
         source.onComplete();
 
-
         verify(o, never()).onError(any(Throwable.class));
 
         assertEquals(n / 3, values.size());
@@ -329,6 +328,7 @@ public class ObservableWindowWithObservableTest {
         to.assertNoErrors();
         to.assertValueCount(1);
     }
+
     @Test
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -347,7 +347,6 @@ public class ObservableWindowWithObservableTest {
         assertTrue(boundary.hasObservers());
 
         boundary.onComplete();
-
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());

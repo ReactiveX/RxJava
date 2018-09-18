@@ -45,36 +45,36 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
     static final class LastObserver<T> implements Observer<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final T defaultItem;
 
-        Disposable s;
+        Disposable upstream;
 
         T item;
 
         LastObserver(SingleObserver<? super T> actual, T defaultItem) {
-            this.actual = actual;
+            this.downstream = actual;
             this.defaultItem = defaultItem;
         }
 
         @Override
         public void dispose() {
-            s.dispose();
-            s = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == DisposableHelper.DISPOSED;
+            return upstream == DisposableHelper.DISPOSED;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -85,24 +85,24 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
         @Override
         public void onError(Throwable t) {
-            s = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
             item = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            s = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
             T v = item;
             if (v != null) {
                 item = null;
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             } else {
                 v = defaultItem;
                 if (v != null) {
-                    actual.onSuccess(v);
+                    downstream.onSuccess(v);
                 } else {
-                    actual.onError(new NoSuchElementException());
+                    downstream.onError(new NoSuchElementException());
                 }
             }
         }

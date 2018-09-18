@@ -312,10 +312,10 @@ public class ObservableSwitchMapCompletableTest {
         try {
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onNext(1);
-                    s.onError(new TestException("main"));
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onError(new TestException("main"));
                 }
             }
             .switchMapCompletable(Functions.justFunction(Completable.error(new TestException("inner"))))

@@ -66,7 +66,7 @@ public class FlowableFilterTest {
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> o = w.filter(new Predicate<String>() {
+        Flowable<String> f = w.filter(new Predicate<String>() {
 
             @Override
             public boolean test(String t1) {
@@ -100,7 +100,7 @@ public class FlowableFilterTest {
         // this means it will only request "one" and "two", expecting to receive them before requesting more
         ts.request(2);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
@@ -113,7 +113,7 @@ public class FlowableFilterTest {
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
         Flowable<Integer> w = Flowable.range(1, Flowable.bufferSize() * 2);
-        Flowable<Integer> o = w.filter(new Predicate<Integer>() {
+        Flowable<Integer> f = w.filter(new Predicate<Integer>() {
 
             @Override
             public boolean test(Integer t1) {
@@ -146,7 +146,7 @@ public class FlowableFilterTest {
         // this means it will only request 1 item and expect to receive more
         ts.request(1);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
@@ -555,8 +555,8 @@ public class FlowableFilterTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.filter(Functions.alwaysTrue());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.filter(Functions.alwaysTrue());
             }
         });
     }

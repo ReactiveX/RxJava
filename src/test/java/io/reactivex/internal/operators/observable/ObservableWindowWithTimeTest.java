@@ -32,7 +32,6 @@ import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 
-
 public class ObservableWindowWithTimeTest {
 
     private TestScheduler scheduler;
@@ -158,6 +157,7 @@ public class ObservableWindowWithTimeTest {
             }
         };
     }
+
     @Test
     public void testExactWindowSize() {
         Observable<Observable<Integer>> source = Observable.range(1, 10)

@@ -372,7 +372,6 @@ public class ScheduledRunnableTest {
         assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
     }
 
-
     @Test
     public void noParentIsDisposed() {
         ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);

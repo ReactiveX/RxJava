@@ -39,7 +39,6 @@ public final class SingleZipArray<T, R> extends Single<R> {
         SingleSource<? extends T>[] sources = this.sources;
         int n = sources.length;
 
-
         if (n == 1) {
             sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonArrayFunc()));
             return;
@@ -67,10 +66,9 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
-
         private static final long serialVersionUID = -5556924161382950569L;
 
-        final SingleObserver<? super R> actual;
+        final SingleObserver<? super R> downstream;
 
         final Function<? super Object[], ? extends R> zipper;
 
@@ -81,7 +79,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         @SuppressWarnings("unchecked")
         ZipCoordinator(SingleObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
             super(n);
-            this.actual = observer;
+            this.downstream = observer;
             this.zipper = zipper;
             ZipSingleObserver<T>[] o = new ZipSingleObserver[n];
             for (int i = 0; i < n; i++) {
@@ -114,11 +112,11 @@ public final class SingleZipArray<T, R> extends Single<R> {
                     v = ObjectHelper.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    actual.onError(ex);
+                    downstream.onError(ex);
                     return;
                 }
 
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             }
         }
 
@@ -136,7 +134,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }

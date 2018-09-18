@@ -30,14 +30,14 @@ public final class SingleLift<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> s) {
+    protected void subscribeActual(SingleObserver<? super R> observer) {
         SingleObserver<? super T> sr;
 
         try {
-            sr = ObjectHelper.requireNonNull(onLift.apply(s), "The onLift returned a null SingleObserver");
+            sr = ObjectHelper.requireNonNull(onLift.apply(observer), "The onLift returned a null SingleObserver");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            EmptyDisposable.error(ex, s);
+            EmptyDisposable.error(ex, observer);
             return;
         }
 

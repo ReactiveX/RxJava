@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -31,13 +30,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps each upstream item into a {@link MaybeSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
  * terminate.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream element type
  * @param <R> the output element type
- *
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
 
     final Observable<T> source;
@@ -58,9 +55,9 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, s)) {
-            source.subscribe(new ConcatMapMaybeMainObserver<T, R>(s, mapper, prefetch, errorMode));
+    protected void subscribeActual(Observer<? super R> observer) {
+        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, observer)) {
+            source.subscribe(new ConcatMapMaybeMainObserver<T, R>(observer, mapper, prefetch, errorMode));
         }
     }
 
@@ -111,9 +108,9 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                upstream = d;
                 downstream.onSubscribe(this);
             }
         }
@@ -199,6 +196,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;

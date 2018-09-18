@@ -42,7 +42,7 @@ public final class SingleUsing<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
         final U resource; // NOPMD
 
@@ -50,7 +50,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             resource = resourceSupplier.call();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            EmptyDisposable.error(ex, s);
+            EmptyDisposable.error(ex, observer);
             return;
         }
 
@@ -69,7 +69,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     ex = new CompositeException(ex, exc);
                 }
             }
-            EmptyDisposable.error(ex, s);
+            EmptyDisposable.error(ex, observer);
             if (!eager) {
                 try {
                     disposer.accept(resource);
@@ -81,7 +81,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             return;
         }
 
-        source.subscribe(new UsingSingleObserver<T, U>(s, resource, eager, disposer));
+        source.subscribe(new UsingSingleObserver<T, U>(observer, resource, eager, disposer));
     }
 
     static final class UsingSingleObserver<T, U> extends
@@ -89,47 +89,47 @@ public final class SingleUsing<T, U> extends Single<T> {
 
         private static final long serialVersionUID = -5331524057054083935L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Consumer<? super U> disposer;
 
         final boolean eager;
 
-        Disposable d;
+        Disposable upstream;
 
         UsingSingleObserver(SingleObserver<? super T> actual, U resource, boolean eager,
                 Consumer<? super U> disposer) {
             super(resource);
-            this.actual = actual;
+            this.downstream = actual;
             this.eager = eager;
             this.disposer = disposer;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
             disposeAfter();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
 
             if (eager) {
                 Object u = getAndSet(this);
@@ -138,7 +138,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                         disposer.accept((U)u);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        actual.onError(ex);
+                        downstream.onError(ex);
                         return;
                     }
                 } else {
@@ -146,7 +146,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                 }
             }
 
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
 
             if (!eager) {
                 disposeAfter();
@@ -156,7 +156,7 @@ public final class SingleUsing<T, U> extends Single<T> {
         @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
 
             if (eager) {
                 Object u = getAndSet(this);
@@ -172,7 +172,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                 }
             }
 
-            actual.onError(e);
+            downstream.onError(e);
 
             if (!eager) {
                 disposeAfter();

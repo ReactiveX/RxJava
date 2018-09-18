@@ -66,7 +66,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
 
         private static final long serialVersionUID = -2809475196591179431L;
 
-        final Subscriber<? super Long> actual;
+        final Subscriber<? super Long> downstream;
         final long end;
 
         long count;
@@ -74,7 +74,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
 
         IntervalRangeSubscriber(Subscriber<? super Long> actual, long start, long end) {
-            this.actual = actual;
+            this.downstream = actual;
             this.count = start;
             this.end = end;
         }
@@ -98,11 +98,11 @@ public final class FlowableIntervalRange extends Flowable<Long> {
 
                 if (r != 0L) {
                     long c = count;
-                    actual.onNext(c);
+                    downstream.onNext(c);
 
                     if (c == end) {
                         if (resource.get() != DisposableHelper.DISPOSED) {
-                            actual.onComplete();
+                            downstream.onComplete();
                         }
                         DisposableHelper.dispose(resource);
                         return;
@@ -114,7 +114,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                         decrementAndGet();
                     }
                 } else {
-                    actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
                     DisposableHelper.dispose(resource);
                 }
             }

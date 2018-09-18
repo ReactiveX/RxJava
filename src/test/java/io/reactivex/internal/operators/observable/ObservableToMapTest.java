@@ -225,7 +225,6 @@ public class ObservableToMapTest {
         verify(objectObserver, times(1)).onError(any(Throwable.class));
     }
 
-
     @Test
     public void testToMap() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");

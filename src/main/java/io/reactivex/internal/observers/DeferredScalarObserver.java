@@ -29,22 +29,22 @@ implements Observer<T> {
     private static final long serialVersionUID = -266195175408988651L;
 
     /** The upstream disposable. */
-    protected Disposable s;
+    protected Disposable upstream;
 
     /**
      * Creates a DeferredScalarObserver instance and wraps a downstream Observer.
-     * @param actual the downstream subscriber, not null (not verified)
+     * @param downstream the downstream subscriber, not null (not verified)
      */
-    public DeferredScalarObserver(Observer<? super R> actual) {
-        super(actual);
+    public DeferredScalarObserver(Observer<? super R> downstream) {
+        super(downstream);
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        if (DisposableHelper.validate(this.s, s)) {
-            this.s = s;
+    public void onSubscribe(Disposable d) {
+        if (DisposableHelper.validate(this.upstream, d)) {
+            this.upstream = d;
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
         }
     }
 
@@ -68,6 +68,6 @@ implements Observer<T> {
     @Override
     public void dispose() {
         super.dispose();
-        s.dispose();
+        upstream.dispose();
     }
 }

@@ -27,11 +27,11 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
+        observer.onSubscribe(sd);
 
-        RepeatObserver<T> rs = new RepeatObserver<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
+        RepeatObserver<T> rs = new RepeatObserver<T>(observer, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
         rs.subscribeNext();
     }
 
@@ -39,29 +39,30 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         long remaining;
         RepeatObserver(Observer<? super T> actual, long count, SequentialDisposable sd, ObservableSource<? extends T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sd = sd;
             this.source = source;
             this.remaining = count;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            sd.replace(s);
+        public void onSubscribe(Disposable d) {
+            sd.replace(d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -73,7 +74,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
             if (r != 0L) {
                 subscribeNext();
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

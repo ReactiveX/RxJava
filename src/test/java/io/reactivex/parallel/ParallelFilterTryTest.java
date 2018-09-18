@@ -94,6 +94,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
             .assertResult(1);
         }
     }
+
     @Test
     public void filterErrorConditionalNoError() {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {

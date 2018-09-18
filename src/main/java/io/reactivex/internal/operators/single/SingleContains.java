@@ -33,22 +33,22 @@ public final class SingleContains<T> extends Single<Boolean> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super Boolean> s) {
+    protected void subscribeActual(final SingleObserver<? super Boolean> observer) {
 
-        source.subscribe(new Single(s));
+        source.subscribe(new ContainsSingleObserver(observer));
     }
 
-    final class Single implements SingleObserver<T> {
+    final class ContainsSingleObserver implements SingleObserver<T> {
 
-        private final SingleObserver<? super Boolean> s;
+        private final SingleObserver<? super Boolean> downstream;
 
-        Single(SingleObserver<? super Boolean> s) {
-            this.s = s;
+        ContainsSingleObserver(SingleObserver<? super Boolean> observer) {
+            this.downstream = observer;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            s.onSubscribe(d);
+            downstream.onSubscribe(d);
         }
 
         @Override
@@ -59,15 +59,15 @@ public final class SingleContains<T> extends Single<Boolean> {
                 b = comparer.test(v, value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.onError(ex);
+                downstream.onError(ex);
                 return;
             }
-            s.onSuccess(b);
+            downstream.onSuccess(b);
         }
 
         @Override
         public void onError(Throwable e) {
-            s.onError(e);
+            downstream.onError(e);
         }
 
     }

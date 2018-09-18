@@ -145,9 +145,9 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         if (subscribers.get() == TERMINATED) {
-            s.dispose();
+            d.dispose();
         }
     }
 
@@ -215,9 +215,9 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        AsyncDisposable<T> as = new AsyncDisposable<T>(s, this);
-        s.onSubscribe(as);
+    protected void subscribeActual(Observer<? super T> observer) {
+        AsyncDisposable<T> as = new AsyncDisposable<T>(observer, this);
+        observer.onSubscribe(as);
         if (add(as)) {
             if (as.isDisposed()) {
                 remove(as);
@@ -225,7 +225,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         } else {
             Throwable ex = error;
             if (ex != null) {
-                s.onError(ex);
+                observer.onError(ex);
             } else {
                 T v = value;
                 if (v != null) {
@@ -325,7 +325,9 @@ public final class AsyncSubject<T> extends Subject<T> {
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
      * @return the array containing the snapshot of all values of the Subject
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     public Object[] getValues() {
         T v = getValue();
         return v != null ? new Object[] { v } : new Object[0];
@@ -338,7 +340,9 @@ public final class AsyncSubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @param array the target array to copy values into if it fits
      * @return the given array if the values fit into it or a new array containing all values
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     public T[] getValues(T[] array) {
         T v = getValue();
         if (v == null) {
@@ -376,7 +380,7 @@ public final class AsyncSubject<T> extends Subject<T> {
 
         void onComplete() {
             if (!isDisposed()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -384,7 +388,7 @@ public final class AsyncSubject<T> extends Subject<T> {
             if (isDisposed()) {
                 RxJavaPlugins.onError(t);
             } else {
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
     }

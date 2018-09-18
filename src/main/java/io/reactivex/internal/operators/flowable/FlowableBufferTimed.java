@@ -78,7 +78,6 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 bufferSupplier, timespan, timeskip, unit, w));
     }
 
-
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
         final Callable<U> bufferSupplier;
@@ -86,7 +85,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         final TimeUnit unit;
         final Scheduler scheduler;
 
-        Subscription s;
+        Subscription upstream;
 
         U buffer;
 
@@ -104,8 +103,8 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 U b;
 
@@ -114,13 +113,13 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
-                    EmptySubscription.error(e, actual);
+                    EmptySubscription.error(e, downstream);
                     return;
                 }
 
                 buffer = b;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 if (!cancelled) {
                     s.request(Long.MAX_VALUE);
@@ -149,7 +148,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             synchronized (this) {
                 buffer = null;
             }
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -166,7 +165,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, actual, false, null, this);
+                QueueDrainHelper.drainMaxLoop(queue, downstream, false, null, this);
             }
         }
 
@@ -178,7 +177,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
             DisposableHelper.dispose(timer);
         }
 
@@ -191,7 +190,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -210,7 +209,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
-            actual.onNext(v);
+            downstream.onNext(v);
             return true;
         }
 
@@ -234,8 +233,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         final Worker w;
         final List<U> buffers;
 
-        Subscription s;
-
+        Subscription upstream;
 
         BufferSkipBoundedSubscriber(Subscriber<? super U> actual,
                 Callable<U> bufferSupplier, long timespan,
@@ -251,10 +249,10 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validate(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.upstream, s)) {
                 return;
             }
-            this.s = s;
+            this.upstream = s;
 
             final U b; // NOPMD
 
@@ -264,13 +262,13 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
-                EmptySubscription.error(e, actual);
+                EmptySubscription.error(e, downstream);
                 return;
             }
 
             buffers.add(b);
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
 
             s.request(Long.MAX_VALUE);
 
@@ -293,7 +291,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             done = true;
             w.dispose();
             clear();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -309,7 +307,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             }
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, actual, false, w, this);
+                QueueDrainHelper.drainMaxLoop(queue, downstream, false, w, this);
             }
         }
 
@@ -321,7 +319,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
             w.dispose();
             clear();
         }
@@ -344,7 +342,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -395,7 +393,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         Disposable timer;
 
-        Subscription s;
+        Subscription upstream;
 
         long producerIndex;
 
@@ -417,10 +415,10 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validate(this.s, s)) {
+            if (!SubscriptionHelper.validate(this.upstream, s)) {
                 return;
             }
-            this.s = s;
+            this.upstream = s;
 
             U b;
 
@@ -430,13 +428,13 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
-                EmptySubscription.error(e, actual);
+                EmptySubscription.error(e, downstream);
                 return;
             }
 
             buffer = b;
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
 
             timer = w.schedulePeriodically(this, timespan, timespan, unit);
 
@@ -473,7 +471,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -491,7 +489,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             synchronized (this) {
                 buffer = null;
             }
-            actual.onError(t);
+            downstream.onError(t);
             w.dispose();
         }
 
@@ -506,7 +504,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
+                QueueDrainHelper.drainMaxLoop(queue, downstream, false, this, this);
             }
 
             w.dispose();
@@ -517,7 +515,6 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             a.onNext(v);
             return true;
         }
-
 
         @Override
         public void request(long n) {
@@ -537,7 +534,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             synchronized (this) {
                 buffer = null;
             }
-            s.cancel();
+            upstream.cancel();
             w.dispose();
         }
 
@@ -555,7 +552,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 

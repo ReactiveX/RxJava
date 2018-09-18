@@ -28,13 +28,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueDisposable<R> {
 
     /** The downstream subscriber. */
-    protected final Observer<? super R> actual;
+    protected final Observer<? super R> downstream;
 
     /** The upstream subscription. */
-    protected Disposable s;
+    protected Disposable upstream;
 
     /** The upstream's QueueDisposable if not null. */
-    protected QueueDisposable<T> qs;
+    protected QueueDisposable<T> qd;
 
     /** Flag indicating no further onXXX event should be accepted. */
     protected boolean done;
@@ -44,26 +44,26 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
 
     /**
      * Construct a BasicFuseableObserver by wrapping the given subscriber.
-     * @param actual the subscriber, not null (not verified)
+     * @param downstream the subscriber, not null (not verified)
      */
-    public BasicFuseableObserver(Observer<? super R> actual) {
-        this.actual = actual;
+    public BasicFuseableObserver(Observer<? super R> downstream) {
+        this.downstream = downstream;
     }
 
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
-    public final void onSubscribe(Disposable s) {
-        if (DisposableHelper.validate(this.s, s)) {
+    public final void onSubscribe(Disposable d) {
+        if (DisposableHelper.validate(this.upstream, d)) {
 
-            this.s = s;
-            if (s instanceof QueueDisposable) {
-                this.qs = (QueueDisposable<T>)s;
+            this.upstream = d;
+            if (d instanceof QueueDisposable) {
+                this.qd = (QueueDisposable<T>)d;
             }
 
             if (beforeDownstream()) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 afterDownstream();
             }
@@ -97,7 +97,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
             return;
         }
         done = true;
-        actual.onError(t);
+        downstream.onError(t);
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
      */
     protected final void fail(Throwable t) {
         Exceptions.throwIfFatal(t);
-        s.dispose();
+        upstream.dispose();
         onError(t);
     }
 
@@ -116,7 +116,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
             return;
         }
         done = true;
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     /**
@@ -124,16 +124,16 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
      * saves the established mode in {@link #sourceMode} if that mode doesn't
      * have the {@link QueueDisposable#BOUNDARY} flag set.
      * <p>
-     * If the upstream doesn't support fusion ({@link #qs} is null), the method
+     * If the upstream doesn't support fusion ({@link #qd} is null), the method
      * returns {@link QueueDisposable#NONE}.
      * @param mode the fusion mode requested
      * @return the established fusion mode
      */
     protected final int transitiveBoundaryFusion(int mode) {
-        QueueDisposable<T> qs = this.qs;
-        if (qs != null) {
+        QueueDisposable<T> qd = this.qd;
+        if (qd != null) {
             if ((mode & BOUNDARY) == 0) {
-                int m = qs.requestFusion(mode);
+                int m = qd.requestFusion(mode);
                 if (m != NONE) {
                     sourceMode = m;
                 }
@@ -149,22 +149,22 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
 
     @Override
     public void dispose() {
-        s.dispose();
+        upstream.dispose();
     }
 
     @Override
     public boolean isDisposed() {
-        return s.isDisposed();
+        return upstream.isDisposed();
     }
 
     @Override
     public boolean isEmpty() {
-        return qs.isEmpty();
+        return qd.isEmpty();
     }
 
     @Override
     public void clear() {
-        qs.clear();
+        qd.clear();
     }
 
     // -----------------------------------------------------------

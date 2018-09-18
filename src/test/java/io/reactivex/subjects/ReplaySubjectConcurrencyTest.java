@@ -322,6 +322,7 @@ public class ReplaySubjectConcurrencyTest {
             }
         }
     }
+
     @Test
     public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
@@ -395,6 +396,7 @@ public class ReplaySubjectConcurrencyTest {
             worker.dispose();
         }
     }
+
     @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.create();

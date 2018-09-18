@@ -40,9 +40,9 @@ public class FlowableSkipLastTimedTest {
         // FIXME the timeunit now matters due to rounding
         Flowable<Integer> result = source.skipLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -57,17 +57,17 @@ public class FlowableSkipLastTimedTest {
         scheduler.advanceTimeBy(950, TimeUnit.MILLISECONDS);
         source.onComplete();
 
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o, never()).onNext(4);
-        inOrder.verify(o, never()).onNext(5);
-        inOrder.verify(o, never()).onNext(6);
-        inOrder.verify(o).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber, never()).onNext(4);
+        inOrder.verify(subscriber, never()).onNext(5);
+        inOrder.verify(subscriber, never()).onNext(6);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -78,9 +78,9 @@ public class FlowableSkipLastTimedTest {
 
         Flowable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -89,10 +89,10 @@ public class FlowableSkipLastTimedTest {
 
         scheduler.advanceTimeBy(1050, TimeUnit.MILLISECONDS);
 
-        verify(o).onError(any(TestException.class));
+        verify(subscriber).onError(any(TestException.class));
 
-        verify(o, never()).onComplete();
-        verify(o, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -103,9 +103,9 @@ public class FlowableSkipLastTimedTest {
 
         Flowable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -115,12 +115,12 @@ public class FlowableSkipLastTimedTest {
 
         source.onComplete();
 
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -131,9 +131,9 @@ public class FlowableSkipLastTimedTest {
 
         Flowable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -143,11 +143,11 @@ public class FlowableSkipLastTimedTest {
 
         source.onComplete();
 
-        InOrder inOrder = inOrder(o);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -187,8 +187,8 @@ public class FlowableSkipLastTimedTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.skipLast(1, TimeUnit.DAYS);
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.skipLast(1, TimeUnit.DAYS);
             }
         });
     }

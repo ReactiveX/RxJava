@@ -249,9 +249,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         if (terminalEvent.get() != null) {
-            s.dispose();
+            d.dispose();
         }
     }
 
@@ -298,7 +298,6 @@ public final class BehaviorSubject<T> extends Subject<T> {
         return subscribers.get().length != 0;
     }
 
-
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
@@ -331,7 +330,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
      * @return the array containing the snapshot of all values of the Subject
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
         T[] a = (T[])EMPTY_ARRAY;
@@ -350,7 +351,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @param array the target array to copy values into if it fits
      * @return the given array if the values fit into it or a new array containing all values
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
         Object o = value.get();
@@ -466,7 +469,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     static final class BehaviorDisposable<T> implements Disposable, NonThrowingPredicate<Object> {
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final BehaviorSubject<T> state;
 
         boolean next;
@@ -480,7 +483,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         long index;
 
         BehaviorDisposable(Observer<? super T> actual, BehaviorSubject<T> state) {
-            this.actual = actual;
+            this.downstream = actual;
             this.state = state;
         }
 
@@ -563,7 +566,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
         @Override
         public boolean test(Object o) {
-            return cancelled || NotificationLite.accept(o, actual);
+            return cancelled || NotificationLite.accept(o, downstream);
         }
 
         void emitLoop() {

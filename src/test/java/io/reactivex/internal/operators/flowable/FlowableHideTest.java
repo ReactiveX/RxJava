@@ -34,16 +34,16 @@ public class FlowableHideTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onNext(1);
         src.onComplete();
 
-        verify(o).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -54,24 +54,24 @@ public class FlowableHideTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onError(new TestException());
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o)
+            public Flowable<Object> apply(Flowable<Object> f)
                     throws Exception {
-                return o.hide();
+                return f.hide();
             }
         });
     }

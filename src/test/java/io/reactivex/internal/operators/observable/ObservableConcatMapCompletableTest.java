@@ -155,7 +155,6 @@ public class ObservableConcatMapCompletableTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void fusedPollThrows() {
         Observable.just(1)

@@ -1,0 +1,3 @@
+In RxJava an object that implements the _Observer_ interface _subscribes_ to an object of the _Observable_ class. Then that subscriber reacts to whatever item or sequence of items the Observable object _emits_. This pattern facilitates concurrent operations because it does not need to block while waiting for the Observable to emit objects, but instead it creates a sentry in the form of a subscriber that stands ready to react appropriately at whatever future time the Observable does so.
+
+For information about the Observable class, see [the Observable documentation page at ReactiveX.io](http://reactivex.io/documentation/observable.html).

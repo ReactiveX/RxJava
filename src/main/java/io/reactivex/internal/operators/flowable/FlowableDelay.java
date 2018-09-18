@@ -38,30 +38,30 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> t) {
-        Subscriber<? super T> s;
+        Subscriber<? super T> downstream;
         if (delayError) {
-            s = t;
+            downstream = t;
         } else {
-            s = new SerializedSubscriber<T>(t);
+            downstream = new SerializedSubscriber<T>(t);
         }
 
         Scheduler.Worker w = scheduler.createWorker();
 
-        source.subscribe(new DelaySubscriber<T>(s, delay, unit, w, delayError));
+        source.subscribe(new DelaySubscriber<T>(downstream, delay, unit, w, delayError));
     }
 
     static final class DelaySubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final long delay;
         final TimeUnit unit;
         final Scheduler.Worker w;
         final boolean delayError;
 
-        Subscription s;
+        Subscription upstream;
 
         DelaySubscriber(Subscriber<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
             super();
-            this.actual = actual;
+            this.downstream = actual;
             this.delay = delay;
             this.unit = unit;
             this.w = w;
@@ -70,9 +70,9 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -93,12 +93,12 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             w.dispose();
         }
 
@@ -111,7 +111,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
             @Override
             public void run() {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
@@ -125,7 +125,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             @Override
             public void run() {
                 try {
-                    actual.onError(t);
+                    downstream.onError(t);
                 } finally {
                     w.dispose();
                 }
@@ -136,7 +136,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             @Override
             public void run() {
                 try {
-                    actual.onComplete();
+                    downstream.onComplete();
                 } finally {
                     w.dispose();
                 }

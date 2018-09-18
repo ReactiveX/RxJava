@@ -16,14 +16,13 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
-import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -31,13 +30,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps each upstream item into a {@link SingleSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
  * terminate.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream element type
  * @param <R> the output element type
- *
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
     final Observable<T> source;
@@ -58,9 +55,9 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        if (!ScalarXMapZHelper.tryAsSingle(source, mapper, s)) {
-            source.subscribe(new ConcatMapSingleMainObserver<T, R>(s, mapper, prefetch, errorMode));
+    protected void subscribeActual(Observer<? super R> observer) {
+        if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
+            source.subscribe(new ConcatMapSingleMainObserver<T, R>(observer, mapper, prefetch, errorMode));
         }
     }
 
@@ -107,13 +104,13 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
             this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                upstream = d;
                 downstream.onSubscribe(this);
             }
         }
@@ -194,6 +191,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;

@@ -26,15 +26,18 @@ public final class LatchedSingleObserver<T> implements SingleObserver<T> {
         this.bh = bh;
         this.cdl = new CountDownLatch(1);
     }
+
     @Override
     public void onSubscribe(Disposable d) {
 
     }
+
     @Override
     public void onSuccess(T value) {
         bh.consume(value);
         cdl.countDown();
     }
+
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();

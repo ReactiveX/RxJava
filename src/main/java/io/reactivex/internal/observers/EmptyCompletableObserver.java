@@ -26,7 +26,6 @@ public final class EmptyCompletableObserver
 extends AtomicReference<Disposable>
 implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
 
-
     private static final long serialVersionUID = -7545121636549663526L;
 
     @Override

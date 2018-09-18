@@ -25,17 +25,18 @@ public final class ObservableDefer<T> extends Observable<T> {
     public ObservableDefer(Callable<? extends ObservableSource<? extends T>> supplier) {
         this.supplier = supplier;
     }
+
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         ObservableSource<? extends T> pub;
         try {
             pub = ObjectHelper.requireNonNull(supplier.call(), "null ObservableSource supplied");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
-            EmptyDisposable.error(t, s);
+            EmptyDisposable.error(t, observer);
             return;
         }
 
-        pub.subscribe(s);
+        pub.subscribe(observer);
     }
 }

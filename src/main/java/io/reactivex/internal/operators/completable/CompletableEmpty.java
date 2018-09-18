@@ -23,7 +23,7 @@ public final class CompletableEmpty extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver s) {
-        EmptyDisposable.complete(s);
+    public void subscribeActual(CompletableObserver observer) {
+        EmptyDisposable.complete(observer);
     }
 }

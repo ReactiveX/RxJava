@@ -121,16 +121,16 @@ public class FlowableSkipWhileTest {
         Flowable<Integer> src = Flowable.range(1, 10).skipWhile(LESS_THAN_FIVE);
         int n = 5;
         for (int i = 0; i < n; i++) {
-            Subscriber<Object> o = TestHelper.mockSubscriber();
-            InOrder inOrder = inOrder(o);
+            Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+            InOrder inOrder = inOrder(subscriber);
 
-            src.subscribe(o);
+            src.subscribe(subscriber);
 
             for (int j = 5; j < 10; j++) {
-                inOrder.verify(o).onNext(j);
+                inOrder.verify(subscriber).onNext(j);
             }
-            inOrder.verify(o).onComplete();
-            verify(o, never()).onError(any(Throwable.class));
+            inOrder.verify(subscriber).onComplete();
+            verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
 
@@ -143,8 +143,8 @@ public class FlowableSkipWhileTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.skipWhile(Functions.alwaysFalse());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.skipWhile(Functions.alwaysFalse());
             }
         });
     }

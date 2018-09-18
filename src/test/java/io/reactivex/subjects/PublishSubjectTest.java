@@ -338,7 +338,6 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         }
     }
 
-
     // FIXME RS subscribers are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
@@ -384,6 +383,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 //        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, to.getOnErrorEvents().size());
 //    }
+
     @Test
     public void testCurrentStateMethodsNormal() {
         PublishSubject<Object> as = PublishSubject.create();
@@ -419,6 +419,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         PublishSubject<Object> as = PublishSubject.create();
@@ -533,9 +534,9 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         ps.subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable s) {
-                s.dispose();
-                s.dispose();
+            public void onSubscribe(Disposable d) {
+                d.dispose();
+                d.dispose();
             }
 
             @Override

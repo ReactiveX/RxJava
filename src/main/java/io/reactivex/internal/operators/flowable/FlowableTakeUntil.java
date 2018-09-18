@@ -42,54 +42,54 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
 
         private static final long serialVersionUID = -4945480365982832967L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final AtomicLong requested;
 
-        final AtomicReference<Subscription> s;
+        final AtomicReference<Subscription> upstream;
 
         final AtomicThrowable error;
 
         final OtherSubscriber other;
 
-        TakeUntilMainSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        TakeUntilMainSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
             this.requested = new AtomicLong();
-            this.s = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<Subscription>();
             this.other = new OtherSubscriber();
             this.error = new AtomicThrowable();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
+            SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
         @Override
         public void onNext(T t) {
-            HalfSerializer.onNext(actual, t, this, error);
+            HalfSerializer.onNext(downstream, t, this, error);
         }
 
         @Override
         public void onError(Throwable t) {
             SubscriptionHelper.cancel(other);
-            HalfSerializer.onError(actual, t, this, error);
+            HalfSerializer.onError(downstream, t, this, error);
         }
 
         @Override
         public void onComplete() {
             SubscriptionHelper.cancel(other);
-            HalfSerializer.onComplete(actual, this, error);
+            HalfSerializer.onComplete(downstream, this, error);
         }
 
         @Override
         public void request(long n) {
-            SubscriptionHelper.deferredRequest(s, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             SubscriptionHelper.cancel(other);
         }
 
@@ -110,14 +110,14 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
 
             @Override
             public void onError(Throwable t) {
-                SubscriptionHelper.cancel(s);
-                HalfSerializer.onError(actual, t, TakeUntilMainSubscriber.this, error);
+                SubscriptionHelper.cancel(upstream);
+                HalfSerializer.onError(downstream, t, TakeUntilMainSubscriber.this, error);
             }
 
             @Override
             public void onComplete() {
-                SubscriptionHelper.cancel(s);
-                HalfSerializer.onComplete(actual, TakeUntilMainSubscriber.this, error);
+                SubscriptionHelper.cancel(upstream);
+                HalfSerializer.onComplete(downstream, TakeUntilMainSubscriber.this, error);
             }
 
         }

@@ -506,7 +506,6 @@ public class ObservableReplayTest {
         }
     }
 
-
     /*
      * test the basic expectation of OperatorMulticast via replay
      */
@@ -644,7 +643,6 @@ public class ObservableReplayTest {
         verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
         verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
 
-
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -680,7 +678,6 @@ public class ObservableReplayTest {
     public static Worker workerSpy(final Disposable mockDisposable) {
         return spy(new InprocessWorker(mockDisposable));
     }
-
 
     static class InprocessWorker extends Worker {
         private final Disposable mockDisposable;
@@ -986,6 +983,7 @@ public class ObservableReplayTest {
             assertEquals(10000, to2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
@@ -1051,7 +1049,6 @@ public class ObservableReplayTest {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .replay().autoConnect();
-
 
         TestObserver<Integer> to = new TestObserver<Integer>();
         source.subscribe(to);
@@ -1497,8 +1494,8 @@ public class ObservableReplayTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> s) {
-                sub[0] = s;
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                sub[0] = observer;
             }
         }
         .replay()

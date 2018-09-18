@@ -55,7 +55,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
         final U u;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
@@ -67,9 +67,9 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -83,7 +83,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
                 collector.accept(u, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
             }
         }
@@ -95,7 +95,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -110,7 +110,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

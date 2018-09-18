@@ -61,7 +61,6 @@ public class MaybeSwitchIfEmptySingleTest {
         assertFalse(pp.hasSubscribers());
     }
 
-
     @Test
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();

@@ -157,7 +157,6 @@ public class FlowableDoFinallyTest implements Action {
         assertEquals(1, calls);
     }
 
-
     @Test
     public void normalJustConditional() {
         Flowable.just(1)

@@ -28,7 +28,6 @@ public final class SequentialDisposable
 extends AtomicReference<Disposable>
 implements Disposable {
 
-
     private static final long serialVersionUID = -754898800686245608L;
 
     /**

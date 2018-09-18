@@ -34,23 +34,23 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
     }
 
     static final class TakeWhileSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Predicate<? super T> predicate;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         TakeWhileSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.predicate = predicate;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -64,19 +64,19 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
                 b = predicate.test(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
                 return;
             }
 
             if (!b) {
                 done = true;
-                s.cancel();
-                actual.onComplete();
+                upstream.cancel();
+                downstream.onComplete();
                 return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -86,7 +86,7 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -95,17 +95,17 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

@@ -36,9 +36,9 @@ public final class ObservableInterval extends Observable<Long> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> s) {
-        IntervalObserver is = new IntervalObserver(s);
-        s.onSubscribe(is);
+    public void subscribeActual(Observer<? super Long> observer) {
+        IntervalObserver is = new IntervalObserver(observer);
+        observer.onSubscribe(is);
 
         Scheduler sch = scheduler;
 
@@ -56,15 +56,14 @@ public final class ObservableInterval extends Observable<Long> {
     extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
-
         private static final long serialVersionUID = 346773832286157679L;
 
-        final Observer<? super Long> actual;
+        final Observer<? super Long> downstream;
 
         long count;
 
-        IntervalObserver(Observer<? super Long> actual) {
-            this.actual = actual;
+        IntervalObserver(Observer<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -80,7 +79,7 @@ public final class ObservableInterval extends Observable<Long> {
         @Override
         public void run() {
             if (get() != DisposableHelper.DISPOSED) {
-                actual.onNext(count++);
+                downstream.onNext(count++);
             }
         }
 

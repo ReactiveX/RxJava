@@ -50,7 +50,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -60,7 +60,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                 return false;
             }
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return true;
             }
             boolean b;
@@ -71,7 +71,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                 return true;
             }
             if (b) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
             return b;
         }
@@ -102,8 +102,6 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                 }
             }
         }
-
-
     }
 
     static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
@@ -117,7 +115,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -128,7 +126,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
             }
 
             if (sourceMode != NONE) {
-                return actual.tryOnNext(null);
+                return downstream.tryOnNext(null);
             }
 
             boolean b;
@@ -138,7 +136,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                 fail(e);
                 return true;
             }
-            return b && actual.tryOnNext(t);
+            return b && downstream.tryOnNext(t);
         }
 
         @Override

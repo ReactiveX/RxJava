@@ -122,12 +122,12 @@ public class MaybeDelaySubscriptionTest {
         try {
             Flowable<Integer> f = new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onError(new TestException());
-                    observer.onComplete();
-                    observer.onNext(2);
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
                 }
             };
 

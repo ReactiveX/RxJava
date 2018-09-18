@@ -20,7 +20,6 @@ import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-
 /**
  * Utility methods for working with Disposables atomically.
  */

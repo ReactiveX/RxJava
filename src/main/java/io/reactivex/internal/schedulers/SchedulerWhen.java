@@ -24,7 +24,6 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -100,8 +99,9 @@ import io.reactivex.processors.UnicastProcessor;
  *  }));
  * });
  * </pre>
+ * <p>History 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public class SchedulerWhen extends Scheduler implements Disposable {
     private final Scheduler actualScheduler;
     private final FlowableProcessor<Flowable<Completable>> workerProcessor;

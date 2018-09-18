@@ -114,8 +114,8 @@ public class FlowableAllTest {
 
     @Test
     public void testFollowingFirst() {
-        Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Single<Boolean> allOdd = o.all(new Predicate<Integer>() {
+        Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
+        Single<Boolean> allOdd = f.all(new Predicate<Integer>() {
             @Override
             public boolean test(Integer i) {
                 return i % 2 == 1;
@@ -124,6 +124,7 @@ public class FlowableAllTest {
 
         assertFalse(allOdd.blockingGet());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1)
@@ -203,7 +204,7 @@ public class FlowableAllTest {
     public void testAllFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "six");
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -212,19 +213,19 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(true);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(true);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
     public void testNotAllFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "three", "six");
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -233,19 +234,19 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(false);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(false);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
     public void testEmptyFlowable() {
         Flowable<String> obs = Flowable.empty();
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -254,12 +255,12 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(true);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(true);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -267,7 +268,7 @@ public class FlowableAllTest {
         Throwable error = new Throwable();
         Flowable<String> obs = Flowable.error(error);
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -276,17 +277,17 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onError(error);
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onError(error);
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
     public void testFollowingFirstFlowable() {
-        Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Flowable<Boolean> allOdd = o.all(new Predicate<Integer>() {
+        Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
+        Flowable<Boolean> allOdd = f.all(new Predicate<Integer>() {
             @Override
             public boolean test(Integer i) {
                 return i % 2 == 1;
@@ -297,6 +298,7 @@ public class FlowableAllTest {
 
         assertFalse(allOdd.blockingFirst());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1)
@@ -391,13 +393,13 @@ public class FlowableAllTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .all(new Predicate<Integer>() {
@@ -422,13 +424,13 @@ public class FlowableAllTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .all(new Predicate<Integer>() {
@@ -451,15 +453,15 @@ public class FlowableAllTest {
     public void badSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.all(Functions.alwaysTrue());
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.all(Functions.alwaysTrue());
             }
         }, false, 1, 1, true);
 
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.all(Functions.alwaysTrue()).toFlowable();
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.all(Functions.alwaysTrue()).toFlowable();
             }
         }, false, 1, 1, true);
     }
@@ -468,14 +470,14 @@ public class FlowableAllTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
             @Override
-            public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
-                return o.all(Functions.alwaysTrue()).toFlowable();
+            public Publisher<Boolean> apply(Flowable<Object> f) throws Exception {
+                return f.all(Functions.alwaysTrue()).toFlowable();
             }
         });
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Boolean>>() {
             @Override
-            public Single<Boolean> apply(Flowable<Object> o) throws Exception {
-                return o.all(Functions.alwaysTrue());
+            public Single<Boolean> apply(Flowable<Object> f) throws Exception {
+                return f.all(Functions.alwaysTrue());
             }
         });
     }

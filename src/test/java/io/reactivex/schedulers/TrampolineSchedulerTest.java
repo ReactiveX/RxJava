@@ -45,9 +45,9 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
-        Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).subscribeOn(Schedulers.trampoline()).map(new Function<Integer, String>() {
+        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.<Integer> merge(f1, f2).subscribeOn(Schedulers.trampoline()).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {
@@ -56,7 +56,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
             }
         });
 
-        o.blockingForEach(new Consumer<String>() {
+        f.blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {
@@ -110,8 +110,8 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     @Test
     public void testTrampolineWorkerHandlesConcurrentScheduling() {
         final Worker trampolineWorker = Schedulers.trampoline().createWorker();
-        final Subscriber<Object> observer = TestHelper.mockSubscriber();
-        final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(observer);
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(subscriber);
 
         // Spam the trampoline with actions.
         Flowable.range(0, 50)

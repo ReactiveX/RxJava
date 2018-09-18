@@ -32,10 +32,10 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
 
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
         Iterator<? extends CompletableSource> iterator;
 
@@ -43,7 +43,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             iterator = ObjectHelper.requireNonNull(sources.iterator(), "The source iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            s.onError(e);
+            observer.onError(e);
             return;
         }
 
@@ -89,15 +89,15 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
 
             wip.getAndIncrement();
 
-            c.subscribe(new MergeInnerCompletableObserver(s, set, error, wip));
+            c.subscribe(new MergeInnerCompletableObserver(observer, set, error, wip));
         }
 
         if (wip.decrementAndGet() == 0) {
             Throwable ex = error.terminate();
             if (ex == null) {
-                s.onComplete();
+                observer.onComplete();
             } else {
-                s.onError(ex);
+                observer.onError(ex);
             }
         }
     }

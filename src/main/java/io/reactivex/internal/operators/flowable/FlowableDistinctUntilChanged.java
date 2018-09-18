@@ -46,7 +46,6 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
     static final class DistinctUntilChangedSubscriber<T, K> extends BasicFuseableSubscriber<T, T>
     implements ConditionalSubscriber<T> {
 
-
         final Function<? super T, K> keySelector;
 
         final BiPredicate<? super K, ? super K> comparer;
@@ -66,7 +65,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -76,7 +75,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 return false;
             }
             if (sourceMode != NONE) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 return true;
             }
 
@@ -99,7 +98,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                return true;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
             return true;
         }
 
@@ -129,7 +128,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 }
                 last = key;
                 if (sourceMode != SYNC) {
-                    s.request(1);
+                    upstream.request(1);
                 }
             }
         }
@@ -157,7 +156,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -167,7 +166,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 return false;
             }
             if (sourceMode != NONE) {
-                return actual.tryOnNext(t);
+                return downstream.tryOnNext(t);
             }
 
             K key;
@@ -189,7 +188,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                return true;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
             return true;
         }
 
@@ -219,7 +218,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 }
                 last = key;
                 if (sourceMode != SYNC) {
-                    s.request(1);
+                    upstream.request(1);
                 }
             }
         }

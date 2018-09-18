@@ -57,14 +57,14 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
     }
 
     static final class MaybePeekObserver<T> implements MaybeObserver<T>, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final MaybePeek<T> parent;
 
-        Disposable d;
+        Disposable upstream;
 
         MaybePeekObserver(MaybeObserver<? super T> actual, MaybePeek<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
@@ -77,37 +77,37 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 RxJavaPlugins.onError(ex);
             }
 
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
+            if (DisposableHelper.validate(this.upstream, d)) {
                 try {
                     parent.onSubscribeCall.accept(d);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     d.dispose();
-                    this.d = DisposableHelper.DISPOSED;
-                    EmptyDisposable.error(ex, actual);
+                    this.upstream = DisposableHelper.DISPOSED;
+                    EmptyDisposable.error(ex, downstream);
                     return;
                 }
 
-                this.d = d;
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            if (this.d == DisposableHelper.DISPOSED) {
+            if (this.upstream == DisposableHelper.DISPOSED) {
                 return;
             }
             try {
@@ -117,16 +117,16 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 onErrorInner(ex);
                 return;
             }
-            this.d = DisposableHelper.DISPOSED;
+            this.upstream = DisposableHelper.DISPOSED;
 
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
 
             onAfterTerminate();
         }
 
         @Override
         public void onError(Throwable e) {
-            if (this.d == DisposableHelper.DISPOSED) {
+            if (this.upstream == DisposableHelper.DISPOSED) {
                 RxJavaPlugins.onError(e);
                 return;
             }
@@ -142,16 +142,16 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 e = new CompositeException(e, ex);
             }
 
-            this.d = DisposableHelper.DISPOSED;
+            this.upstream = DisposableHelper.DISPOSED;
 
-            actual.onError(e);
+            downstream.onError(e);
 
             onAfterTerminate();
         }
 
         @Override
         public void onComplete() {
-            if (this.d == DisposableHelper.DISPOSED) {
+            if (this.upstream == DisposableHelper.DISPOSED) {
                 return;
             }
 
@@ -162,9 +162,9 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 onErrorInner(ex);
                 return;
             }
-            this.d = DisposableHelper.DISPOSED;
+            this.upstream = DisposableHelper.DISPOSED;
 
-            actual.onComplete();
+            downstream.onComplete();
 
             onAfterTerminate();
         }

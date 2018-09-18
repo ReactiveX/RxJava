@@ -13,7 +13,6 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -90,14 +89,13 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code UnicastSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
- *  the {@code Observer}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  the single {@code Observer} gets notified on the thread the respective {@code onXXX} methods were invoked.</dd>
  *  <dt><b>Error handling:</b></dt>
  *  <dd>When the {@link #onError(Throwable)} is called, the {@code UnicastSubject} enters into a terminal state
- *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
- *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  and emits the same {@code Throwable} instance to the current single {@code Observer}. During this emission,
+ *  if the single {@code Observer}s disposes its respective {@code Disposable}, the
  *  {@code Throwable} is delivered to the global error handler via
- *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
- *  cancel at once).
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
  *  If there were no {@code Observer}s subscribed to this {@code UnicastSubject} when the {@code onError()}
  *  was called, the global error handler is not invoked.
  *  </dd>
@@ -130,10 +128,10 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  *
  * UnicastSubject&lt;Integer&gt; subject2 = UnicastSubject.create();
  *
- * // a UnicastSubject caches events util its single Observer subscribes
- * subject.onNext(1);
- * subject.onNext(2);
- * subject.onComplete();
+ * // a UnicastSubject caches events until its single Observer subscribes
+ * subject2.onNext(1);
+ * subject2.onNext(2);
+ * subject2.onComplete();
  *
  * TestObserver&lt;Integer&gt; to3 = subject2.test();
  *
@@ -148,7 +146,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     final SpscLinkedArrayQueue<T> queue;
 
     /** The single Observer. */
-    final AtomicReference<Observer<? super T>> actual;
+    final AtomicReference<Observer<? super T>> downstream;
 
     /** The optional callback when the Subject gets cancelled or terminates. */
     final AtomicReference<Runnable> onTerminate;
@@ -222,16 +220,15 @@ public final class UnicastSubject<T> extends Subject<T> {
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastSubject instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate, boolean delayError) {
         return new UnicastSubject<T>(capacityHint, onTerminate, delayError);
@@ -242,31 +239,30 @@ public final class UnicastSubject<T> extends Subject<T> {
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastSubject instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastSubject<T> create(boolean delayError) {
         return new UnicastSubject<T>(bufferSize(), delayError);
     }
 
-
     /**
      * Creates an UnicastSubject with the given capacity hint and delay error flag.
+     * <p>History: 2.0.8 - experimental
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     UnicastSubject(int capacityHint, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>();
         this.delayError = delayError;
-        this.actual = new AtomicReference<Observer<? super T>>();
+        this.downstream = new AtomicReference<Observer<? super T>>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueDisposable();
     }
@@ -286,16 +282,17 @@ public final class UnicastSubject<T> extends Subject<T> {
     /**
      * Creates an UnicastSubject with the given capacity hint, delay error flag and callback
      * for when the Subject is terminated normally or its single Subscriber cancels.
+     * <p>History: 2.0.8 - experimental
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     UnicastSubject(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
         this.delayError = delayError;
-        this.actual = new AtomicReference<Observer<? super T>>();
+        this.downstream = new AtomicReference<Observer<? super T>>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueDisposable();
     }
@@ -304,9 +301,9 @@ public final class UnicastSubject<T> extends Subject<T> {
     protected void subscribeActual(Observer<? super T> observer) {
         if (!once.get() && once.compareAndSet(false, true)) {
             observer.onSubscribe(wip);
-            actual.lazySet(observer); // full barrier in drain
+            downstream.lazySet(observer); // full barrier in drain
             if (disposed) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 return;
             }
             drain();
@@ -323,9 +320,9 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         if (done || disposed) {
-            s.dispose();
+            d.dispose();
         }
     }
 
@@ -375,7 +372,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             for (;;) {
 
                 if (disposed) {
-                    actual.lazySet(null);
+                    downstream.lazySet(null);
                     q.clear();
                     return;
                 }
@@ -422,7 +419,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         for (;;) {
 
             if (disposed) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 q.clear();
                 return;
             }
@@ -449,7 +446,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     void errorOrComplete(Observer<? super T> a) {
-        actual.lazySet(null);
+        downstream.lazySet(null);
         Throwable ex = error;
         if (ex != null) {
             a.onError(ex);
@@ -461,7 +458,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     boolean failedFast(final SimpleQueue<T> q, Observer<? super T> a) {
         Throwable ex = error;
         if (ex != null) {
-            actual.lazySet(null);
+            downstream.lazySet(null);
             q.clear();
             a.onError(ex);
             return true;
@@ -475,7 +472,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             return;
         }
 
-        Observer<? super T> a = actual.get();
+        Observer<? super T> a = downstream.get();
         int missed = 1;
 
         for (;;) {
@@ -494,13 +491,13 @@ public final class UnicastSubject<T> extends Subject<T> {
                 break;
             }
 
-            a = actual.get();
+            a = downstream.get();
         }
     }
 
     @Override
     public boolean hasObservers() {
-        return actual.get() != null;
+        return downstream.get() != null;
     }
 
     @Override
@@ -523,7 +520,6 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     final class UnicastQueueDisposable extends BasicIntQueueDisposable<T> {
-
 
         private static final long serialVersionUID = 7926949470189395511L;
 
@@ -559,9 +555,9 @@ public final class UnicastSubject<T> extends Subject<T> {
 
                 doTerminate();
 
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 if (wip.getAndIncrement() == 0) {
-                    actual.lazySet(null);
+                    downstream.lazySet(null);
                     queue.clear();
                 }
             }

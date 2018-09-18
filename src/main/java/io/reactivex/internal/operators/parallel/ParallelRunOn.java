@@ -120,7 +120,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
         final Worker worker;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean done;
 
@@ -145,7 +145,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                 return;
             }
             if (!queue.offer(t)) {
-                s.cancel();
+                upstream.cancel();
                 onError(new MissingBackpressureException("Queue is full?!"));
                 return;
             }
@@ -184,7 +184,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
         public final void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
                 worker.dispose();
 
                 if (getAndIncrement() == 0) {
@@ -204,19 +204,19 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
         private static final long serialVersionUID = 1075119423897941642L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         RunOnSubscriber(Subscriber<? super T> actual, int prefetch, SpscArrayQueue<T> queue, Worker worker) {
             super(prefetch, queue, worker);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch);
             }
@@ -227,7 +227,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             int missed = 1;
             int c = consumed;
             SpscArrayQueue<T> q = queue;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             int lim = limit;
 
             for (;;) {
@@ -277,7 +277,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                     int p = ++c;
                     if (p == lim) {
                         c = 0;
-                        s.request(p);
+                        upstream.request(p);
                     }
                 }
 
@@ -328,19 +328,19 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
         private static final long serialVersionUID = 1075119423897941642L;
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         RunOnConditionalSubscriber(ConditionalSubscriber<? super T> actual, int prefetch, SpscArrayQueue<T> queue, Worker worker) {
             super(prefetch, queue, worker);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch);
             }
@@ -351,7 +351,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
             int missed = 1;
             int c = consumed;
             SpscArrayQueue<T> q = queue;
-            ConditionalSubscriber<? super T> a = actual;
+            ConditionalSubscriber<? super T> a = downstream;
             int lim = limit;
 
             for (;;) {
@@ -401,7 +401,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
                     int p = ++c;
                     if (p == lim) {
                         c = 0;
-                        s.request(p);
+                        upstream.request(p);
                     }
                 }
 

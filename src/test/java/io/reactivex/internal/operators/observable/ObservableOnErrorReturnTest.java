@@ -46,8 +46,7 @@ public class ObservableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
 
         try {
@@ -82,8 +81,7 @@ public class ObservableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
 
         try {
@@ -128,8 +126,7 @@ public class ObservableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<String>(observer);
         observable.subscribe(to);
         to.awaitTerminalEvent();

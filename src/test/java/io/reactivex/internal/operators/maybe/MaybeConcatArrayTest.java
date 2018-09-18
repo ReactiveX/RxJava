@@ -151,7 +151,6 @@ public class MaybeConcatArrayTest {
 
             o[0].onError(new TestException());
 
-
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();

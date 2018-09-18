@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableFromCallable extends Completable {
 
@@ -28,20 +29,22 @@ public final class CompletableFromCallable extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
+    protected void subscribeActual(CompletableObserver observer) {
         Disposable d = Disposables.empty();
-        s.onSubscribe(d);
+        observer.onSubscribe(d);
         try {
             callable.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
-                s.onError(e);
+                observer.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
             return;
         }
         if (!d.isDisposed()) {
-            s.onComplete();
+            observer.onComplete();
         }
     }
 }

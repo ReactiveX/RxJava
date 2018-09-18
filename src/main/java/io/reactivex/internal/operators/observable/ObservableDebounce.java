@@ -39,10 +39,10 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
     static final class DebounceObserver<T, U>
     implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
 
@@ -52,15 +52,15 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
         DebounceObserver(Observer<? super T> actual,
                 Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
-            this.actual = actual;
+            this.downstream = actual;
             this.debounceSelector = debounceSelector;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -85,7 +85,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -99,7 +99,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(debouncer);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -114,24 +114,24 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 DebounceInnerObserver<T, U> dis = (DebounceInnerObserver<T, U>)d;
                 dis.emit();
                 DisposableHelper.dispose(debouncer);
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
             DisposableHelper.dispose(debouncer);
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         void emit(long idx, T value) {
             if (idx == index) {
-                actual.onNext(value);
+                downstream.onNext(value);
             }
         }
 

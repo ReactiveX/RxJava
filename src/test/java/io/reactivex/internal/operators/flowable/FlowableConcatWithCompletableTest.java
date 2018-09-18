@@ -15,13 +15,16 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -104,22 +107,29 @@ public class FlowableConcatWithCompletableTest {
 
     @Test
     public void badSource() {
-        new Flowable<Integer>() {
-            @Override
-            protected void subscribeActual(Subscriber<? super Integer> s) {
-                BooleanSubscription bs1 = new BooleanSubscription();
-                s.onSubscribe(bs1);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    BooleanSubscription bs1 = new BooleanSubscription();
+                    s.onSubscribe(bs1);
 
-                BooleanSubscription bs2 = new BooleanSubscription();
-                s.onSubscribe(bs2);
+                    BooleanSubscription bs2 = new BooleanSubscription();
+                    s.onSubscribe(bs2);
 
-                assertFalse(bs1.isCancelled());
-                assertTrue(bs2.isCancelled());
+                    assertFalse(bs1.isCancelled());
+                    assertTrue(bs2.isCancelled());
 
-                s.onComplete();
-            }
-        }.concatWith(Completable.complete())
-        .test()
-        .assertResult();
+                    s.onComplete();
+                }
+            }.concatWith(Completable.complete())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

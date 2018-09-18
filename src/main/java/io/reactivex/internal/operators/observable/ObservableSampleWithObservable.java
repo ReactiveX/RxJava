@@ -47,23 +47,23 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         private static final long serialVersionUID = -3517602651313910099L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final ObservableSource<?> sampler;
 
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
-        Disposable s;
+        Disposable upstream;
 
         SampleMainObserver(Observer<? super T> actual, ObservableSource<?> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sampler = other;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
                 if (other.get() == null) {
                     sampler.subscribe(new SamplerObserver<T>(this));
                 }
@@ -78,7 +78,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(other);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -94,7 +94,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         @Override
         public void dispose() {
             DisposableHelper.dispose(other);
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
@@ -103,19 +103,19 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         public void error(Throwable e) {
-            s.dispose();
-            actual.onError(e);
+            upstream.dispose();
+            downstream.onError(e);
         }
 
         public void complete() {
-            s.dispose();
+            upstream.dispose();
             completeOther();
         }
 
         void emit() {
             T value = getAndSet(null);
             if (value != null) {
-                actual.onNext(value);
+                downstream.onNext(value);
             }
         }
 
@@ -134,8 +134,8 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            parent.setOther(s);
+        public void onSubscribe(Disposable d) {
+            parent.setOther(d);
         }
 
         @Override
@@ -164,12 +164,12 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         @Override
         void completeMain() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         void completeOther() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -196,7 +196,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -205,7 +205,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -216,7 +216,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
                     boolean d = done;
                     emit();
                     if (d) {
-                        actual.onComplete();
+                        downstream.onComplete();
                         return;
                     }
                 } while (wip.decrementAndGet() != 0);

@@ -77,7 +77,6 @@ public class ObservableReduceTests {
         assertNotNull(reduceResult2);
     }
 
-
     @Test
     public void reduceInts() {
         Observable<Integer> o = Observable.just(1, 2, 3);

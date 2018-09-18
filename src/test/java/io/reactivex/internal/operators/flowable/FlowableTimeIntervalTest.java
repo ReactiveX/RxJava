@@ -32,40 +32,40 @@ public class FlowableTimeIntervalTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
-    private Subscriber<Timed<Integer>> observer;
+    private Subscriber<Timed<Integer>> subscriber;
 
     private TestScheduler testScheduler;
-    private PublishProcessor<Integer> subject;
-    private Flowable<Timed<Integer>> observable;
+    private PublishProcessor<Integer> processor;
+    private Flowable<Timed<Integer>> flowable;
 
     @Before
     public void setUp() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
         testScheduler = new TestScheduler();
-        subject = PublishProcessor.create();
-        observable = subject.timeInterval(testScheduler);
+        processor = PublishProcessor.create();
+        flowable = processor.timeInterval(testScheduler);
     }
 
     @Test
     public void testTimeInterval() {
-        InOrder inOrder = inOrder(observer);
-        observable.subscribe(observer);
+        InOrder inOrder = inOrder(subscriber);
+        flowable.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(1000, TIME_UNIT);
-        subject.onNext(1);
+        processor.onNext(1);
         testScheduler.advanceTimeBy(2000, TIME_UNIT);
-        subject.onNext(2);
+        processor.onNext(2);
         testScheduler.advanceTimeBy(3000, TIME_UNIT);
-        subject.onNext(3);
-        subject.onComplete();
+        processor.onNext(3);
+        processor.onComplete();
 
-        inOrder.verify(observer, times(1)).onNext(
+        inOrder.verify(subscriber, times(1)).onNext(
                 new Timed<Integer>(1, 1000, TIME_UNIT));
-        inOrder.verify(observer, times(1)).onNext(
+        inOrder.verify(subscriber, times(1)).onNext(
                 new Timed<Integer>(2, 2000, TIME_UNIT));
-        inOrder.verify(observer, times(1)).onNext(
+        inOrder.verify(subscriber, times(1)).onNext(
                 new Timed<Integer>(3, 3000, TIME_UNIT));
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

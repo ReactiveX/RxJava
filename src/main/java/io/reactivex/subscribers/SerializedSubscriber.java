@@ -31,12 +31,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-    final Subscriber<? super T> actual;
+    final Subscriber<? super T> downstream;
     final boolean delayError;
 
     static final int QUEUE_LINK_SIZE = 4;
 
-    Subscription subscription;
+    Subscription upstream;
 
     boolean emitting;
     AppendOnlyLinkedArrayList<Object> queue;
@@ -45,10 +45,10 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
 
     /**
      * Construct a SerializedSubscriber by wrapping the given actual Subscriber.
-     * @param actual the actual Subscriber, not null (not verified)
+     * @param downstream the actual Subscriber, not null (not verified)
      */
-    public SerializedSubscriber(Subscriber<? super T> actual) {
-        this(actual, false);
+    public SerializedSubscriber(Subscriber<? super T> downstream) {
+        this(downstream, false);
     }
 
     /**
@@ -59,15 +59,15 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
      * @param delayError if true, errors are emitted after regular values have been emitted
      */
     public SerializedSubscriber(Subscriber<? super T> actual, boolean delayError) {
-        this.actual = actual;
+        this.downstream = actual;
         this.delayError = delayError;
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.subscription, s)) {
-            this.subscription = s;
-            actual.onSubscribe(this);
+        if (SubscriptionHelper.validate(this.upstream, s)) {
+            this.upstream = s;
+            downstream.onSubscribe(this);
         }
     }
 
@@ -77,7 +77,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
             return;
         }
         if (t == null) {
-            subscription.cancel();
+            upstream.cancel();
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
@@ -97,7 +97,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
             emitting = true;
         }
 
-        actual.onNext(t);
+        downstream.onNext(t);
 
         emitLoop();
     }
@@ -139,7 +139,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
             return;
         }
 
-        actual.onError(t);
+        downstream.onError(t);
         // no need to loop because this onError is the last event
     }
 
@@ -165,7 +165,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
             emitting = true;
         }
 
-        actual.onComplete();
+        downstream.onComplete();
         // no need to loop because this onComplete is the last event
     }
 
@@ -181,7 +181,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
                 queue = null;
             }
 
-            if (q.accept(actual)) {
+            if (q.accept(downstream)) {
                 return;
             }
         }
@@ -189,11 +189,11 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
 
     @Override
     public void request(long n) {
-        subscription.request(n);
+        upstream.request(n);
     }
 
     @Override
     public void cancel() {
-        subscription.cancel();
+        upstream.cancel();
     }
 }

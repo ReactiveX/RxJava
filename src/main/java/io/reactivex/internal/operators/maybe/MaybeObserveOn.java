@@ -42,10 +42,9 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
 
-
         private static final long serialVersionUID = 8571289934935992137L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final Scheduler scheduler;
 
@@ -53,7 +52,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
         Throwable error;
 
         ObserveOnMaybeObserver(MaybeObserver<? super T> actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
@@ -70,7 +69,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -96,14 +95,14 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
             Throwable ex = error;
             if (ex != null) {
                 error = null;
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 T v = value;
                 if (v != null) {
                     value = null;
-                    actual.onSuccess(v);
+                    downstream.onSuccess(v);
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

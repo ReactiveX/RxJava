@@ -205,7 +205,6 @@ public class ObservableFlatMapTest {
                 Observable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
 
-
         Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);
@@ -308,7 +307,7 @@ public class ObservableFlatMapTest {
     private static <T> Observable<T> composer(Observable<T> source, final AtomicInteger subscriptionCount, final int m) {
         return source.doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     int n = subscriptionCount.getAndIncrement();
                     if (n >= m) {
                         Assert.fail("Too many subscriptions! " + (n + 1));
@@ -350,6 +349,7 @@ public class ObservableFlatMapTest {
         Assert.assertEquals(expected.size(), to.valueCount());
         Assert.assertTrue(expected.containsAll(to.values()));
     }
+
     @Test
     public void testFlatMapSelectorMaxConcurrent() {
         final int m = 4;
@@ -471,6 +471,7 @@ public class ObservableFlatMapTest {
             }
         }
     }
+
     @Test(timeout = 30000)
     public void flatMapRangeMixedAsyncLoop() {
         for (int i = 0; i < 2000; i++) {
@@ -530,6 +531,7 @@ public class ObservableFlatMapTest {
             to.assertValueCount(1000);
         }
     }
+
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
@@ -894,7 +896,6 @@ public class ObservableFlatMapTest {
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
-
 
     @Test
     public void failingFusedInnerCancelsSource() {

@@ -22,8 +22,9 @@ import io.reactivex.internal.disposables.DisposableHelper;
 /**
  * Subscribe to a main Observable first, then when it completes normally, subscribe to a Single,
  * signal its success value followed by a completion or signal its error as is.
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the main source and output type
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class ObservableConcatWithSingle<T> extends AbstractObservableWithUpstream<T, T> {
 
@@ -45,38 +46,38 @@ public final class ObservableConcatWithSingle<T> extends AbstractObservableWithU
 
         private static final long serialVersionUID = -1953724749712440952L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         SingleSource<? extends T> other;
 
         boolean inSingle;
 
         ConcatWithObserver(Observer<? super T> actual, SingleSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d) && !inSingle) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onNext(t);
-            actual.onComplete();
+            downstream.onNext(t);
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override

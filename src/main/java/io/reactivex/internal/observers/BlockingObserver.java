@@ -34,8 +34,8 @@ public final class BlockingObserver<T> extends AtomicReference<Disposable> imple
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        DisposableHelper.setOnce(this, s);
+    public void onSubscribe(Disposable d) {
+        DisposableHelper.setOnce(this, d);
     }
 
     @Override

@@ -331,10 +331,10 @@ public class FlowableFlatMapSingleTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onError(new TestException("First"));
-                    observer.onError(new TestException("Second"));
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onError(new TestException("First"));
+                    subscriber.onError(new TestException("Second"));
                 }
             }
             .flatMapSingle(Functions.justFunction(Single.just(2)))

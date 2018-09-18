@@ -57,7 +57,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
     implements FlowableSubscriber<T>, Subscription {
         private static final long serialVersionUID = -1776795561228106469L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final BiFunction<R, ? super T, R> accumulator;
 
@@ -74,14 +74,14 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         volatile boolean done;
         Throwable error;
 
-        Subscription s;
+        Subscription upstream;
 
         R value;
 
         int consumed;
 
         ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value, int prefetch) {
-            this.actual = actual;
+            this.downstream = actual;
             this.accumulator = accumulator;
             this.value = value;
             this.prefetch = prefetch;
@@ -93,10 +93,10 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch - 1);
             }
@@ -113,7 +113,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
                 v = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.cancel();
+                upstream.cancel();
                 onError(ex);
                 return;
             }
@@ -146,7 +146,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
@@ -166,7 +166,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             }
 
             int missed = 1;
-            Subscriber<? super R> a = actual;
+            Subscriber<? super R> a = downstream;
             SimplePlainQueue<R> q = queue;
             int lim = limit;
             int c = consumed;
@@ -209,7 +209,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
                     e++;
                     if (++c == lim) {
                         c = 0;
-                        s.request(lim);
+                        upstream.request(lim);
                     }
                 }
 

@@ -145,8 +145,8 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testUnsubscribeAfterTake() {
-        Disposable s = mock(Disposable.class);
-        TestObservable w = new TestObservable(s, "one", "two", "three");
+        Disposable upstream = mock(Disposable.class);
+        TestObservable w = new TestObservable(upstream, "one", "two", "three");
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
@@ -172,24 +172,24 @@ public class ObservableTakeWhileTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
-        verify(s, times(1)).dispose();
+        verify(upstream, times(1)).dispose();
     }
 
     private static class TestObservable implements ObservableSource<String> {
 
-        final Disposable s;
+        final Disposable upstream;
         final String[] values;
         Thread t;
 
-        TestObservable(Disposable s, String... values) {
-            this.s = s;
+        TestObservable(Disposable upstream, String... values) {
+            this.upstream = upstream;
             this.values = values;
         }
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            observer.onSubscribe(s);
+            observer.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override

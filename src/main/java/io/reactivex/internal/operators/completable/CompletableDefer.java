@@ -29,18 +29,18 @@ public final class CompletableDefer extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
+    protected void subscribeActual(CompletableObserver observer) {
         CompletableSource c;
 
         try {
             c = ObjectHelper.requireNonNull(completableSupplier.call(), "The completableSupplier returned a null CompletableSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        c.subscribe(s);
+        c.subscribe(observer);
     }
 
 }

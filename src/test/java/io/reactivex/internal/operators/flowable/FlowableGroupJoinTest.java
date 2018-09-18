@@ -36,7 +36,7 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableGroupJoinTest {
 
-    Subscriber<Object> observer = TestHelper.mockSubscriber();
+    Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
     BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
         @Override
@@ -45,20 +45,20 @@ public class FlowableGroupJoinTest {
         }
     };
 
-    <T> Function<Integer, Flowable<T>> just(final Flowable<T> observable) {
+    <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return new Function<Integer, Flowable<T>>() {
             @Override
             public Flowable<T> apply(Integer t1) {
-                return observable;
+                return flowable;
             }
         };
     }
 
-    <T, R> Function<T, Flowable<R>> just2(final Flowable<R> observable) {
+    <T, R> Function<T, Flowable<R>> just2(final Flowable<R> flowable) {
         return new Function<T, Flowable<R>>() {
             @Override
             public Flowable<R> apply(T t1) {
-                return observable;
+                return flowable;
             }
         };
     }
@@ -90,7 +90,7 @@ public class FlowableGroupJoinTest {
                 just(Flowable.never()),
                 just(Flowable.never()), add2));
 
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source1.onNext(1);
         source1.onNext(2);
@@ -103,18 +103,18 @@ public class FlowableGroupJoinTest {
         source1.onComplete();
         source2.onComplete();
 
-        verify(observer, times(1)).onNext(17);
-        verify(observer, times(1)).onNext(18);
-        verify(observer, times(1)).onNext(20);
-        verify(observer, times(1)).onNext(33);
-        verify(observer, times(1)).onNext(34);
-        verify(observer, times(1)).onNext(36);
-        verify(observer, times(1)).onNext(65);
-        verify(observer, times(1)).onNext(66);
-        verify(observer, times(1)).onNext(68);
+        verify(subscriber, times(1)).onNext(17);
+        verify(subscriber, times(1)).onNext(18);
+        verify(subscriber, times(1)).onNext(20);
+        verify(subscriber, times(1)).onNext(33);
+        verify(subscriber, times(1)).onNext(34);
+        verify(subscriber, times(1)).onNext(36);
+        verify(subscriber, times(1)).onNext(65);
+        verify(subscriber, times(1)).onNext(66);
+        verify(subscriber, times(1)).onNext(68);
 
-        verify(observer, times(1)).onComplete(); //Never emitted?
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete(); //Never emitted?
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     class Person {
@@ -184,19 +184,19 @@ public class FlowableGroupJoinTest {
                         }).subscribe(new Consumer<PersonFruit>() {
                             @Override
                             public void accept(PersonFruit t1) {
-                                observer.onNext(Arrays.asList(ppf.person.name, t1.fruit));
+                                subscriber.onNext(Arrays.asList(ppf.person.name, t1.fruit));
                             }
                         });
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        observer.onError(e);
+                        subscriber.onError(e);
                     }
 
                     @Override
                     public void onComplete() {
-                        observer.onComplete();
+                        subscriber.onComplete();
                     }
 
                     @Override
@@ -207,12 +207,12 @@ public class FlowableGroupJoinTest {
                 }
                 );
 
-        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Strawberry"));
-        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Apple"));
-        verify(observer, times(1)).onNext(Arrays.asList("Charlie", "Peach"));
+        verify(subscriber, times(1)).onNext(Arrays.asList("Joe", "Strawberry"));
+        verify(subscriber, times(1)).onNext(Arrays.asList("Joe", "Apple"));
+        verify(subscriber, times(1)).onNext(Arrays.asList("Charlie", "Peach"));
 
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -224,14 +224,14 @@ public class FlowableGroupJoinTest {
                 just(Flowable.never()),
                 just(Flowable.never()), add2);
 
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source2.onNext(1);
         source1.onError(new RuntimeException("Forced failure"));
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -243,14 +243,14 @@ public class FlowableGroupJoinTest {
                 just(Flowable.never()),
                 just(Flowable.never()), add2);
 
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source1.onNext(1);
         source2.onError(new RuntimeException("Forced failure"));
 
-        verify(observer, times(1)).onNext(any(Flowable.class));
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        verify(subscriber, times(1)).onNext(any(Flowable.class));
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -263,13 +263,13 @@ public class FlowableGroupJoinTest {
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 just(duration1),
                 just(Flowable.never()), add2);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source1.onNext(1);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -282,13 +282,13 @@ public class FlowableGroupJoinTest {
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 just(Flowable.never()),
                 just(duration1), add2);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source2.onNext(1);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -306,13 +306,13 @@ public class FlowableGroupJoinTest {
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 fail,
                 just(Flowable.never()), add2);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source1.onNext(1);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -330,13 +330,13 @@ public class FlowableGroupJoinTest {
         Flowable<Flowable<Integer>> m = source1.groupJoin(source2,
                 just(Flowable.never()),
                 fail, add2);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source2.onNext(1);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -354,14 +354,14 @@ public class FlowableGroupJoinTest {
         Flowable<Integer> m = source1.groupJoin(source2,
                 just(Flowable.never()),
                 just(Flowable.never()), fail);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source1.onNext(1);
         source2.onNext(2);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any());
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -478,31 +478,38 @@ public class FlowableGroupJoinTest {
 
     @Test
     public void innerErrorRight() {
-        Flowable.just(1)
-        .groupJoin(
-            Flowable.just(2),
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer left) throws Exception {
-                    return Flowable.never();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1)
+            .groupJoin(
+                Flowable.just(2),
+                new Function<Integer, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Integer left) throws Exception {
+                        return Flowable.never();
+                    }
+                },
+                new Function<Integer, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Integer right) throws Exception {
+                        return Flowable.error(new TestException());
+                    }
+                },
+                new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                        return l;
+                    }
                 }
-            },
-            new Function<Integer, Flowable<Object>>() {
-                @Override
-                public Flowable<Object> apply(Integer right) throws Exception {
-                    return Flowable.error(new TestException());
-                }
-            },
-            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
-                @Override
-                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
-                    return l;
-                }
-            }
-        )
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test()
-        .assertFailure(TestException.class);
+            )
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

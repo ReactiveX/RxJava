@@ -41,14 +41,14 @@ public final class ObservableUsing<T, D> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         D resource;
 
         try {
             resource = resourceSupplier.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
@@ -61,14 +61,14 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 disposer.accept(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                EmptyDisposable.error(new CompositeException(e, ex), s);
+                EmptyDisposable.error(new CompositeException(e, ex), observer);
                 return;
             }
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        UsingObserver<T, D> us = new UsingObserver<T, D>(s, resource, disposer, eager);
+        UsingObserver<T, D> us = new UsingObserver<T, D>(observer, resource, disposer, eager);
 
         source.subscribe(us);
     }
@@ -77,31 +77,31 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
         private static final long serialVersionUID = 5904473792286235046L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final D resource;
         final Consumer<? super D> disposer;
         final boolean eager;
 
-        Disposable s;
+        Disposable upstream;
 
         UsingObserver(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
-            this.actual = actual;
+            this.downstream = actual;
             this.resource = resource;
             this.disposer = disposer;
             this.eager = eager;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -116,11 +116,11 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                     }
                 }
 
-                s.dispose();
-                actual.onError(t);
+                upstream.dispose();
+                downstream.onError(t);
             } else {
-                actual.onError(t);
-                s.dispose();
+                downstream.onError(t);
+                upstream.dispose();
                 disposeAfter();
             }
         }
@@ -133,16 +133,16 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                         disposer.accept(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
-                        actual.onError(e);
+                        downstream.onError(e);
                         return;
                     }
                 }
 
-                s.dispose();
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onComplete();
             } else {
-                actual.onComplete();
-                s.dispose();
+                downstream.onComplete();
+                upstream.dispose();
                 disposeAfter();
             }
         }
@@ -150,7 +150,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         @Override
         public void dispose() {
             disposeAfter();
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override

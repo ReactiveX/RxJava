@@ -105,17 +105,17 @@ public class ObservableConcatWithCompletableTest {
     public void badSource() {
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> s) {
+            protected void subscribeActual(Observer<? super Integer> observer) {
                 Disposable bs1 = Disposables.empty();
-                s.onSubscribe(bs1);
+                observer.onSubscribe(bs1);
 
                 Disposable bs2 = Disposables.empty();
-                s.onSubscribe(bs2);
+                observer.onSubscribe(bs2);
 
                 assertFalse(bs1.isDisposed());
                 assertTrue(bs2.isDisposed());
 
-                s.onComplete();
+                observer.onComplete();
             }
         }.concatWith(Completable.complete())
         .test()

@@ -36,24 +36,24 @@ public final class CompletableTimer extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        TimerDisposable parent = new TimerDisposable(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(final CompletableObserver observer) {
+        TimerDisposable parent = new TimerDisposable(observer);
+        observer.onSubscribe(parent);
         parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
         private static final long serialVersionUID = 3167244060586201109L;
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        TimerDisposable(final CompletableObserver actual) {
-            this.actual = actual;
+        TimerDisposable(final CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void run() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override

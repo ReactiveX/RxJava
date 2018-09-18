@@ -18,17 +18,15 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Limits both the total request amount and items received from the upstream.
- *
+ * <p>History: 2.1.6 - experimental
  * @param <T> the source and output value type
- * @since 2.1.6 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final long n;
@@ -49,14 +47,14 @@ public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
 
         private static final long serialVersionUID = 2288246011222124525L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         long remaining;
 
         Subscription upstream;
 
         LimitSubscriber(Subscriber<? super T> actual, long remaining) {
-            this.actual = actual;
+            this.downstream = actual;
             this.remaining = remaining;
             lazySet(remaining);
         }
@@ -66,10 +64,10 @@ public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 if (remaining == 0L) {
                     s.cancel();
-                    EmptySubscription.complete(actual);
+                    EmptySubscription.complete(downstream);
                 } else {
                     this.upstream = s;
-                    actual.onSubscribe(this);
+                    downstream.onSubscribe(this);
                 }
             }
         }
@@ -79,10 +77,10 @@ public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
             long r = remaining;
             if (r > 0L) {
                 remaining = --r;
-                actual.onNext(t);
+                downstream.onNext(t);
                 if (r == 0L) {
                     upstream.cancel();
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }
@@ -91,7 +89,7 @@ public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onError(Throwable t) {
             if (remaining > 0L) {
                 remaining = 0L;
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -101,7 +99,7 @@ public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onComplete() {
             if (remaining > 0L) {
                 remaining = 0L;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

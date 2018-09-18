@@ -15,21 +15,25 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class FlowableLiftTest {
 
     @Test
     public void callbackCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
             .lift(new FlowableOperator<Object, Integer>() {
                 @Override
-                public Subscriber<? super Integer> apply(Subscriber<? super Object> o) throws Exception {
+                public Subscriber<? super Integer> apply(Subscriber<? super Object> subscriber) throws Exception {
                     throw new TestException();
                 }
             })
@@ -37,6 +41,9 @@ public class FlowableLiftTest {
             fail("Should have thrown");
         } catch (NullPointerException ex) {
             assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

@@ -95,49 +95,49 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
     extends AtomicReference<Disposable> implements Observer<R>, Disposable {
         private static final long serialVersionUID = 854110278590336484L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        TargetObserver(Observer<? super R> actual) {
-            this.actual = actual;
+        TargetObserver(Observer<? super R> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(R value) {
-            actual.onNext(value);
+            downstream.onNext(value);
         }
 
         @Override
         public void onError(Throwable e) {
             DisposableHelper.dispose(this);
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
             DisposableHelper.dispose(this);
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
             DisposableHelper.dispose(this);
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

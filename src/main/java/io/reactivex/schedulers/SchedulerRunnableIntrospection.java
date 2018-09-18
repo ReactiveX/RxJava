@@ -24,10 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
  * task in a custom {@link RxJavaPlugins#onSchedule(Runnable)} hook set via
  * the {@link RxJavaPlugins#setScheduleHandler(Function)} method multiple times due to internal delegation
  * of the default {@code Scheduler.scheduleDirect} or {@code Scheduler.Worker.schedule} methods.
- *
- * @since 2.1.7 - experimental
+ * <p>History: 2.1.7 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface SchedulerRunnableIntrospection {
 
     /**

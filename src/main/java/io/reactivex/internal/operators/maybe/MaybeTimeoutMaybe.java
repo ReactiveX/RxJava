@@ -54,10 +54,9 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -5955289211445418871L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final TimeoutOtherMaybeObserver<T, U> other;
 
@@ -66,7 +65,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
         final TimeoutFallbackMaybeObserver<T> otherObserver;
 
         TimeoutMainMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> fallback) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = new TimeoutOtherMaybeObserver<T, U>(this);
             this.fallback = fallback;
             this.otherObserver = fallback != null ? new TimeoutFallbackMaybeObserver<T>(actual) : null;
@@ -96,7 +95,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
         public void onSuccess(T value) {
             DisposableHelper.dispose(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 
@@ -104,7 +103,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
         public void onError(Throwable e) {
             DisposableHelper.dispose(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -114,13 +113,13 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
         public void onComplete() {
             DisposableHelper.dispose(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         public void otherError(Throwable e) {
             if (DisposableHelper.dispose(this)) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -129,7 +128,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
         public void otherComplete() {
             if (DisposableHelper.dispose(this)) {
                 if (fallback == null) {
-                    actual.onError(new TimeoutException());
+                    downstream.onError(new TimeoutException());
                 } else {
                     fallback.subscribe(otherObserver);
                 }
@@ -140,7 +139,6 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     static final class TimeoutOtherMaybeObserver<T, U>
     extends AtomicReference<Disposable>
     implements MaybeObserver<Object> {
-
 
         private static final long serialVersionUID = 8663801314800248617L;
 
@@ -174,13 +172,12 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
-
         private static final long serialVersionUID = 8663801314800248617L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        TimeoutFallbackMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        TimeoutFallbackMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -190,17 +187,17 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

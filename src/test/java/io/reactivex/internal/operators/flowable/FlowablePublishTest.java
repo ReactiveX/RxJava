@@ -42,18 +42,18 @@ public class FlowablePublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
+        ConnectableFlowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onComplete();
+                        subscriber.onNext("one");
+                        subscriber.onComplete();
                     }
                 }).start();
             }
@@ -62,7 +62,7 @@ public class FlowablePublishTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String v) {
@@ -72,7 +72,7 @@ public class FlowablePublishTest {
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String v) {
@@ -81,14 +81,14 @@ public class FlowablePublishTest {
             }
         });
 
-        Disposable s = o.connect();
+        Disposable connection = f.connect();
         try {
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
                 fail("subscriptions did not receive values");
             }
             assertEquals(1, counter.get());
         } finally {
-            s.dispose();
+            connection.dispose();
         }
     }
 
@@ -275,7 +275,7 @@ public class FlowablePublishTest {
 
         source.subscribe(ts1);
 
-        Disposable s = source.connect();
+        Disposable connection = source.connect();
 
         ts1.assertValue(1);
         ts1.assertNoErrors();
@@ -285,14 +285,14 @@ public class FlowablePublishTest {
 
         source.subscribe(ts2);
 
-        Disposable s2 = source.connect();
+        Disposable connection2 = source.connect();
 
         ts2.assertValue(1);
         ts2.assertNoErrors();
         ts2.assertTerminated();
 
-        System.out.println(s);
-        System.out.println(s2);
+        System.out.println(connection);
+        System.out.println(connection2);
     }
 
     @Test
@@ -328,18 +328,18 @@ public class FlowablePublishTest {
     public void testNoDisconnectSomeoneElse() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
 
-        Disposable s1 = source.connect();
-        Disposable s2 = source.connect();
+        Disposable connection1 = source.connect();
+        Disposable connection2 = source.connect();
 
-        s1.dispose();
+        connection1.dispose();
 
-        Disposable s3 = source.connect();
+        Disposable connection3 = source.connect();
 
-        s2.dispose();
+        connection2.dispose();
 
-        assertTrue(checkPublishDisposed(s1));
-        assertTrue(checkPublishDisposed(s2));
-        assertFalse(checkPublishDisposed(s3));
+        assertTrue(checkPublishDisposed(connection1));
+        assertTrue(checkPublishDisposed(connection2));
+        assertFalse(checkPublishDisposed(connection3));
     }
 
     @SuppressWarnings("unchecked")
@@ -371,6 +371,7 @@ public class FlowablePublishTest {
         ts.assertNoErrors();
         ts.assertTerminated();
     }
+
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
@@ -412,7 +413,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -421,7 +422,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -439,7 +440,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -448,7 +449,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -465,7 +466,7 @@ public class FlowablePublishTest {
                     cf.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -474,7 +475,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -492,7 +493,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -501,16 +502,16 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
 
     @Test
     public void source() {
-        Flowable<Integer> o = Flowable.never();
+        Flowable<Integer> f = Flowable.never();
 
-        assertSame(o, (((HasUpstreamPublisher<?>)o.publish()).source()));
+        assertSame(f, (((HasUpstreamPublisher<?>)f.publish()).source()));
     }
 
     @Test
@@ -519,7 +520,7 @@ public class FlowablePublishTest {
         try {
             cf.connect(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException();
                 }
             });
@@ -651,13 +652,13 @@ public class FlowablePublishTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onComplete();
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .publish()
@@ -824,6 +825,7 @@ public class FlowablePublishTest {
                 throw new TestException();
             }
         })
+        .compose(TestHelper.flowableStripBoundary())
         .publish()
         .autoConnect()
         .test()
@@ -831,48 +833,85 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void dryRunCrash() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+    public void pollThrowsNoSubscribers() {
+        ConnectableFlowable<Integer> cf = Flowable.just(1, 2)
+        .map(new Function<Integer, Integer>() {
             @Override
-            public void onNext(Object t) {
-                super.onNext(t);
-                onComplete();
-                cancel();
-            }
-        };
-
-        Flowable.range(1, 10)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
+            public Integer apply(Integer v) throws Exception {
                 if (v == 2) {
                     throw new TestException();
                 }
                 return v;
             }
         })
-        .publish()
-        .autoConnect()
-        .subscribe(ts);
+        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .publish();
 
-        ts
-        .assertResult(1);
+        TestSubscriber<Integer> ts = cf.take(1)
+        .test();
+
+        cf.connect();
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void dryRunCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+                @Override
+                public void onNext(Object t) {
+                    super.onNext(t);
+                    onComplete();
+                    cancel();
+                }
+            };
+
+            Flowable.range(1, 10)
+            .map(new Function<Integer, Object>() {
+                @Override
+                public Object apply(Integer v) throws Exception {
+                    if (v == 2) {
+                        throw new TestException();
+                    }
+                    return v;
+                }
+            })
+            .publish()
+            .autoConnect()
+            .subscribe(ts);
+
+            ts
+            .assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void overflowQueue() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 0; i < 10; i++) {
-                    s.onNext(i);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(new FlowableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                    for (int i = 0; i < 10; i++) {
+                        s.onNext(i);
+                    }
                 }
-            }
-        }, BackpressureStrategy.MISSING)
-        .publish(8)
-        .autoConnect()
-        .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+            }, BackpressureStrategy.MISSING)
+            .publish(8)
+            .autoConnect()
+            .test(0L)
+           .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -1301,5 +1340,32 @@ public class FlowablePublishTest {
 
         ts1.assertEmpty();
         ts2.assertValuesOnly(1);
+    }
+
+    @Test
+    public void boundaryFusion() {
+        Flowable.range(1, 10000)
+        .observeOn(Schedulers.single())
+        .map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer t) throws Exception {
+                String name = Thread.currentThread().getName();
+                if (name.contains("RxSingleScheduler")) {
+                    return "RxSingleScheduler";
+                }
+                return name;
+            }
+        })
+        .share()
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.range(1, 5).publish());
     }
 }

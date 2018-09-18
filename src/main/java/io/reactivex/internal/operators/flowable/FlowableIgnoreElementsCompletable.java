@@ -40,19 +40,19 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
     }
 
     static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, Disposable {
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Subscription s;
+        Subscription upstream;
 
-        IgnoreElementsSubscriber(CompletableObserver actual) {
-            this.actual = actual;
+        IgnoreElementsSubscriber(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -64,25 +64,25 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
 
         @Override
         public void onError(Throwable t) {
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
-            actual.onComplete();
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

@@ -43,9 +43,9 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
     implements ConditionalSubscriber<T>, Subscription {
         private static final long serialVersionUID = -6270983465606289181L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
-        final AtomicReference<Subscription> s;
+        final AtomicReference<Subscription> upstream;
 
         final AtomicLong requested;
 
@@ -55,9 +55,9 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
         volatile boolean gate;
 
-        SkipUntilMainSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
-            this.s = new AtomicReference<Subscription>();
+        SkipUntilMainSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
+            this.upstream = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
             this.other = new OtherSubscriber();
             this.error = new AtomicThrowable();
@@ -65,20 +65,20 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onSubscribe(Subscription s) {
-            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
+            SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.get().request(1);
+                upstream.get().request(1);
             }
         }
 
         @Override
         public boolean tryOnNext(T t) {
             if (gate) {
-                HalfSerializer.onNext(actual, t, this, error);
+                HalfSerializer.onNext(downstream, t, this, error);
                 return true;
             }
             return false;
@@ -87,23 +87,23 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         @Override
         public void onError(Throwable t) {
             SubscriptionHelper.cancel(other);
-            HalfSerializer.onError(actual, t, SkipUntilMainSubscriber.this, error);
+            HalfSerializer.onError(downstream, t, SkipUntilMainSubscriber.this, error);
         }
 
         @Override
         public void onComplete() {
             SubscriptionHelper.cancel(other);
-            HalfSerializer.onComplete(actual, this, error);
+            HalfSerializer.onComplete(downstream, this, error);
         }
 
         @Override
         public void request(long n) {
-            SubscriptionHelper.deferredRequest(s, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             SubscriptionHelper.cancel(other);
         }
 
@@ -125,8 +125,8 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
             @Override
             public void onError(Throwable t) {
-                SubscriptionHelper.cancel(s);
-                HalfSerializer.onError(actual, t, SkipUntilMainSubscriber.this, error);
+                SubscriptionHelper.cancel(upstream);
+                HalfSerializer.onError(downstream, t, SkipUntilMainSubscriber.this, error);
             }
 
             @Override

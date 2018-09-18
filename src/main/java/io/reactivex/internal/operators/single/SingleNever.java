@@ -23,8 +23,8 @@ public final class SingleNever extends Single<Object> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Object> s) {
-        s.onSubscribe(EmptyDisposable.NEVER);
+    protected void subscribeActual(SingleObserver<? super Object> observer) {
+        observer.onSubscribe(EmptyDisposable.NEVER);
     }
 
 }

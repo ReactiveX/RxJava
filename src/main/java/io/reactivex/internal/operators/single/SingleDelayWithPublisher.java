@@ -36,36 +36,35 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        other.subscribe(new OtherSubscriber<T, U>(subscriber, source));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        other.subscribe(new OtherSubscriber<T, U>(observer, source));
     }
 
     static final class OtherSubscriber<T, U>
     extends AtomicReference<Disposable>
     implements FlowableSubscriber<U>, Disposable {
 
-
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SingleSource<T> source;
 
         boolean done;
 
-        Subscription s;
+        Subscription upstream;
 
         OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -73,7 +72,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
 
         @Override
         public void onNext(U value) {
-            s.cancel();
+            upstream.cancel();
             onComplete();
         }
 
@@ -84,7 +83,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -93,12 +92,12 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            source.subscribe(new ResumeSingleObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
         }
 
         @Override
         public void dispose() {
-            s.cancel();
+            upstream.cancel();
             DisposableHelper.dispose(this);
         }
 
