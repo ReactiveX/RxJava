@@ -4634,6 +4634,110 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,
+            Function3<? super T1, ? super T2,? super T3, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,
+            Function4<? super T1, ? super T2,? super T3,? super T4, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,
+            Function5<? super T1, ? super T2,? super T3,? super T4,? super T5, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,
+            Function6<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,
+            Function7<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7);
+    }
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,Publisher<? extends T8> source8,
+            Function8<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7,source8);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8,T9, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,Publisher<? extends T8> source8,Publisher<? extends T9> source9,
+            Function9<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8,? super T9, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7,source8,source9);
+    }
+
     /**
      * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other Publishers.
@@ -4694,6 +4798,110 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,
+            Function3<? super T1, ? super T2,? super T3, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,
+            Function4<? super T1, ? super T2,? super T3,? super T4, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,
+            Function5<? super T1, ? super T2,? super T3,? super T4,? super T5, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,
+            Function6<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,
+            Function7<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7);
+    }
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,Publisher<? extends T8> source8,
+            Function8<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7,source8);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8,T9, R> Flowable<R> zip(
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2,Publisher<? extends T3> source3,Publisher<? extends T4> source4,Publisher<? extends T5> source5,Publisher<? extends T6> source6,Publisher<? extends T7> source7,Publisher<? extends T8> source8,Publisher<? extends T9> source9,
+            Function9<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8,? super T9, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7,source8,source9);
     }
 
     /**
@@ -18011,6 +18219,106 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zip(this, other, zipper);
     }
 
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2,
+                                                 Function3<? super T, ? super U1, ? super U2, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3,
+                                                     Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4,
+                                                         Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5,
+                                                             Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6,
+                                                                 Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7,
+                                                                     Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper);
+
+    }
+
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7, Publisher<? extends U8> source8,
+                                                                         Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
+
+    }
+
+
     /**
      * Returns a Flowable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source Publisher and another specified Publisher.
@@ -18059,6 +18367,105 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other,
             BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
         return zip(this, other, zipper, delayError);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2,
+                                                 Function3<? super T, ? super U1, ? super U2, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3,
+                                                     Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4,
+                                                         Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5,
+                                                             Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6,
+                                                                 Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7,
+                                                                     Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError);
+
+    }
+
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7, Publisher<? extends U8> source8,
+                                                                         Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper,delayError);
+
     }
 
     /**
@@ -18111,6 +18518,105 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other,
             BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2,
+                                                 Function3<? super T, ? super U1, ? super U2, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3,
+                                                     Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4,
+                                                         Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5,
+                                                             Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6,
+                                                                 Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7,
+                                                                     Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError, bufferSize);
+
+    }
+
+
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Flowable<R> zipWith(Publisher<? extends U1> source1, Publisher<? extends U2> source2, Publisher<? extends U3> source3, Publisher<? extends U4> source4, Publisher<? extends U5> source5, Publisher<? extends U6> source6, Publisher<? extends U7> source7, Publisher<? extends U8> source8,
+                                                                         Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper,delayError, bufferSize);
+
     }
 
     // -------------------------------------------------------------------------
