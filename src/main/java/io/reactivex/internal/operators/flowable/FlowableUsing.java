@@ -78,15 +78,15 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         private static final long serialVersionUID = 5904473792286235046L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final D resource;
         final Consumer<? super D> disposer;
         final boolean eager;
 
-        Subscription s;
+        Subscription upstream;
 
         UsingSubscriber(Subscriber<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
-            this.actual = actual;
+            this.downstream = actual;
             this.resource = resource;
             this.disposer = disposer;
             this.eager = eager;
@@ -94,15 +94,15 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -118,15 +118,15 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     }
                 }
 
-                s.cancel();
+                upstream.cancel();
                 if (innerError != null) {
-                    actual.onError(new CompositeException(t, innerError));
+                    downstream.onError(new CompositeException(t, innerError));
                 } else {
-                    actual.onError(t);
+                    downstream.onError(t);
                 }
             } else {
-                actual.onError(t);
-                s.cancel();
+                downstream.onError(t);
+                upstream.cancel();
                 disposeAfter();
             }
         }
@@ -139,29 +139,29 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                         disposer.accept(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
-                        actual.onError(e);
+                        downstream.onError(e);
                         return;
                     }
                 }
 
-                s.cancel();
-                actual.onComplete();
+                upstream.cancel();
+                downstream.onComplete();
             } else {
-                actual.onComplete();
-                s.cancel();
+                downstream.onComplete();
+                upstream.cancel();
                 disposeAfter();
             }
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
             disposeAfter();
-            s.cancel();
+            upstream.cancel();
         }
 
         void disposeAfter() {

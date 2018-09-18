@@ -31,33 +31,32 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
         this.unit = unit;
     }
 
-
     @Override
     protected void subscribeActual(Subscriber<? super Timed<T>> s) {
         source.subscribe(new TimeIntervalSubscriber<T>(s, unit, scheduler));
     }
 
     static final class TimeIntervalSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super Timed<T>> actual;
+        final Subscriber<? super Timed<T>> downstream;
         final TimeUnit unit;
         final Scheduler scheduler;
 
-        Subscription s;
+        Subscription upstream;
 
         long lastTime;
 
         TimeIntervalSubscriber(Subscriber<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
             this.unit = unit;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
+            if (SubscriptionHelper.validate(this.upstream, s)) {
                 lastTime = scheduler.now(unit);
-                this.s = s;
-                actual.onSubscribe(this);
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -67,27 +66,27 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            actual.onNext(new Timed<T>(t, delta, unit));
+            downstream.onNext(new Timed<T>(t, delta, unit));
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

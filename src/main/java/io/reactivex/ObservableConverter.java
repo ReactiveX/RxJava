@@ -18,12 +18,11 @@ import io.reactivex.annotations.*;
 /**
  * Convenience interface and callback used by the {@link Observable#as} operator to turn an Observable into another
  * value fluently.
- *
+ * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type
  * @param <R> the output type
- * @since 2.1.7 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface ObservableConverter<T, R> {
     /**
      * Applies a function to the upstream Observable and returns a converted value of type {@code R}.

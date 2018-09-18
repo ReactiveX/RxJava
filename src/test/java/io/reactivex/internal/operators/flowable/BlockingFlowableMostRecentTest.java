@@ -103,7 +103,6 @@ public class BlockingFlowableMostRecentTest {
         TestHelper.checkUtilityClass(BlockingFlowableMostRecent.class);
     }
 
-
     @Test
     public void empty() {
         Iterator<Integer> it = Flowable.<Integer>empty()

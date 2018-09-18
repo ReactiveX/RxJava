@@ -350,7 +350,6 @@ public class MaybeTest {
         Completable.complete().toMaybe().ignoreElement().test().assertResult();
     }
 
-
     @Test
     public void unsafeCreate() {
         Maybe.unsafeCreate(new MaybeSource<Integer>() {
@@ -646,7 +645,6 @@ public class MaybeTest {
         assertNotEquals(main, name[0]);
     }
 
-
     @Test
     public void observeOnCompleteThread() {
         String main = Thread.currentThread().getName();
@@ -687,7 +685,6 @@ public class MaybeTest {
         .assertResult()
         ;
     }
-
 
     @Test
     public void fromAction() {
@@ -801,7 +798,6 @@ public class MaybeTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void doOnSubscribe() {
         final Disposable[] value = { null };
@@ -829,7 +825,6 @@ public class MaybeTest {
         .test()
         .assertFailure(TestException.class);
     }
-
 
     @Test
     public void doOnCompleteThrows() {
@@ -861,7 +856,6 @@ public class MaybeTest {
 
         assertEquals(1, call[0]);
     }
-
 
     @Test
     public void doOnDisposeThrows() {
@@ -971,7 +965,6 @@ public class MaybeTest {
         assertEquals(-1, call[0]);
     }
 
-
     @Test
     public void doAfterTerminateComplete() {
         final int[] call = { 0 };
@@ -1002,7 +995,7 @@ public class MaybeTest {
         try {
             Maybe.unsafeCreate(new MaybeSource<Object>() {
                 @Override
-                public void subscribe(MaybeObserver<? super Object> s) {
+                public void subscribe(MaybeObserver<? super Object> observer) {
                     throw new NullPointerException("Forced failure");
                 }
             }).test();
@@ -1013,13 +1006,12 @@ public class MaybeTest {
         }
     }
 
-
     @Test
     public void sourceThrowsIAE() {
         try {
             Maybe.unsafeCreate(new MaybeSource<Object>() {
                 @Override
-                public void subscribe(MaybeObserver<? super Object> s) {
+                public void subscribe(MaybeObserver<? super Object> observer) {
                     throw new IllegalArgumentException("Forced failure");
                 }
             }).test();
@@ -1180,6 +1172,7 @@ public class MaybeTest {
         .test()
         .assertResult();
     }
+
     @Test
     public void ignoreElementSuccessMaybe() {
         Maybe.just(1)
@@ -1503,68 +1496,91 @@ public class MaybeTest {
 
     @Test
     public void basic() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onSuccess(1);
-                e.onError(new TestException());
-                e.onSuccess(2);
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        })
-        .test()
-        .assertResult(1);
+                    e.onSuccess(1);
+                    e.onError(new TestException());
+                    e.onSuccess(2);
+                    e.onError(new TestException());
+                    e.onComplete();
+                }
+            })
+            .test()
+            .assertResult(1);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithError() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onError(new TestException());
-                e.onSuccess(2);
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
+                    e.onError(new TestException());
+                    e.onSuccess(2);
+                    e.onError(new TestException());
+                    e.onComplete();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithComplete() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+            Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(MaybeEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onComplete();
-                e.onSuccess(1);
-                e.onError(new TestException());
-                e.onComplete();
-                e.onSuccess(2);
-                e.onError(new TestException());
-            }
-        })
-        .test()
-        .assertResult();
+                    e.onComplete();
+                    e.onSuccess(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                    e.onSuccess(2);
+                    e.onError(new TestException());
+                }
+            })
+            .test()
+            .assertResult();
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -2366,21 +2382,28 @@ public class MaybeTest {
 
     @Test
     public void doOnEventError() {
-        final List<Object> list = new ArrayList<Object>();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final List<Object> list = new ArrayList<Object>();
 
-        TestException ex = new TestException();
+            TestException ex = new TestException();
 
-        assertTrue(Maybe.<Integer>error(ex)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                list.add(v);
-                list.add(e);
-            }
-        })
-        .subscribe().isDisposed());
+            assertTrue(Maybe.<Integer>error(ex)
+            .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                @Override
+                public void accept(Integer v, Throwable e) throws Exception {
+                    list.add(v);
+                    list.add(e);
+                }
+            })
+            .subscribe().isDisposed());
 
-        assertEquals(Arrays.asList(null, ex), list);
+            assertEquals(Arrays.asList(null, ex), list);
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -2435,7 +2458,6 @@ public class MaybeTest {
         TestHelper.assertError(list, 1, TestException.class, "Inner");
         assertEquals(2, list.size());
     }
-
 
     @Test
     public void doOnEventCompleteThrows() {
@@ -2880,7 +2902,6 @@ public class MaybeTest {
         .assertResult("[1]");
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void zipIterable() {
@@ -2982,7 +3003,6 @@ public class MaybeTest {
         .test()
         .assertResult("123456789");
     }
-
 
     @Test
     public void ambWith1SignalsSuccess() {

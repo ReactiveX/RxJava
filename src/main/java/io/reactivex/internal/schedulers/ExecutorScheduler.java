@@ -162,7 +162,6 @@ public final class ExecutorScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
 
-
             SequentialDisposable first = new SequentialDisposable();
 
             final SequentialDisposable mar = new SequentialDisposable(first);

@@ -37,9 +37,9 @@ public final class MaybeCreate<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        Emitter<T> parent = new Emitter<T>(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        Emitter<T> parent = new Emitter<T>(observer);
+        observer.onSubscribe(parent);
 
         try {
             source.subscribe(parent);
@@ -53,12 +53,11 @@ public final class MaybeCreate<T> extends Maybe<T> {
     extends AtomicReference<Disposable>
     implements MaybeEmitter<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Emitter(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        Emitter(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
-
 
         private static final long serialVersionUID = -2467358622224974244L;
 
@@ -69,9 +68,9 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 if (d != DisposableHelper.DISPOSED) {
                     try {
                         if (value == null) {
-                            actual.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
+                            downstream.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
                         } else {
-                            actual.onSuccess(value);
+                            downstream.onSuccess(value);
                         }
                     } finally {
                         if (d != null) {
@@ -98,7 +97,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onError(t);
+                        downstream.onError(t);
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -116,7 +115,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onComplete();
+                        downstream.onComplete();
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -144,6 +143,11 @@ public final class MaybeCreate<T> extends Maybe<T> {
         @Override
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s{%s}", getClass().getSimpleName(), super.toString());
         }
     }
 }

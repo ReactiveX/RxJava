@@ -37,15 +37,15 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
+    protected void subscribeActual(Observer<? super T> observer) {
         if (other == null) {
-            TimeoutObserver<T> parent = new TimeoutObserver<T>(s, timeout, unit, scheduler.createWorker());
-            s.onSubscribe(parent);
+            TimeoutObserver<T> parent = new TimeoutObserver<T>(observer, timeout, unit, scheduler.createWorker());
+            observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         } else {
-            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(s, timeout, unit, scheduler.createWorker(), other);
-            s.onSubscribe(parent);
+            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(observer, timeout, unit, scheduler.createWorker(), other);
+            observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         }
@@ -56,7 +56,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         private static final long serialVersionUID = 3764492702657003550L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final long timeout;
 
@@ -69,7 +69,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         final AtomicReference<Disposable> upstream;
 
         TimeoutObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Scheduler.Worker worker) {
-            this.actual = actual;
+            this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
@@ -78,8 +78,8 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(upstream, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
@@ -91,7 +91,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
             task.get().dispose();
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             startTimeout(idx + 1);
         }
@@ -105,7 +105,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
 
                 worker.dispose();
             } else {
@@ -118,7 +118,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
 
                 worker.dispose();
             }
@@ -129,7 +129,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(upstream);
 
-                actual.onError(new TimeoutException());
+                downstream.onError(new TimeoutException());
 
                 worker.dispose();
             }
@@ -146,7 +146,6 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             return DisposableHelper.isDisposed(upstream.get());
         }
     }
-
 
     static final class TimeoutTask implements Runnable {
 
@@ -170,7 +169,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         private static final long serialVersionUID = 3764492702657003550L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final long timeout;
 
@@ -188,7 +187,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         TimeoutFallbackObserver(Observer<? super T> actual, long timeout, TimeUnit unit,
                 Scheduler.Worker worker, ObservableSource<? extends T> fallback) {
-            this.actual = actual;
+            this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
@@ -199,8 +198,8 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(upstream, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
@@ -212,7 +211,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
             task.get().dispose();
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             startTimeout(idx + 1);
         }
@@ -226,7 +225,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
 
                 worker.dispose();
             } else {
@@ -239,7 +238,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
 
                 worker.dispose();
             }
@@ -253,7 +252,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
                 ObservableSource<? extends T> f = fallback;
                 fallback = null;
 
-                f.subscribe(new FallbackObserver<T>(actual, this));
+                f.subscribe(new FallbackObserver<T>(downstream, this));
 
                 worker.dispose();
             }
@@ -274,33 +273,33 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
     static final class FallbackObserver<T> implements Observer<T> {
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final AtomicReference<Disposable> arbiter;
 
         FallbackObserver(Observer<? super T> actual, AtomicReference<Disposable> arbiter) {
-            this.actual = actual;
+            this.downstream = actual;
             this.arbiter = arbiter;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.replace(arbiter, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.replace(arbiter, d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 

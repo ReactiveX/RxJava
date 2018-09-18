@@ -447,15 +447,17 @@ public class SafeObserverTest {
     @Ignore("Observers can't throw")
     public void testOnCompletedThrows() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        SafeObserver<Integer> s = new SafeObserver<Integer>(new DefaultObserver<Integer>() {
+        SafeObserver<Integer> observer = new SafeObserver<Integer>(new DefaultObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
 
             }
+
             @Override
             public void onError(Throwable e) {
                 error.set(e);
             }
+
             @Override
             public void onComplete() {
                 throw new TestException();
@@ -463,7 +465,7 @@ public class SafeObserverTest {
         });
 
         try {
-            s.onComplete();
+            observer.onComplete();
             Assert.fail();
         } catch (RuntimeException e) {
            assertNull(error.get());
@@ -476,16 +478,18 @@ public class SafeObserverTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable e) {
             }
+
             @Override
             public void onComplete() {
             }
         };
-        SafeObserver<Integer> s = new SafeObserver<Integer>(actual);
+        SafeObserver<Integer> observer = new SafeObserver<Integer>(actual);
 
-        assertSame(actual, s.actual);
+        assertSame(actual, observer.downstream);
     }
 
     @Test

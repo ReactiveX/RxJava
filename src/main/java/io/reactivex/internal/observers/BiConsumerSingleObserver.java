@@ -26,7 +26,6 @@ public final class BiConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
 implements SingleObserver<T>, Disposable {
 
-
     private static final long serialVersionUID = 4943102778943297569L;
     final BiConsumer<? super T, ? super Throwable> onCallback;
 

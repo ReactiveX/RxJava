@@ -134,7 +134,6 @@ public class ObservableWithLatestFromTest {
         assertFalse(other.hasObservers());
     }
 
-
     @Test
     public void testUnsubscription() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -189,6 +188,7 @@ public class ObservableWithLatestFromTest {
         assertFalse(source.hasObservers());
         assertFalse(other.hasObservers());
     }
+
     @Test
     public void testOtherThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -259,7 +259,6 @@ public class ObservableWithLatestFromTest {
         // 2.0.2 - not anymore
 //        assertTrue("Not cancelled!", ts.isCancelled());
     }
-
 
     static final Function<Object[], String> toArray = new Function<Object[], String>() {
         @Override

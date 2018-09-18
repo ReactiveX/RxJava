@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-
 import java.util.*;
 
 import io.reactivex.ObservableSource;

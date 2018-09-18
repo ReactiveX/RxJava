@@ -30,21 +30,21 @@ public final class CompletableDisposeOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new CompletableObserverImplementation(s, scheduler));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new DisposeOnObserver(observer, scheduler));
     }
 
-    static final class CompletableObserverImplementation implements CompletableObserver, Disposable, Runnable {
-        final CompletableObserver s;
+    static final class DisposeOnObserver implements CompletableObserver, Disposable, Runnable {
+        final CompletableObserver downstream;
 
         final Scheduler scheduler;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile boolean disposed;
 
-        CompletableObserverImplementation(CompletableObserver s, Scheduler scheduler) {
-            this.s = s;
+        DisposeOnObserver(CompletableObserver observer, Scheduler scheduler) {
+            this.downstream = observer;
             this.scheduler = scheduler;
         }
 
@@ -53,7 +53,7 @@ public final class CompletableDisposeOn extends Completable {
             if (disposed) {
                 return;
             }
-            s.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -62,15 +62,15 @@ public final class CompletableDisposeOn extends Completable {
                 RxJavaPlugins.onError(e);
                 return;
             }
-            s.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onSubscribe(final Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                s.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -87,8 +87,8 @@ public final class CompletableDisposeOn extends Completable {
 
         @Override
         public void run() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
     }
 

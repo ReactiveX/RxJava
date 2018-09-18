@@ -25,10 +25,10 @@ import org.reactivestreams.Subscriber;
 public interface FlowableOperator<Downstream, Upstream> {
     /**
      * Applies a function to the child Subscriber and returns a new parent Subscriber.
-     * @param observer the child Subscriber instance
+     * @param subscriber the child Subscriber instance
      * @return the parent Subscriber instance
      * @throws Exception on failure
      */
     @NonNull
-    Subscriber<? super Upstream> apply(@NonNull Subscriber<? super Downstream> observer) throws Exception;
+    Subscriber<? super Upstream> apply(@NonNull Subscriber<? super Downstream> subscriber) throws Exception;
 }

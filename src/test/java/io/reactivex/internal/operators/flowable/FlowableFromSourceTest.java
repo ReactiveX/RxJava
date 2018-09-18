@@ -13,12 +13,15 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.List;
+
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Cancellable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 
@@ -36,7 +39,6 @@ public class FlowableFromSourceTest {
         sourceNoCancel = new PublishAsyncEmitterNoCancel();
         ts = new TestSubscriber<Integer>(0L);
     }
-
 
     @Test
     public void normalBuffered() {
@@ -121,7 +123,6 @@ public class FlowableFromSourceTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-
 
     @Test
     public void normalError() {
@@ -271,82 +272,116 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelBuffer() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
-        ts.cancel();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
+            ts.cancel();
 
-        sourceNoCancel.onNext(1);
-        sourceNoCancel.onNext(2);
-        sourceNoCancel.onError(new TestException());
+            sourceNoCancel.onNext(1);
+            sourceNoCancel.onNext(2);
+            sourceNoCancel.onError(new TestException());
 
-        ts.request(1);
+            ts.request(1);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+            ts.assertNoValues();
+            ts.assertNoErrors();
+            ts.assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void unsubscribedNoCancelLatest() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
-        ts.cancel();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
+            ts.cancel();
 
-        sourceNoCancel.onNext(1);
-        sourceNoCancel.onNext(2);
-        sourceNoCancel.onError(new TestException());
+            sourceNoCancel.onNext(1);
+            sourceNoCancel.onNext(2);
+            sourceNoCancel.onError(new TestException());
 
-        ts.request(1);
+            ts.request(1);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+            ts.assertNoValues();
+            ts.assertNoErrors();
+            ts.assertNotComplete();
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void unsubscribedNoCancelError() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.ERROR).subscribe(ts);
-        ts.cancel();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(sourceNoCancel, BackpressureStrategy.ERROR).subscribe(ts);
+            ts.cancel();
 
-        sourceNoCancel.onNext(1);
-        sourceNoCancel.onNext(2);
-        sourceNoCancel.onError(new TestException());
+            sourceNoCancel.onNext(1);
+            sourceNoCancel.onNext(2);
+            sourceNoCancel.onError(new TestException());
 
-        ts.request(1);
+            ts.request(1);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+            ts.assertNoValues();
+            ts.assertNoErrors();
+            ts.assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void unsubscribedNoCancelDrop() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.DROP).subscribe(ts);
-        ts.cancel();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(sourceNoCancel, BackpressureStrategy.DROP).subscribe(ts);
+            ts.cancel();
 
-        sourceNoCancel.onNext(1);
-        sourceNoCancel.onNext(2);
-        sourceNoCancel.onError(new TestException());
+            sourceNoCancel.onNext(1);
+            sourceNoCancel.onNext(2);
+            sourceNoCancel.onError(new TestException());
 
-        ts.request(1);
+            ts.request(1);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+            ts.assertNoValues();
+            ts.assertNoErrors();
+            ts.assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void unsubscribedNoCancelMissing() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.MISSING).subscribe(ts);
-        ts.cancel();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(sourceNoCancel, BackpressureStrategy.MISSING).subscribe(ts);
+            ts.cancel();
 
-        sourceNoCancel.onNext(1);
-        sourceNoCancel.onNext(2);
-        sourceNoCancel.onError(new TestException());
+            sourceNoCancel.onNext(1);
+            sourceNoCancel.onNext(2);
+            sourceNoCancel.onError(new TestException());
 
-        ts.request(1);
+            ts.request(1);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+            ts.assertNoValues();
+            ts.assertNoErrors();
+            ts.assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -451,7 +486,6 @@ public class FlowableFromSourceTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-
 
     @Test
     public void unsubscribeInline() {
@@ -622,12 +656,12 @@ public class FlowableFromSourceTest {
 
     static final class PublishAsyncEmitter implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
-        final PublishProcessor<Integer> subject;
+        final PublishProcessor<Integer> processor;
 
         FlowableEmitter<Integer> current;
 
         PublishAsyncEmitter() {
-            this.subject = PublishProcessor.create();
+            this.processor = PublishProcessor.create();
         }
 
         long requested() {
@@ -658,7 +692,7 @@ public class FlowableFromSourceTest {
 
             };
 
-            subject.subscribe(as);
+            processor.subscribe(as);
 
             t.setCancellable(new Cancellable() {
                 @Override
@@ -675,32 +709,32 @@ public class FlowableFromSourceTest {
 
         @Override
         public void onNext(Integer t) {
-            subject.onNext(t);
+            processor.onNext(t);
         }
 
         @Override
         public void onError(Throwable e) {
-            subject.onError(e);
+            processor.onError(e);
         }
 
         @Override
         public void onComplete() {
-            subject.onComplete();
+            processor.onComplete();
         }
     }
 
     static final class PublishAsyncEmitterNoCancel implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
-        final PublishProcessor<Integer> subject;
+        final PublishProcessor<Integer> processor;
 
         PublishAsyncEmitterNoCancel() {
-            this.subject = PublishProcessor.create();
+            this.processor = PublishProcessor.create();
         }
 
         @Override
         public void subscribe(final FlowableEmitter<Integer> t) {
 
-            subject.subscribe(new FlowableSubscriber<Integer>() {
+            processor.subscribe(new FlowableSubscriber<Integer>() {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -732,17 +766,17 @@ public class FlowableFromSourceTest {
 
         @Override
         public void onNext(Integer t) {
-            subject.onNext(t);
+            processor.onNext(t);
         }
 
         @Override
         public void onError(Throwable e) {
-            subject.onError(e);
+            processor.onError(e);
         }
 
         @Override
         public void onComplete() {
-            subject.onComplete();
+            processor.onComplete();
         }
     }
 

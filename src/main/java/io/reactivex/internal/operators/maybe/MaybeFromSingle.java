@@ -42,44 +42,44 @@ public final class MaybeFromSingle<T> extends Maybe<T> implements HasUpstreamSin
     }
 
     static final class FromSingleObserver<T> implements SingleObserver<T>, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        FromSingleObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        FromSingleObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(value);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
     }
 }

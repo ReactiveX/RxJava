@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -28,12 +27,12 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Maps the upstream intems into {@link CompletableSource}s and subscribes to them one after the
+ * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
  * other completes or terminates (in error-delaying mode).
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream value type
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableConcatMapCompletable<T> extends Completable {
 
     final Observable<T> source;
@@ -55,9 +54,9 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, s)) {
-            source.subscribe(new ConcatMapCompletableObserver<T>(s, mapper, errorMode, prefetch));
+    protected void subscribeActual(CompletableObserver observer) {
+        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
+            source.subscribe(new ConcatMapCompletableObserver<T>(observer, mapper, errorMode, prefetch));
         }
     }
 
@@ -101,12 +100,12 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                this.upstream = s;
-                if (s instanceof QueueDisposable) {
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                this.upstream = d;
+                if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
-                    QueueDisposable<T> qd = (QueueDisposable<T>) s;
+                    QueueDisposable<T> qd = (QueueDisposable<T>) d;
 
                     int m = qd.requestFusion(QueueDisposable.ANY);
                     if (m == QueueDisposable.SYNC) {

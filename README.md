@@ -8,15 +8,6 @@ RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io)
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-#### Version 1.x ([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/))
-
-Looking for version 1.x? Jump [to the 1.x branch](https://github.com/ReactiveX/RxJava/tree/1.x).
-
-Timeline plans for the 1.x line:
-
-  - **June 1, 2017** - feature freeze (no new operators), only bugfixes
-  - **March 31, 2018** - end of life, no further development
-
 #### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
@@ -31,6 +22,10 @@ Version 2.x and 1.x will live side-by-side for several years. They will have dif
 
 See the differences between version 1.x and 2.x in the wiki article [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
+#### Version 1.x
+
+The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life as of **March 31, 2018**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/)) of the very last version, **1.3.8**, will remain accessible.
+
 ## Getting started
 
 ### Setting up the dependency
@@ -38,7 +33,7 @@ See the differences between version 1.x and 2.x in the wiki article [What's diff
 The first step is to include RxJava 2 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
-compile "io.reactivex.rxjava2:rxjava:2.x.y"
+implementation "io.reactivex.rxjava2:rxjava:2.x.y"
 ```
 
 (Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
@@ -149,7 +144,7 @@ Observable.create(emitter -> {
          long time = System.currentTimeMillis();
          emitter.onNext(time);
          if (time % 2 != 0) {
-             emitter.onError(new IllegalStateException("Odd millisecond!");
+             emitter.onError(new IllegalStateException("Odd millisecond!"));
              break;
          }
      }
@@ -198,7 +193,7 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 ### Schedulers
 
-RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. 
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. 
 
 - `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default `Scheduler`.
 - `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
@@ -238,14 +233,14 @@ Flowable.range(1, 10)
   .blockingSubscribe(System.out::println);
 ```
 
-Practically, paralellism in RxJava means running independent flows and merging their results back into a single flow. The operator `flatMap` does this by first mapping each number from 1 to 10 into its own individual `Flowable`, runs them and merges the computed squares.
+Practically, parallelism in RxJava means running independent flows and merging their results back into a single flow. The operator `flatMap` does this by first mapping each number from 1 to 10 into its own individual `Flowable`, runs them and merges the computed squares.
 
 Note, however, that `flatMap` doesn't guarantee any order and the end result from the inner flows may end up interleaved. There are alternative operators:
 
   - `concatMap` that maps and runs one inner flow at a time and
   - `concatMapEager` which runs all inner flows "at once" but the output flow will be in the order those inner flows were created.
 
-Alternatively, there is a [*beta*](#beta) operator `Flowable.parallel()` and type `ParallelFlowable` that helps achieve the same parallel processing pattern:
+Alternatively, the `Flowable.parallel()` operator and the `ParallelFlowable` type help achieve the same parallel processing pattern:
 
 ```java
 Flowable.range(1, 10)
@@ -256,7 +251,7 @@ Flowable.range(1, 10)
   .blockingSubscribe(System.out::println);
 ```
 
-### Dependend sub-flows
+### Dependent sub-flows
 
 `flatMap` is a powerful operator and helps in a lot of situations. For example, given a service that returns a `Flowable`, we'd like to call another service with values emitted by the first service:
 
@@ -273,7 +268,7 @@ inventorySource.flatMap(inventoryItem ->
 
 ### Continuations
 
-Sometimes, when an item has become available, one would like to perform some dependent computations on it. This is sometimes called **continuations** and, depending on what should happen and what types are involed, may involve various operators to accomplish.
+Sometimes, when an item has become available, one would like to perform some dependent computations on it. This is sometimes called **continuations** and, depending on what should happen and what types are involved, may involve various operators to accomplish.
 
 #### Dependent
 
@@ -329,7 +324,7 @@ Sometimes, there is an implicit data dependency between the previous sequence an
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.just(count.get()))
   .subscribe(System.out::println);
@@ -341,7 +336,7 @@ Unfortunately, this prints `0` because `Single.just(count.get())` is evaluated a
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.defer(() -> Single.just(count.get())))
   .subscribe(System.out::println);
@@ -353,7 +348,7 @@ or
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.fromCallable(() -> count.get()))
   .subscribe(System.out::println);
@@ -437,7 +432,7 @@ someSource.concatWith(s -> Single.just(2))
 Unfortunately, this approach doesn't work and the example does not print `2` at all. In fact, since version 2.1.10, it doesn't
 even compile because at least 4 `concatWith` overloads exist and the compiler finds the code above ambiguous.
 
-The user in such situations probably wanted to defer some computation until the `sameSource` has completed, thus the correct
+The user in such situations probably wanted to defer some computation until the `someSource` has completed, thus the correct
 unambiguous operator should have been `defer`:
 
 ```java
@@ -457,7 +452,7 @@ This can get also ambiguous when functional interface types get involved as the 
 
 #### Error handling
 
-Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice wether or not wait for all of them to complete or fail. To indicate this opportunity, many operator names are suffixed with the `DelayError` words (while others feature a `delayError` or `delayErrors` boolean flag in one of their overloads):
+Dataflows can fail, at which point the error is emitted to the consumer(s). Sometimes though, multiple sources may fail at which point there is a choice whether or not wait for all of them to complete or fail. To indicate this opportunity, many operator names are suffixed with the `DelayError` words (while others feature a `delayError` or `delayErrors` boolean flag in one of their overloads):
 
 ```java
 Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources);
@@ -527,6 +522,8 @@ All code inside the `io.reactivex.internal.*` packages is considered private API
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
 - [Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)
+- [Latest snaphot Javadoc](http://reactivex.io/RxJava/2.x/javadoc/snapshot/)
+- Javadoc of a specific [release version](https://github.com/ReactiveX/RxJava/tags): `http://reactivex.io/RxJava/2.x/javadoc/2.x.y/`
 
 ## Binaries
 

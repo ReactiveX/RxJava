@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.observers.DefaultObserver;
 
 @SuppressWarnings("unchecked")
 public class ObservableDeferTest {
@@ -69,7 +68,7 @@ public class ObservableDeferTest {
 
         Observable<String> result = Observable.defer(factory);
 
-        DefaultObserver<String> o = mock(DefaultObserver.class);
+        Observer<String> o = TestHelper.mockObserver();
 
         result.subscribe(o);
 

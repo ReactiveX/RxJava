@@ -31,15 +31,15 @@ public final class SingleObserveOn<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new ObserveOnSingleObserver<T>(s, scheduler));
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        source.subscribe(new ObserveOnSingleObserver<T>(observer, scheduler));
     }
 
     static final class ObserveOnSingleObserver<T> extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable, Runnable {
         private static final long serialVersionUID = 3528003840217436037L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Scheduler scheduler;
 
@@ -47,14 +47,14 @@ public final class SingleObserveOn<T> extends Single<T> {
         Throwable error;
 
         ObserveOnSingleObserver(SingleObserver<? super T> actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -76,9 +76,9 @@ public final class SingleObserveOn<T> extends Single<T> {
         public void run() {
             Throwable ex = error;
             if (ex != null) {
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 

@@ -13,9 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.junit.Test;
+import java.util.concurrent.TimeUnit;
 
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.WeakScalarSubscription;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableConcatMapTest {
@@ -39,4 +46,101 @@ public class FlowableConcatMapTest {
         ts.assertResult(1);
     }
 
+    @Test
+    public void boundaryFusion() {
+        Flowable.range(1, 10000)
+        .observeOn(Schedulers.single())
+        .map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer t) throws Exception {
+                String name = Thread.currentThread().getName();
+                if (name.contains("RxSingleScheduler")) {
+                    return "RxSingleScheduler";
+                }
+                return name;
+            }
+        })
+        .concatMap(new Function<String, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(String v)
+                    throws Exception {
+                return Flowable.just(v);
+            }
+        })
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void boundaryFusionDelayError() {
+        Flowable.range(1, 10000)
+        .observeOn(Schedulers.single())
+        .map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer t) throws Exception {
+                String name = Thread.currentThread().getName();
+                if (name.contains("RxSingleScheduler")) {
+                    return "RxSingleScheduler";
+                }
+                return name;
+            }
+        })
+        .concatMapDelayError(new Function<String, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(String v)
+                    throws Exception {
+                return Flowable.just(v);
+            }
+        })
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void pollThrows() {
+        Flowable.just(1)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .concatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v)
+                    throws Exception {
+                return Flowable.just(v);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void pollThrowsDelayError() {
+        Flowable.just(1)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v)
+                    throws Exception {
+                return Flowable.just(v);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

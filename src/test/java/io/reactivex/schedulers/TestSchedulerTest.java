@@ -232,9 +232,9 @@ public class TestSchedulerTest {
         TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() {
             @Override
             public void run() {
-                // TODO Auto-generated method stub
-
+                // deliberately no-op
             }
+
             @Override
             public String toString() {
                 return "Runnable";

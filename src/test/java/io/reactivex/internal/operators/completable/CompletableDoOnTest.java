@@ -85,15 +85,15 @@ public class CompletableDoOnTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(bs);
-                    s.onError(new TestException("Second"));
-                    s.onComplete();
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(bs);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
                 }
             }
             .doOnSubscribe(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException("First");
                 }
             })

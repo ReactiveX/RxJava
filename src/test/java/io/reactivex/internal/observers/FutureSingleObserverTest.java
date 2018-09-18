@@ -22,6 +22,8 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class FutureSingleObserverTest {
@@ -156,28 +158,33 @@ public class FutureSingleObserverTest {
 
     @Test
     public void onErrorCancelRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> ps = PublishSubject.create();
+        RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
+        try {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final Future<?> f = ps.single(-99).toFuture();
+                final Future<?> f = ps.single(-99).toFuture();
 
-            final TestException ex = new TestException();
+                final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    f.cancel(true);
-                }
-            };
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        f.cancel(true);
+                    }
+                };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onError(ex);
-                }
-            };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps.onError(ex);
+                    }
+                };
 
-            TestHelper.race(r1, r2);
+                TestHelper.race(r1, r2);
+            }
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

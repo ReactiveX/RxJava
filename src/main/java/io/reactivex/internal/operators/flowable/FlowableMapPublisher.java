@@ -11,7 +11,6 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-
 package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
@@ -22,10 +21,10 @@ import io.reactivex.internal.operators.flowable.FlowableMap.MapSubscriber;
 
 /**
  * Map working with an arbitrary Publisher source.
- *
+ * <p>History: 2.0.7 - experimental
  * @param <T> the input value type
  * @param <U> the output value type
- * @since 2.0.7 - experimental
+ * @since 2.1
  */
 public final class FlowableMapPublisher<T, U> extends Flowable<U> {
 

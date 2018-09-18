@@ -37,11 +37,11 @@ public class FlowableScanTest {
 
     @Test
     public void testScanIntegersWithInitialValue() {
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable<Integer> observable = Flowable.just(1, 2, 3);
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<String> m = observable.scan("", new BiFunction<String, Integer, String>() {
+        Flowable<String> m = flowable.scan("", new BiFunction<String, Integer, String>() {
 
             @Override
             public String apply(String s, Integer n) {
@@ -49,25 +49,25 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext("");
-        verify(observer, times(1)).onNext("1");
-        verify(observer, times(1)).onNext("12");
-        verify(observer, times(1)).onNext("123");
-        verify(observer, times(4)).onNext(anyString());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext("");
+        verify(subscriber, times(1)).onNext("1");
+        verify(subscriber, times(1)).onNext("12");
+        verify(subscriber, times(1)).onNext("123");
+        verify(subscriber, times(4)).onNext(anyString());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValue() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        Flowable<Integer> observable = Flowable.just(1, 2, 3);
+        Flowable<Integer> flowable = Flowable.just(1, 2, 3);
 
-        Flowable<Integer> m = observable.scan(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> m = flowable.scan(new BiFunction<Integer, Integer, Integer>() {
 
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -75,25 +75,25 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(0);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(6);
-        verify(observer, times(3)).onNext(anyInt());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(0);
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, times(1)).onNext(6);
+        verify(subscriber, times(3)).onNext(anyInt());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        Flowable<Integer> observable = Flowable.just(1);
+        Flowable<Integer> flowable = Flowable.just(1);
 
-        Flowable<Integer> m = observable.scan(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> m = flowable.scan(new BiFunction<Integer, Integer, Integer>() {
 
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -101,14 +101,14 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(0);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(anyInt());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(0);
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(anyInt());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -283,7 +283,7 @@ public class FlowableScanTest {
      */
     @Test
     public void testSeedFactoryFlowable() {
-        Flowable<List<Integer>> o = Flowable.range(1, 10)
+        Flowable<List<Integer>> f = Flowable.range(1, 10)
                 .collect(new Callable<List<Integer>>() {
 
                     @Override
@@ -300,13 +300,13 @@ public class FlowableScanTest {
 
                 }).toFlowable().takeLast(1);
 
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), f.blockingSingle());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), f.blockingSingle());
     }
 
     @Test
     public void testScanWithRequestOne() {
-        Flowable<Integer> o = Flowable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> f = Flowable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -315,7 +315,7 @@ public class FlowableScanTest {
 
         }).take(1);
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
-        o.subscribe(subscriber);
+        f.subscribe(subscriber);
         subscriber.assertValue(0);
         subscriber.assertTerminated();
         subscriber.assertNoErrors();
@@ -324,7 +324,7 @@ public class FlowableScanTest {
     @Test
     public void testScanShouldNotRequestZero() {
         final AtomicReference<Subscription> producer = new AtomicReference<Subscription>();
-        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> subscriber) {
                 Subscription p = spy(new Subscription() {
@@ -356,7 +356,7 @@ public class FlowableScanTest {
 
         });
 
-        o.subscribe(new TestSubscriber<Integer>(1L) {
+        f.subscribe(new TestSubscriber<Integer>(1L) {
 
             @Override
             public void onNext(Integer integer) {
@@ -427,8 +427,8 @@ public class FlowableScanTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.scan(new BiFunction<Object, Object, Object>() {
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.scan(new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
                         return a;
@@ -439,8 +439,8 @@ public class FlowableScanTest {
 
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.scan(0, new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
                         return a;

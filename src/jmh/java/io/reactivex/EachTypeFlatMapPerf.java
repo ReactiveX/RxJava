@@ -86,10 +86,12 @@ public class EachTypeFlatMapPerf {
     public void bpRange(Blackhole bh) {
         bpRange.subscribe(new PerfSubscriber(bh));
     }
+
     @Benchmark
     public void bpRangeMapJust(Blackhole bh) {
         bpRangeMapJust.subscribe(new PerfSubscriber(bh));
     }
+
     @Benchmark
     public void bpRangeMapRange(Blackhole bh) {
         bpRangeMapRange.subscribe(new PerfSubscriber(bh));
@@ -99,10 +101,12 @@ public class EachTypeFlatMapPerf {
     public void nbpRange(Blackhole bh) {
         nbpRange.subscribe(new PerfObserver(bh));
     }
+
     @Benchmark
     public void nbpRangeMapJust(Blackhole bh) {
         nbpRangeMapJust.subscribe(new PerfObserver(bh));
     }
+
     @Benchmark
     public void nbpRangeMapRange(Blackhole bh) {
         nbpRangeMapRange.subscribe(new PerfObserver(bh));
@@ -112,6 +116,7 @@ public class EachTypeFlatMapPerf {
     public void singleJust(Blackhole bh) {
         singleJust.subscribe(new LatchedSingleObserver<Integer>(bh));
     }
+
     @Benchmark
     public void singleJustMapJust(Blackhole bh) {
         singleJustMapJust.subscribe(new LatchedSingleObserver<Integer>(bh));

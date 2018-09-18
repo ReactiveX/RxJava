@@ -73,11 +73,13 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * </code></pre>
  */
 public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
-    private Subscription s;
+
+    Subscription upstream;
+
     @Override
     public final void onSubscribe(Subscription s) {
-        if (EndConsumerHelper.validate(this.s, s, getClass())) {
-            this.s = s;
+        if (EndConsumerHelper.validate(this.upstream, s, getClass())) {
+            this.upstream = s;
             onStart();
         }
     }
@@ -87,7 +89,7 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
      * @param n the request amount, positive
      */
     protected final void request(long n) {
-        Subscription s = this.s;
+        Subscription s = this.upstream;
         if (s != null) {
             s.request(n);
         }
@@ -97,8 +99,8 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
      * Cancels the upstream's Subscription.
      */
     protected final void cancel() {
-        Subscription s = this.s;
-        this.s = SubscriptionHelper.CANCELLED;
+        Subscription s = this.upstream;
+        this.upstream = SubscriptionHelper.CANCELLED;
         s.cancel();
     }
     /**

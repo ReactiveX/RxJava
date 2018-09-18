@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
@@ -25,10 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Execute an action after an onError, onComplete or a dispose event.
- *
- * @since 2.0.1 - experimental
+ * <p>History: 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class CompletableDoFinally extends Completable {
 
     final CompletableSource source;
@@ -41,55 +39,55 @@ public final class CompletableDoFinally extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new DoFinallyObserver(s, onFinally));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new DoFinallyObserver(observer, onFinally));
     }
 
     static final class DoFinallyObserver extends AtomicInteger implements CompletableObserver, Disposable {
 
         private static final long serialVersionUID = 4109457741734051389L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final Action onFinally;
 
-        Disposable d;
+        Disposable upstream;
 
         DoFinallyObserver(CompletableObserver actual, Action onFinally) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onFinally = onFinally;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             runFinally();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             runFinally();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
             runFinally();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         void runFinally() {

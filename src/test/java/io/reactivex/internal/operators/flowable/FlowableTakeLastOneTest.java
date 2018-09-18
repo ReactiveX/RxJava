@@ -118,7 +118,9 @@ public class FlowableTakeLastOneTest {
 
         @Override
         public void onStart() {
-            request(initialRequest);
+            if (initialRequest > 0) {
+                request(initialRequest);
+            }
         }
 
         @Override

@@ -482,7 +482,7 @@ public enum TestHelper {
     }
 
     /**
-     * Returns an Consumer that asserts the TestSubscriber has exaclty one value + completed
+     * Returns an Consumer that asserts the TestSubscriber has exactly one value + completed
      * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
@@ -505,7 +505,7 @@ public enum TestHelper {
     }
 
     /**
-     * Returns an Consumer that asserts the TestObserver has exaclty one value + completed
+     * Returns an Consumer that asserts the TestObserver has exactly one value + completed
      * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
@@ -556,18 +556,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(Observer<?> subscriber) {
+    public static void doubleOnSubscribe(Observer<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -582,18 +582,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(SingleObserver<?> subscriber) {
+    public static void doubleOnSubscribe(SingleObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -608,18 +608,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(CompletableObserver subscriber) {
+    public static void doubleOnSubscribe(CompletableObserver observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -634,18 +634,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(MaybeObserver<?> subscriber) {
+    public static void doubleOnSubscribe(MaybeObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -1425,16 +1425,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1692,18 +1692,18 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1746,18 +1746,18 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1800,18 +1800,18 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1853,18 +1853,18 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -2416,28 +2416,28 @@ public enum TestHelper {
 
         source.subscribe(new FlowableSubscriber<T>() {
             @Override
-            public void onSubscribe(Subscription d) {
+            public void onSubscribe(Subscription s) {
                 try {
-                    if (d instanceof QueueSubscription) {
+                    if (s instanceof QueueSubscription) {
                         @SuppressWarnings("unchecked")
-                        QueueSubscription<Object> qd = (QueueSubscription<Object>) d;
+                        QueueSubscription<Object> qs = (QueueSubscription<Object>) s;
                         state[0] = true;
 
-                        int m = qd.requestFusion(QueueFuseable.ANY);
+                        int m = qs.requestFusion(QueueFuseable.ANY);
 
                         if (m != QueueFuseable.NONE) {
                             state[1] = true;
 
-                            state[2] = qd.isEmpty();
+                            state[2] = qs.isEmpty();
 
-                            qd.clear();
+                            qs.clear();
 
-                            state[3] = qd.isEmpty();
+                            state[3] = qs.isEmpty();
                         }
                     }
                     cdl.countDown();
                 } finally {
-                    d.cancel();
+                    s.cancel();
                 }
             }
 
@@ -2669,24 +2669,24 @@ public enum TestHelper {
         try {
             Flowable<T> bad = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
                     if (goodValue != null) {
-                        observer.onNext(goodValue);
+                        subscriber.onNext(goodValue);
                     }
 
                     if (error) {
-                        observer.onError(new TestException("error"));
+                        subscriber.onError(new TestException("error"));
                     } else {
-                        observer.onComplete();
+                        subscriber.onComplete();
                     }
 
                     if (badValue != null) {
-                        observer.onNext(badValue);
+                        subscriber.onNext(badValue);
                     }
-                    observer.onError(new TestException("second"));
-                    observer.onComplete();
+                    subscriber.onError(new TestException("second"));
+                    subscriber.onComplete();
                 }
             };
 
@@ -2879,8 +2879,8 @@ public enum TestHelper {
     public static <T> Flowable<T> rejectFlowableFusion() {
         return new Flowable<T>() {
             @Override
-            protected void subscribeActual(Subscriber<? super T> observer) {
-                observer.onSubscribe(new QueueSubscription<T>() {
+            protected void subscribeActual(Subscriber<? super T> subscriber) {
+                subscriber.onSubscribe(new QueueSubscription<T>() {
 
                     @Override
                     public int requestFusion(int mode) {
@@ -2921,5 +2921,215 @@ public enum TestHelper {
                 });
             }
         };
+    }
+
+    static final class FlowableStripBoundary<T> extends Flowable<T> implements FlowableTransformer<T, T> {
+
+        final Flowable<T> source;
+
+        FlowableStripBoundary(Flowable<T> source) {
+            this.source = source;
+        }
+
+        @Override
+        public Flowable<T> apply(Flowable<T> upstream) {
+            return new FlowableStripBoundary<T>(upstream);
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super T> s) {
+            source.subscribe(new StripBoundarySubscriber<T>(s));
+        }
+
+        static final class StripBoundarySubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {
+
+            final Subscriber<? super T> downstream;
+
+            Subscription upstream;
+
+            QueueSubscription<T> qs;
+
+            StripBoundarySubscriber(Subscriber<? super T> downstream) {
+                this.downstream = downstream;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                this.upstream = subscription;
+                if (subscription instanceof QueueSubscription) {
+                    qs = (QueueSubscription<T>)subscription;
+                }
+                downstream.onSubscribe(this);
+            }
+
+            @Override
+            public void onNext(T t) {
+                downstream.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                downstream.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                downstream.onComplete();
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                QueueSubscription<T> fs = qs;
+                if (fs != null) {
+                    return fs.requestFusion(mode & ~BOUNDARY);
+                }
+                return NONE;
+            }
+
+            @Override
+            public boolean offer(T value) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public boolean offer(T v1, T v2) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public T poll() throws Exception {
+                return qs.poll();
+            }
+
+            @Override
+            public void clear() {
+                qs.clear();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return qs.isEmpty();
+            }
+
+            @Override
+            public void request(long n) {
+                upstream.request(n);
+            }
+
+            @Override
+            public void cancel() {
+                upstream.cancel();
+            }
+        }
+    }
+
+    public static <T> FlowableTransformer<T, T> flowableStripBoundary() {
+        return new FlowableStripBoundary<T>(null);
+    }
+
+    static final class ObservableStripBoundary<T> extends Observable<T> implements ObservableTransformer<T, T> {
+
+        final Observable<T> source;
+
+        ObservableStripBoundary(Observable<T> source) {
+            this.source = source;
+        }
+
+        @Override
+        public Observable<T> apply(Observable<T> upstream) {
+            return new ObservableStripBoundary<T>(upstream);
+        }
+
+        @Override
+        protected void subscribeActual(Observer<? super T> observer) {
+            source.subscribe(new StripBoundaryObserver<T>(observer));
+        }
+
+        static final class StripBoundaryObserver<T> implements Observer<T>, QueueDisposable<T> {
+
+            final Observer<? super T> downstream;
+
+            Disposable upstream;
+
+            QueueDisposable<T> qd;
+
+            StripBoundaryObserver(Observer<? super T> downstream) {
+                this.downstream = downstream;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onSubscribe(Disposable d) {
+                this.upstream = d;
+                if (d instanceof QueueDisposable) {
+                    qd = (QueueDisposable<T>)d;
+                }
+                downstream.onSubscribe(this);
+            }
+
+            @Override
+            public void onNext(T t) {
+                downstream.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                downstream.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                downstream.onComplete();
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                QueueDisposable<T> fs = qd;
+                if (fs != null) {
+                    return fs.requestFusion(mode & ~BOUNDARY);
+                }
+                return NONE;
+            }
+
+            @Override
+            public boolean offer(T value) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public boolean offer(T v1, T v2) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public T poll() throws Exception {
+                return qd.poll();
+            }
+
+            @Override
+            public void clear() {
+                qd.clear();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return qd.isEmpty();
+            }
+
+            @Override
+            public void dispose() {
+                upstream.dispose();
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return upstream.isDisposed();
+            }
+        }
+    }
+
+    public static <T> ObservableTransformer<T, T> observableStripBoundary() {
+        return new ObservableStripBoundary<T>(null);
     }
 }

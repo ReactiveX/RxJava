@@ -150,9 +150,9 @@ public class ObservableSequenceEqualTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private void verifyError(Single<Boolean> observable) {
+    private void verifyError(Single<Boolean> single) {
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(isA(TestException.class));

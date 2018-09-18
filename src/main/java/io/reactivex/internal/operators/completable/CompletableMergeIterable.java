@@ -30,10 +30,10 @@ public final class CompletableMergeIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
 
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
         Iterator<? extends CompletableSource> iterator;
 
@@ -41,13 +41,13 @@ public final class CompletableMergeIterable extends Completable {
             iterator = ObjectHelper.requireNonNull(sources.iterator(), "The source iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            s.onError(e);
+            observer.onError(e);
             return;
         }
 
         final AtomicInteger wip = new AtomicInteger(1);
 
-        MergeCompletableObserver shared = new MergeCompletableObserver(s, set, wip);
+        MergeCompletableObserver shared = new MergeCompletableObserver(observer, set, wip);
         for (;;) {
             if (set.isDisposed()) {
                 return;
@@ -100,12 +100,12 @@ public final class CompletableMergeIterable extends Completable {
 
         final CompositeDisposable set;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final AtomicInteger wip;
 
         MergeCompletableObserver(CompletableObserver actual, CompositeDisposable set, AtomicInteger wip) {
-            this.actual = actual;
+            this.downstream = actual;
             this.set = set;
             this.wip = wip;
         }
@@ -119,7 +119,7 @@ public final class CompletableMergeIterable extends Completable {
         public void onError(Throwable e) {
             set.dispose();
             if (compareAndSet(false, true)) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -129,7 +129,7 @@ public final class CompletableMergeIterable extends Completable {
         public void onComplete() {
             if (wip.decrementAndGet() == 0) {
                 if (compareAndSet(false, true)) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

@@ -230,7 +230,6 @@ public class DeferredScalarSubscriberTest {
         ds.onComplete();
         ds.onComplete();
 
-
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -303,6 +302,7 @@ public class DeferredScalarSubscriberTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
+
     @Test
     public void emissionRequestRace() {
         Worker w = Schedulers.computation().createWorker();
@@ -401,8 +401,8 @@ public class DeferredScalarSubscriberTest {
 
         private static final long serialVersionUID = 6285096158319517837L;
 
-        TestingDeferredScalarSubscriber(Subscriber<? super Integer> actual) {
-            super(actual);
+        TestingDeferredScalarSubscriber(Subscriber<? super Integer> downstream) {
+            super(downstream);
         }
 
         @Override

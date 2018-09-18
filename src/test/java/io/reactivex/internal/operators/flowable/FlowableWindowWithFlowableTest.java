@@ -40,7 +40,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
@@ -55,12 +55,12 @@ public class FlowableWindowWithFlowableTest {
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         };
 
@@ -75,8 +75,7 @@ public class FlowableWindowWithFlowableTest {
         }
         source.onComplete();
 
-
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         assertEquals(n / 3, values.size());
 
@@ -90,7 +89,7 @@ public class FlowableWindowWithFlowableTest {
             j += 3;
         }
 
-        verify(o).onComplete();
+        verify(subscriber).onComplete();
     }
 
     @Test
@@ -98,7 +97,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
@@ -113,12 +112,12 @@ public class FlowableWindowWithFlowableTest {
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         };
 
@@ -145,8 +144,8 @@ public class FlowableWindowWithFlowableTest {
             j += 3;
         }
 
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -154,7 +153,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
@@ -169,12 +168,12 @@ public class FlowableWindowWithFlowableTest {
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         };
 
@@ -195,8 +194,8 @@ public class FlowableWindowWithFlowableTest {
         verify(mo).onNext(2);
         verify(mo).onError(any(TestException.class));
 
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 
     @Test
@@ -204,7 +203,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
 
@@ -219,12 +218,12 @@ public class FlowableWindowWithFlowableTest {
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         };
 
@@ -245,8 +244,8 @@ public class FlowableWindowWithFlowableTest {
         verify(mo).onNext(2);
         verify(mo).onError(any(TestException.class));
 
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 
     @Test
@@ -326,6 +325,7 @@ public class FlowableWindowWithFlowableTest {
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
+
     @Test
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -344,7 +344,6 @@ public class FlowableWindowWithFlowableTest {
         assertTrue(boundary.hasSubscribers());
 
         boundary.onComplete();
-
 
         assertFalse(source.hasSubscribers());
         assertFalse(boundary.hasSubscribers());
@@ -373,7 +372,6 @@ public class FlowableWindowWithFlowableTest {
 
         ts.dispose();
 
-
         assertTrue(source.hasSubscribers());
 
         assertFalse(boundary.hasSubscribers());
@@ -386,6 +384,7 @@ public class FlowableWindowWithFlowableTest {
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
+
     @Test
     public void testInnerBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 10);
@@ -497,8 +496,8 @@ public class FlowableWindowWithFlowableTest {
     public void innerBadSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return Flowable.just(1).window(o).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return Flowable.just(1).window(f).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
                     @Override
                     public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
                         return v;
@@ -509,7 +508,7 @@ public class FlowableWindowWithFlowableTest {
 
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(final Flowable<Integer> o) throws Exception {
+            public Object apply(final Flowable<Integer> f) throws Exception {
                 return Flowable.just(1).window(new Callable<Publisher<Integer>>() {
                     int count;
                     @Override
@@ -517,7 +516,7 @@ public class FlowableWindowWithFlowableTest {
                         if (++count > 1) {
                             return Flowable.never();
                         }
-                        return o;
+                        return f;
                     }
                 })
                         .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
@@ -606,8 +605,8 @@ public class FlowableWindowWithFlowableTest {
     public void badSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
-                return o.window(Flowable.never()).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.window(Flowable.never()).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Flowable<Object> v) throws Exception {
                         return v;
@@ -621,8 +620,8 @@ public class FlowableWindowWithFlowableTest {
     public void badSourceCallable() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
-                return o.window(Functions.justCallable(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.window(Functions.justCallable(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Flowable<Object> v) throws Exception {
                         return v;
@@ -698,19 +697,33 @@ public class FlowableWindowWithFlowableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressure() {
-        BehaviorProcessor.create()
-        .window(Flowable.error(new TestException()))
-        .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.create()
+            .window(Flowable.error(new TestException()))
+            .test(0)
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressureNoNullPointerException() {
-        BehaviorProcessor.createDefault(1)
-        .window(Flowable.error(new TestException()))
-        .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.createDefault(1)
+            .window(Flowable.error(new TestException()))
+            .test(0)
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -757,7 +770,6 @@ public class FlowableWindowWithFlowableTest {
         ts.assertResult(1);
     }
 
-
     @Test
     public void mainAndBoundaryBothError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -767,9 +779,9 @@ public class FlowableWindowWithFlowableTest {
             TestSubscriber<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    ref.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    ref.set(subscriber);
                 }
             })
             .test();
@@ -800,16 +812,16 @@ public class FlowableWindowWithFlowableTest {
 
                 TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        refMain.set(observer);
+                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        refMain.set(subscriber);
                     }
                 }
                 .window(new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        ref.set(observer);
+                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        ref.set(subscriber);
                     }
                 })
                 .test();
@@ -850,16 +862,16 @@ public class FlowableWindowWithFlowableTest {
 
             TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    refMain.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    refMain.set(subscriber);
                 }
             }
             .window(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    ref.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    ref.set(subscriber);
                 }
             })
             .test();
@@ -893,16 +905,16 @@ public class FlowableWindowWithFlowableTest {
 
         TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                refMain.set(observer);
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                refMain.set(subscriber);
             }
         }
         .window(new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                ref.set(observer);
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                ref.set(subscriber);
             }
         })
         .test();
@@ -925,16 +937,16 @@ public class FlowableWindowWithFlowableTest {
 
             final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> observer) {
-                     observer.onSubscribe(new BooleanSubscription());
-                     refMain.set(observer);
+                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                     subscriber.onSubscribe(new BooleanSubscription());
+                     refMain.set(subscriber);
                  }
              }
              .window(new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> observer) {
+                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                      final AtomicInteger counter = new AtomicInteger();
-                     observer.onSubscribe(new Subscription() {
+                     subscriber.onSubscribe(new Subscription() {
 
                          @Override
                          public void cancel() {
@@ -948,7 +960,7 @@ public class FlowableWindowWithFlowableTest {
                         public void request(long n) {
                         }
                      });
-                     ref.set(observer);
+                     ref.set(subscriber);
                  }
              })
              .test();
@@ -962,9 +974,9 @@ public class FlowableWindowWithFlowableTest {
              Runnable r2 = new Runnable() {
                  @Override
                  public void run() {
-                     Subscriber<Object> o = ref.get();
-                     o.onNext(1);
-                     o.onComplete();
+                     Subscriber<Object> subscriber = ref.get();
+                     subscriber.onNext(1);
+                     subscriber.onComplete();
                  }
              };
 
@@ -982,16 +994,16 @@ public class FlowableWindowWithFlowableTest {
 
            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                @Override
-               protected void subscribeActual(Subscriber<? super Object> observer) {
-                   observer.onSubscribe(new BooleanSubscription());
-                   refMain.set(observer);
+               protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                   subscriber.onSubscribe(new BooleanSubscription());
+                   refMain.set(subscriber);
                }
            }
            .window(new Flowable<Object>() {
                @Override
-               protected void subscribeActual(Subscriber<? super Object> observer) {
+               protected void subscribeActual(Subscriber<? super Object> subscriber) {
                    final AtomicInteger counter = new AtomicInteger();
-                   observer.onSubscribe(new Subscription() {
+                   subscriber.onSubscribe(new Subscription() {
 
                        @Override
                        public void cancel() {
@@ -1005,7 +1017,7 @@ public class FlowableWindowWithFlowableTest {
                       public void request(long n) {
                       }
                    });
-                   ref.set(observer);
+                   ref.set(subscriber);
                }
            })
            .test();
@@ -1019,9 +1031,9 @@ public class FlowableWindowWithFlowableTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    Subscriber<Object> o = ref.get();
-                    o.onNext(1);
-                    o.onError(ex);
+                    Subscriber<Object> subscriber = ref.get();
+                    subscriber.onNext(1);
+                    subscriber.onError(ex);
                 }
             };
 
@@ -1073,9 +1085,9 @@ public class FlowableWindowWithFlowableTest {
             TestSubscriber<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(Functions.justCallable(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    ref.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    ref.set(subscriber);
                 }
             }))
             .test();
@@ -1106,16 +1118,16 @@ public class FlowableWindowWithFlowableTest {
 
                 TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        refMain.set(observer);
+                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        refMain.set(subscriber);
                     }
                 }
                 .window(Functions.justCallable(new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        ref.set(observer);
+                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        ref.set(subscriber);
                     }
                 }))
                 .test();
@@ -1156,16 +1168,16 @@ public class FlowableWindowWithFlowableTest {
 
             TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    refMain.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    refMain.set(subscriber);
                 }
             }
             .window(Functions.justCallable(new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    ref.set(observer);
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    ref.set(subscriber);
                 }
             }))
             .test();
@@ -1199,16 +1211,16 @@ public class FlowableWindowWithFlowableTest {
 
         TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                refMain.set(observer);
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                refMain.set(subscriber);
             }
         }
         .window(Functions.justCallable(new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                ref.set(observer);
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                ref.set(subscriber);
             }
         }))
         .test();
@@ -1231,16 +1243,16 @@ public class FlowableWindowWithFlowableTest {
 
             final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> observer) {
-                     observer.onSubscribe(new BooleanSubscription());
-                     refMain.set(observer);
+                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                     subscriber.onSubscribe(new BooleanSubscription());
+                     refMain.set(subscriber);
                  }
              }
              .window(Functions.justCallable(new Flowable<Object>() {
                  @Override
-                 protected void subscribeActual(Subscriber<? super Object> observer) {
+                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                      final AtomicInteger counter = new AtomicInteger();
-                     observer.onSubscribe(new Subscription() {
+                     subscriber.onSubscribe(new Subscription() {
 
                          @Override
                          public void cancel() {
@@ -1254,7 +1266,7 @@ public class FlowableWindowWithFlowableTest {
                          public void request(long n) {
                          }
                       });
-                     ref.set(observer);
+                     ref.set(subscriber);
                  }
              }))
              .test();
@@ -1268,9 +1280,9 @@ public class FlowableWindowWithFlowableTest {
              Runnable r2 = new Runnable() {
                  @Override
                  public void run() {
-                     Subscriber<Object> o = ref.get();
-                     o.onNext(1);
-                     o.onComplete();
+                     Subscriber<Object> subscriber = ref.get();
+                     subscriber.onNext(1);
+                     subscriber.onComplete();
                  }
              };
 
@@ -1290,9 +1302,9 @@ public class FlowableWindowWithFlowableTest {
 
                 final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        refMain.set(observer);
+                    protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        refMain.set(subscriber);
                     }
                 }
                 .window(new Callable<Flowable<Object>>() {
@@ -1304,9 +1316,9 @@ public class FlowableWindowWithFlowableTest {
                         }
                         return (new Flowable<Object>() {
                             @Override
-                            protected void subscribeActual(Subscriber<? super Object> observer) {
+                            protected void subscribeActual(Subscriber<? super Object> subscriber) {
                                 final AtomicInteger counter = new AtomicInteger();
-                                observer.onSubscribe(new Subscription() {
+                                subscriber.onSubscribe(new Subscription() {
 
                                     @Override
                                     public void cancel() {
@@ -1320,7 +1332,7 @@ public class FlowableWindowWithFlowableTest {
                                     public void request(long n) {
                                     }
                                 });
-                                ref.set(observer);
+                                ref.set(subscriber);
                             }
                         });
                     }
@@ -1336,9 +1348,9 @@ public class FlowableWindowWithFlowableTest {
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        Subscriber<Object> o = ref.get();
-                        o.onNext(1);
-                        o.onError(ex);
+                        Subscriber<Object> subscriber = ref.get();
+                        subscriber.onNext(1);
+                        subscriber.onError(ex);
                     }
                 };
 

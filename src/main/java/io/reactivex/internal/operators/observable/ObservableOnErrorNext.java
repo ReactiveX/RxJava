@@ -39,7 +39,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
     }
 
     static final class OnErrorNextObserver<T> implements Observer<T> {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
         final boolean allowFatal;
         final SequentialDisposable arbiter;
@@ -49,15 +49,15 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
         boolean done;
 
         OnErrorNextObserver(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
-            this.actual = actual;
+            this.downstream = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
             this.arbiter = new SequentialDisposable();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            arbiter.replace(s);
+        public void onSubscribe(Disposable d) {
+            arbiter.replace(d);
         }
 
         @Override
@@ -65,7 +65,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
             if (done) {
                 return;
             }
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -75,13 +75,13 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
                     RxJavaPlugins.onError(t);
                     return;
                 }
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
             once = true;
 
             if (allowFatal && !(t instanceof Exception)) {
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
 
@@ -91,14 +91,14 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
 
             if (p == null) {
                 NullPointerException npe = new NullPointerException("Observable is null");
                 npe.initCause(t);
-                actual.onError(npe);
+                downstream.onError(npe);
                 return;
             }
 
@@ -112,7 +112,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
             }
             done = true;
             once = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

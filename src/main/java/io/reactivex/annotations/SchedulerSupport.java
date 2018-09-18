@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
 public @interface SchedulerSupport {
     /**
      * A special value indicating the operator/class doesn't use schedulers.
@@ -63,9 +63,9 @@ public @interface SchedulerSupport {
     /**
      * The operator/class runs on RxJava's {@linkplain Schedulers#single() single scheduler}
      * or takes timing information from it.
-     * @since 2.0.8 - experimental
+     * <p>History: 2.0.8 - experimental
+     * @since 2.2
      */
-    @Experimental
     String SINGLE = "io.reactivex:single";
 
     /**

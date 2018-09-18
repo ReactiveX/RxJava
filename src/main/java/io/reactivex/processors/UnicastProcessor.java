@@ -16,7 +16,6 @@ package io.reactivex.processors;
 import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.annotations.NonNull;
 import org.reactivestreams.*;
@@ -29,18 +28,122 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Processor that allows only a single Subscriber to subscribe to it during its lifetime.
- *
- * <p>This processor buffers notifications and replays them to the Subscriber as requested.
- *
- * <p>This processor holds an unbounded internal buffer.
- *
- * <p>If more than one Subscriber attempts to subscribe to this Processor, they
- * will receive an IllegalStateException if this Processor hasn't terminated yet,
+ * A {@link FlowableProcessor} variant that queues up events until a single {@link Subscriber} subscribes to it, replays
+ * those events to it until the {@code Subscriber} catches up and then switches to relaying events live to
+ * this single {@code Subscriber} until this {@code UnicastProcessor} terminates or the {@code Subscriber} cancels
+ * its subscription.
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastProcessor.png" alt="">
+ * <p>
+ * This processor does not have a public constructor by design; a new empty instance of this
+ * {@code UnicastProcessor} can be created via the following {@code create} methods that
+ * allow specifying the retention policy for items:
+ * <ul>
+ * <li>{@link #create()} - creates an empty, unbounded {@code UnicastProcessor} that
+ *     caches all items and the terminal event it receives.</li>
+ * <li>{@link #create(int)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain.</li>
+ * <li>{@link #create(boolean)} - creates an empty, unbounded {@code UnicastProcessor} that
+ *     optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * <li>{@link #create(int, Runnable)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastProcessor} gets terminated or the single {@code Subscriber} cancels.</li>
+ * <li>{@link #create(int, Runnable, boolean)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastProcessor} gets terminated or the single {@code Subscriber} cancels
+ *     and optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * </ul>
+ * <p>
+ * If more than one {@code Subscriber} attempts to subscribe to this Processor, they
+ * will receive an {@link IllegalStateException} if this {@link UnicastProcessor} hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
  * Processor has terminated.
  * <p>
- * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastProcessor.png" alt="">
+ * The {@code UnicastProcessor} buffers notifications and replays them to the single {@code Subscriber} as requested,
+ * for which it holds upstream items an unbounded internal buffer until they can be emitted.
+ * <p>
+ * Since a {@code UnicastProcessor} is a Reactive Streams {@code Processor},
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the processor's state is not changed.
+ * <p>
+ * Since a {@code UnicastProcessor} is a {@link io.reactivex.Flowable} as well as a {@link FlowableProcessor}, it
+ * honors the downstream backpressure but consumes an upstream source in an unbounded manner (requesting {@code Long.MAX_VALUE}).
+ * <p>
+ * When this {@code UnicastProcessor} is terminated via {@link #onError(Throwable)} the current or late single {@code Subscriber}
+ * may receive the {@code Throwable} before any available items could be emitted. To make sure an {@code onError} event is delivered
+ * to the {@code Subscriber} after the normal items, create a {@code UnicastProcessor} with the {@link #create(boolean)} or
+ * {@link #create(int, Runnable, boolean)} factory methods.
+ * <p>
+ * Even though {@code UnicastProcessor} implements the {@code Subscriber} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the processor is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code UnicastProcessor} reached its terminal state will result in the
+ * given {@code Subscription} being canceled immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@link FlowableProcessor}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
+ * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * <p>
+ * This {@code UnicastProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasSubscribers()}.
+ * <dl>
+ *  <dt><b>Backpressure:</b></dt>
+ *  <dd>{@code UnicastProcessor} honors the downstream backpressure but consumes an upstream source
+ *  (if any) in an unbounded manner (requesting {@code Long.MAX_VALUE}).</dd>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code UnicastProcessor} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the single {@code Subscriber} gets notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code UnicastProcessor} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the current single {@code Subscriber}. During this emission,
+ *  if the single {@code Subscriber}s cancels its respective {@code Subscription}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
+ *  If there were no {@code Subscriber}s subscribed to this {@code UnicastProcessor} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * UnicastProcessor&lt;Integer&gt; processor = UnicastProcessor.create();
+ *
+ * TestSubscriber&lt;Integer&gt; ts1 = processor.test();
+ *
+ * // fresh UnicastProcessors are empty
+ * ts1.assertEmpty();
+ *
+ * TestSubscriber&lt;Integer&gt; ts2 = processor.test();
+ *
+ * // A UnicastProcessor only allows one Subscriber during its lifetime
+ * ts2.assertFailure(IllegalStateException.class);
+ *
+ * processor.onNext(1);
+ * ts1.assertValue(1);
+ *
+ * processor.onNext(2);
+ * ts1.assertValues(1, 2);
+ *
+ * processor.onComplete();
+ * ts1.assertResult(1, 2);
+ *
+ * // ----------------------------------------------------
+ *
+ * UnicastProcessor&lt;Integer&gt; processor2 = UnicastProcessor.create();
+ *
+ * // a UnicastProcessor caches events until its single Subscriber subscribes
+ * processor2.onNext(1);
+ * processor2.onNext(2);
+ * processor2.onComplete();
+ *
+ * TestSubscriber&lt;Integer&gt; ts3 = processor2.test();
+ *
+ * // the cached events are emitted in order
+ * ts3.assertResult(1, 2);
+ * </code></pre>
  *
  * @param <T> the value type received and emitted by this Processor subclass
  * @since 2.0
@@ -57,7 +160,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     Throwable error;
 
-    final AtomicReference<Subscriber<? super T>> actual;
+    final AtomicReference<Subscriber<? super T>> downstream;
 
     volatile boolean cancelled;
 
@@ -94,13 +197,13 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     /**
      * Creates an UnicastProcessor with default internal buffer capacity hint and delay error flag.
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
         return new UnicastProcessor<T>(bufferSize(), null, delayError);
@@ -131,16 +234,15 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onCancelled the non null callback
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
         ObjectHelper.requireNonNull(onCancelled, "onTerminate");
@@ -170,16 +272,17 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     /**
      * Creates an UnicastProcessor with the given capacity hint and callback
      * for when the Processor is terminated normally or its single Subscriber cancels.
+     * <p>History: 2.0.8 - experimental
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param onTerminate the callback to run when the Processor is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>(onTerminate);
         this.delayError = delayError;
-        this.actual = new AtomicReference<Subscriber<? super T>>();
+        this.downstream = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueSubscription();
         this.requested = new AtomicLong();
@@ -245,7 +348,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
             if (cancelled) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 return;
             }
 
@@ -253,14 +356,14 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
             if (failFast && d && error != null) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 a.onError(error);
                 return;
             }
             a.onNext(null);
 
             if (d) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
 
                 Throwable ex = error;
                 if (ex != null) {
@@ -285,7 +388,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         int missed = 1;
 
-        Subscriber<? super T> a = actual.get();
+        Subscriber<? super T> a = downstream.get();
         for (;;) {
             if (a != null) {
 
@@ -301,27 +404,27 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             if (missed == 0) {
                 break;
             }
-            a = actual.get();
+            a = downstream.get();
         }
     }
 
     boolean checkTerminated(boolean failFast, boolean d, boolean empty, Subscriber<? super T> a, SpscLinkedArrayQueue<T> q) {
         if (cancelled) {
             q.clear();
-            actual.lazySet(null);
+            downstream.lazySet(null);
             return true;
         }
 
         if (d) {
             if (failFast && error != null) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 a.onError(error);
                 return true;
             }
             if (empty) {
                 Throwable e = error;
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 if (e != null) {
                     a.onError(e);
                 } else {
@@ -390,9 +493,9 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         if (!once.get() && once.compareAndSet(false, true)) {
 
             s.onSubscribe(wip);
-            actual.set(s);
+            downstream.set(s);
             if (cancelled) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
             } else {
                 drain();
             }
@@ -402,7 +505,6 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     final class UnicastQueueSubscription extends BasicIntQueueSubscription<T> {
-
 
         private static final long serialVersionUID = -4896760517184205454L;
 
@@ -451,7 +553,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             if (!enableOperatorFusion) {
                 if (wip.getAndIncrement() == 0) {
                     queue.clear();
-                    actual.lazySet(null);
+                    downstream.lazySet(null);
                 }
             }
         }
@@ -459,7 +561,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public boolean hasSubscribers() {
-        return actual.get() != null;
+        return downstream.get() != null;
     }
 
     @Override

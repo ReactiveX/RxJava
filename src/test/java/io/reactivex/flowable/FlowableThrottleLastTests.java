@@ -29,11 +29,11 @@ public class FlowableThrottleLastTests {
 
     @Test
     public void testThrottle() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         TestScheduler s = new TestScheduler();
         PublishProcessor<Integer> o = PublishProcessor.create();
-        o.throttleLast(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        o.throttleLast(500, TimeUnit.MILLISECONDS, s).subscribe(subscriber);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -51,11 +51,11 @@ public class FlowableThrottleLastTests {
         s.advanceTimeTo(1501, TimeUnit.MILLISECONDS);
         o.onComplete();
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext(2);
-        inOrder.verify(observer).onNext(6);
-        inOrder.verify(observer).onNext(7);
-        inOrder.verify(observer).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(6);
+        inOrder.verify(subscriber).onNext(7);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 }

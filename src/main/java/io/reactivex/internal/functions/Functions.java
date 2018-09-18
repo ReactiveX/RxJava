@@ -745,4 +745,23 @@ public final class Functions {
             t.request(Long.MAX_VALUE);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Consumer<T> boundedConsumer(int bufferSize) {
+        return (Consumer<T>) new BoundedConsumer(bufferSize);
+    }
+
+    public static class BoundedConsumer implements Consumer<Subscription> {
+
+        final int bufferSize;
+
+        BoundedConsumer(int bufferSize) {
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public void accept(Subscription s) throws Exception {
+            s.request(bufferSize);
+        }
+    }
 }

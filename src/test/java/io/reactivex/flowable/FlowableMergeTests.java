@@ -38,10 +38,10 @@ public class FlowableMergeTests {
 
     @Test
     public void testMergeCovariance() {
-        Flowable<Media> o1 = Flowable.<Media> just(new HorrorMovie(), new Movie());
-        Flowable<Media> o2 = Flowable.just(new Media(), new HorrorMovie());
+        Flowable<Media> f1 = Flowable.<Media> just(new HorrorMovie(), new Movie());
+        Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        Flowable<Flowable<Media>> os = Flowable.just(o1, o2);
+        Flowable<Flowable<Media>> os = Flowable.just(f1, f2);
 
         List<Media> values = Flowable.merge(os).toList().blockingGet();
 
@@ -50,10 +50,10 @@ public class FlowableMergeTests {
 
     @Test
     public void testMergeCovariance2() {
-        Flowable<Media> o1 = Flowable.just(new HorrorMovie(), new Movie(), new Media());
-        Flowable<Media> o2 = Flowable.just(new Media(), new HorrorMovie());
+        Flowable<Media> f1 = Flowable.just(new HorrorMovie(), new Movie(), new Media());
+        Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        Flowable<Flowable<Media>> os = Flowable.just(o1, o2);
+        Flowable<Flowable<Media>> os = Flowable.just(f1, f2);
 
         List<Media> values = Flowable.merge(os).toList().blockingGet();
 
@@ -62,10 +62,10 @@ public class FlowableMergeTests {
 
     @Test
     public void testMergeCovariance3() {
-        Flowable<Movie> o1 = Flowable.just(new HorrorMovie(), new Movie());
-        Flowable<Media> o2 = Flowable.just(new Media(), new HorrorMovie());
+        Flowable<Movie> f1 = Flowable.just(new HorrorMovie(), new Movie());
+        Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Flowable.merge(o1, o2).toList().blockingGet();
+        List<Media> values = Flowable.merge(f1, f2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
@@ -76,7 +76,7 @@ public class FlowableMergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Flowable<Movie> o1 = Flowable.defer(new Callable<Publisher<Movie>>() {
+        Flowable<Movie> f1 = Flowable.defer(new Callable<Publisher<Movie>>() {
             @Override
             public Publisher<Movie> call() {
                 return Flowable.just(
@@ -86,9 +86,9 @@ public class FlowableMergeTests {
             }
         });
 
-        Flowable<Media> o2 = Flowable.just(new Media(), new HorrorMovie());
+        Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
-        List<Media> values = Flowable.merge(o1, o2).toList().blockingGet();
+        List<Media> values = Flowable.merge(f1, f2).toList().blockingGet();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);

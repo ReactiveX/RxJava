@@ -49,7 +49,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 3520831347801429610L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final AtomicLong requested;
 
@@ -64,7 +64,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
         long produced;
 
         ConcatMaybeObserver(Subscriber<? super T> actual, MaybeSource<? extends T>[] sources) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sources = sources;
             this.requested = new AtomicLong();
             this.disposables = new SequentialDisposable();
@@ -97,7 +97,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -113,7 +113,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
             }
 
             AtomicReference<Object> c = current;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             Disposable cancelled = disposables;
 
             for (;;) {

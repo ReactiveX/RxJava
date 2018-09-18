@@ -1,0 +1,9 @@
+The `StringObservable` class contains methods that represent operators particular to Observables that deal in string-based sequences and streams. These include:
+
+* [**`byLine( )`**](http://reactivex.io/documentation/operators/map.html) — converts an Observable of Strings into an Observable of Lines by treating the source sequence as a stream and splitting it on line-endings
+* [**`decode( )`**](http://reactivex.io/documentation/operators/from.html) — convert a stream of multibyte characters into an Observable that emits byte arrays that respect character boundaries
+* [**`encode( )`**](http://reactivex.io/documentation/operators/map.html) — transform an Observable that emits strings into an Observable that emits byte arrays that respect character boundaries of multibyte characters in the original strings
+* [**`from( )`**](http://reactivex.io/documentation/operators/from.html) — convert a stream of characters or a Reader into an Observable that emits byte arrays or Strings
+* [**`join( )`**](http://reactivex.io/documentation/operators/sum.html) — converts an Observable that emits a sequence of strings into an Observable that emits a single string that concatenates them all, separating them by a specified string
+* [**`split( )`**](http://reactivex.io/documentation/operators/flatmap.html) — converts an Observable of Strings into an Observable of Strings that treats the source sequence as a stream and splits it on a specified regex boundary
+* [**`stringConcat( )`**](http://reactivex.io/documentation/operators/sum.html) — converts an Observable that emits a sequence of strings into an Observable that emits a single string that concatenates them all

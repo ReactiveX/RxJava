@@ -39,7 +39,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
         private static final long serialVersionUID = -3521127104134758517L;
         final Predicate<? super T> predicate;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
@@ -47,11 +47,12 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
             super(actual);
             this.predicate = predicate;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -66,13 +67,13 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
                 b = predicate.test(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
                 return;
             }
             if (!b) {
                 done = true;
-                s.cancel();
+                upstream.cancel();
                 complete(false);
             }
         }
@@ -84,7 +85,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -100,7 +101,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

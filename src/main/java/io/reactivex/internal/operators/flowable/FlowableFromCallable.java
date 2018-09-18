@@ -21,12 +21,14 @@ import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableFromCallable<T> extends Flowable<T> implements Callable<T> {
     final Callable<? extends T> callable;
     public FlowableFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);
@@ -37,7 +39,11 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Callab
             t = ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            s.onError(ex);
+            if (deferred.isCancelled()) {
+                RxJavaPlugins.onError(ex);
+            } else {
+                s.onError(ex);
+            }
             return;
         }
 

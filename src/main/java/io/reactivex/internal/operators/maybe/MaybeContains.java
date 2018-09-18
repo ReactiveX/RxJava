@@ -48,52 +48,52 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
 
     static final class ContainsMaybeObserver implements MaybeObserver<Object>, Disposable {
 
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
 
         final Object value;
 
-        Disposable d;
+        Disposable upstream;
 
         ContainsMaybeObserver(SingleObserver<? super Boolean> actual, Object value) {
-            this.actual = actual;
+            this.downstream = actual;
             this.value = value;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(Object value) {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(ObjectHelper.equals(value, this.value));
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(ObjectHelper.equals(value, this.value));
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(false);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(false);
         }
     }
 }

@@ -57,7 +57,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
     static final class FlatMapCompletableMainObserver<T> extends AtomicInteger implements Disposable, Observer<T> {
         private static final long serialVersionUID = 8443155186132538303L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final AtomicThrowable errors;
 
@@ -67,12 +67,12 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
         final CompositeDisposable set;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile boolean disposed;
 
         FlatMapCompletableMainObserver(CompletableObserver observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
-            this.actual = observer;
+            this.downstream = observer;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
@@ -82,10 +82,10 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -97,7 +97,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
                 cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                d.dispose();
+                upstream.dispose();
                 onError(ex);
                 return;
             }
@@ -117,13 +117,13 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
-                        actual.onError(ex);
+                        downstream.onError(ex);
                     }
                 } else {
                     dispose();
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
-                        actual.onError(ex);
+                        downstream.onError(ex);
                     }
                 }
             } else {
@@ -136,9 +136,9 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             if (decrementAndGet() == 0) {
                 Throwable ex = errors.terminate();
                 if (ex != null) {
-                    actual.onError(ex);
+                    downstream.onError(ex);
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }
@@ -146,13 +146,13 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         @Override
         public void dispose() {
             disposed = true;
-            d.dispose();
+            upstream.dispose();
             set.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         void innerComplete(InnerObserver inner) {

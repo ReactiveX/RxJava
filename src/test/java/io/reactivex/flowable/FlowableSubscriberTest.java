@@ -231,9 +231,8 @@ public class FlowableSubscriberTest {
                     public void onNext(String t) {
 
                     }
-
-
                 };
+
                 return as;
             }
         };
@@ -589,10 +588,10 @@ public class FlowableSubscriberTest {
         try {
             s.onSubscribe(new BooleanSubscription());
 
-            BooleanSubscription d = new BooleanSubscription();
-            s.onSubscribe(d);
+            BooleanSubscription bs = new BooleanSubscription();
+            s.onSubscribe(bs);
 
-            assertTrue(d.isCancelled());
+            assertTrue(bs.isCancelled());
 
             TestHelper.assertError(list, 0, IllegalStateException.class, "Subscription already set!");
         } finally {
@@ -602,33 +601,40 @@ public class FlowableSubscriberTest {
 
     @Test
     public void suppressAfterCompleteEvents() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.onSubscribe(new BooleanSubscription());
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                ts.onNext(v);
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                ts.onError(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onComplete();
-            }
-        });
+            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    ts.onNext(v);
+                    return true;
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) throws Exception {
+                    ts.onError(e);
+                }
+            }, new Action() {
+                @Override
+                public void run() throws Exception {
+                    ts.onComplete();
+                }
+            });
 
-        s.onComplete();
-        s.onNext(1);
-        s.onError(new TestException());
-        s.onComplete();
+            s.onComplete();
+            s.onNext(1);
+            s.onError(new TestException());
+            s.onComplete();
 
-        ts.assertResult();
+            ts.assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -764,7 +770,6 @@ public class FlowableSubscriberTest {
         ts.assertResult(1);
     }
 
-
     @Test
     public void methodTestNoCancel() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -809,7 +814,7 @@ public class FlowableSubscriberTest {
                 Flowable.just(1).test();
                 fail("Should have thrown");
             } catch (NullPointerException ex) {
-                assertEquals("Plugin returned null Subscriber", ex.getMessage());
+                assertEquals("The RxJavaPlugins.onSubscribe hook returned a null FlowableSubscriber. Please check the handler provided to RxJavaPlugins.setOnFlowableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins", ex.getMessage());
             }
         } finally {
             RxJavaPlugins.reset();

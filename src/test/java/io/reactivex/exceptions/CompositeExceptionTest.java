@@ -182,6 +182,7 @@ public class CompositeExceptionTest {
         composite.getCause();
         composite.printStackTrace();
     }
+
     @Test
     public void testNullElement() {
         CompositeException composite = new CompositeException(Collections.singletonList((Throwable) null));

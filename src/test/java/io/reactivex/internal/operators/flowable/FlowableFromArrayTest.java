@@ -33,6 +33,7 @@ public class FlowableFromArrayTest {
         }
         return Flowable.fromArray(array);
     }
+
     @Test
     public void simple() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

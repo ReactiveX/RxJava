@@ -49,12 +49,12 @@ public final class FlowableTimer extends Flowable<Long> {
 
         private static final long serialVersionUID = -2809475196591179431L;
 
-        final Subscriber<? super Long> actual;
+        final Subscriber<? super Long> downstream;
 
         volatile boolean requested;
 
-        TimerSubscriber(Subscriber<? super Long> actual) {
-            this.actual = actual;
+        TimerSubscriber(Subscriber<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -73,12 +73,12 @@ public final class FlowableTimer extends Flowable<Long> {
         public void run() {
             if (get() != DisposableHelper.DISPOSED) {
                 if (requested) {
-                    actual.onNext(0L);
+                    downstream.onNext(0L);
                     lazySet(EmptyDisposable.INSTANCE);
-                    actual.onComplete();
+                    downstream.onComplete();
                 } else {
                     lazySet(EmptyDisposable.INSTANCE);
-                    actual.onError(new MissingBackpressureException("Can't deliver value due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Can't deliver value due to lack of requests"));
                 }
             }
         }

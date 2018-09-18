@@ -49,24 +49,24 @@ public class FlowableWindowWithStartEndFlowableTest {
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 500);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 60);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 160);
+                push(subscriber, "five", 210);
+                complete(subscriber, 500);
             }
         });
 
         Flowable<Object> openings = Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
-            public void subscribe(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, new Object(), 50);
-                push(observer, new Object(), 200);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, new Object(), 50);
+                push(subscriber, new Object(), 200);
+                complete(subscriber, 250);
             }
         });
 
@@ -75,10 +75,10 @@ public class FlowableWindowWithStartEndFlowableTest {
             public Flowable<Object> apply(Object opening) {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        push(observer, new Object(), 100);
-                        complete(observer, 101);
+                    public void subscribe(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        push(subscriber, new Object(), 100);
+                        complete(subscriber, 101);
                     }
                 });
             }
@@ -100,14 +100,14 @@ public class FlowableWindowWithStartEndFlowableTest {
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 60);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 160);
+                push(subscriber, "five", 210);
+                complete(subscriber, 250);
             }
         });
 
@@ -117,16 +117,16 @@ public class FlowableWindowWithStartEndFlowableTest {
             public Flowable<Object> call() {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
+                    public void subscribe(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
                         int c = calls++;
                         if (c == 0) {
-                            push(observer, new Object(), 100);
+                            push(subscriber, new Object(), 100);
                         } else
                         if (c == 1) {
-                            push(observer, new Object(), 100);
+                            push(subscriber, new Object(), 100);
                         } else {
-                            complete(observer, 101);
+                            complete(subscriber, 101);
                         }
                     }
                 });
@@ -151,20 +151,20 @@ public class FlowableWindowWithStartEndFlowableTest {
         return list;
     }
 
-    private <T> void push(final Subscriber<T> observer, final T value, int delay) {
+    private <T> void push(final Subscriber<T> subscriber, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Subscriber<?> observer, int delay) {
+    private void complete(final Subscriber<?> subscriber, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -300,8 +300,8 @@ public class FlowableWindowWithStartEndFlowableTest {
     public void badSourceCallable() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
-                return o.window(Flowable.just(1), Functions.justFunction(Flowable.never()));
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.window(Flowable.just(1), Functions.justFunction(Flowable.never()));
             }
         }, false, 1, 1, (Object[])null);
     }

@@ -29,11 +29,11 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
+        observer.onSubscribe(sd);
 
-        RepeatUntilObserver<T> rs = new RepeatUntilObserver<T>(s, until, sd, source);
+        RepeatUntilObserver<T> rs = new RepeatUntilObserver<T>(observer, until, sd, source);
         rs.subscribeNext();
     }
 
@@ -41,29 +41,30 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Observer<? super T> actual;
-        final SequentialDisposable sd;
+        final Observer<? super T> downstream;
+        final SequentialDisposable upstream;
         final ObservableSource<? extends T> source;
         final BooleanSupplier stop;
         RepeatUntilObserver(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
-            this.actual = actual;
-            this.sd = sd;
+            this.downstream = actual;
+            this.upstream = sd;
             this.source = source;
             this.stop = until;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            sd.replace(s);
+        public void onSubscribe(Disposable d) {
+            upstream.replace(d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -73,11 +74,11 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
                 b = stop.getAsBoolean();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
             if (b) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 subscribeNext();
             }

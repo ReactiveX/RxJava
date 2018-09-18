@@ -96,13 +96,13 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
         }
 
         @Override
-        public void onSubscribe(Subscription d) {
-            if (SubscriptionHelper.validate(upstream, d)) {
-                upstream = d;
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(upstream, s)) {
+                upstream = s;
                 downstream.onSubscribe(this);
                 queue.offer(NEXT_WINDOW);
                 drain();
-                d.request(Long.MAX_VALUE);
+                s.request(Long.MAX_VALUE);
             }
         }
 

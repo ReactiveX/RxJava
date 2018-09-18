@@ -22,10 +22,10 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class SubscriberCompletableObserver<T> implements CompletableObserver, Subscription {
     final Subscriber<? super T> subscriber;
 
-    Disposable d;
+    Disposable upstream;
 
-    public SubscriberCompletableObserver(Subscriber<? super T> observer) {
-        this.subscriber = observer;
+    public SubscriberCompletableObserver(Subscriber<? super T> subscriber) {
+        this.subscriber = subscriber;
     }
 
     @Override
@@ -40,8 +40,8 @@ public final class SubscriberCompletableObserver<T> implements CompletableObserv
 
     @Override
     public void onSubscribe(Disposable d) {
-        if (DisposableHelper.validate(this.d, d)) {
-            this.d = d;
+        if (DisposableHelper.validate(this.upstream, d)) {
+            this.upstream = d;
 
             subscriber.onSubscribe(this);
         }
@@ -54,6 +54,6 @@ public final class SubscriberCompletableObserver<T> implements CompletableObserv
 
     @Override
     public void cancel() {
-        d.dispose();
+        upstream.dispose();
     }
 }

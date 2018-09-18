@@ -22,10 +22,9 @@ import io.reactivex.annotations.*;
  * at most the parallelism level of the Scheduler, those
  * {@link io.reactivex.Scheduler.Worker} instances will be running
  * with different backing threads.
- *
- * @since 2.1.8 - experimental
+ * <p>History: 2.1.8 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface SchedulerMultiWorkerSupport {
 
     /**

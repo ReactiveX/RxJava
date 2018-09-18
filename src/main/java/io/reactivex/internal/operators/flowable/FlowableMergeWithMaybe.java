@@ -29,9 +29,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Merges an Observable and a Maybe by emitting the items of the Observable and the success
  * value of the Maybe and waiting until both the Observable and Maybe terminate normally.
- *
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the Observable
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstream<T, T> {
 
@@ -43,9 +43,9 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(observer);
-        observer.onSubscribe(parent);
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
+        MergeWithObserver<T> parent = new MergeWithObserver<T>(subscriber);
+        subscriber.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
     }
@@ -55,7 +55,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
         private static final long serialVersionUID = -4592979584110982903L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final AtomicReference<Subscription> mainSubscription;
 
@@ -87,8 +87,8 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
         static final int OTHER_STATE_CONSUMED_OR_EMPTY = 2;
 
-        MergeWithObserver(Subscriber<? super T> actual) {
-            this.actual = actual;
+        MergeWithObserver(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
             this.mainSubscription = new AtomicReference<Subscription>();
             this.otherObserver = new OtherObserver<T>(this);
             this.error = new AtomicThrowable();
@@ -111,7 +111,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                     if (q == null || q.isEmpty()) {
 
                         emitted = e + 1;
-                        actual.onNext(t);
+                        downstream.onNext(t);
 
                         int c = consumed + 1;
                         if (c == limit) {
@@ -179,7 +179,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                 if (requested.get() != e) {
 
                     emitted = e + 1;
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
                 } else {
                     singleItem = value;
@@ -228,7 +228,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         }
 
         void drainLoop() {
-            Subscriber<? super T> actual = this.actual;
+            Subscriber<? super T> actual = this.downstream;
             int missed = 1;
             long e = emitted;
             int c = consumed;

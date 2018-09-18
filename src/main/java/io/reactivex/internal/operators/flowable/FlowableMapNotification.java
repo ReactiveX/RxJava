@@ -71,12 +71,12 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
             produced++;
-            actual.onNext(p);
+            downstream.onNext(p);
         }
 
         @Override
@@ -87,7 +87,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
 
@@ -102,7 +102,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 

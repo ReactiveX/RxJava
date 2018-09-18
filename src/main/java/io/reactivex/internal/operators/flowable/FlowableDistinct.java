@@ -41,18 +41,18 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
         Collection<? super K> collection;
 
         try {
             collection = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            EmptySubscription.error(ex, observer);
+            EmptySubscription.error(ex, subscriber);
             return;
         }
 
-        source.subscribe(new DistinctSubscriber<T, K>(observer, keySelector, collection));
+        source.subscribe(new DistinctSubscriber<T, K>(subscriber, keySelector, collection));
     }
 
     static final class DistinctSubscriber<T, K> extends BasicFuseableSubscriber<T, T> {
@@ -85,12 +85,12 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 }
 
                 if (b) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                 } else {
-                    s.request(1);
+                    upstream.request(1);
                 }
             } else {
-                actual.onNext(null);
+                downstream.onNext(null);
             }
         }
 
@@ -101,7 +101,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             } else {
                 done = true;
                 collection.clear();
-                actual.onError(e);
+                downstream.onError(e);
             }
         }
 
@@ -110,7 +110,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             if (!done) {
                 done = true;
                 collection.clear();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -129,7 +129,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                     return v;
                 } else {
                     if (sourceMode == QueueFuseable.ASYNC) {
-                        s.request(1);
+                        upstream.request(1);
                     }
                 }
             }

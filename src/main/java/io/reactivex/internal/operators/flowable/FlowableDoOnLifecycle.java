@@ -39,18 +39,18 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
     }
 
     static final class SubscriptionLambdaSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Consumer<? super Subscription> onSubscribe;
         final LongConsumer onRequest;
         final Action onCancel;
 
-        Subscription s;
+        Subscription upstream;
 
         SubscriptionLambdaSubscriber(Subscriber<? super T> actual,
                 Consumer<? super Subscription> onSubscribe,
                 LongConsumer onRequest,
                 Action onCancel) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onSubscribe = onSubscribe;
             this.onCancel = onCancel;
             this.onRequest = onRequest;
@@ -64,25 +64,25 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
-                this.s = SubscriptionHelper.CANCELLED;
-                EmptySubscription.error(e, actual);
+                this.upstream = SubscriptionHelper.CANCELLED;
+                EmptySubscription.error(e, downstream);
                 return;
             }
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (s != SubscriptionHelper.CANCELLED) {
-                actual.onError(t);
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -90,8 +90,8 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onComplete() {
-            if (s != SubscriptionHelper.CANCELLED) {
-                actual.onComplete();
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                downstream.onComplete();
             }
         }
 
@@ -103,7 +103,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
                 Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
@@ -114,7 +114,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
                 Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

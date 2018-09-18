@@ -91,15 +91,14 @@ public final class MaybeAmb<T> extends Maybe<T> {
     extends AtomicBoolean
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -7044685185359438206L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final CompositeDisposable set;
 
-        AmbMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        AmbMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
             this.set = new CompositeDisposable();
         }
 
@@ -125,7 +124,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
             if (compareAndSet(false, true)) {
                 set.dispose();
 
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 
@@ -134,7 +133,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
             if (compareAndSet(false, true)) {
                 set.dispose();
 
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -145,7 +144,7 @@ public final class MaybeAmb<T> extends Maybe<T> {
             if (compareAndSet(false, true)) {
                 set.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

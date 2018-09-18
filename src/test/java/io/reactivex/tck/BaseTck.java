@@ -44,7 +44,6 @@ public abstract class BaseTck<T> extends PublisherVerification<T> {
         return Flowable.error(new TestException());
     }
 
-
     @Override
     public long maxElementsFromPublisher() {
         return 1024;

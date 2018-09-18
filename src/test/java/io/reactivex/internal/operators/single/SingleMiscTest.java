@@ -55,9 +55,9 @@ public class SingleMiscTest {
 
         Single.wrap(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onSuccess(1);
+            public void subscribe(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onSuccess(1);
             }
         })
         .test()
@@ -254,6 +254,7 @@ public class SingleMiscTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void toCompletable() {
         Single.just(1)
         .toCompletable()
@@ -262,6 +263,19 @@ public class SingleMiscTest {
 
         Single.error(new TestException())
         .toCompletable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void ignoreElement() {
+        Single.just(1)
+        .ignoreElement()
+        .test()
+        .assertResult();
+
+        Single.error(new TestException())
+        .ignoreElement()
         .test()
         .assertFailure(TestException.class);
     }

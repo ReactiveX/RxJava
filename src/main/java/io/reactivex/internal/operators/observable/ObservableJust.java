@@ -29,9 +29,9 @@ public final class ObservableJust<T> extends Observable<T> implements ScalarCall
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        ScalarDisposable<T> sd = new ScalarDisposable<T>(s, value);
-        s.onSubscribe(sd);
+    protected void subscribeActual(Observer<? super T> observer) {
+        ScalarDisposable<T> sd = new ScalarDisposable<T>(observer, value);
+        observer.onSubscribe(sd);
         sd.run();
     }
 

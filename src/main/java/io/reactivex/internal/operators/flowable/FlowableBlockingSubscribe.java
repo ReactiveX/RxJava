@@ -63,7 +63,7 @@ public final class FlowableBlockingSubscribe {
                 if (bs.isCancelled()) {
                     break;
                 }
-                if (o == BlockingSubscriber.TERMINATED
+                if (v == BlockingSubscriber.TERMINATED
                         || NotificationLite.acceptFull(v, subscriber)) {
                     break;
                 }
@@ -107,5 +107,24 @@ public final class FlowableBlockingSubscribe {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         subscribe(o, new LambdaSubscriber<T>(onNext, onError, onComplete, Functions.REQUEST_MAX));
+    }
+
+    /**
+     * Subscribes to the source and calls the given actions on the current thread.
+     * @param o the source publisher
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @param onComplete the callback action for the completion event.
+     * @param bufferSize the number of elements to prefetch from the source Publisher
+     * @param <T> the value type
+     */
+    public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
+        final Consumer<? super Throwable> onError, final Action onComplete, int bufferSize) {
+        ObjectHelper.requireNonNull(onNext, "onNext is null");
+        ObjectHelper.requireNonNull(onError, "onError is null");
+        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
+        ObjectHelper.verifyPositive(bufferSize, "number > 0 required");
+        subscribe(o, new BoundedSubscriber<T>(onNext, onError, onComplete, Functions.boundedConsumer(bufferSize),
+                bufferSize));
     }
 }

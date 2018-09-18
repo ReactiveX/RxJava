@@ -164,11 +164,11 @@ public class ResourceSubscriberTest {
 
             tc.onSubscribe(new BooleanSubscription());
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            tc.onSubscribe(d);
+            tc.onSubscribe(bs);
 
-            assertTrue(d.isCancelled());
+            assertTrue(bs.isCancelled());
 
             assertEquals(1, tc.start);
 
@@ -183,11 +183,11 @@ public class ResourceSubscriberTest {
         TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<Integer>();
         tc.dispose();
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        tc.onSubscribe(d);
+        tc.onSubscribe(bs);
 
-        assertTrue(d.isCancelled());
+        assertTrue(bs.isCancelled());
 
         assertEquals(0, tc.start);
     }

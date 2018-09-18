@@ -86,7 +86,6 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     static final class ParallelReduceSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
-
         private static final long serialVersionUID = 8200530050639449080L;
 
         final BiFunction<R, ? super T, R> reducer;
@@ -103,10 +102,10 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -138,7 +137,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
             }
             done = true;
             accumulator = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -155,7 +154,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

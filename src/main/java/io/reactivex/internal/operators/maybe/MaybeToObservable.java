@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
@@ -40,18 +39,18 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(create(s));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(create(observer));
     }
 
     /**
      * Creates a {@link MaybeObserver} wrapper around a {@link Observer}.
+     * <p>History: 2.1.11 - experimental
      * @param <T> the value type
      * @param downstream the downstream {@code Observer} to talk to
      * @return the new MaybeObserver instance
-     * @since 2.1.11 - experimental
+     * @since 2.2
      */
-    @Experimental
     public static <T> MaybeObserver<T> create(Observer<? super T> downstream) {
         return new MaybeToObservableObserver<T>(downstream);
     }
@@ -61,18 +60,18 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
 
         private static final long serialVersionUID = 7603343402964826922L;
 
-        Disposable d;
+        Disposable upstream;
 
-        MaybeToObservableObserver(Observer<? super T> actual) {
-            super(actual);
+        MaybeToObservableObserver(Observer<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -94,7 +93,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
         @Override
         public void dispose() {
             super.dispose();
-            d.dispose();
+            upstream.dispose();
         }
     }
 }

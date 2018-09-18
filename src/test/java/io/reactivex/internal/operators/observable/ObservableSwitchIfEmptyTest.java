@@ -25,7 +25,6 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DefaultObserver;
 
-
 public class ObservableSwitchIfEmptyTest {
 
     @Test
@@ -35,7 +34,7 @@ public class ObservableSwitchIfEmptyTest {
                 .switchIfEmpty(Observable.just(2)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                         subscribed.set(true);
                     }
                 }));
@@ -89,7 +88,6 @@ public class ObservableSwitchIfEmptyTest {
                 };
             }
         }).subscribe();
-
 
         assertTrue(d.isDisposed());
         // FIXME no longer assertable

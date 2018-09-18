@@ -45,16 +45,16 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super U> s) {
+    protected void subscribeActual(SingleObserver<? super U> observer) {
         U coll;
         try {
             coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
-        source.subscribe(new ToListSubscriber<T, U>(s, coll));
+        source.subscribe(new ToListSubscriber<T, U>(observer, coll));
     }
 
     @Override
@@ -65,22 +65,22 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     static final class ToListSubscriber<T, U extends Collection<? super T>>
     implements FlowableSubscriber<T>, Disposable {
 
-        final SingleObserver<? super U> actual;
+        final SingleObserver<? super U> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
         U value;
 
         ToListSubscriber(SingleObserver<? super U> actual, U collection) {
-            this.actual = actual;
+            this.downstream = actual;
             this.value = collection;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -93,25 +93,25 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
         @Override
         public void onError(Throwable t) {
             value = null;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
-            actual.onSuccess(value);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onSuccess(value);
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

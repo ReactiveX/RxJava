@@ -31,7 +31,7 @@ public final class FlowableCollectTest {
 
     @Test
     public void testCollectToListFlowable() {
-        Flowable<List<Integer>> o = Flowable.just(1, 2, 3)
+        Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
         .collect(new Callable<List<Integer>>() {
             @Override
             public List<Integer> call() {
@@ -44,7 +44,7 @@ public final class FlowableCollectTest {
             }
         }).toFlowable();
 
-        List<Integer> list =  o.blockingLast();
+        List<Integer> list =  f.blockingLast();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
@@ -52,7 +52,7 @@ public final class FlowableCollectTest {
         assertEquals(3, list.get(2).intValue());
 
         // test multiple subscribe
-        List<Integer> list2 =  o.blockingLast();
+        List<Integer> list2 =  f.blockingLast();
 
         assertEquals(3, list2.size());
         assertEquals(1, list2.get(0).intValue());
@@ -82,7 +82,6 @@ public final class FlowableCollectTest {
 
         assertEquals("1-2-3", value);
     }
-
 
     @Test
     public void testFactoryFailureResultsInErrorEmissionFlowable() {
@@ -167,7 +166,6 @@ public final class FlowableCollectTest {
         assertFalse(added.get());
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void collectIntoFlowable() {
@@ -182,7 +180,6 @@ public final class FlowableCollectTest {
         .test()
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
     }
-
 
     @Test
     public void testCollectToList() {
@@ -237,7 +234,6 @@ public final class FlowableCollectTest {
 
         assertEquals("1-2-3", value);
     }
-
 
     @Test
     public void testFactoryFailureResultsInErrorEmission() {
@@ -318,7 +314,6 @@ public final class FlowableCollectTest {
                 .assertNotComplete();
         assertFalse(added.get());
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

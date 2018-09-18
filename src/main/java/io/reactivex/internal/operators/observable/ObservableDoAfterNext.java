@@ -14,17 +14,16 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
+ * <p>History: 2.0.1 - experimental
  * @param <T> the value type
- * @since 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstream<T, T> {
 
     final Consumer<? super T> onAfterNext;
@@ -35,8 +34,8 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new DoAfterObserver<T>(s, onAfterNext));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new DoAfterObserver<T>(observer, onAfterNext));
     }
 
     static final class DoAfterObserver<T> extends BasicFuseableObserver<T, T> {
@@ -50,7 +49,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
 
             if (sourceMode == NONE) {
                 try {
@@ -69,7 +68,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
         @Nullable
         @Override
         public T poll() throws Exception {
-            T v = qs.poll();
+            T v = qd.poll();
             if (v != null) {
                 onAfterNext.accept(v);
             }

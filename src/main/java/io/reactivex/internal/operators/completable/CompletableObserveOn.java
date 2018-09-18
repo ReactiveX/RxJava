@@ -30,25 +30,24 @@ public final class CompletableObserveOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new ObserveOnCompletableObserver(s, scheduler));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new ObserveOnCompletableObserver(observer, scheduler));
     }
 
     static final class ObserveOnCompletableObserver
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable, Runnable {
 
-
         private static final long serialVersionUID = 8571289934935992137L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final Scheduler scheduler;
 
         Throwable error;
 
         ObserveOnCompletableObserver(CompletableObserver actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
@@ -65,7 +64,7 @@ public final class CompletableObserveOn extends Completable {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -85,9 +84,9 @@ public final class CompletableObserveOn extends Completable {
             Throwable ex = error;
             if (ex != null) {
                 error = null;
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

@@ -1,0 +1,34 @@
+// remove the excessive whitespaces between method arguments in the javadocs
+task javadocCleanup(dependsOn: "javadoc") doLast {
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Flowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Observable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Single.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Maybe.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Completable.html'));
+
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/flowables/ConnectableFlowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/observables/ConnectableObservable.html'));
+
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/subjects/ReplaySubject.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/processors/ReplayProcessor.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/plugins/RxJavaPlugins.html'));
+}
+
+def fixJavadocFile(file) {
+    println("Cleaning up: " + file);
+    String fileContents = file.getText('UTF-8')
+
+    // lots of spaces after the previous method argument
+    fileContents = fileContents.replaceAll(",\\s{4,}", ",\n        ");
+
+    // lots of spaces after the @NonNull annotations
+    fileContents = fileContents.replaceAll("@NonNull</a>\\s{4,}", "@NonNull</a> ");
+
+    // lots of spaces after the @Nullable annotations
+    fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ");
+
+    file.setText(fileContents, 'UTF-8');
+}
+
+javadocJar.dependsOn javadocCleanup
+build.dependsOn javadocCleanup 

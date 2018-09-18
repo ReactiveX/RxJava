@@ -29,13 +29,13 @@ public final class CompletableMergeDelayErrorArray extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
 
         final AtomicThrowable error = new AtomicThrowable();
 
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
         for (CompletableSource c : sources) {
             if (set.isDisposed()) {
@@ -49,29 +49,29 @@ public final class CompletableMergeDelayErrorArray extends Completable {
                 continue;
             }
 
-            c.subscribe(new MergeInnerCompletableObserver(s, set, error, wip));
+            c.subscribe(new MergeInnerCompletableObserver(observer, set, error, wip));
         }
 
         if (wip.decrementAndGet() == 0) {
             Throwable ex = error.terminate();
             if (ex == null) {
-                s.onComplete();
+                observer.onComplete();
             } else {
-                s.onError(ex);
+                observer.onError(ex);
             }
         }
     }
 
     static final class MergeInnerCompletableObserver
     implements CompletableObserver {
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
         final CompositeDisposable set;
         final AtomicThrowable error;
         final AtomicInteger wip;
 
-        MergeInnerCompletableObserver(CompletableObserver s, CompositeDisposable set, AtomicThrowable error,
+        MergeInnerCompletableObserver(CompletableObserver observer, CompositeDisposable set, AtomicThrowable error,
                 AtomicInteger wip) {
-            this.actual = s;
+            this.downstream = observer;
             this.set = set;
             this.error = error;
             this.wip = wip;
@@ -100,9 +100,9 @@ public final class CompletableMergeDelayErrorArray extends Completable {
             if (wip.decrementAndGet() == 0) {
                 Throwable ex = error.terminate();
                 if (ex == null) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 } else {
-                    actual.onError(ex);
+                    downstream.onError(ex);
                 }
             }
         }

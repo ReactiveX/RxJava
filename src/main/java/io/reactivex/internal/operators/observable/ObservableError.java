@@ -25,8 +25,9 @@ public final class ObservableError<T> extends Observable<T> {
     public ObservableError(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
+
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         Throwable error;
         try {
             error = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
@@ -34,6 +35,6 @@ public final class ObservableError<T> extends Observable<T> {
             Exceptions.throwIfFatal(t);
             error = t;
         }
-        EmptyDisposable.error(error, s);
+        EmptyDisposable.error(error, observer);
     }
 }

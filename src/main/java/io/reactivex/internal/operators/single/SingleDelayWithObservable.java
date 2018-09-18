@@ -33,25 +33,24 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        other.subscribe(new OtherSubscriber<T, U>(subscriber, source));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        other.subscribe(new OtherSubscriber<T, U>(observer, source));
     }
 
     static final class OtherSubscriber<T, U>
     extends AtomicReference<Disposable>
     implements Observer<U>, Disposable {
 
-
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SingleSource<T> source;
 
         boolean done;
 
         OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
         }
 
@@ -59,7 +58,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.set(this, d)) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -76,7 +75,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -85,7 +84,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            source.subscribe(new ResumeSingleObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
         }
 
         @Override

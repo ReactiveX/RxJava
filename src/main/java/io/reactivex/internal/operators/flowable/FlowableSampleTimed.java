@@ -54,7 +54,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = -3517602651313910099L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final long period;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -63,10 +63,10 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         final SequentialDisposable timer = new SequentialDisposable();
 
-        Subscription s;
+        Subscription upstream;
 
         SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.period = period;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -74,9 +74,9 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 timer.replace(scheduler.schedulePeriodicallyDirect(this, period, period, unit));
                 s.request(Long.MAX_VALUE);
             }
@@ -90,7 +90,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         @Override
         public void onError(Throwable t) {
             cancelTimer();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -113,7 +113,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         @Override
         public void cancel() {
             cancelTimer();
-            s.cancel();
+            upstream.cancel();
         }
 
         void emit() {
@@ -121,11 +121,11 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
             if (value != null) {
                 long r = requested.get();
                 if (r != 0L) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     BackpressureHelper.produced(requested, 1);
                 } else {
                     cancel();
-                    actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
+                    downstream.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
                 }
             }
         }
@@ -143,7 +143,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         void complete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -167,7 +167,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         void complete() {
             emit();
             if (wip.decrementAndGet() == 0) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -176,7 +176,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
             if (wip.incrementAndGet() == 2) {
                 emit();
                 if (wip.decrementAndGet() == 0) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

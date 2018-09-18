@@ -78,7 +78,7 @@ public class ObservableSubscribeOnTest {
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> observer) {
                 throw new RuntimeException("fail");
             }
 
@@ -93,9 +93,9 @@ public class ObservableSubscribeOnTest {
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onError(new RuntimeException("fail"));
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onError(new RuntimeException("fail"));
             }
 
         }).subscribeOn(Schedulers.computation()).subscribe(to);

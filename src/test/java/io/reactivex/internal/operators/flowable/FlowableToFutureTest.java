@@ -34,17 +34,17 @@ public class FlowableToFutureTest {
         Object value = new Object();
         when(future.get()).thenReturn(value);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         Flowable.fromFuture(future).subscribe(ts);
 
         ts.dispose();
 
-        verify(o, times(1)).onNext(value);
-        verify(o, times(1)).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext(value);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
         verify(future, never()).cancel(anyBoolean());
     }
 
@@ -55,18 +55,18 @@ public class FlowableToFutureTest {
         Object value = new Object();
         when(future.get()).thenReturn(value);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         Flowable.fromFuture(future, scheduler).subscribe(ts);
 
-        verify(o, never()).onNext(value);
+        verify(subscriber, never()).onNext(value);
 
         scheduler.triggerActions();
 
-        verify(o, times(1)).onNext(value);
+        verify(subscriber, times(1)).onNext(value);
     }
 
     @Test
@@ -76,17 +76,17 @@ public class FlowableToFutureTest {
         RuntimeException e = new RuntimeException();
         when(future.get()).thenThrow(e);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         Flowable.fromFuture(future).subscribe(ts);
 
         ts.dispose();
 
-        verify(o, never()).onNext(null);
-        verify(o, never()).onComplete();
-        verify(o, times(1)).onError(e);
+        verify(subscriber, never()).onNext(null);
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(e);
         verify(future, never()).cancel(anyBoolean());
     }
 
@@ -97,9 +97,9 @@ public class FlowableToFutureTest {
         CancellationException e = new CancellationException("unit test synthetic cancellation");
         when(future.get()).thenThrow(e);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
         ts.dispose();
 
         Flowable.fromFuture(future).subscribe(ts);
@@ -143,9 +143,9 @@ public class FlowableToFutureTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
         Flowable<Object> futureObservable = Flowable.fromFuture(future);
 
         futureObservable.subscribeOn(Schedulers.computation()).subscribe(ts);

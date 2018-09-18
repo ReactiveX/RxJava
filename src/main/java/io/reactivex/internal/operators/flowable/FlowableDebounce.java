@@ -45,10 +45,10 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
     implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 6725975399620862591L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Function<? super T, ? extends Publisher<U>> debounceSelector;
 
-        Subscription s;
+        Subscription upstream;
 
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
 
@@ -58,15 +58,15 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         DebounceSubscriber(Subscriber<? super T> actual,
                 Function<? super T, ? extends Publisher<U>> debounceSelector) {
-            this.actual = actual;
+            this.downstream = actual;
             this.debounceSelector = debounceSelector;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -92,7 +92,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -106,7 +106,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(debouncer);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -121,7 +121,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
                 DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
                 dis.emit();
                 DisposableHelper.dispose(debouncer);
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -134,7 +134,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             DisposableHelper.dispose(debouncer);
         }
 
@@ -142,11 +142,11 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             if (idx == index) {
                 long r = get();
                 if (r != 0L) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     BackpressureHelper.produced(this, 1);
                 } else {
                     cancel();
-                    actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
                 }
             }
         }

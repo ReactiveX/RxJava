@@ -58,7 +58,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         private static final long serialVersionUID = -8466418554264089604L;
 
-        final Subscriber<? super C> actual;
+        final Subscriber<? super C> downstream;
 
         final Callable<C> bufferSupplier;
 
@@ -91,7 +91,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
                 Callable<C> bufferSupplier
         ) {
-            this.actual = actual;
+            this.downstream = actual;
             this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
@@ -250,7 +250,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
             int missed = 1;
             long e = emitted;
-            Subscriber<? super C> a = actual;
+            Subscriber<? super C> a = downstream;
             SpscLinkedArrayQueue<C> q = queue;
 
             for (;;) {

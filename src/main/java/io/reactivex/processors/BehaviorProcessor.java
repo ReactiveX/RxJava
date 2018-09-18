@@ -85,11 +85,13 @@ import io.reactivex.plugins.RxJavaPlugins;
  * after the {@code BehaviorProcessor} reached its terminal state will result in the
  * given {@code Subscription} being cancelled immediately.
  * <p>
- * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * Calling {@link #onNext(Object)}, {@link #offer(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
  * is required to be serialized (called from the same thread or called non-overlappingly from different threads
  * through external means of serialization). The {@link #toSerialized()} method available to all {@code FlowableProcessor}s
  * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
  * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * Note that serializing over {@link #offer(Object)} is not supported through {@code toSerialized()} because it is a method
+ * available on the {@code PublishProcessor} and {@code BehaviorProcessor} classes only.
  * <p>
  * This {@code BehaviorProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
  * {@link #getThrowable()} and {@link #hasSubscribers()} as well as means to read the latest observed value
@@ -127,34 +129,34 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  // observer will receive all events.
+  // subscriber will receive all events.
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   processor.onNext("one");
   processor.onNext("two");
   processor.onNext("three");
 
-  // observer will receive the "one", "two" and "three" events, but not "zero"
+  // subscriber will receive the "one", "two" and "three" events, but not "zero"
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   processor.onNext("two");
   processor.onNext("three");
 
-  // observer will receive only onComplete
+  // subscriber will receive only onComplete
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
   processor.onComplete();
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
 
-  // observer will receive only onError
+  // subscriber will receive only onError
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
   processor.onError(new RuntimeException("error"));
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   } </pre>
  *
  * @param <T>
@@ -313,11 +315,11 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>
      * Calling with null will terminate the PublishProcessor and a NullPointerException
      * is signalled to the Subscribers.
+     * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
-    @Experimental
     public boolean offer(T t) {
         if (t == null) {
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
@@ -343,7 +345,6 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
-
 
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
@@ -377,7 +378,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * Returns an Object array containing snapshot all values of the BehaviorProcessor.
      * <p>The method is thread-safe.
      * @return the array containing the snapshot of all values of the BehaviorProcessor
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
         T[] a = (T[])EMPTY_ARRAY;
@@ -396,7 +399,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>The method is thread-safe.
      * @param array the target array to copy values into if it fits
      * @return the given array if the values fit into it or a new array containing all values
+     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
         Object o = value.get();
@@ -440,7 +445,6 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
-
 
     boolean add(BehaviorSubscription<T> rs) {
         for (;;) {
@@ -519,7 +523,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = 3293175281126227086L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final BehaviorProcessor<T> state;
 
         boolean next;
@@ -533,7 +537,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         long index;
 
         BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
-            this.actual = actual;
+            this.downstream = actual;
             this.state = state;
         }
 
@@ -623,24 +627,24 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
 
             if (NotificationLite.isComplete(o)) {
-                actual.onComplete();
+                downstream.onComplete();
                 return true;
             } else
             if (NotificationLite.isError(o)) {
-                actual.onError(NotificationLite.getError(o));
+                downstream.onError(NotificationLite.getError(o));
                 return true;
             }
 
             long r = get();
             if (r != 0L) {
-                actual.onNext(NotificationLite.<T>getValue(o));
+                downstream.onNext(NotificationLite.<T>getValue(o));
                 if (r != Long.MAX_VALUE) {
                     decrementAndGet();
                 }
                 return false;
             }
             cancel();
-            actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+            downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
             return true;
         }
 

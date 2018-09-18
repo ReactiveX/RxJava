@@ -76,7 +76,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(inner, d)) {
-                inner.actual.onSubscribe(this);
+                inner.downstream.onSubscribe(this);
             }
         }
 
@@ -88,7 +88,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
                 next = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                inner.actual.onError(ex);
+                inner.downstream.onError(ex);
                 return;
             }
 
@@ -100,12 +100,12 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
         @Override
         public void onError(Throwable e) {
-            inner.actual.onError(e);
+            inner.downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            inner.actual.onComplete();
+            inner.downstream.onComplete();
         }
 
         static final class InnerObserver<T, U, R>
@@ -114,7 +114,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
             private static final long serialVersionUID = -2897979525538174559L;
 
-            final MaybeObserver<? super R> actual;
+            final MaybeObserver<? super R> downstream;
 
             final BiFunction<? super T, ? super U, ? extends R> resultSelector;
 
@@ -122,7 +122,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
             InnerObserver(MaybeObserver<? super R> actual,
                     BiFunction<? super T, ? super U, ? extends R> resultSelector) {
-                this.actual = actual;
+                this.downstream = actual;
                 this.resultSelector = resultSelector;
             }
 
@@ -142,21 +142,21 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
                     r = ObjectHelper.requireNonNull(resultSelector.apply(t, value), "The resultSelector returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    actual.onError(ex);
+                    downstream.onError(ex);
                     return;
                 }
 
-                actual.onSuccess(r);
+                downstream.onSuccess(r);
             }
 
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

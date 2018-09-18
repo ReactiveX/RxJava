@@ -29,23 +29,23 @@ public class FlowableDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                     count.incrementAndGet();
             }
         });
 
-        o.subscribe();
-        o.subscribe();
-        o.subscribe();
+        f.subscribe();
+        f.subscribe();
+        f.subscribe();
         assertEquals(3, count.get());
     }
 
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+        Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                     count.incrementAndGet();
@@ -57,7 +57,7 @@ public class FlowableDoOnSubscribeTest {
             }
         });
 
-        o.subscribe();
+        f.subscribe();
         assertEquals(2, count.get());
     }
 
@@ -67,7 +67,7 @@ public class FlowableDoOnSubscribeTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<Subscriber<? super Integer>>();
-        Flowable<Integer> o = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -89,16 +89,16 @@ public class FlowableDoOnSubscribeTest {
             }
         });
 
-        o.subscribe();
-        o.subscribe();
-        o.subscribe();
+        f.subscribe();
+        f.subscribe();
+        f.subscribe();
         assertEquals(1, countBefore.get());
         assertEquals(1, onSubscribed.get());
         assertEquals(3, countAfter.get());
         sref.get().onComplete();
-        o.subscribe();
-        o.subscribe();
-        o.subscribe();
+        f.subscribe();
+        f.subscribe();
+        f.subscribe();
         assertEquals(2, countBefore.get());
         assertEquals(2, onSubscribed.get());
         assertEquals(6, countAfter.get());

@@ -11,7 +11,6 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
@@ -33,7 +32,6 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         source.subscribe(new MapObserver<T, U>(t, function));
     }
 
-
     static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {
         final Function<? super T, ? extends U> mapper;
 
@@ -49,7 +47,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -61,7 +59,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
                 fail(ex);
                 return;
             }
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -72,7 +70,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         @Nullable
         @Override
         public U poll() throws Exception {
-            T t = qs.poll();
+            T t = qd.poll();
             return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }

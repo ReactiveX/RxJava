@@ -87,7 +87,6 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     static final class ParallelCollectSubscriber<T, C> extends DeferredScalarSubscriber<T, C> {
 
-
         private static final long serialVersionUID = -4767392946044436228L;
 
         final BiConsumer<? super C, ? super T> collector;
@@ -105,10 +104,10 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -137,7 +136,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
             }
             done = true;
             collection = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -154,7 +153,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

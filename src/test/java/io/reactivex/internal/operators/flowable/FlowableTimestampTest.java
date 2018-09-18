@@ -28,11 +28,11 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 
 public class FlowableTimestampTest {
-    Subscriber<Object> observer;
+    Subscriber<Object> subscriber;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
@@ -41,7 +41,7 @@ public class FlowableTimestampTest {
 
         PublishProcessor<Integer> source = PublishProcessor.create();
         Flowable<Timed<Integer>> m = source.timestamp(scheduler);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source.onNext(1);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
@@ -49,14 +49,14 @@ public class FlowableTimestampTest {
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         source.onNext(3);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(2, 100, TimeUnit.MILLISECONDS));
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(2, 100, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -65,7 +65,7 @@ public class FlowableTimestampTest {
 
         PublishProcessor<Integer> source = PublishProcessor.create();
         Flowable<Timed<Integer>> m = source.timestamp(scheduler);
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -73,14 +73,14 @@ public class FlowableTimestampTest {
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         source.onNext(3);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(2, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(observer, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(2, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test

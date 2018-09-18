@@ -38,9 +38,9 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     @Test
     public final void testIOScheduler() {
 
-        Flowable<Integer> o1 = Flowable.just(1, 2, 3, 4, 5);
-        Flowable<Integer> o2 = Flowable.just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<Integer> f1 = Flowable.just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.merge(f1, f2).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {
@@ -49,7 +49,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.io()).blockingForEach(new Consumer<String>() {
+        f.subscribeOn(Schedulers.io()).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

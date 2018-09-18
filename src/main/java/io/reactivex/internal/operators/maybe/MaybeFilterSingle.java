@@ -42,35 +42,35 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
 
     static final class FilterMaybeObserver<T> implements SingleObserver<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final Predicate<? super T> predicate;
 
-        Disposable d;
+        Disposable upstream;
 
         FilterMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.predicate = predicate;
         }
 
         @Override
         public void dispose() {
-            Disposable d = this.d;
-            this.d = DisposableHelper.DISPOSED;
+            Disposable d = this.upstream;
+            this.upstream = DisposableHelper.DISPOSED;
             d.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -82,20 +82,20 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
                 b = predicate.test(value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
             if (b) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 

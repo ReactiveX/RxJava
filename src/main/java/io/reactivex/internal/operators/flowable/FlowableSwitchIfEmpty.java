@@ -33,14 +33,14 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
     }
 
     static final class SwitchIfEmptySubscriber<T> implements FlowableSubscriber<T> {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Publisher<? extends T> other;
         final SubscriptionArbiter arbiter;
 
         boolean empty;
 
         SwitchIfEmptySubscriber(Subscriber<? super T> actual, Publisher<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
             this.empty = true;
             this.arbiter = new SubscriptionArbiter();
@@ -56,12 +56,12 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
             if (empty) {
                 empty = false;
             }
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -70,7 +70,7 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
                 empty = false;
                 other.subscribe(this);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

@@ -26,7 +26,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.subscribers.TestSubscriber;
 
-
 public class FlowableDetachTest {
 
     Object o;
@@ -86,7 +85,6 @@ public class FlowableDetachTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-
 
     @Test
     public void backpressured() throws Exception {
@@ -169,8 +167,8 @@ public class FlowableDetachTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.onTerminateDetach();
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.onTerminateDetach();
             }
         });
     }

@@ -30,36 +30,34 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
     }
 
     static final class DematerializeObserver<T> implements Observer<Notification<T>>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         boolean done;
 
-        Disposable s;
+        Disposable upstream;
 
-        DematerializeObserver(Observer<? super T> actual) {
-            this.actual = actual;
+        DematerializeObserver(Observer<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
-
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(Notification<T> t) {
@@ -70,14 +68,14 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
                 return;
             }
             if (t.isOnError()) {
-                s.dispose();
+                upstream.dispose();
                 onError(t.getError());
             }
             else if (t.isOnComplete()) {
-                s.dispose();
+                upstream.dispose();
                 onComplete();
             } else {
-                actual.onNext(t.getValue());
+                downstream.onNext(t.getValue());
             }
         }
 
@@ -89,8 +87,9 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
             }
             done = true;
 
-            actual.onError(t);
+            downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (done) {
@@ -98,7 +97,7 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
             }
             done = true;
 
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

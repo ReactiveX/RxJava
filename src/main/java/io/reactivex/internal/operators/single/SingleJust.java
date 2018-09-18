@@ -25,9 +25,9 @@ public final class SingleJust<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        s.onSubscribe(Disposables.disposed());
-        s.onSuccess(value);
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        observer.onSubscribe(Disposables.disposed());
+        observer.onSuccess(value);
     }
 
 }

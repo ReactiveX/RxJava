@@ -44,6 +44,7 @@ public class ParallelMapTryTest implements Consumer<Object> {
             .assertResult(1);
         }
     }
+
     @Test
     public void mapErrorNoError() {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {
@@ -68,6 +69,7 @@ public class ParallelMapTryTest implements Consumer<Object> {
             .assertResult(1);
         }
     }
+
     @Test
     public void mapErrorConditionalNoError() {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {

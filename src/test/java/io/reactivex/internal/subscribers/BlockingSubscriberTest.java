@@ -93,6 +93,7 @@ public class BlockingSubscriberTest {
             public void request(long n) {
                 bf.cancelled = true;
             }
+
             @Override
             public void cancel() {
                 b.set(true);
@@ -118,6 +119,7 @@ public class BlockingSubscriberTest {
             public void request(long n) {
                 b.set(true);
             }
+
             @Override
             public void cancel() {
             }

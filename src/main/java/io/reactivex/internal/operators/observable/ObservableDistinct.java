@@ -82,10 +82,10 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 }
 
                 if (b) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                 }
             } else {
-                actual.onNext(null);
+                downstream.onNext(null);
             }
         }
 
@@ -96,7 +96,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             } else {
                 done = true;
                 collection.clear();
-                actual.onError(e);
+                downstream.onError(e);
             }
         }
 
@@ -105,7 +105,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             if (!done) {
                 done = true;
                 collection.clear();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -118,7 +118,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         @Override
         public T poll() throws Exception {
             for (;;) {
-                T v = qs.poll();
+                T v = qd.poll();
 
                 if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
                     return v;

@@ -27,10 +27,10 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
-
 
 public class FlowableWindowWithTimeTest {
 
@@ -50,14 +50,14 @@ public class FlowableWindowWithTimeTest {
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 90);
-                push(observer, "three", 110);
-                push(observer, "four", 190);
-                push(observer, "five", 210);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 90);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 190);
+                push(subscriber, "five", 210);
+                complete(subscriber, 250);
             }
         });
 
@@ -84,14 +84,14 @@ public class FlowableWindowWithTimeTest {
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 98);
-                push(observer, "two", 99);
-                push(observer, "three", 99); // FIXME happens after the window is open
-                push(observer, "four", 101);
-                push(observer, "five", 102);
-                complete(observer, 150);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 98);
+                push(subscriber, "two", 99);
+                push(subscriber, "three", 99); // FIXME happens after the window is open
+                push(subscriber, "four", 101);
+                push(subscriber, "five", 102);
+                complete(subscriber, 150);
             }
         });
 
@@ -115,20 +115,20 @@ public class FlowableWindowWithTimeTest {
         return list;
     }
 
-    private <T> void push(final Subscriber<T> observer, final T value, int delay) {
+    private <T> void push(final Subscriber<T> subscriber, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Subscriber<?> observer, int delay) {
+    private void complete(final Subscriber<?> subscriber, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -157,6 +157,7 @@ public class FlowableWindowWithTimeTest {
             }
         };
     }
+
     @Test
     public void testExactWindowSize() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10)
@@ -220,7 +221,6 @@ public class FlowableWindowWithTimeTest {
         ts.assertComplete();
         Assert.assertTrue(ts.valueCount() != 0);
     }
-
 
     @Test
     public void timespanTimeskipCustomSchedulerBufferSize() {
@@ -366,47 +366,68 @@ public class FlowableWindowWithTimeTest {
 
     @Test
     public void exactOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void overlappingOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void skipOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -484,16 +505,23 @@ public class FlowableWindowWithTimeTest {
 
     @Test
     public void overlapBackpressure2() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .test(1L);
+            TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+            .test(1L);
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+            scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        ts.assertError(MissingBackpressureException.class);
+            ts.assertError(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -782,6 +810,7 @@ public class FlowableWindowWithTimeTest {
         .assertNoErrors()
         .assertNotComplete();
     }
+
     @Test
     public void countRestartsOnTimeTick() {
         TestScheduler scheduler = new TestScheduler();

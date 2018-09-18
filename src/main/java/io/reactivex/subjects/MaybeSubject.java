@@ -154,7 +154,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
         if (once.compareAndSet(false, true)) {
             this.value = value;
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {
-                md.actual.onSuccess(value);
+                md.downstream.onSuccess(value);
             }
         }
     }
@@ -166,7 +166,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {
-                md.actual.onError(e);
+                md.downstream.onError(e);
             }
         } else {
             RxJavaPlugins.onError(e);
@@ -178,7 +178,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     public void onComplete() {
         if (once.compareAndSet(false, true)) {
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {
-                md.actual.onComplete();
+                md.downstream.onComplete();
             }
         }
     }
@@ -328,10 +328,10 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     extends AtomicReference<MaybeSubject<T>> implements Disposable {
         private static final long serialVersionUID = -7650903191002190468L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         MaybeDisposable(MaybeObserver<? super T> actual, MaybeSubject<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             lazySet(parent);
         }
 

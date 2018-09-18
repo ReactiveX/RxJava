@@ -64,14 +64,14 @@ public enum NotificationLite {
     static final class SubscriptionNotification implements Serializable {
 
         private static final long serialVersionUID = -1322257508628817540L;
-        final Subscription s;
+        final Subscription upstream;
         SubscriptionNotification(Subscription s) {
-            this.s = s;
+            this.upstream = s;
         }
 
         @Override
         public String toString() {
-            return "NotificationLite.Subscription[" + s + "]";
+            return "NotificationLite.Subscription[" + upstream + "]";
         }
     }
 
@@ -81,15 +81,15 @@ public enum NotificationLite {
     static final class DisposableNotification implements Serializable {
 
         private static final long serialVersionUID = -7482590109178395495L;
-        final Disposable d;
+        final Disposable upstream;
 
         DisposableNotification(Disposable d) {
-            this.d = d;
+            this.upstream = d;
         }
 
         @Override
         public String toString() {
-            return "NotificationLite.Disposable[" + d + "]";
+            return "NotificationLite.Disposable[" + upstream + "]";
         }
     }
 
@@ -195,11 +195,11 @@ public enum NotificationLite {
      * @return the extracted Subscription
      */
     public static Subscription getSubscription(Object o) {
-        return ((SubscriptionNotification)o).s;
+        return ((SubscriptionNotification)o).upstream;
     }
 
     public static Disposable getDisposable(Object o) {
-        return ((DisposableNotification)o).d;
+        return ((DisposableNotification)o).upstream;
     }
 
     /**
@@ -230,20 +230,20 @@ public enum NotificationLite {
      * <p>Does not check for a subscription notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
-     * @param s the Observer to call methods on
+     * @param observer the Observer to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean accept(Object o, Observer<? super T> s) {
+    public static <T> boolean accept(Object o, Observer<? super T> observer) {
         if (o == COMPLETE) {
-            s.onComplete();
+            observer.onComplete();
             return true;
         } else
         if (o instanceof ErrorNotification) {
-            s.onError(((ErrorNotification)o).e);
+            observer.onError(((ErrorNotification)o).e);
             return true;
         }
-        s.onNext((T)o);
+        observer.onNext((T)o);
         return false;
     }
 
@@ -266,7 +266,7 @@ public enum NotificationLite {
             return true;
         } else
         if (o instanceof SubscriptionNotification) {
-            s.onSubscribe(((SubscriptionNotification)o).s);
+            s.onSubscribe(((SubscriptionNotification)o).upstream);
             return false;
         }
         s.onNext((T)o);
@@ -277,25 +277,25 @@ public enum NotificationLite {
      * Calls the appropriate Observer method based on the type of the notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
-     * @param s the subscriber to call methods on
+     * @param observer the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
      * @see #accept(Object, Observer)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean acceptFull(Object o, Observer<? super T> s) {
+    public static <T> boolean acceptFull(Object o, Observer<? super T> observer) {
         if (o == COMPLETE) {
-            s.onComplete();
+            observer.onComplete();
             return true;
         } else
         if (o instanceof ErrorNotification) {
-            s.onError(((ErrorNotification)o).e);
+            observer.onError(((ErrorNotification)o).e);
             return true;
         } else
         if (o instanceof DisposableNotification) {
-            s.onSubscribe(((DisposableNotification)o).d);
+            observer.onSubscribe(((DisposableNotification)o).upstream);
             return false;
         }
-        s.onNext((T)o);
+        observer.onNext((T)o);
         return false;
     }
 

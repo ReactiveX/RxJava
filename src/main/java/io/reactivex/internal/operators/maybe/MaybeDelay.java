@@ -51,7 +51,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
 
         private static final long serialVersionUID = 5566860102500855068L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final long delay;
 
@@ -64,7 +64,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
         Throwable error;
 
         DelayMaybeObserver(MaybeObserver<? super T> actual, long delay, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.delay = delay;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -74,13 +74,13 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
         public void run() {
             Throwable ex = error;
             if (ex != null) {
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 T v = value;
                 if (v != null) {
-                    actual.onSuccess(v);
+                    downstream.onSuccess(v);
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }
@@ -98,7 +98,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 

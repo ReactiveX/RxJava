@@ -29,11 +29,11 @@ public final class ResumeSingleObserver<T> implements SingleObserver<T> {
 
     final AtomicReference<Disposable> parent;
 
-    final SingleObserver<? super T> actual;
+    final SingleObserver<? super T> downstream;
 
-    public ResumeSingleObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
+    public ResumeSingleObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> downstream) {
         this.parent = parent;
-        this.actual = actual;
+        this.downstream = downstream;
     }
 
     @Override
@@ -43,11 +43,11 @@ public final class ResumeSingleObserver<T> implements SingleObserver<T> {
 
     @Override
     public void onSuccess(T value) {
-        actual.onSuccess(value);
+        downstream.onSuccess(value);
     }
 
     @Override
     public void onError(Throwable e) {
-        actual.onError(e);
+        downstream.onError(e);
     }
 }

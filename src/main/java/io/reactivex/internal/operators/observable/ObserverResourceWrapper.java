@@ -23,48 +23,48 @@ public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable
 
     private static final long serialVersionUID = -8612022020200669122L;
 
-    final Observer<? super T> actual;
+    final Observer<? super T> downstream;
 
-    final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
+    final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
 
-    public ObserverResourceWrapper(Observer<? super T> actual) {
-        this.actual = actual;
+    public ObserverResourceWrapper(Observer<? super T> downstream) {
+        this.downstream = downstream;
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        if (DisposableHelper.setOnce(subscription, s)) {
-            actual.onSubscribe(this);
+    public void onSubscribe(Disposable d) {
+        if (DisposableHelper.setOnce(upstream, d)) {
+            downstream.onSubscribe(this);
         }
     }
 
     @Override
     public void onNext(T t) {
-        actual.onNext(t);
+        downstream.onNext(t);
     }
 
     @Override
     public void onError(Throwable t) {
         dispose();
-        actual.onError(t);
+        downstream.onError(t);
     }
 
     @Override
     public void onComplete() {
         dispose();
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     @Override
     public void dispose() {
-        DisposableHelper.dispose(subscription);
+        DisposableHelper.dispose(upstream);
 
         DisposableHelper.dispose(this);
     }
 
     @Override
     public boolean isDisposed() {
-        return subscription.get() == DisposableHelper.DISPOSED;
+        return upstream.get() == DisposableHelper.DISPOSED;
     }
 
     public void setResource(Disposable resource) {

@@ -22,6 +22,10 @@ import io.reactivex.schedulers.Schedulers;
 @Test
 public class BehaviorProcessorAsPublisherTckTest extends BaseTck<Integer> {
 
+    public BehaviorProcessorAsPublisherTckTest() {
+        super(50);
+    }
+
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();

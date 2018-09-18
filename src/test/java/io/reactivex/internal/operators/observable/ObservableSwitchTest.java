@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -26,15 +27,14 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.schedulers.*;
+import io.reactivex.subjects.*;
 
 public class ObservableSwitchTest {
 
@@ -484,7 +484,6 @@ public class ObservableSwitchTest {
         Assert.assertEquals(250, to.valueCount());
     }
 
-
     @Test
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
@@ -608,7 +607,6 @@ public class ObservableSwitchTest {
 
     }
 
-
     @Test
     public void switchMapInnerCancelled() {
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -664,9 +662,9 @@ public class ObservableSwitchTest {
             public SingleSource<Integer> apply(Object v) throws Exception {
                 return new SingleSource<Integer>() {
                     @Override
-                    public void subscribe(SingleObserver<? super Integer> s) {
-                        s.onSubscribe(Disposables.empty());
-                        s.onSuccess(1);
+                    public void subscribe(SingleObserver<? super Integer> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        observer.onSuccess(1);
                     }
                 };
             }
@@ -1121,6 +1119,7 @@ public class ObservableSwitchTest {
                         throw new TestException();
                     }
                 })
+                .compose(TestHelper.<Integer>observableStripBoundary())
         ))
         .test();
 
@@ -1148,6 +1147,7 @@ public class ObservableSwitchTest {
                         throw new TestException();
                     }
                 })
+                .compose(TestHelper.<Integer>observableStripBoundary())
         ))
         .test();
 
@@ -1165,5 +1165,31 @@ public class ObservableSwitchTest {
         .assertFailure(TestException.class);
 
         assertFalse(ps.hasObservers());
+    }
+
+    @Test
+    public void fusedBoundary() {
+        String thread = Thread.currentThread().getName();
+
+        Observable.range(1, 10000)
+        .switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
+            @Override
+            public ObservableSource<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Observable.just(2).hide()
+                .observeOn(Schedulers.single())
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer w) throws Exception {
+                        return Thread.currentThread().getName();
+                    }
+                });
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNever(thread)
+        .assertNoErrors()
+        .assertComplete();
     }
 }

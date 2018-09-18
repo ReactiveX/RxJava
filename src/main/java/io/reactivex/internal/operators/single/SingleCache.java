@@ -43,9 +43,9 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        CacheDisposable<T> d = new CacheDisposable<T>(s, this);
-        s.onSubscribe(d);
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        CacheDisposable<T> d = new CacheDisposable<T>(observer, this);
+        observer.onSubscribe(d);
 
         if (add(d)) {
             if (d.isDisposed()) {
@@ -54,9 +54,9 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
         } else {
             Throwable ex = error;
             if (ex != null) {
-                s.onError(ex);
+                observer.onError(ex);
             } else {
-                s.onSuccess(value);
+                observer.onSuccess(value);
             }
             return;
         }
@@ -131,7 +131,7 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
 
         for (CacheDisposable<T> d : observers.getAndSet(TERMINATED)) {
             if (!d.isDisposed()) {
-                d.actual.onSuccess(value);
+                d.downstream.onSuccess(value);
             }
         }
     }
@@ -143,7 +143,7 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
 
         for (CacheDisposable<T> d : observers.getAndSet(TERMINATED)) {
             if (!d.isDisposed()) {
-                d.actual.onError(e);
+                d.downstream.onError(e);
             }
         }
     }
@@ -154,12 +154,12 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
 
         private static final long serialVersionUID = 7514387411091976596L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SingleCache<T> parent;
 
         CacheDisposable(SingleObserver<? super T> actual, SingleCache<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 

@@ -128,4 +128,17 @@ public final class ObjectHelper {
             return ObjectHelper.equals(o1, o2);
         }
     }
+
+    /**
+     * Trap null-check attempts on primitives.
+     * @param value the value to check
+     * @param message the message to print
+     * @return the value
+     * @deprecated this method should not be used as there is no need
+     * to check primitives for nullness.
+     */
+    @Deprecated
+    public static long requireNonNull(long value, String message) {
+        throw new InternalError("Null check on a primitive: " + message);
+    }
 }

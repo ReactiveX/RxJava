@@ -35,50 +35,50 @@ public final class MaybeIgnoreElement<T> extends AbstractMaybeWithUpstream<T, T>
 
     static final class IgnoreMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        IgnoreMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        IgnoreMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            actual.onComplete();
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            actual.onComplete();
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onComplete();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
     }

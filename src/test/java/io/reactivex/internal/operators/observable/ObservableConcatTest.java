@@ -155,7 +155,6 @@ public class ObservableConcatTest {
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
 
-
         Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
@@ -471,7 +470,7 @@ public class ObservableConcatTest {
 
     static class TestObservable<T> implements ObservableSource<T> {
 
-        private final Disposable s = new Disposable() {
+        private final Disposable upstream = new Disposable() {
             @Override
             public void dispose() {
                     subscribed = false;
@@ -514,7 +513,7 @@ public class ObservableConcatTest {
 
         @Override
         public void subscribe(final Observer<? super T> observer) {
-            observer.onSubscribe(s);
+            observer.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -623,6 +622,7 @@ public class ObservableConcatTest {
         inOrder.verify(o).onSuccess(list);
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
@@ -663,11 +663,11 @@ public class ObservableConcatTest {
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onNext("hello");
-                s.onComplete();
-                s.onComplete();
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext("hello");
+                observer.onComplete();
+                observer.onComplete();
             }
 
         });

@@ -26,7 +26,6 @@ public final class ForEachWhileObserver<T>
 extends AtomicReference<Disposable>
 implements Observer<T>, Disposable {
 
-
     private static final long serialVersionUID = -4403180040475402120L;
 
     final Predicate<? super T> onNext;
@@ -45,8 +44,8 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        DisposableHelper.setOnce(this, s);
+    public void onSubscribe(Disposable d) {
+        DisposableHelper.setOnce(this, d);
     }
 
     @Override

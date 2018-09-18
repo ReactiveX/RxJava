@@ -50,7 +50,7 @@ extends AbstractObservableWithUpstream<T, U> {
         final Callable<U> bufferSupplier;
         final Callable<? extends ObservableSource<B>> boundarySupplier;
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
@@ -64,11 +64,11 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                Observer<? super U> actual = this.actual;
+                Observer<? super U> actual = this.downstream;
 
                 U b;
 
@@ -77,7 +77,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
-                    s.dispose();
+                    d.dispose();
                     EmptyDisposable.error(e, actual);
                     return;
                 }
@@ -91,7 +91,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancelled = true;
-                    s.dispose();
+                    d.dispose();
                     EmptyDisposable.error(ex, actual);
                     return;
                 }
@@ -121,7 +121,7 @@ extends AbstractObservableWithUpstream<T, U> {
         @Override
         public void onError(Throwable t) {
             dispose();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -137,7 +137,7 @@ extends AbstractObservableWithUpstream<T, U> {
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainLoop(queue, actual, false, this, this);
+                QueueDrainHelper.drainLoop(queue, downstream, false, this, this);
             }
         }
 
@@ -145,7 +145,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                s.dispose();
+                upstream.dispose();
                 disposeOther();
 
                 if (enter()) {
@@ -172,7 +172,7 @@ extends AbstractObservableWithUpstream<T, U> {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -183,8 +183,8 @@ extends AbstractObservableWithUpstream<T, U> {
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;
-                s.dispose();
-                actual.onError(ex);
+                upstream.dispose();
+                downstream.onError(ex);
                 return;
             }
 
@@ -208,7 +208,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void accept(Observer<? super U> a, U v) {
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
     }

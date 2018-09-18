@@ -46,7 +46,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super R> s) {
+    public void subscribeActual(Observer<? super R> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -64,18 +64,18 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
 
         if (count == 0) {
-            EmptyDisposable.complete(s);
+            EmptyDisposable.complete(observer);
             return;
         }
 
-        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(s, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(observer, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = 2983708048395377667L;
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
         final Function<? super Object[], ? extends R> zipper;
         final ZipObserver<T, R>[] observers;
         final T[] row;
@@ -87,7 +87,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         ZipCoordinator(Observer<? super R> actual,
                 Function<? super Object[], ? extends R> zipper,
                 int count, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.zipper = zipper;
             this.observers = new ZipObserver[count];
             this.row = (T[])new Object[count];
@@ -102,7 +102,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             }
             // this makes sure the contents of the observers array is visible
             this.lazySet(0);
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
             for (int i = 0; i < len; i++) {
                 if (cancelled) {
                     return;
@@ -152,7 +152,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             int missing = 1;
 
             final ZipObserver<T, R>[] zs = observers;
-            final Observer<? super R> a = actual;
+            final Observer<? super R> a = downstream;
             final T[] os = row;
             final boolean delayError = this.delayError;
 
@@ -259,15 +259,16 @@ public final class ObservableZip<T, R> extends Observable<R> {
         volatile boolean done;
         Throwable error;
 
-        final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
 
         ZipObserver(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
+
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this.s, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
@@ -290,7 +291,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
 
         public void dispose() {
-            DisposableHelper.dispose(s);
+            DisposableHelper.dispose(upstream);
         }
     }
 }

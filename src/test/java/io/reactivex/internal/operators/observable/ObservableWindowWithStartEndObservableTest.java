@@ -404,11 +404,11 @@ public class ObservableWindowWithStartEndObservableTest {
                     return new Observable<Integer>() {
                         @Override
                         protected void subscribeActual(
-                                Observer<? super Integer> s) {
-                            s.onSubscribe(Disposables.empty());
-                            s.onNext(1);
-                            s.onNext(2);
-                            s.onError(new TestException());
+                                Observer<? super Integer> observer) {
+                            observer.onSubscribe(Disposables.empty());
+                            observer.onNext(1);
+                            observer.onNext(2);
+                            observer.onError(new TestException());
                         }
                     };
                 }

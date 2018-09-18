@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -29,11 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps the upstream values into {@link CompletableSource}s, subscribes to the newer one while
  * disposing the subscription to the previous {@code CompletableSource}, thus keeping at most one
  * active {@code CompletableSource} running.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream value type
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableSwitchMapCompletable<T> extends Completable {
 
     final Observable<T> source;
@@ -50,9 +48,9 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, s)) {
-            source.subscribe(new SwitchMapCompletableObserver<T>(s, mapper, delayErrors));
+    protected void subscribeActual(CompletableObserver observer) {
+        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
+            source.subscribe(new SwitchMapCompletableObserver<T>(observer, mapper, delayErrors));
         }
     }
 
@@ -84,9 +82,9 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                this.upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                this.upstream = d;
                 downstream.onSubscribe(this);
             }
         }

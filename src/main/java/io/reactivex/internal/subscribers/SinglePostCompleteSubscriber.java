@@ -32,10 +32,10 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
     private static final long serialVersionUID = 7917814472626990048L;
 
     /** The downstream consumer. */
-    protected final Subscriber<? super R> actual;
+    protected final Subscriber<? super R> downstream;
 
     /** The upstream subscription. */
-    protected Subscription s;
+    protected Subscription upstream;
 
     /** The last value stored in case there is no request for it. */
     protected R value;
@@ -48,15 +48,15 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
     /** Masks out the lower 63 bit holding the current request amount. */
     static final long REQUEST_MASK = Long.MAX_VALUE;
 
-    public SinglePostCompleteSubscriber(Subscriber<? super R> actual) {
-        this.actual = actual;
+    public SinglePostCompleteSubscriber(Subscriber<? super R> downstream) {
+        this.downstream = downstream;
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
-            this.s = s;
-            actual.onSubscribe(this);
+        if (SubscriptionHelper.validate(this.upstream, s)) {
+            this.upstream = s;
+            downstream.onSubscribe(this);
         }
     }
 
@@ -78,8 +78,8 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
             }
             if ((r & REQUEST_MASK) != 0) {
                 lazySet(COMPLETE_MASK + 1);
-                actual.onNext(n);
-                actual.onComplete();
+                downstream.onNext(n);
+                downstream.onComplete();
                 return;
             }
             value = n;
@@ -105,14 +105,14 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
                 long r = get();
                 if ((r & COMPLETE_MASK) != 0) {
                     if (compareAndSet(COMPLETE_MASK, COMPLETE_MASK + 1)) {
-                        actual.onNext(value);
-                        actual.onComplete();
+                        downstream.onNext(value);
+                        downstream.onComplete();
                     }
                     break;
                 }
                 long u = BackpressureHelper.addCap(r, n);
                 if (compareAndSet(r, u)) {
-                    s.request(n);
+                    upstream.request(n);
                     break;
                 }
             }
@@ -121,6 +121,6 @@ public abstract class SinglePostCompleteSubscriber<T, R> extends AtomicLong impl
 
     @Override
     public void cancel() {
-        s.cancel();
+        upstream.cancel();
     }
 }

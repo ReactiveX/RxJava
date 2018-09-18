@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -29,12 +28,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps the upstream items into {@link MaybeSource}s and switches (subscribes) to the newer ones
  * while disposing the older ones and emits the latest success value if available, optionally delaying
  * errors from the main source or the inner sources.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream value type
  * @param <R> the downstream value type
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
     final Observable<T> source;
@@ -52,9 +50,9 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, s)) {
-            source.subscribe(new SwitchMapMaybeMainObserver<T, R>(s, mapper, delayErrors));
+    protected void subscribeActual(Observer<? super R> observer) {
+        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, observer)) {
+            source.subscribe(new SwitchMapMaybeMainObserver<T, R>(observer, mapper, delayErrors));
         }
     }
 
@@ -93,9 +91,9 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                upstream = d;
                 downstream.onSubscribe(this);
             }
         }

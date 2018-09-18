@@ -24,7 +24,6 @@ import io.reactivex.internal.schedulers.ExecutorScheduler.DelayedRunnable;
 
 public class ExecutorSchedulerDelayedRunnableTest {
 
-
     @Test(expected = TestException.class)
     public void delayedRunnableCrash() {
         DelayedRunnable dl = new DelayedRunnable(new Runnable() {

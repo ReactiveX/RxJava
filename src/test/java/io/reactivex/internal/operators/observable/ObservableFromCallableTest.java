@@ -310,7 +310,4 @@ public class ObservableFromCallableTest {
                 .test()
                 .assertResult(1);
     }
-
-
-
 }

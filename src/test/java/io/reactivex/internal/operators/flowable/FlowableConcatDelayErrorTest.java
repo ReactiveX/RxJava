@@ -216,7 +216,6 @@ public class FlowableConcatDelayErrorTest {
         return source.concatWith(Flowable.<T>error(new TestException()));
     }
 
-
     @Test
     public void concatDelayErrorFlowable() {
         TestSubscriber<Integer> ts = TestSubscriber.create();

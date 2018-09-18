@@ -32,54 +32,54 @@ public final class FlowableDetach<T> extends AbstractFlowableWithUpstream<T, T> 
 
     static final class DetachSubscriber<T> implements FlowableSubscriber<T>, Subscription {
 
-        Subscriber<? super T> actual;
+        Subscriber<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
-        DetachSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        DetachSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            Subscription s = this.s;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asSubscriber();
+            Subscription s = this.upstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asSubscriber();
             s.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            Subscriber<? super T> a = actual;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asSubscriber();
+            Subscriber<? super T> a = downstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asSubscriber();
             a.onError(t);
         }
 
         @Override
         public void onComplete() {
-            Subscriber<? super T> a = actual;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asSubscriber();
+            Subscriber<? super T> a = downstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asSubscriber();
             a.onComplete();
         }
     }

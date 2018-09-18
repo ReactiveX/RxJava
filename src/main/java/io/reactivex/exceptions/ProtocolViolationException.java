@@ -13,15 +13,12 @@
 
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.Beta;
-
 /**
  * Explicitly named exception to indicate a Reactive-Streams
  * protocol violation.
- * <p>History: 2.0.6 - experimental
- * @since 2.1 - beta
+ * <p>History: 2.0.6 - experimental; 2.1 - beta
+ * @since 2.2
  */
-@Beta
 public final class ProtocolViolationException extends IllegalStateException {
 
     private static final long serialVersionUID = 1644750035281290266L;

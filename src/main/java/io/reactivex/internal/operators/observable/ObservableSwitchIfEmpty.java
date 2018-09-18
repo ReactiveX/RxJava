@@ -32,22 +32,22 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
     }
 
     static final class SwitchIfEmptyObserver<T> implements Observer<T> {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final ObservableSource<? extends T> other;
         final SequentialDisposable arbiter;
 
         boolean empty;
 
         SwitchIfEmptyObserver(Observer<? super T> actual, ObservableSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
             this.empty = true;
             this.arbiter = new SequentialDisposable();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            arbiter.update(s);
+        public void onSubscribe(Disposable d) {
+            arbiter.update(d);
         }
 
         @Override
@@ -55,12 +55,12 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
             if (empty) {
                 empty = false;
             }
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -69,7 +69,7 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
                 empty = false;
                 other.subscribe(this);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

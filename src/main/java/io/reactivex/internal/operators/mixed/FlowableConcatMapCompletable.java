@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -31,12 +30,12 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Maps the upstream intems into {@link CompletableSource}s and subscribes to them one after the
+ * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
  * other completes or terminates (in error-delaying mode).
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream value type
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class FlowableConcatMapCompletable<T> extends Completable {
 
     final Flowable<T> source;
@@ -58,8 +57,8 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new ConcatMapCompletableObserver<T>(s, mapper, errorMode, prefetch));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new ConcatMapCompletableObserver<T>(observer, mapper, errorMode, prefetch));
     }
 
     static final class ConcatMapCompletableObserver<T>

@@ -36,24 +36,24 @@ public final class SingleTimer extends Single<Long> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super Long> s) {
-        TimerDisposable parent = new TimerDisposable(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(final SingleObserver<? super Long> observer) {
+        TimerDisposable parent = new TimerDisposable(observer);
+        observer.onSubscribe(parent);
         parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
         private static final long serialVersionUID = 8465401857522493082L;
-        final SingleObserver<? super Long> actual;
+        final SingleObserver<? super Long> downstream;
 
-        TimerDisposable(final SingleObserver<? super Long> actual) {
-            this.actual = actual;
+        TimerDisposable(final SingleObserver<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void run() {
-            actual.onSuccess(0L);
+            downstream.onSuccess(0L);
         }
 
         @Override

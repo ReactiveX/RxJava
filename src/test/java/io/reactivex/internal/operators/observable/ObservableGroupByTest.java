@@ -993,10 +993,8 @@ public class ObservableGroupByTest {
         Observable<GroupedObservable<Boolean, Long>> stream = source.groupBy(IS_EVEN);
 
         // create two observers
-        @SuppressWarnings("unchecked")
-        DefaultObserver<GroupedObservable<Boolean, Long>> o1 = mock(DefaultObserver.class);
-        @SuppressWarnings("unchecked")
-        DefaultObserver<GroupedObservable<Boolean, Long>> o2 = mock(DefaultObserver.class);
+        Observer<GroupedObservable<Boolean, Long>> o1 = TestHelper.mockObserver();
+        Observer<GroupedObservable<Boolean, Long>> o2 = TestHelper.mockObserver();
 
         // subscribe with the observers
         stream.subscribe(o1);
@@ -1222,8 +1220,7 @@ public class ObservableGroupByTest {
 
         inner.get().subscribe();
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o2 = mock(DefaultObserver.class);
+        Observer<Integer> o2 = TestHelper.mockObserver();
 
         inner.get().subscribe(o2);
 
@@ -1373,12 +1370,12 @@ public class ObservableGroupByTest {
 
     @Test
     public void testGroupByUnsubscribe() {
-        final Disposable s = mock(Disposable.class);
+        final Disposable upstream = mock(Disposable.class);
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(s);
+                        observer.onSubscribe(upstream);
                     }
                 }
         );
@@ -1394,7 +1391,7 @@ public class ObservableGroupByTest {
 
         to.dispose();
 
-        verify(s).dispose();
+        verify(upstream).dispose();
     }
 
     @Test

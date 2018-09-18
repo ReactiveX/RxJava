@@ -34,13 +34,13 @@ public class FlowableSkipTest {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(-99);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -48,13 +48,13 @@ public class FlowableSkipTest {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(0);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -62,13 +62,13 @@ public class FlowableSkipTest {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(1);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
+        verify(subscriber, never()).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -76,13 +76,13 @@ public class FlowableSkipTest {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(2);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, never()).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
+        verify(subscriber, never()).onNext("one");
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -91,11 +91,11 @@ public class FlowableSkipTest {
         Flowable<String> w = Flowable.empty();
         Flowable<String> skip = w.skip(1);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
+        verify(subscriber, never()).onNext(any(String.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -104,19 +104,19 @@ public class FlowableSkipTest {
         Flowable<String> skip = Flowable.just("one", "two", "three")
                 .skip(2);
 
-        Subscriber<String> observer1 = TestHelper.mockSubscriber();
-        skip.subscribe(observer1);
+        Subscriber<String> subscriber1 = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber1);
 
-        Subscriber<String> observer2 = TestHelper.mockSubscriber();
-        skip.subscribe(observer2);
+        Subscriber<String> subscriber2 = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber2);
 
-        verify(observer1, times(1)).onNext(any(String.class));
-        verify(observer1, never()).onError(any(Throwable.class));
-        verify(observer1, times(1)).onComplete();
+        verify(subscriber1, times(1)).onNext(any(String.class));
+        verify(subscriber1, never()).onError(any(Throwable.class));
+        verify(subscriber1, times(1)).onComplete();
 
-        verify(observer2, times(1)).onNext(any(String.class));
-        verify(observer2, never()).onError(any(Throwable.class));
-        verify(observer2, times(1)).onComplete();
+        verify(subscriber2, times(1)).onNext(any(String.class));
+        verify(subscriber2, never()).onError(any(Throwable.class));
+        verify(subscriber2, times(1)).onComplete();
     }
 
     @Test
@@ -129,12 +129,12 @@ public class FlowableSkipTest {
 
         Flowable<String> skip = Flowable.concat(ok, error).skip(100);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        skip.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        skip.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, times(1)).onError(e);
-        verify(observer, never()).onComplete();
+        verify(subscriber, never()).onNext(any(String.class));
+        verify(subscriber, times(1)).onError(e);
+        verify(subscriber, never()).onComplete();
 
     }
 
@@ -179,9 +179,9 @@ public class FlowableSkipTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o)
+            public Flowable<Object> apply(Flowable<Object> f)
                     throws Exception {
-                return o.skip(1);
+                return f.skip(1);
             }
         });
     }

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.maybe;
 
-
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamCompletableSource;

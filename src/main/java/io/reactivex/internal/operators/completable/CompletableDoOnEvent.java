@@ -31,8 +31,8 @@ public final class CompletableDoOnEvent extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new DoOnEvent(s));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new DoOnEvent(observer));
     }
 
     final class DoOnEvent implements CompletableObserver {

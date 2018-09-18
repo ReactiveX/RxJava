@@ -70,35 +70,35 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
 
     static final class ParallelMapSubscriber<T, R> implements FlowableSubscriber<T>, Subscription {
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super T, ? extends R> mapper;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ParallelMapSubscriber(Subscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -118,7 +118,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
 
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -128,7 +128,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -137,41 +137,41 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }
     static final class ParallelMapConditionalSubscriber<T, R> implements ConditionalSubscriber<T>, Subscription {
 
-        final ConditionalSubscriber<? super R> actual;
+        final ConditionalSubscriber<? super R> downstream;
 
         final Function<? super T, ? extends R> mapper;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ParallelMapConditionalSubscriber(ConditionalSubscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -191,7 +191,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
 
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -210,7 +210,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return false;
             }
 
-            return actual.tryOnNext(v);
+            return downstream.tryOnNext(v);
         }
 
         @Override
@@ -220,7 +220,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -229,7 +229,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }

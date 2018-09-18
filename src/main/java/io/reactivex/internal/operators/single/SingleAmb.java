@@ -32,7 +32,7 @@ public final class SingleAmb<T> extends Single<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
         SingleSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -40,7 +40,7 @@ public final class SingleAmb<T> extends Single<T> {
             try {
                 for (SingleSource<? extends T> element : sourcesIterable) {
                     if (element == null) {
-                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), s);
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), observer);
                         return;
                     }
                     if (count == sources.length) {
@@ -52,7 +52,7 @@ public final class SingleAmb<T> extends Single<T> {
                 }
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                EmptyDisposable.error(e, s);
+                EmptyDisposable.error(e, observer);
                 return;
             }
         } else {
@@ -61,8 +61,8 @@ public final class SingleAmb<T> extends Single<T> {
 
         final CompositeDisposable set = new CompositeDisposable();
 
-        AmbSingleObserver<T> shared = new AmbSingleObserver<T>(s, set);
-        s.onSubscribe(set);
+        AmbSingleObserver<T> shared = new AmbSingleObserver<T>(observer, set);
+        observer.onSubscribe(set);
 
         for (int i = 0; i < count; i++) {
             SingleSource<? extends T> s1 = sources[i];
@@ -74,7 +74,7 @@ public final class SingleAmb<T> extends Single<T> {
                 set.dispose();
                 Throwable e = new NullPointerException("One of the sources is null");
                 if (shared.compareAndSet(false, true)) {
-                    s.onError(e);
+                    observer.onError(e);
                 } else {
                     RxJavaPlugins.onError(e);
                 }
@@ -91,10 +91,10 @@ public final class SingleAmb<T> extends Single<T> {
 
         final CompositeDisposable set;
 
-        final SingleObserver<? super T> s;
+        final SingleObserver<? super T> downstream;
 
-        AmbSingleObserver(SingleObserver<? super T> s, CompositeDisposable set) {
-            this.s = s;
+        AmbSingleObserver(SingleObserver<? super T> observer, CompositeDisposable set) {
+            this.downstream = observer;
             this.set = set;
         }
 
@@ -107,7 +107,7 @@ public final class SingleAmb<T> extends Single<T> {
         public void onSuccess(T value) {
             if (compareAndSet(false, true)) {
                 set.dispose();
-                s.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 
@@ -115,7 +115,7 @@ public final class SingleAmb<T> extends Single<T> {
         public void onError(Throwable e) {
             if (compareAndSet(false, true)) {
                 set.dispose();
-                s.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }

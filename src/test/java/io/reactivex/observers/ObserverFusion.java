@@ -150,7 +150,6 @@ public enum ObserverFusion {
         return new AssertFusionConsumer<T>(mode);
     }
 
-
     /**
      * Constructs a TestObserver with the given required fusion mode.
      * @param <T> the value type

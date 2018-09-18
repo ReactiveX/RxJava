@@ -39,13 +39,13 @@ public class ReplayProcessorConcurrencyTest {
                 Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
-                    public void subscribe(Subscriber<? super Long> o) {
+                    public void subscribe(Subscriber<? super Long> subscriber) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
+                            subscriber.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 }).subscribe(replay);
             }
@@ -148,13 +148,13 @@ public class ReplayProcessorConcurrencyTest {
                 Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
-                    public void subscribe(Subscriber<? super Long> o) {
+                    public void subscribe(Subscriber<? super Long> subscriber) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
+                            subscriber.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 }).subscribe(replay);
             }
@@ -318,6 +318,7 @@ public class ReplayProcessorConcurrencyTest {
             }
         }
     }
+
     @Test
     public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
@@ -391,6 +392,7 @@ public class ReplayProcessorConcurrencyTest {
             worker.dispose();
         }
     }
+
     @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.create();

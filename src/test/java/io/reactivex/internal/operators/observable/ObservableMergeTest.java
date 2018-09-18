@@ -133,14 +133,14 @@ public class ObservableMergeTest {
             @Override
             public void subscribe(final Observer<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable s = Disposables.fromRunnable(new Runnable() {
+                final Disposable upstream = Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("*** unsubscribed");
                         unsubscribed.set(true);
                     }
                 });
-                observer.onSubscribe(s);
+                observer.onSubscribe(upstream);
 
                 new Thread(new Runnable() {
 
@@ -343,7 +343,7 @@ public class ObservableMergeTest {
         Observable<String> o1 = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> observer) {
                 throw new RuntimeException("fail");
             }
 
@@ -502,12 +502,12 @@ public class ObservableMergeTest {
                 .take(5)
                 .subscribe(new Observer<Long>() {
                     @Override
-                    public void onSubscribe(final Disposable s) {
+                    public void onSubscribe(final Disposable d) {
                         child.onSubscribe(Disposables.fromRunnable(new Runnable() {
                             @Override
                             public void run() {
                                 unsubscribed.set(true);
-                                s.dispose();
+                                d.dispose();
                             }
                         }));
                     }
@@ -559,13 +559,13 @@ public class ObservableMergeTest {
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
-            public void subscribe(final Observer<? super Integer> s) {
+            public void subscribe(final Observer<? super Integer> observer) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(Disposables.empty());
                 as.add(inner);
 
-                s.onSubscribe(as);
+                observer.onSubscribe(as);
 
                 inner.schedule(new Runnable() {
 
@@ -573,7 +573,7 @@ public class ObservableMergeTest {
                     public void run() {
                         try {
                             for (int i = 0; i < 100; i++) {
-                                s.onNext(1);
+                                observer.onNext(1);
                                 try {
                                     Thread.sleep(1);
                                 } catch (InterruptedException e) {
@@ -581,10 +581,10 @@ public class ObservableMergeTest {
                                 }
                             }
                         } catch (Exception e) {
-                            s.onError(e);
+                            observer.onError(e);
                         }
                         as.dispose();
-                        s.onComplete();
+                        observer.onComplete();
                     }
 
                 });
@@ -609,13 +609,13 @@ public class ObservableMergeTest {
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
-            public void subscribe(final Observer<? super Integer> s) {
+            public void subscribe(final Observer<? super Integer> observer) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(Disposables.empty());
                 as.add(inner);
 
-                s.onSubscribe(as);
+                observer.onSubscribe(as);
 
                 inner.schedule(new Runnable() {
 
@@ -623,15 +623,15 @@ public class ObservableMergeTest {
                     public void run() {
                         try {
                             for (int i = 0; i < 10000; i++) {
-                                s.onNext(i);
+                                observer.onNext(i);
                             }
                         } catch (Exception e) {
-                            s.onError(e);
+                            observer.onError(e);
                         }
                         as.dispose();
-                        s.onComplete();
-                        s.onComplete();
-                        s.onComplete();
+                        observer.onComplete();
+                        observer.onComplete();
+                        observer.onComplete();
                     }
 
                 });
@@ -840,8 +840,8 @@ public class ObservableMergeTest {
         Observable<String> bad = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onNext("two");
+            public void subscribe(Observer<? super String> observer) {
+                observer.onNext("two");
                 // FIXME can't cancel downstream
 //                s.unsubscribe();
 //                s.onComplete();
@@ -1023,8 +1023,8 @@ public class ObservableMergeTest {
                 return Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                     @Override
-                    public void subscribe(Observer<? super Integer> s) {
-                        s.onSubscribe(Disposables.empty());
+                    public void subscribe(Observer<? super Integer> observer) {
+                        observer.onSubscribe(Disposables.empty());
                         if (i < 500) {
                             try {
                                 Thread.sleep(1);
@@ -1032,8 +1032,8 @@ public class ObservableMergeTest {
                                 e.printStackTrace();
                             }
                         }
-                        s.onNext(i);
-                        s.onComplete();
+                        observer.onNext(i);
+                        observer.onComplete();
                     }
 
                 }).subscribeOn(Schedulers.computation()).cache();
@@ -1082,10 +1082,12 @@ public class ObservableMergeTest {
     public void testFastMergeFullScalar() {
         runMerge(toScalar, new TestObserver<Integer>());
     }
+
     @Test
     public void testFastMergeHiddenScalar() {
         runMerge(toHiddenScalar, new TestObserver<Integer>());
     }
+
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
@@ -1103,6 +1105,7 @@ public class ObservableMergeTest {
             runMerge(toScalar, to);
         }
     }
+
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {

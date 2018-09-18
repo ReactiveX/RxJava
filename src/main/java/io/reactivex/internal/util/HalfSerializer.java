@@ -74,7 +74,6 @@ public final class HalfSerializer {
         }
     }
 
-
     /**
      * Emits an onComplete signal or an onError signal with the given error or indicates
      * the concurrently running onNext should do that.

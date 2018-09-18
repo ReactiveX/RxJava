@@ -373,7 +373,6 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void drainFusedFailFast() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-
         TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
 
         us.done = true;
@@ -385,7 +384,6 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void drainFusedFailFastEmpty() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
-
 
         TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
 
@@ -430,7 +428,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void unicastSubscriptionBadRequest() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-        UnicastProcessor<Integer>.UnicastQueueSubscription usc = us.new UnicastQueueSubscription();
+        UnicastProcessor<Integer>.UnicastQueueSubscription usc = (UnicastProcessor<Integer>.UnicastQueueSubscription)us.wip;
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

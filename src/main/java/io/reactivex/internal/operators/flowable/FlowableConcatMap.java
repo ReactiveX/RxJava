@@ -80,7 +80,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         final int limit;
 
-        Subscription s;
+        Subscription upstream;
 
         int consumed;
 
@@ -108,12 +108,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public final void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s))  {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s))  {
+                this.upstream = s;
 
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked") QueueSubscription<T> f = (QueueSubscription<T>)s;
-                    int m = f.requestFusion(QueueSubscription.ANY);
+                    int m = f.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
                         queue = f;
@@ -151,7 +151,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         public final void onNext(T t) {
             if (sourceMode != QueueSubscription.ASYNC) {
                 if (!queue.offer(t)) {
-                    s.cancel();
+                    upstream.cancel();
                     onError(new IllegalStateException("Queue full?!"));
                     return;
                 }
@@ -173,14 +173,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     }
 
-
     static final class ConcatMapImmediate<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
-
         private static final long serialVersionUID = 7898995095634264146L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final AtomicInteger wip;
 
@@ -188,13 +186,13 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 Function<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch) {
             super(mapper, prefetch);
-            this.actual = actual;
+            this.downstream = actual;
             this.wip = new AtomicInteger();
         }
 
         @Override
         void subscribeActual() {
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -203,7 +201,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 inner.cancel();
 
                 if (getAndIncrement() == 0) {
-                    actual.onError(errors.terminate());
+                    downstream.onError(errors.terminate());
                 }
             } else {
                 RxJavaPlugins.onError(t);
@@ -213,21 +211,21 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         @Override
         public void innerNext(R value) {
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(value);
+                downstream.onNext(value);
                 if (compareAndSet(1, 0)) {
                     return;
                 }
-                actual.onError(errors.terminate());
+                downstream.onError(errors.terminate());
             }
         }
 
         @Override
         public void innerError(Throwable e) {
             if (errors.addThrowable(e)) {
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
-                    actual.onError(errors.terminate());
+                    downstream.onError(errors.terminate());
                 }
             } else {
                 RxJavaPlugins.onError(e);
@@ -245,7 +243,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 cancelled = true;
 
                 inner.cancel();
-                s.cancel();
+                upstream.cancel();
             }
         }
 
@@ -266,16 +264,16 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             v = queue.poll();
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
-                            s.cancel();
+                            upstream.cancel();
                             errors.addThrowable(e);
-                            actual.onError(errors.terminate());
+                            downstream.onError(errors.terminate());
                             return;
                         }
 
                         boolean empty = v == null;
 
                         if (d && empty) {
-                            actual.onComplete();
+                            downstream.onComplete();
                             return;
                         }
 
@@ -287,9 +285,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
-                                s.cancel();
+                                upstream.cancel();
                                 errors.addThrowable(e);
-                                actual.onError(errors.terminate());
+                                downstream.onError(errors.terminate());
                                 return;
                             }
 
@@ -297,12 +295,11 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 int c = consumed + 1;
                                 if (c == limit) {
                                     consumed = 0;
-                                    s.request(c);
+                                    upstream.request(c);
                                 } else {
                                     consumed = c;
                                 }
                             }
-
 
                             if (p instanceof Callable) {
                                 @SuppressWarnings("unchecked")
@@ -314,12 +311,11 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     vr = callable.call();
                                 } catch (Throwable e) {
                                     Exceptions.throwIfFatal(e);
-                                    s.cancel();
+                                    upstream.cancel();
                                     errors.addThrowable(e);
-                                    actual.onError(errors.terminate());
+                                    downstream.onError(errors.terminate());
                                     return;
                                 }
-
 
                                 if (vr == null) {
                                     continue;
@@ -327,9 +323,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
                                 if (inner.isUnbounded()) {
                                     if (get() == 0 && compareAndSet(0, 1)) {
-                                        actual.onNext(vr);
+                                        downstream.onNext(vr);
                                         if (!compareAndSet(1, 0)) {
-                                            actual.onError(errors.terminate());
+                                            downstream.onError(errors.terminate());
                                             return;
                                         }
                                     }
@@ -354,20 +350,20 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     }
 
     static final class WeakScalarSubscription<T> implements Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final T value;
         boolean once;
 
-        WeakScalarSubscription(T value, Subscriber<? super T> actual) {
+        WeakScalarSubscription(T value, Subscriber<? super T> downstream) {
             this.value = value;
-            this.actual = actual;
+            this.downstream = downstream;
         }
 
         @Override
         public void request(long n) {
             if (n > 0 && !once) {
                 once = true;
-                Subscriber<? super T> a = actual;
+                Subscriber<? super T> a = downstream;
                 a.onNext(value);
                 a.onComplete();
             }
@@ -382,10 +378,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     static final class ConcatMapDelayed<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
-
         private static final long serialVersionUID = -2945777694260521066L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final boolean veryEnd;
 
@@ -393,13 +388,13 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 Function<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch, boolean veryEnd) {
             super(mapper, prefetch);
-            this.actual = actual;
+            this.downstream = actual;
             this.veryEnd = veryEnd;
         }
 
         @Override
         void subscribeActual() {
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -414,15 +409,14 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void innerNext(R value) {
-            actual.onNext(value);
+            downstream.onNext(value);
         }
-
 
         @Override
         public void innerError(Throwable e) {
             if (errors.addThrowable(e)) {
                 if (!veryEnd) {
-                    s.cancel();
+                    upstream.cancel();
                     done = true;
                 }
                 active = false;
@@ -443,7 +437,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 cancelled = true;
 
                 inner.cancel();
-                s.cancel();
+                upstream.cancel();
             }
         }
 
@@ -463,7 +457,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                         if (d && !veryEnd) {
                             Throwable ex = errors.get();
                             if (ex != null) {
-                                actual.onError(errors.terminate());
+                                downstream.onError(errors.terminate());
                                 return;
                             }
                         }
@@ -474,9 +468,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             v = queue.poll();
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
-                            s.cancel();
+                            upstream.cancel();
                             errors.addThrowable(e);
-                            actual.onError(errors.terminate());
+                            downstream.onError(errors.terminate());
                             return;
                         }
 
@@ -485,9 +479,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                         if (d && empty) {
                             Throwable ex = errors.terminate();
                             if (ex != null) {
-                                actual.onError(ex);
+                                downstream.onError(ex);
                             } else {
-                                actual.onComplete();
+                                downstream.onComplete();
                             }
                             return;
                         }
@@ -500,9 +494,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
-                                s.cancel();
+                                upstream.cancel();
                                 errors.addThrowable(e);
-                                actual.onError(errors.terminate());
+                                downstream.onError(errors.terminate());
                                 return;
                             }
 
@@ -510,7 +504,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 int c = consumed + 1;
                                 if (c == limit) {
                                     consumed = 0;
-                                    s.request(c);
+                                    upstream.request(c);
                                 } else {
                                     consumed = c;
                                 }
@@ -526,9 +520,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     vr = supplier.call();
                                 } catch (Throwable e) {
                                     Exceptions.throwIfFatal(e);
-                                    s.cancel();
+                                    upstream.cancel();
                                     errors.addThrowable(e);
-                                    actual.onError(errors.terminate());
+                                    downstream.onError(errors.terminate());
                                     return;
                                 }
 
@@ -537,7 +531,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 }
 
                                 if (inner.isUnbounded()) {
-                                    actual.onNext(vr);
+                                    downstream.onNext(vr);
                                     continue;
                                 } else {
                                     active = true;
@@ -569,7 +563,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     static final class ConcatMapInner<R>
     extends SubscriptionArbiter
     implements FlowableSubscriber<R> {
-
 
         private static final long serialVersionUID = 897683679971470653L;
 

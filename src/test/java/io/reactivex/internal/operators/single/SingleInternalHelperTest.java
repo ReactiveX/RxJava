@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import io.reactivex.*;
 
-
 public class SingleInternalHelperTest {
 
     @Test

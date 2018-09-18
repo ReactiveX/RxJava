@@ -19,10 +19,9 @@ import io.reactivex.annotations.*;
  * Represents an exception used to signal to the {@code RxJavaPlugins.onError()} that a
  * callback-based subscribe() method on a base reactive type didn't specify
  * an onError handler.
- * <p>History: 2.0.6 - experimental
- * @since 2.1 - beta
+ * <p>History: 2.0.6 - experimental; 2.1 - beta
+ * @since 2.2
  */
-@Beta
 public final class OnErrorNotImplementedException extends RuntimeException {
 
     private static final long serialVersionUID = -6298857009889503852L;
@@ -49,6 +48,6 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
     public OnErrorNotImplementedException(@NonNull Throwable e) {
-        super(e != null ? e.getMessage() : null, e != null ? e : new NullPointerException());
+        this("The exception was not handled due to missing onError handler in the subscribe() method call. Further reading: https://github.com/ReactiveX/RxJava/wiki/Error-Handling | " + (e != null ? e.getMessage() : ""), e);
     }
 }

@@ -31,12 +31,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class SerializedObserver<T> implements Observer<T>, Disposable {
-    final Observer<? super T> actual;
+    final Observer<? super T> downstream;
     final boolean delayError;
 
     static final int QUEUE_LINK_SIZE = 4;
 
-    Disposable s;
+    Disposable upstream;
 
     boolean emitting;
     AppendOnlyLinkedArrayList<Object> queue;
@@ -45,10 +45,10 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
 
     /**
      * Construct a SerializedObserver by wrapping the given actual Observer.
-     * @param actual the actual Observer, not null (not verified)
+     * @param downstream the actual Observer, not null (not verified)
      */
-    public SerializedObserver(@NonNull Observer<? super T> actual) {
-        this(actual, false);
+    public SerializedObserver(@NonNull Observer<? super T> downstream) {
+        this(downstream, false);
     }
 
     /**
@@ -59,30 +59,28 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
      * @param delayError if true, errors are emitted after regular values have been emitted
      */
     public SerializedObserver(@NonNull Observer<? super T> actual, boolean delayError) {
-        this.actual = actual;
+        this.downstream = actual;
         this.delayError = delayError;
     }
 
     @Override
-    public void onSubscribe(@NonNull Disposable s) {
-        if (DisposableHelper.validate(this.s, s)) {
-            this.s = s;
+    public void onSubscribe(@NonNull Disposable d) {
+        if (DisposableHelper.validate(this.upstream, d)) {
+            this.upstream = d;
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
         }
     }
 
-
     @Override
     public void dispose() {
-        s.dispose();
+        upstream.dispose();
     }
 
     @Override
     public boolean isDisposed() {
-        return s.isDisposed();
+        return upstream.isDisposed();
     }
-
 
     @Override
     public void onNext(@NonNull T t) {
@@ -90,7 +88,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             return;
         }
         if (t == null) {
-            s.dispose();
+            upstream.dispose();
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
@@ -110,7 +108,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             emitting = true;
         }
 
-        actual.onNext(t);
+        downstream.onNext(t);
 
         emitLoop();
     }
@@ -152,7 +150,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             return;
         }
 
-        actual.onError(t);
+        downstream.onError(t);
         // no need to loop because this onError is the last event
     }
 
@@ -178,7 +176,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             emitting = true;
         }
 
-        actual.onComplete();
+        downstream.onComplete();
         // no need to loop because this onComplete is the last event
     }
 
@@ -194,7 +192,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
                 queue = null;
             }
 
-            if (q.accept(actual)) {
+            if (q.accept(downstream)) {
                 return;
             }
         }

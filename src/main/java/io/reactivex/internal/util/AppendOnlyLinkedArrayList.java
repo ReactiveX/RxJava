@@ -91,7 +91,7 @@ public class AppendOnlyLinkedArrayList<T> {
                     break;
                 }
                 if (consumer.test((T)o)) {
-                    break;
+                    return;
                 }
             }
             a = (Object[])a[c];
@@ -124,7 +124,6 @@ public class AppendOnlyLinkedArrayList<T> {
         }
         return false;
     }
-
 
     /**
      * Interprets the contents as NotificationLite objects and calls

@@ -159,7 +159,6 @@ public class ObservableDoFinallyTest implements Action {
         assertEquals(1, calls);
     }
 
-
     @Test
     public void normalJustConditional() {
         Observable.just(1)
@@ -355,27 +354,27 @@ public class ObservableDoFinallyTest implements Action {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable s) {
+            public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<Integer> qs = (QueueDisposable<Integer>)s;
+                QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
-                qs.requestFusion(QueueFuseable.ANY);
+                qd.requestFusion(QueueFuseable.ANY);
 
-                assertFalse(qs.isEmpty());
+                assertFalse(qd.isEmpty());
 
                 try {
-                    assertEquals(1, qs.poll().intValue());
+                    assertEquals(1, qd.poll().intValue());
                 } catch (Throwable ex) {
                     throw new RuntimeException(ex);
                 }
 
-                assertFalse(qs.isEmpty());
+                assertFalse(qd.isEmpty());
 
-                qs.clear();
+                qd.clear();
 
-                assertTrue(qs.isEmpty());
+                assertTrue(qd.isEmpty());
 
-                qs.dispose();
+                qd.dispose();
             }
 
             @Override
@@ -402,31 +401,31 @@ public class ObservableDoFinallyTest implements Action {
         .subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable s) {
+            public void onSubscribe(Disposable d) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<Integer> qs = (QueueDisposable<Integer>)s;
+                QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
-                qs.requestFusion(QueueFuseable.ANY);
+                qd.requestFusion(QueueFuseable.ANY);
 
-                assertFalse(qs.isEmpty());
+                assertFalse(qd.isEmpty());
 
-                assertFalse(qs.isDisposed());
+                assertFalse(qd.isDisposed());
 
                 try {
-                    assertEquals(1, qs.poll().intValue());
+                    assertEquals(1, qd.poll().intValue());
                 } catch (Throwable ex) {
                     throw new RuntimeException(ex);
                 }
 
-                assertFalse(qs.isEmpty());
+                assertFalse(qd.isEmpty());
 
-                qs.clear();
+                qd.clear();
 
-                assertTrue(qs.isEmpty());
+                assertTrue(qd.isEmpty());
 
-                qs.dispose();
+                qd.dispose();
 
-                assertTrue(qs.isDisposed());
+                assertTrue(qd.isDisposed());
             }
 
             @Override
@@ -444,7 +443,6 @@ public class ObservableDoFinallyTest implements Action {
 
         assertEquals(1, calls);
     }
-
 
     @Test
     public void eventOrdering() {

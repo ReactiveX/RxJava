@@ -138,7 +138,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
         if (once.compareAndSet(false, true)) {
             this.value = value;
             for (SingleDisposable<T> md : observers.getAndSet(TERMINATED)) {
-                md.actual.onSuccess(value);
+                md.downstream.onSuccess(value);
             }
         }
     }
@@ -150,7 +150,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (SingleDisposable<T> md : observers.getAndSet(TERMINATED)) {
-                md.actual.onError(e);
+                md.downstream.onError(e);
             }
         } else {
             RxJavaPlugins.onError(e);
@@ -289,10 +289,10 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     extends AtomicReference<SingleSubject<T>> implements Disposable {
         private static final long serialVersionUID = -7650903191002190468L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         SingleDisposable(SingleObserver<? super T> actual, SingleSubject<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             lazySet(parent);
         }
 

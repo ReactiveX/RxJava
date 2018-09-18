@@ -48,7 +48,7 @@ extends AbstractObservableWithUpstream<T, U> {
         final Callable<U> bufferSupplier;
         final ObservableSource<B> boundary;
 
-        Disposable s;
+        Disposable upstream;
 
         Disposable other;
 
@@ -62,9 +62,9 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
                 U b;
 
@@ -73,8 +73,8 @@ extends AbstractObservableWithUpstream<T, U> {
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
-                    s.dispose();
-                    EmptyDisposable.error(e, actual);
+                    d.dispose();
+                    EmptyDisposable.error(e, downstream);
                     return;
                 }
 
@@ -83,7 +83,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
                 other = bs;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 if (!cancelled) {
                     boundary.subscribe(bs);
@@ -105,7 +105,7 @@ extends AbstractObservableWithUpstream<T, U> {
         @Override
         public void onError(Throwable t) {
             dispose();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -121,7 +121,7 @@ extends AbstractObservableWithUpstream<T, U> {
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainLoop(queue, actual, false, this, this);
+                QueueDrainHelper.drainLoop(queue, downstream, false, this, this);
             }
         }
 
@@ -130,7 +130,7 @@ extends AbstractObservableWithUpstream<T, U> {
             if (!cancelled) {
                 cancelled = true;
                 other.dispose();
-                s.dispose();
+                upstream.dispose();
 
                 if (enter()) {
                     queue.clear();
@@ -152,7 +152,7 @@ extends AbstractObservableWithUpstream<T, U> {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
@@ -170,7 +170,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void accept(Observer<? super U> a, U v) {
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
     }

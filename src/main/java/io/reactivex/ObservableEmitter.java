@@ -50,15 +50,15 @@ import io.reactivex.functions.Cancellable;
 public interface ObservableEmitter<T> extends Emitter<T> {
 
     /**
-     * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * Sets a Disposable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param d the disposable, null is allowed
      */
     void setDisposable(@Nullable Disposable d);
 
     /**
-     * Sets a Cancellable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * Sets a Cancellable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(@Nullable Cancellable c);
@@ -86,11 +86,11 @@ public interface ObservableEmitter<T> extends Emitter<T> {
      * <p>
      * Unlike {@link #onError(Throwable)}, the {@code RxJavaPlugins.onError} is not called
      * if the error could not be delivered.
+     * <p>History: 2.1.1 - experimental
      * @param t the throwable error to signal if possible
      * @return true if successful, false if the downstream is not able to accept further
      * events
-     * @since 2.1.1 - experimental
+     * @since 2.2
      */
-    @Experimental
     boolean tryOnError(@NonNull Throwable t);
 }

@@ -52,18 +52,17 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3491074160481096299L;
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
         final int bufferSize;
         final boolean delayErrors;
-
 
         volatile boolean done;
         final AtomicThrowable error;
 
         volatile boolean cancelled;
 
-        Subscription s;
+        Subscription upstream;
 
         final AtomicReference<SwitchMapInnerSubscriber<T, R>> active = new AtomicReference<SwitchMapInnerSubscriber<T, R>>();
 
@@ -80,7 +79,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         SwitchMapSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
                         boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.delayErrors = delayErrors;
@@ -89,9 +88,9 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -114,7 +113,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 p = ObjectHelper.requireNonNull(mapper.apply(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
                 return;
             }
@@ -160,7 +159,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
                 if (unique == 0L) {
-                    s.request(Long.MAX_VALUE);
+                    upstream.request(Long.MAX_VALUE);
                 } else {
                     drain();
                 }
@@ -171,7 +170,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
 
                 disposeInner();
             }
@@ -193,7 +192,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 return;
             }
 
-            final Subscriber<? super R> a = actual;
+            final Subscriber<? super R> a = downstream;
 
             int missing = 1;
 
@@ -359,7 +358,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                     @SuppressWarnings("unchecked")
                     QueueSubscription<R> qs = (QueueSubscription<R>) s;
 
-                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    int m = qs.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
                     if (m == QueueSubscription.SYNC) {
                         fusionMode = m;
                         queue = qs;
@@ -398,7 +397,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             SwitchMapSubscriber<T, R> p = parent;
             if (index == p.unique && p.error.addThrowable(t)) {
                 if (!p.delayErrors) {
-                    p.s.cancel();
+                    p.upstream.cancel();
                 }
                 done = true;
                 p.drain();

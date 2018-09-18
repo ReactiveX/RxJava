@@ -29,9 +29,9 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
     @Test
     public void testResumeNext() {
-        Disposable s = mock(Disposable.class);
+        Disposable upstream = mock(Disposable.class);
         // Trigger failure on second element
-        TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
+        TestObservable f = new TestObservable(upstream, "one", "fail", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onErrorResumeNext(resume);
@@ -133,8 +133,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("resume");
         Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<String>(observer);
         observable.subscribe(to);
 
@@ -147,19 +146,19 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
     static class TestObservable implements ObservableSource<String> {
 
-        final Disposable s;
+        final Disposable upstream;
         final String[] values;
         Thread t;
 
-        TestObservable(Disposable s, String... values) {
-            this.s = s;
+        TestObservable(Disposable upstream, String... values) {
+            this.upstream = upstream;
             this.values = values;
         }
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            observer.onSubscribe(s);
+            observer.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override
