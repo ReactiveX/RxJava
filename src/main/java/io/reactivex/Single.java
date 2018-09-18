@@ -3880,9 +3880,6 @@ public abstract class Single<T> implements SingleSource<T> {
         return zip(this, other, zipper);
     }
 
-
-
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, R> Single<R> zipWith(SingleSource<? extends U1> source1, SingleSource<? extends U2> source2,
@@ -3958,7 +3955,6 @@ public abstract class Single<T> implements SingleSource<T> {
 
     }
 
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Single<R> zipWith(SingleSource<? extends U1> source1, SingleSource<? extends U2> source2, SingleSource<? extends U3> source3, SingleSource<? extends U4> source4, SingleSource<? extends U5> source5, SingleSource<? extends U6> source6, SingleSource<? extends U7> source7, SingleSource<? extends U8> source8,
@@ -3974,8 +3970,6 @@ public abstract class Single<T> implements SingleSource<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
 
     }
-
-
 
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate

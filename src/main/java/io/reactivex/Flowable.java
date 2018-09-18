@@ -4703,6 +4703,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7);
     }
+
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4869,6 +4870,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7);
     }
+
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -18300,7 +18302,6 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     }
 
-
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -18317,7 +18318,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
 
     }
-
 
     /**
      * Returns a Flowable that emits items that are the result of applying a specified function to pairs of
@@ -18449,7 +18449,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError);
 
     }
-
 
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -18600,7 +18599,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError, bufferSize);
 
     }
-
 
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)

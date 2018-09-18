@@ -4299,6 +4299,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7);
     }
+
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Observable<R> zip(
@@ -4452,6 +4453,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7);
     }
+
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Observable<R> zip(
@@ -15441,7 +15443,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     }
 
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7, ObservableSource<? extends U8> source8,
@@ -15457,7 +15458,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
 
     }
-
 
     /**
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
@@ -15503,7 +15503,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
             BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
         return zip(this, other, zipper, delayError);
     }
-
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -15580,7 +15579,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     }
 
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7, ObservableSource<? extends U8> source8,
@@ -15596,7 +15594,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper,delayError);
 
     }
-
 
     /**
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
@@ -15719,7 +15716,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError, bufferSize);
 
     }
-
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

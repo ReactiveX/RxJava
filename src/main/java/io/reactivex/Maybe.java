@@ -4571,9 +4571,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return zip(this, other, zipper);
     }
 
-
-
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2,
@@ -4617,7 +4614,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
         return zip(this, source1, source2, source3, source4, source5, zipper);
-
     }
 
     @CheckReturnValue
@@ -4631,7 +4627,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
         return zip(this, source1, source2, source3, source4, source5, source6, zipper);
-
     }
 
     @CheckReturnValue
@@ -4649,7 +4644,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     }
 
-
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4, MaybeSource<? extends U5> source5, MaybeSource<? extends U6> source6, MaybeSource<? extends U7> source7, MaybeSource<? extends U8> source8,
@@ -4665,8 +4659,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
 
     }
-
-
 
     // ------------------------------------------------------------------
     // Test helper
