@@ -84,12 +84,12 @@ import io.reactivex.schedulers.*;
  *             System.out.println("Done!");
  *         }
  *     });
- * 
+ *
  * Thread.sleep(500);
  * // the sequence now can be cancelled via dispose()
  * d.dispose();
  * </code></pre>
- * 
+ *
  * @param <T>
  *            the type of the items emitted by the Observable
  * @see Flowable
@@ -4179,6 +4179,102 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,
+            Function3<? super T1, ? super T2,? super T3, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,
+            Function4<? super T1, ? super T2,? super T3,? super T4, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,
+            Function5<? super T1, ? super T2,? super T3,? super T4,? super T5, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,
+            Function6<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,
+            Function7<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7);
+    }
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,ObservableSource<? extends T8> source8,
+            Function8<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7,source8);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8,T9, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,ObservableSource<? extends T8> source8,ObservableSource<? extends T9> source9,
+            Function9<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8,? super T9, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2,source3,source4,source5,source6,source7,source8,source9);
+    }
     /**
      * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other ObservableSources.
@@ -4234,6 +4330,103 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,
+            Function3<? super T1, ? super T2,? super T3, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,
+            Function4<? super T1, ? super T2,? super T3,? super T4, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,
+            Function5<? super T1, ? super T2,? super T3,? super T4,? super T5, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,
+            Function6<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,
+            Function7<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7);
+    }
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,ObservableSource<? extends T8> source8,
+            Function8<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7,source8);
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T1, T2, T3, T4, T5, T6, T7,T8,T9, R> Observable<R> zip(
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,ObservableSource<? extends T3> source3,ObservableSource<? extends T4> source4,ObservableSource<? extends T5> source5,ObservableSource<? extends T6> source6,ObservableSource<? extends T7> source7,ObservableSource<? extends T8> source8,ObservableSource<? extends T9> source9,
+            Function9<? super T1, ? super T2,? super T3,? super T4,? super T5,? super T6,? super T7,? super T8,? super T9, ? extends R> zipper, boolean delayError,int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2,source3,source4,source5,source6,source7,source8,source9);
     }
 
     /**
@@ -9363,7 +9556,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the ObservableOperator.apply():
-     * 
+     *
      * public final class CustomObserver&lt;T&gt; implements Observer&lt;T&gt;, Disposable {
      *
      *     // The donstream's Observer that will receive the onXXX events
@@ -14972,65 +15165,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zip(this, other, zipper);
     }
 
-    /**
-     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
-     * values, one each from the source ObservableSource and another specified ObservableSource.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p>
-     * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will dispose B immediately. For example:
-     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or a dispose() call.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U>
-     *            the type of items emitted by the {@code other} ObservableSource
-     * @param <R>
-     *            the type of items emitted by the resulting ObservableSource
-     * @param other
-     *            the other ObservableSource
-     * @param zipper
-     *            a function that combines the pairs of items from the two ObservableSources to generate the items to
-     *            be emitted by the resulting ObservableSource
-     * @param delayError
-     *            if true, errors from the current Observable or the other ObservableSource is delayed until both terminate
-     * @return an Observable that pairs up values from the source ObservableSource and the {@code other} ObservableSource
-     *         and emits the results of {@code zipFunction} applied to these pairs
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     * @since 2.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
-        return zip(this, other, zipper, delayError);
-    }
-
-
-    //Richard Kollcaku
-    /**
-     * Created by Richard Kollcaku
-     * look at zip
-     *
-     * @param source1
-     * @param source2
-     * @param zipper
-     * @param <U1>
-     * @param <U2>
-     * @param <R>
-     * @return
-     */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U1, U2, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2,
@@ -15155,6 +15289,145 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param zipper
      *            a function that combines the pairs of items from the two ObservableSources to generate the items to
      *            be emitted by the resulting ObservableSource
+     * @param delayError
+     *            if true, errors from the current Observable or the other ObservableSource is delayed until both terminate
+     * @return an Observable that pairs up values from the source ObservableSource and the {@code other} ObservableSource
+     *         and emits the results of {@code zipFunction} applied to these pairs
+     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 2.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other,
+            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
+        return zip(this, other, zipper, delayError);
+    }
+
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2,
+                                                   Function3<? super T, ? super U1, ? super U2, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3,
+                                                       Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4,
+                                                           Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5,
+                                                               Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6,
+                                                                   Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper,delayError);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7,
+                                                                       Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError);
+
+    }
+
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7, ObservableSource<? extends U8> source8,
+                                                                           Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper,delayError);
+
+    }
+
+
+    /**
+     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
+     * values, one each from the source ObservableSource and another specified ObservableSource.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <p>
+     * The operator subscribes to its sources in order they are specified and completes eagerly if
+     * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
+     * is possible those other sources will never be able to run to completion (and thus not calling
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
+     * source A completes and B has been consumed and is about to complete, the operator detects A won't
+     * be sending further values and it will dispose B immediately. For example:
+     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * {@code action1} will be called but {@code action2} won't.
+     * <br>To work around this termination property,
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U>
+     *            the type of items emitted by the {@code other} ObservableSource
+     * @param <R>
+     *            the type of items emitted by the resulting ObservableSource
+     * @param other
+     *            the other ObservableSource
+     * @param zipper
+     *            a function that combines the pairs of items from the two ObservableSources to generate the items to
+     *            be emitted by the resulting ObservableSource
      * @param bufferSize
      *            the capacity hint for the buffer in the inner windows
      * @param delayError
@@ -15171,6 +15444,97 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return zip(this, other, zipper, delayError, bufferSize);
     }
 
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2,
+                                                   Function3<? super T, ? super U1, ? super U2, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3,
+                                                       Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4,
+                                                           Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5,
+                                                               Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6,
+                                                                   Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper,delayError, bufferSize);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7,
+                                                                       Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper,delayError, bufferSize);
+
+    }
+
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Observable<R> zipWith(ObservableSource<? extends U1> source1, ObservableSource<? extends U2> source2, ObservableSource<? extends U3> source3, ObservableSource<? extends U4> source4, ObservableSource<? extends U5> source5, ObservableSource<? extends U6> source6, ObservableSource<? extends U7> source7, ObservableSource<? extends U8> source8,
+                                                                           Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper,delayError, bufferSize);
+
+    }
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------

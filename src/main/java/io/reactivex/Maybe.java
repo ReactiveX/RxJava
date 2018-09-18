@@ -3128,7 +3128,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the MaybeOperator.apply():
-     * 
+     *
      * public final class CustomMaybeObserver&lt;T&gt; implements MaybeObserver&lt;T&gt;, Disposable {
      *
      *     // The donstream's MaybeObserver that will receive the onXXX events
@@ -4479,6 +4479,103 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(other, "other is null");
         return zip(this, other, zipper);
     }
+
+
+
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2,
+                                              Function3<? super T, ? super U1, ? super U2, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zip(this, source1, source2, zipper);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3,
+                                                  Function4<? super T, ? super U1, ? super U2, ? super U3, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zip(this, source1, source2, source3, zipper);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4,
+                                                      Function5<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zip(this, source1, source2, source3, source4, zipper);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4, MaybeSource<? extends U5> source5,
+                                                          Function6<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zip(this, source1, source2, source3, source4, source5, zipper);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4, MaybeSource<? extends U5> source5, MaybeSource<? extends U6> source6,
+                                                              Function7<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, zipper);
+
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4, MaybeSource<? extends U5> source5, MaybeSource<? extends U6> source6, MaybeSource<? extends U7> source7,
+                                                                  Function8<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, zipper);
+
+    }
+
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U1, U2, U3, U4, U5, U6, U7, U8, R> Maybe<R> zipWith(MaybeSource<? extends U1> source1, MaybeSource<? extends U2> source2, MaybeSource<? extends U3> source3, MaybeSource<? extends U4> source4, MaybeSource<? extends U5> source5, MaybeSource<? extends U6> source6, MaybeSource<? extends U7> source7, MaybeSource<? extends U8> source8,
+                                                                      Function9<? super T, ? super U1, ? super U2, ? super U3, ? super U4, ? super U5, ? super U6, ? super U7, ? super U8, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zip(this, source1, source2, source3, source4, source5, source6, source7, source8, zipper);
+
+    }
+
+
 
     // ------------------------------------------------------------------
     // Test helper
