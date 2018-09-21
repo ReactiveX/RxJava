@@ -203,7 +203,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * during the lifetime of the returned Observable. If this ConnectableObservable
      * terminates, the connection is never renewed, no matter how Observers come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
+     * connection when all {@code Observer}s have disposed their {@code Disposable}s.
      * <p>
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
@@ -227,7 +227,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * during the lifetime of the returned Observable. If this ConnectableObservable
      * terminates, the connection is never renewed, no matter how Observers come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
+     * connection when all {@code Observer}s have disposed their {@code Disposable}s.
      * <p>
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
@@ -255,7 +255,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * during the lifetime of the returned Observable. If this ConnectableObservable
      * terminates, the connection is never renewed, no matter how Observers come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
-     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
+     * connection when all {@code Observer}s have disposed their {@code Disposable}s.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
