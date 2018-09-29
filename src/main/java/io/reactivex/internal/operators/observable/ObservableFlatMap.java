@@ -352,9 +352,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                             child.onNext(o);
                         }
-                        if (o == null) {
-                            break;
-                        }
                     }
                 }
 
