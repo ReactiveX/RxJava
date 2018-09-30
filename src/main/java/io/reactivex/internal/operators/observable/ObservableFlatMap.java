@@ -338,23 +338,17 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 if (svq != null) {
                     for (;;) {
-                        U o;
-                        for (;;) {
-                            if (checkTerminate()) {
-                                return;
-                            }
-
-                            o = svq.poll();
-
-                            if (o == null) {
-                                break;
-                            }
-
-                            child.onNext(o);
+                        if (checkTerminate()) {
+                            return;
                         }
+
+                        U o = svq.poll();
+
                         if (o == null) {
                             break;
                         }
+
+                        child.onNext(o);
                     }
                 }
 
@@ -415,17 +409,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                         @SuppressWarnings("unchecked")
                         InnerObserver<T, U> is = (InnerObserver<T, U>)inner[j];
-
-                        for (;;) {
-                            if (checkTerminate()) {
-                                return;
-                            }
-                            SimpleQueue<U> q = is.queue;
-                            if (q == null) {
-                                break;
-                            }
-                            U o;
+                        SimpleQueue<U> q = is.queue;
+                        if (q != null) {
                             for (;;) {
+                                U o;
                                 try {
                                     o = q.poll();
                                 } catch (Throwable ex) {
@@ -437,7 +424,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                     }
                                     removeInner(is);
                                     innerCompleted = true;
-                                    i++;
+                                    j++;
+                                    if (j == n) {
+                                        j = 0;
+                                    }
                                     continue sourceLoop;
                                 }
                                 if (o == null) {
@@ -450,10 +440,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                     return;
                                 }
                             }
-                            if (o == null) {
-                                break;
-                            }
                         }
+
                         boolean innerDone = is.done;
                         SimpleQueue<U> innerQueue = is.queue;
                         if (innerDone && (innerQueue == null || innerQueue.isEmpty())) {

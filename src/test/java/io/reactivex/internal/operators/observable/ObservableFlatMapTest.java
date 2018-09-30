@@ -26,14 +26,14 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableFlatMapTest {
     @Test
@@ -1005,5 +1005,44 @@ public class ObservableFlatMapTest {
         ps.onNext(0);
 
         to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void fusedSourceCrashResumeWithNextSource() {
+        final UnicastSubject<Integer> fusedSource = UnicastSubject.create();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        ObservableFlatMap.MergeObserver<Integer, Integer> merger =
+                new ObservableFlatMap.MergeObserver<Integer, Integer>(to, new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer t)
+                            throws Exception {
+                        if (t == 0) {
+                            return fusedSource
+                                    .map(new Function<Integer, Integer>() {
+                                        @Override
+                                        public Integer apply(Integer v)
+                                                throws Exception { throw new TestException(); }
+                                    })
+                                    .compose(TestHelper.<Integer>observableStripBoundary());
+                        }
+                        return Observable.range(10 * t, 5);
+                    }
+                }, true, Integer.MAX_VALUE, 128);
+
+        merger.onSubscribe(Disposables.empty());
+        merger.getAndIncrement();
+
+        merger.onNext(0);
+        merger.onNext(1);
+        merger.onNext(2);
+
+        assertTrue(fusedSource.hasObservers());
+
+        fusedSource.onNext(-1);
+
+        merger.drainLoop();
+
+        to.assertValuesOnly(10, 11, 12, 13, 14, 20, 21, 22, 23, 24);
     }
 }
