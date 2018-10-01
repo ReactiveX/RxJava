@@ -104,7 +104,7 @@ public final class CompletableTimeout extends Completable {
             if (once.compareAndSet(false, true)) {
                 set.clear();
                 if (other == null) {
-                    downstream.onError(new TimeoutException());
+                    downstream.onError(new TimeoutException("timeout = " + timeout + ", unit = " + unit));
                 } else {
                     other.subscribe(new DisposeObserver());
                 }

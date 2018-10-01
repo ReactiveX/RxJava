@@ -91,7 +91,7 @@ implements SingleObserver<T>, Future<T>, Disposable {
         if (getCount() != 0) {
             BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {
-                throw new TimeoutException();
+                throw new TimeoutException("timeout = " + timeout + ", unit = " + unit);
             }
         }
 

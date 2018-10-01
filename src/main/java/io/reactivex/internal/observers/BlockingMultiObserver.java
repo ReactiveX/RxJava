@@ -148,7 +148,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
                 BlockingHelper.verifyNonBlocking();
                 if (!await(timeout, unit)) {
                     dispose();
-                    throw ExceptionHelper.wrapOrThrow(new TimeoutException());
+                    throw ExceptionHelper.wrapOrThrow(new TimeoutException("timeout = " + timeout + ", unit = " + unit));
                 }
             } catch (InterruptedException ex) {
                 dispose();

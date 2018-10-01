@@ -129,7 +129,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(upstream);
 
-                downstream.onError(new TimeoutException());
+                downstream.onError(new TimeoutException("timeout = " + timeout + ", unit = " + unit));
 
                 worker.dispose();
             }

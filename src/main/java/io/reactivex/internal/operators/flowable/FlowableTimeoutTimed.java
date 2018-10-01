@@ -134,7 +134,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 SubscriptionHelper.cancel(upstream);
 
-                downstream.onError(new TimeoutException());
+                downstream.onError(new TimeoutException("timeout = " + timeout + ", unit = " + unit));
 
                 worker.dispose();
             }
