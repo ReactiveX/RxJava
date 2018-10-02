@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.observers;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -351,5 +352,15 @@ public class FutureObserverTest {
         }, 500, TimeUnit.MILLISECONDS);
 
         assertEquals(1, fo.get().intValue());
+    }
+
+    @Test
+    public void getTimedOut() throws Exception {
+        try {
+            fo.get(1, TimeUnit.NANOSECONDS);
+            fail("Should have thrown");
+        } catch (TimeoutException expected) {
+            assertEquals(timeoutMessage(1, TimeUnit.NANOSECONDS), expected.getMessage());
+        }
     }
 }

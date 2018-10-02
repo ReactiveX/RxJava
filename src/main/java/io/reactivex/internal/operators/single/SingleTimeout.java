@@ -21,6 +21,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 public final class SingleTimeout<T> extends Single<T> {
 
     final SingleSource<T> source;
@@ -45,7 +47,7 @@ public final class SingleTimeout<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        TimeoutMainObserver<T> parent = new TimeoutMainObserver<T>(observer, other);
+        TimeoutMainObserver<T> parent = new TimeoutMainObserver<T>(observer, other, timeout, unit);
         observer.onSubscribe(parent);
 
         DisposableHelper.replace(parent.task, scheduler.scheduleDirect(parent, timeout, unit));
@@ -65,6 +67,10 @@ public final class SingleTimeout<T> extends Single<T> {
         final TimeoutFallbackObserver<T> fallback;
 
         SingleSource<? extends T> other;
+
+        final long timeout;
+
+        final TimeUnit unit;
 
         static final class TimeoutFallbackObserver<T> extends AtomicReference<Disposable>
         implements SingleObserver<T> {
@@ -92,9 +98,11 @@ public final class SingleTimeout<T> extends Single<T> {
             }
         }
 
-        TimeoutMainObserver(SingleObserver<? super T> actual, SingleSource<? extends T> other) {
+        TimeoutMainObserver(SingleObserver<? super T> actual, SingleSource<? extends T> other, long timeout, TimeUnit unit) {
             this.downstream = actual;
             this.other = other;
+            this.timeout = timeout;
+            this.unit = unit;
             this.task = new AtomicReference<Disposable>();
             if (other != null) {
                 this.fallback = new TimeoutFallbackObserver<T>(actual);
@@ -112,7 +120,7 @@ public final class SingleTimeout<T> extends Single<T> {
                 }
                 SingleSource<? extends T> other = this.other;
                 if (other == null) {
-                    downstream.onError(new TimeoutException());
+                    downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));
                 } else {
                     this.other = null;
                     other.subscribe(fallback);

@@ -13,9 +13,11 @@
 
 package io.reactivex.internal.observers;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
@@ -131,5 +133,18 @@ public class BlockingMultiObserverTest {
         }, 100, TimeUnit.MILLISECONDS);
 
         assertTrue(bmo.blockingGetError(1, TimeUnit.MINUTES) instanceof TestException);
+    }
+
+    @Test
+    public void blockingGetErrorTimedOut() {
+        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
+
+        try {
+            assertNull(bmo.blockingGetError(1, TimeUnit.NANOSECONDS));
+            fail("Should have thrown");
+        } catch (RuntimeException expected) {
+            assertEquals(TimeoutException.class, expected.getCause().getClass());
+            assertEquals(timeoutMessage(1, TimeUnit.NANOSECONDS), expected.getCause().getMessage());
+        }
     }
 }

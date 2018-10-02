@@ -24,6 +24,8 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BlockingHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 /**
  * A Subscriber + Future that expects exactly one upstream value and provides it
  * via the (blocking) Future API.
@@ -93,7 +95,7 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
         if (getCount() != 0) {
             BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {
-                throw new TimeoutException();
+                throw new TimeoutException(timeoutMessage(timeout, unit));
             }
         }
 

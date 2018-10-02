@@ -21,6 +21,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
@@ -129,7 +131,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(upstream);
 
-                downstream.onError(new TimeoutException());
+                downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));
 
                 worker.dispose();
             }

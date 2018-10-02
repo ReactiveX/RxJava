@@ -23,6 +23,8 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.BlockingHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 /**
  * An Observer + Future that expects exactly one upstream value and provides it
  * via the (blocking) Future API.
@@ -92,7 +94,7 @@ implements Observer<T>, Future<T>, Disposable {
         if (getCount() != 0) {
             BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {
-                throw new TimeoutException();
+                throw new TimeoutException(timeoutMessage(timeout, unit));
             }
         }
 

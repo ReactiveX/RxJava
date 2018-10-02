@@ -20,6 +20,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 public final class CompletableTimeout extends Completable {
 
     final CompletableSource source;
@@ -104,7 +106,7 @@ public final class CompletableTimeout extends Completable {
             if (once.compareAndSet(false, true)) {
                 set.clear();
                 if (other == null) {
-                    downstream.onError(new TimeoutException());
+                    downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));
                 } else {
                     other.subscribe(new DisposeObserver());
                 }

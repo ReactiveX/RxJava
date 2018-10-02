@@ -19,6 +19,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.*;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 /**
  * A combined Observer that awaits the success or error signal via a CountDownLatch.
  * @param <T> the value type
@@ -148,7 +150,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
                 BlockingHelper.verifyNonBlocking();
                 if (!await(timeout, unit)) {
                     dispose();
-                    throw ExceptionHelper.wrapOrThrow(new TimeoutException());
+                    throw ExceptionHelper.wrapOrThrow(new TimeoutException(timeoutMessage(timeout, unit)));
                 }
             } catch (InterruptedException ex) {
                 dispose();

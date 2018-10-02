@@ -23,6 +23,8 @@ import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<T, T> {
     final long timeout;
     final TimeUnit unit;
@@ -134,7 +136,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 SubscriptionHelper.cancel(upstream);
 
-                downstream.onError(new TimeoutException());
+                downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));
 
                 worker.dispose();
             }
