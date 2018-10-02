@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.observers;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
@@ -89,8 +90,8 @@ public class FutureSingleObserverTest {
         try {
             f.get(100, TimeUnit.MILLISECONDS);
             fail("Should have thrown");
-        } catch (TimeoutException ex) {
-            // expected
+        } catch (TimeoutException expected) {
+            assertEquals(timeoutMessage(100, TimeUnit.MILLISECONDS), expected.getMessage());
         }
     }
 

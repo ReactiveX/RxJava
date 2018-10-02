@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -82,26 +83,24 @@ public class FlowableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> subscriber = new TestSubscriber<String>();
 
-        withTimeout.subscribe(ts);
+        withTimeout.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
-        verify(subscriber).onError(any(TimeoutException.class));
-        ts.dispose();
+        subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(TIMEOUT, TIME_UNIT));
     }
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> subscriber = new TestSubscriber<String>();
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
         withTimeout.subscribe(subscriber);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
-        verify(subscriber).onNext("One");
+        subscriber.assertValue("One");
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
-        verify(subscriber).onError(any(TimeoutException.class));
+        subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(TIMEOUT, TIME_UNIT), "One");
         ts.dispose();
     }
 
@@ -235,8 +234,7 @@ public class FlowableTimeoutTests {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        final TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        final TestSubscriber<String> subscriber = new TestSubscriber<String>();
 
         new Thread(new Runnable() {
 
@@ -258,16 +256,14 @@ public class FlowableTimeoutTests {
                     }
 
                 }).timeout(1, TimeUnit.SECONDS, testScheduler)
-                        .subscribe(ts);
+                        .subscribe(subscriber);
             }
         }).start();
 
         timeoutSetuped.await();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber, times(1)).onError(isA(TimeoutException.class));
-        inOrder.verifyNoMoreInteractions();
+        subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.SECONDS));
 
         exit.countDown(); // exit the thread
     }
@@ -287,15 +283,12 @@ public class FlowableTimeoutTests {
         TestScheduler testScheduler = new TestScheduler();
         Flowable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
-        observableWithTimeout.subscribe(ts);
+        TestSubscriber<String> subscriber = new TestSubscriber<String>();
+        observableWithTimeout.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onError(isA(TimeoutException.class));
-        inOrder.verifyNoMoreInteractions();
+        subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(1000, TimeUnit.MILLISECONDS));
 
         verify(s, times(1)).cancel();
     }
@@ -548,11 +541,13 @@ public class FlowableTimeoutTests {
             if (ts.valueCount() != 0) {
                 if (ts.errorCount() != 0) {
                     ts.assertFailure(TimeoutException.class, 1);
+                    ts.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
                 } else {
                     ts.assertValuesOnly(1);
                 }
             } else {
                 ts.assertFailure(TimeoutException.class);
+                ts.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
             }
         }
     }

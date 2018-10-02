@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.completable;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class CompletableTimeoutTest {
         .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TimeoutException.class);
+        .assertFailureAndMessage(TimeoutException.class, timeoutMessage(100, TimeUnit.MILLISECONDS));
     }
 
     @Test

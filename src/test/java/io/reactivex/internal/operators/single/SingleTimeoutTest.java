@@ -13,10 +13,12 @@
 
 package io.reactivex.internal.operators.single;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
@@ -208,5 +210,15 @@ public class SingleTimeoutTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void mainTimedOut() {
+        Single
+                .never()
+                .timeout(1, TimeUnit.NANOSECONDS)
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.NANOSECONDS));
     }
 }

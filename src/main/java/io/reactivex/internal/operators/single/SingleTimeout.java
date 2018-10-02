@@ -21,6 +21,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
+
 public final class SingleTimeout<T> extends Single<T> {
 
     final SingleSource<T> source;
@@ -118,7 +120,7 @@ public final class SingleTimeout<T> extends Single<T> {
                 }
                 SingleSource<? extends T> other = this.other;
                 if (other == null) {
-                    downstream.onError(new TimeoutException("timeout = " + timeout + ", unit = " + unit));
+                    downstream.onError(new TimeoutException(timeoutMessage(timeout, unit)));
                 } else {
                     this.other = null;
                     other.subscribe(fallback);
