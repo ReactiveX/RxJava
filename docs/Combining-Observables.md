@@ -15,7 +15,7 @@ This section explains operators you can use to combine multiple Observables.
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/startwith.html](http://reactivex.io/documentation/operators/startwith.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/startwith.html](http://reactivex.io/documentation/operators/startwith.html)
 
 Emit a specified sequence of items before beginning to emit the items from the Observable.
 
@@ -37,7 +37,7 @@ Combines multiple Observables into one.
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/merge.html](http://reactivex.io/documentation/operators/merge.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/merge.html](http://reactivex.io/documentation/operators/merge.html)
 
 Combines multiple Observables into one. Any `onError` notifications passed from any of the source observables will immediately be passed through to through to the observers and will terminate the merged `Observable`.
 
@@ -55,7 +55,7 @@ Observable.just(1, 2, 3)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/merge.html](http://reactivex.io/documentation/operators/merge.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/merge.html](http://reactivex.io/documentation/operators/merge.html)
 
 Combines multiple Observables into one. Any `onError` notifications passed from any of the source observables will be withheld until all merged Observables complete, and only then will be passed along to the observers.
 
@@ -75,7 +75,7 @@ Observable.mergeDelayError(observable1, observable2)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/zip.html](http://reactivex.io/documentation/operators/zip.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/zip.html](http://reactivex.io/documentation/operators/zip.html)
 
 Combines sets of items emitted by two or more Observables together via a specified function and emit items based on the results of this function.
 
@@ -94,7 +94,7 @@ firstNames.zipWith(lastNames, (first, last) -> first + " " + last)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/combinelatest.html](http://reactivex.io/documentation/operators/combinelatest.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/combinelatest.html](http://reactivex.io/documentation/operators/combinelatest.html)
 
 When an item is emitted by either of two Observables, combine the latest item emitted by each Observable via a specified function and emit items based on the results of this function.
 
@@ -124,7 +124,7 @@ Observable.combineLatest(newsRefreshes, weatherRefreshes,
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/switch.html](http://reactivex.io/documentation/operators/switch.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/switch.html](http://reactivex.io/documentation/operators/switch.html)
 
 Convert an Observable that emits Observables into a single Observable that emits the items emitted by the most-recently emitted of those Observables.
 

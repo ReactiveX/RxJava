@@ -39,7 +39,7 @@ import hu.akarnokd.rxjava2.math.MathFlowable;
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
 
 Calculates the average of `Number`s emitted by an `Observable` and emits this average as a `Double`.
 
@@ -56,7 +56,7 @@ MathObservable.averageDouble(numbers).subscribe((Double avg) -> System.out.print
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
 
 Calculates the average of `Number`s emitted by an `Observable` and emits this average as a `Float`.
 
@@ -73,7 +73,7 @@ MathObservable.averageFloat(numbers).subscribe((Float avg) -> System.out.println
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/max.html](http://reactivex.io/documentation/operators/max.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/max.html](http://reactivex.io/documentation/operators/max.html)
 
 Emits the maximum value emitted by a source `Observable`. A `Comparator` can be specified that will be used to compare the elements emitted by the `Observable`.
 
@@ -100,7 +100,7 @@ MathObservable.max(names, Comparator.comparingInt(String::length))
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/min.html](http://reactivex.io/documentation/operators/min.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/min.html](http://reactivex.io/documentation/operators/min.html)
 
 Emits the minimum value emitted by a source `Observable`. A `Comparator` can be specified that will be used to compare the elements emitted by the `Observable`.
 
@@ -117,7 +117,7 @@ MathObservable.min(numbers).subscribe(System.out::println);
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the `Double`s emitted by an `Observable` and emits this sum.
 
@@ -134,7 +134,7 @@ MathObservable.sumDouble(numbers).subscribe((Double sum) -> System.out.println(s
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the `Float`s emitted by an `Observable` and emits this sum.
 
@@ -151,7 +151,7 @@ MathObservable.sumFloat(numbers).subscribe((Float sum) -> System.out.println(sum
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the `Integer`s emitted by an `Observable` and emits this sum.
 
@@ -168,7 +168,7 @@ MathObservable.sumInt(numbers).subscribe((Integer sum) -> System.out.println(sum
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the `Long`s emitted by an `Observable` and emits this sum.
 
@@ -189,7 +189,7 @@ MathObservable.sumLong(numbers).subscribe((Long sum) -> System.out.println(sum))
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/count.html](http://reactivex.io/documentation/operators/count.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/count.html](http://reactivex.io/documentation/operators/count.html)
 
 Counts the number of items emitted by an `Observable` and emits this count as a `Long`.
 
@@ -205,7 +205,7 @@ Observable.just(1, 2, 3).count().subscribe(System.out::println);
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
 Apply a function to each emitted item, sequentially, and emit only the final accumulated value.
 
@@ -223,7 +223,7 @@ Observable.range(1, 5)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
 Apply a function to each emitted item, sequentially, and emit only the final accumulated value.
 
@@ -245,7 +245,7 @@ Observable.just(1, 2, 2, 3, 4, 4, 4, 5)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
 Collect items emitted by the source `Observable` into a single mutable data structure and return an `Observable` that emits this structure.
 
@@ -264,7 +264,7 @@ Observable.just("Kirk", "Spock", "Chekov", "Sulu")
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
 Collect items emitted by the source `Observable` into a single mutable data structure and return an `Observable` that emits this structure.
 
@@ -285,7 +285,7 @@ Observable.just('R', 'x', 'J', 'a', 'v', 'a')
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
 Collect all items from an `Observable` and emit them as a single `List`.
 
@@ -303,7 +303,7 @@ Observable.just(2, 1, 3)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
 Collect all items from an `Observable` and emit them as a single, sorted `List`.
 
@@ -321,7 +321,7 @@ Observable.just(2, 1, 3)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
 Convert the sequence of items emitted by an `Observable` into a `Map` keyed by a specified key function.
 
@@ -345,7 +345,7 @@ Observable.just(1, 2, 3, 4)
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
-**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
 Convert the sequence of items emitted by an `Observable` into a `Collection` that is also a `Map` keyed by a specified key function.
 
