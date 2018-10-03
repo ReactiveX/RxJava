@@ -48,6 +48,6 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
     public OnErrorNotImplementedException(@NonNull Throwable e) {
-        this("The exception was not handled due to missing onError handler in the subscribe() method call. Further reading: https://github.com/ReactiveX/RxJava/wiki/Error-Handling | " + (e != null ? e.getMessage() : ""), e);
+        this("The exception was not handled due to missing onError handler in the subscribe() method call. Further reading: https://github.com/ReactiveX/RxJava/wiki/Error-Handling | " + e, e);
     }
 }
