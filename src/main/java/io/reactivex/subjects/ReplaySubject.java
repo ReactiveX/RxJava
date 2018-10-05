@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
+import io.reactivex.ReplayBufferStrategy;
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
@@ -136,6 +137,8 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     final AtomicReference<ReplayDisposable<T>[]> observers;
 
+    final BufferPolicy<T> policy;
+
     @SuppressWarnings("rawtypes")
     static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
 
@@ -160,7 +163,28 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> create() {
-        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16));
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16), ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates an unbounded replay subject.
+     * <p>
+     * The internal buffer is backed by an {@link ArrayList} and starts with an initial capacity of 16. Once the
+     * number of items reaches this capacity, it will grow as necessary (usually by 50%). However, as the
+     * number of items grows, this causes frequent array reallocation and copying, and may hurt performance
+     * and latency. This can be avoided with the {@link #create(int)} overload which takes an initial capacity
+     * parameter and can be tuned to reduce the array reallocation frequency as needed.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ReplaySubject<T> create(ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16), strategy);
     }
 
     /**
@@ -181,7 +205,30 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> create(int capacityHint) {
-        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint));
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint), ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates an unbounded replay subject with the specified initial buffer capacity.
+     * <p>
+     * Use this method to avoid excessive array reallocation while the internal buffer grows to accommodate new
+     * items. For example, if you know that the buffer will hold 32k items, you can ask the
+     * {@code ReplaySubject} to preallocate its internal array with a capacity to hold that many items. Once
+     * the items start to arrive, the internal array won't need to grow, creating less garbage and no overhead
+     * due to frequent array-copying.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param capacityHint
+     *          the initial buffer capacity
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ReplaySubject<T> create(int capacityHint, ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint), strategy);
     }
 
     /**
@@ -207,7 +254,35 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithSize(int maxSize) {
-        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize));
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize), ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates a size-bounded replay subject.
+     * <p>
+     * In this setting, the {@code ReplaySubject} holds at most {@code size} items in its internal buffer and
+     * discards the oldest item.
+     * <p>
+     * When observers subscribe to a terminated {@code ReplaySubject}, they are guaranteed to see at most
+     * {@code size} {@code onNext} events followed by a termination event.
+     * <p>
+     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe all items in the
+     * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
+     * the size constraint in the mean time. In other words, once an Observer subscribes, it will receive items
+     * without gaps in the sequence.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param maxSize
+     *          the maximum number of buffered items
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ReplaySubject<T> createWithSize(int maxSize, ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize), strategy);
     }
 
     /**
@@ -223,8 +298,29 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the type of items observed and emitted by the Subject
      * @return the created subject
      */
-    /* test */ static <T> ReplaySubject<T> createUnbounded() {
-        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
+    /* test */
+    static <T> ReplaySubject<T> createUnbounded() {
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE), ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates an unbounded replay subject with the bounded-implementation for testing purposes.
+     * <p>
+     * This variant behaves like the regular unbounded {@code ReplaySubject} created via {@link #create()} but
+     * uses the structures of the bounded-implementation. This is by no means intended for the replacement of
+     * the original, array-backed and unbounded {@code ReplaySubject} due to the additional overhead of the
+     * linked-list based internal buffer. The sole purpose is to allow testing and reasoning about the behavior
+     * of the bounded implementations without the interference of the eviction policies.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    /* test */
+    static <T> ReplaySubject<T> createUnbounded(ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE), strategy);
     }
 
     /**
@@ -262,7 +358,50 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler),
+                ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates a time-bounded replay subject.
+     * <p>
+     * In this setting, the {@code ReplaySubject} internally tags each observed item with a timestamp value
+     * supplied by the {@link Scheduler} and keeps only those whose age is less than the supplied time value
+     * converted to milliseconds. For example, an item arrives at T=0 and the max age is set to 5; at T&gt;=5
+     * this first item is then evicted by any subsequent item or termination event, leaving the buffer empty.
+     * <p>
+     * Once the subject is terminated, observers subscribing to it will receive items that remained in the
+     * buffer after the terminal event, regardless of their age.
+     * <p>
+     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * from within the buffer that have an age less than the specified time, and each item observed thereafter,
+     * even if the buffer evicts items due to the time constraint in the mean time. In other words, once an
+     * observer subscribes, it observes items without gaps in the sequence except for any outdated items at the
+     * beginning of the sequence.
+     * <p>
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * an {@code onComplete} notification.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param maxAge
+     *          the maximum age of the contained items
+     * @param unit
+     *          the time unit of {@code time}
+     * @param scheduler
+     *          the {@link Scheduler} that provides the current time
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler,
+                                                      ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler),
+                strategy);
     }
 
     /**
@@ -302,7 +441,51 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
-        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler),
+                ReplayBufferStrategy.ALWAYS);
+    }
+
+    /**
+     * Creates a time- and size-bounded replay subject.
+     * <p>
+     * In this setting, the {@code ReplaySubject} internally tags each received item with a timestamp value
+     * supplied by the {@link Scheduler} and holds at most {@code size} items in its internal buffer. It evicts
+     * items from the start of the buffer if their age becomes less-than or equal to the supplied age in
+     * milliseconds or the buffer reaches its {@code size} limit.
+     * <p>
+     * When observers subscribe to a terminated {@code ReplaySubject}, they observe the items that remained in
+     * the buffer after the terminal notification, regardless of their age, but at most {@code size} items.
+     * <p>
+     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * from within the buffer that have age less than the specified time and each subsequent item, even if the
+     * buffer evicts items due to the time constraint in the mean time. In other words, once an observer
+     * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
+     * of the sequence.
+     * <p>
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * an {@code onComplete} notification.
+     *
+     * @param <T>
+     *          the type of items observed and emitted by the Subject
+     * @param maxAge
+     *          the maximum age of the contained items
+     * @param unit
+     *          the time unit of {@code time}
+     * @param maxSize
+     *          the maximum number of buffered items
+     * @param scheduler
+     *          the {@link Scheduler} that provides the current time
+     * @param strategy
+     *          the strategy which is defining the policy to buffer the onNext values
+     * @return the created subject
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler,
+                                                             int maxSize, ReplayBufferStrategy strategy) {
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler), strategy);
     }
 
     /**
@@ -310,9 +493,10 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @param buffer the ReplayBuffer instance, not null (not verified)
      */
     @SuppressWarnings("unchecked")
-    ReplaySubject(ReplayBuffer<T> buffer) {
+    ReplaySubject(ReplayBuffer<T> buffer, ReplayBufferStrategy strategy) {
         this.buffer = buffer;
         this.observers = new AtomicReference<ReplayDisposable<T>[]>(EMPTY);
+        this.policy = BufferStrategyFactory.create(strategy);
     }
 
     @Override
@@ -327,7 +511,7 @@ public final class ReplaySubject<T> extends Subject<T> {
                     return;
                 }
             }
-            buffer.replay(rs);
+            policy.subscribeActual(rs, this);
         }
     }
 
@@ -345,12 +529,7 @@ public final class ReplaySubject<T> extends Subject<T> {
             return;
         }
 
-        ReplayBuffer<T> b = buffer;
-        b.add(t);
-
-        for (ReplayDisposable<T> rs : observers.get()) {
-            b.replay(rs);
-        }
+        policy.onNext(t, this);
     }
 
     @Override
@@ -560,6 +739,8 @@ public final class ReplaySubject<T> extends Subject<T> {
      */
     interface ReplayBuffer<T> {
 
+        void clear();
+
         void add(T value);
 
         void addFinal(Object notificationLite);
@@ -572,6 +753,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         T getValue();
 
         T[] getValues(T[] array);
+
         /**
          * Returns the terminal NotificationLite object or null if not yet terminated.
          * @return the terminal NotificationLite object or null if not yet terminated
@@ -609,6 +791,13 @@ public final class ReplaySubject<T> extends Subject<T> {
             this.state = state;
         }
 
+        public void onNext(T t) {
+            if (!isDisposed()) {
+                downstream.onNext(t);
+            }
+
+        }
+
         @Override
         public void dispose() {
             if (!cancelled) {
@@ -637,6 +826,19 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         UnboundedReplayBuffer(int capacityHint) {
             this.buffer = new ArrayList<Object>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+        }
+
+        @Override
+        public void clear() {
+            if (done) {
+                Object o = this.buffer.get(this.buffer.size() - 1);
+                this.buffer.clear();
+                this.buffer.add(o);
+                this.size = 1;
+            } else {
+                this.buffer.clear();
+                this.size = 0;
+            }
         }
 
         @Override
@@ -839,9 +1041,21 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
-            Node<Object> h = new Node<Object>(null);
-            this.tail = h;
-            this.head = h;
+            clear();
+        }
+
+        @Override
+        public void clear() {
+            if (done) {
+                this.head = new Node<Object>(null);
+                this.head.set(tail);
+                this.size = 1;
+            } else {
+                Node<Object> h = new Node<Object>(null);
+                this.tail = h;
+                this.head = h;
+                this.size = 0;
+            }
         }
 
         void trim() {
@@ -1055,9 +1269,21 @@ public final class ReplaySubject<T> extends Subject<T> {
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
             this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
             this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-            TimedNode<Object> h = new TimedNode<Object>(null, 0L);
-            this.tail = h;
-            this.head = h;
+            clear();
+        }
+
+        @Override
+        public void clear() {
+            if (done) {
+                this.head = new TimedNode<Object>(null, 0L);
+                this.head.set(tail);
+                this.size = 1;
+            } else {
+                TimedNode<Object> h = new TimedNode<Object>(null, 0L);
+                this.tail = h;
+                this.head = h;
+                this.size = 0;
+            }
         }
 
         void trim() {
@@ -1326,6 +1552,89 @@ public final class ReplaySubject<T> extends Subject<T> {
             }
 
             return s;
+        }
+    }
+
+    static final class BufferStrategyFactory {
+        static BufferPolicy create(ReplayBufferStrategy strategy) {
+            switch (strategy) {
+                case ALWAYS:
+                    return new BufferAllPolicy();
+                case NO_OBSERVER:
+                    return new BufferNoObserverPolicy();
+                case NO_OBSERVER_EMIT_ONCE:
+                    return new BufferNoObserverEmitOncePolicy();
+                default:
+                    return new BufferAllPolicy();
+            }
+        }
+    }
+
+    interface BufferPolicy<T> {
+        void subscribeActual(ReplayDisposable<T> disposable, ReplaySubject<T> subject);
+
+        void onNext(T t, ReplaySubject<T> subject);
+    }
+
+    static final class BufferAllPolicy<T> implements BufferPolicy<T> {
+
+        @Override
+        public void subscribeActual(ReplayDisposable<T> disposable, ReplaySubject<T> subject) {
+            subject.buffer.replay(disposable);
+        }
+
+        @Override
+        public void onNext(T t, ReplaySubject<T> subject) {
+            ReplayBuffer<T> b = subject.buffer;
+            b.add(t);
+
+            for (ReplayDisposable<T> rs : subject.observers.get()) {
+                b.replay(rs);
+            }
+        }
+    }
+
+    static final class BufferNoObserverPolicy<T> implements BufferPolicy<T> {
+
+        @Override
+        public void subscribeActual(ReplayDisposable<T> disposable, ReplaySubject<T> subject) {
+            subject.buffer.replay(disposable);
+        }
+
+        @Override
+        public void onNext(T t, ReplaySubject<T> subject) {
+            ReplayBuffer<T> b = subject.buffer;
+            if (subject.hasObservers()) {
+                b.clear();
+                for (ReplayDisposable<T> rs : subject.observers.get()) {
+                    rs.onNext(t);
+                }
+            } else {
+                b.add(t);
+            }
+
+        }
+    }
+
+    static final class BufferNoObserverEmitOncePolicy<T> implements BufferPolicy<T> {
+
+        @Override
+        public void subscribeActual(ReplayDisposable<T> disposable, ReplaySubject<T> subject) {
+            ReplayBuffer<T> b = subject.buffer;
+            b.replay(disposable);
+            b.clear();
+        }
+
+        @Override
+        public void onNext(T t, ReplaySubject<T> subject) {
+            if (subject.hasObservers()) {
+                for (ReplayDisposable<T> rs : subject.observers.get()) {
+                    rs.onNext(t);
+                }
+            } else {
+                subject.buffer.add(t);
+            }
+
         }
     }
 }

@@ -196,6 +196,541 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
+    public void testCompletedStopsEmittingDataNoObserver() {
+        ReplaySubject<Integer> channel = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER);
+
+        Observer<Object> observerA = TestHelper.mockObserver();
+        Observer<Object> observerB = TestHelper.mockObserver();
+        Observer<Object> observerC = TestHelper.mockObserver();
+
+        TestObserver<Object> to = new TestObserver<Object>(observerA);
+
+        channel.subscribe(to);
+        channel.subscribe(observerB);
+
+        InOrder inOrderA = inOrder(observerA);
+        InOrder inOrderB = inOrder(observerB);
+        InOrder inOrderC = inOrder(observerC);
+
+        channel.onNext(42);
+
+        inOrderA.verify(observerA).onNext(42);
+        inOrderB.verify(observerB).onNext(42);
+
+        to.dispose();
+        inOrderA.verifyNoMoreInteractions();
+
+        channel.onNext(4711);
+
+        inOrderB.verify(observerB).onNext(4711);
+
+        channel.onComplete();
+
+        inOrderB.verify(observerB).onComplete();
+
+        channel.subscribe(observerC);
+
+        inOrderC.verify(observerC).onComplete();
+
+        channel.onNext(13);
+
+        inOrderB.verifyNoMoreInteractions();
+        inOrderC.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSequenceNoObserver() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER);
+
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        subject.onNext("four");
+
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, times(1)).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testSequenceNoOnNextNoObserver() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER);
+
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testCompletedStopsEmittingDataNoObserverEmitOnce() {
+        ReplaySubject<Integer> channel = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        Observer<Object> observerA = TestHelper.mockObserver();
+        Observer<Object> observerB = TestHelper.mockObserver();
+        Observer<Object> observerC = TestHelper.mockObserver();
+
+        TestObserver<Object> to = new TestObserver<Object>(observerA);
+
+        channel.subscribe(to);
+        channel.subscribe(observerB);
+
+        InOrder inOrderA = inOrder(observerA);
+        InOrder inOrderB = inOrder(observerB);
+        InOrder inOrderC = inOrder(observerC);
+
+        channel.onNext(42);
+
+        inOrderA.verify(observerA).onNext(42);
+        inOrderB.verify(observerB).onNext(42);
+
+        to.dispose();
+        inOrderA.verifyNoMoreInteractions();
+
+        channel.onNext(4711);
+
+        inOrderB.verify(observerB).onNext(4711);
+
+        channel.onComplete();
+
+        inOrderB.verify(observerB).onComplete();
+
+        channel.subscribe(observerC);
+
+        inOrderC.verify(observerC).onComplete();
+
+        channel.onNext(13);
+
+        inOrderB.verifyNoMoreInteractions();
+        inOrderC.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSequenceNoObserverEmitOnce() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        subject.onNext("four");
+
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, times(1)).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testSequenceNoOnNextNoObserverEmitOnce() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testErrorNoObserver() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER);
+
+        assertErrorNoObserver(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverSizeBound() {
+        ReplaySubject<String> subject = ReplaySubject.createWithSize(3, ReplayBufferStrategy.NO_OBSERVER);
+
+        assertErrorNoObserver(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverUnbounded() {
+        ReplaySubject<String> subject = ReplaySubject.createUnbounded(ReplayBufferStrategy.NO_OBSERVER);
+
+        assertErrorNoObserver(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverWithTime() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, new TestScheduler(),
+                ReplayBufferStrategy.NO_OBSERVER);
+
+        assertErrorNoObserver(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverWithTimeAndSize() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS,
+                new TestScheduler(), 3, ReplayBufferStrategy.NO_OBSERVER);
+
+        assertErrorNoObserver(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverEmitOnce() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertErrorNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverEmitOnceSizeBound() {
+        ReplaySubject<String> subject = ReplaySubject.createWithSize(3,
+                ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertErrorNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverEmitOnceUnbounded() {
+        ReplaySubject<String> subject = ReplaySubject.createUnbounded(
+                ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertErrorNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverEmitOnceWithTime() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, new TestScheduler(),
+                ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertErrorNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testErrorNoObserverEmitOnceWithTimeAndSize() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS,
+                new TestScheduler(), 3, ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertErrorNoObserverEmitOnce(subject);
+    }
+
+    private void assertErrorNoObserver(ReplaySubject<String> subject) {
+        assertErrorTwoFirstObserver(subject);
+        Observer<String> observer;
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onError(testException);
+        verify(observer, Mockito.never()).onComplete();
+    }
+
+    private void assertErrorNoObserverEmitOnce(ReplaySubject<String> subject) {
+        assertErrorTwoFirstObserver(subject);
+        Observer<String> observer;
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onError(testException);
+        verify(observer, Mockito.never()).onComplete();
+    }
+
+    private void assertErrorTwoFirstObserver(ReplaySubject<String> subject) {
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+        subject.onError(testException);
+
+        subject.onNext("four");
+        subject.onError(new Throwable());
+        subject.onComplete();
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, Mockito.never()).onComplete();
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onError(testException);
+        verify(observer, Mockito.never()).onComplete();
+    }
+
+    @Test
+    public void testCompleteNoObserver() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER);
+
+        assertCompleteNoObserver(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverSizeBound() {
+        ReplaySubject<String> subject = ReplaySubject.createWithSize(3, ReplayBufferStrategy.NO_OBSERVER);
+
+        assertCompleteNoObserver(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverUnbounded() {
+        ReplaySubject<String> subject = ReplaySubject.createUnbounded(ReplayBufferStrategy.NO_OBSERVER);
+
+        assertCompleteNoObserver(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverWithTime() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, new TestScheduler(),
+                ReplayBufferStrategy.NO_OBSERVER);
+
+        assertCompleteNoObserver(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverWithTimeAndSize() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS,
+                new TestScheduler(), 3, ReplayBufferStrategy.NO_OBSERVER);
+
+        assertCompleteNoObserver(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverEmitOnce() {
+        ReplaySubject<String> subject = ReplaySubject.create(ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertCompleteNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverEmitOnceSizeBound() {
+        ReplaySubject<String> subject = ReplaySubject.createWithSize(3, ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertCompleteNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverEmitOnceUnbounded() {
+        ReplaySubject<String> subject = ReplaySubject.createUnbounded(
+                ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertCompleteNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverEmitOnceWithTime() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, new TestScheduler(),
+                ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertCompleteNoObserverEmitOnce(subject);
+    }
+
+    @Test
+    public void testCompleteNoObserverEmitOnceWithTimeAndSize() {
+        ReplaySubject<String> subject = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS,
+                new TestScheduler(), 3, ReplayBufferStrategy.NO_OBSERVER_EMIT_ONCE);
+
+        assertCompleteNoObserverEmitOnce(subject);
+    }
+
+    private void assertCompleteNoObserverEmitOnce(ReplaySubject<String> subject) {
+        assertCompleteTwoFirstObserver(subject);
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    private void assertCompleteNoObserver(ReplaySubject<String> subject) {
+        assertCompleteTwoFirstObserver(subject);
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    private void assertCompleteTwoFirstObserver(ReplaySubject<String> subject) {
+        Observer<String> observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+
+        Disposable disposable = getDisposable(observer);
+
+        subject.onNext("one");
+
+        disposable.dispose();
+
+        subject.onNext("two");
+        subject.onNext("three");
+        subject.onComplete();
+
+        subject.onNext("four");
+        subject.onError(new Throwable());
+        subject.onComplete();
+
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, Mockito.never()).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+
+        observer = TestHelper.mockObserver();
+        subject.subscribe(observer);
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onNext("four");
+        verify(observer, times(1)).onComplete();
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    private Disposable getDisposable(Observer<String> observer) {
+        ArgumentCaptor<Disposable> disposableCaptor = ArgumentCaptor.forClass(Disposable.class);
+        verify(observer, times(1)).onSubscribe(disposableCaptor.capture());
+        return disposableCaptor.getValue();
+    }
+
+    @Test
     public void testSubscribeMidSequence() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
