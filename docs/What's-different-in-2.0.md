@@ -294,8 +294,6 @@ We followed the naming convention of Java 8 by defining `io.reactivex.functions.
 
 In addition, operators requiring a predicate no longer use `Func1<T, Boolean>` but have a separate, primitive-returning type of `Predicate<T>` (allows better inlining due to no autoboxing).
 
-The `io.reactivex.functions.Functions` utility class offers common function sources and conversions to `Function<Object[], R>`.
-
 # Subscriber
 
 The Reactive-Streams specification has its own Subscriber as an interface. This interface is lightweight and combines request management with cancellation into a single interface `org.reactivestreams.Subscription` instead of having `rx.Producer` and `rx.Subscription` separately. This allows creating stream consumers with less internal state than the quite heavy `rx.Subscriber` of 1.x.
