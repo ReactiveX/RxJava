@@ -1227,6 +1227,7 @@ public abstract class Completable implements CompletableSource {
      * @return the throwable if this terminated with an error, null otherwise
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted
      */
+    @Nullable
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet() {
@@ -1250,6 +1251,7 @@ public abstract class Completable implements CompletableSource {
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted or
      * TimeoutException if the specified timeout elapsed before it
      */
+    @Nullable
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet(long timeout, TimeUnit unit) {
