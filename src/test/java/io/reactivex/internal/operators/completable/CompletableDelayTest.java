@@ -14,17 +14,24 @@
 package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.CompletableSource;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
+import io.reactivex.Completable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.*;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.TestScheduler;
 
 public class CompletableDelayTest {
 
@@ -119,5 +126,85 @@ public class CompletableDelayTest {
         scheduler.advanceTimeBy(99, TimeUnit.MILLISECONDS);
 
         to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorDelayedSubscription() {
+        TestScheduler scheduler = new TestScheduler();
+
+        TestObserver<Void> to = Completable.error(new TestException())
+                .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler)
+                .test();
+
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(90, TimeUnit.MILLISECONDS);
+
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorDelayedSubscriptionDisposeBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Completable result = Completable.complete()
+                .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+        Observer<Void> o = TestHelper.mockObserver();
+        TestObserver<Void> to = new TestObserver<Void>(o);
+
+        result.subscribe(to);
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(90, TimeUnit.MILLISECONDS);
+        to.dispose();
+
+        scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
+
+        to.assertEmpty();
+        verify(o, never()).onComplete();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testDelaySubscriptionDisposeBeforeTime() {
+        TestScheduler scheduler = new TestScheduler();
+        Completable result = Completable.complete()
+                .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+
+        Observer<Void> o = TestHelper.mockObserver();
+        TestObserver<Void> to = new TestObserver<Void>(o);
+
+        result.subscribe(to);
+
+        to.assertEmpty();
+        scheduler.advanceTimeBy(90, TimeUnit.MILLISECONDS);
+        to.dispose();
+        scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
+
+        verify(o, never()).onComplete();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testDelaySubscription() {
+        TestScheduler scheduler = new TestScheduler();
+        Completable result = Completable.complete()
+                .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+
+        Observer<Void> o = TestHelper.mockObserver();
+        TestObserver<Void> to = new TestObserver<Void>(o);
+
+        result.subscribe(to);
+
+        scheduler.advanceTimeBy(90, TimeUnit.MILLISECONDS);
+        to.assertEmpty();
+        scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
+        to.assertComplete();
+
+        verify(o, never()).onError(any(Throwable.class));
     }
 }
