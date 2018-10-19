@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -306,11 +307,20 @@ public class FlowableSampleTest {
 
     @Test
     public void backpressureOverflowWithOtherPublisher() {
-        BehaviorProcessor.createDefault(1)
-        .sample(Flowable.timer(1, TimeUnit.MILLISECONDS))
-        .test(0L)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(MissingBackpressureException.class);
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts =  pp1
+        .sample(pp2)
+        .test(0L);
+
+        pp1.onNext(1);
+        pp2.onNext(2);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
     }
 
     @Test
@@ -455,5 +465,19 @@ public class FlowableSampleTest {
                 return f.sample(1, TimeUnit.SECONDS);
             }
         });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.sample(PublishProcessor.create());
+            }
+        });
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create()
+                .sample(PublishProcessor.create()));
     }
 }
