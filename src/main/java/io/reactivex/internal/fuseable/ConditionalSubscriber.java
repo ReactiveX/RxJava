@@ -16,7 +16,7 @@ package io.reactivex.internal.fuseable;
 import io.reactivex.FlowableSubscriber;
 
 /**
- * A Subscriber with an additional onNextIf(T) method that
+ * A Subscriber with an additional {@link #tryOnNext(Object)} method that
  * tells the caller the specified value has been accepted or
  * not.
  *
@@ -30,6 +30,7 @@ public interface ConditionalSubscriber<T> extends FlowableSubscriber<T> {
      * Conditionally takes the value.
      * @param t the value to deliver
      * @return true if the value has been accepted, false if the value has been rejected
+     * and the next value can be sent immediately
      */
     boolean tryOnNext(T t);
 }

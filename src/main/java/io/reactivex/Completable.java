@@ -1393,6 +1393,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time.
      * <p>
+     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.delaySubscription.t.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -1415,6 +1416,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time,
      * both waiting and subscribing on a given Scheduler.
      * <p>
+     * <img width="640" height="420" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.delaySubscription.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
