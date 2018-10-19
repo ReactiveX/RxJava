@@ -36,7 +36,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
         consumerNode = new AtomicReference<LinkedQueueNode<T>>();
         LinkedQueueNode<T> node = new LinkedQueueNode<T>();
         spConsumerNode(node);
-        xchgProducerNode(node);// this ensures correct construction: StoreLoad
+        xchgProducerNode(node); // this ensures correct construction: StoreLoad
     }
 
     /**

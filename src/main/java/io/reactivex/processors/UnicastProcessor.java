@@ -255,7 +255,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @since 2.0
      */
     UnicastProcessor(int capacityHint) {
-        this(capacityHint,null, true);
+        this(capacityHint, null, true);
     }
 
     /**

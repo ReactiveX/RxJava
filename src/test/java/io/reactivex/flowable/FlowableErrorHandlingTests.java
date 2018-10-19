@@ -28,7 +28,8 @@ import io.reactivex.subscribers.DefaultSubscriber;
 public class FlowableErrorHandlingTests {
 
     /**
-     * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
+     * Test that an error from a user provided Observer.onNext
+     * is handled and emitted to the onError.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -63,7 +64,8 @@ public class FlowableErrorHandlingTests {
     }
 
     /**
-     * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
+     * Test that an error from a user provided Observer.onNext
+     * is handled and emitted to the onError.
      * even when done across thread boundaries with observeOn
      * @throws InterruptedException if the test is interrupted
      */

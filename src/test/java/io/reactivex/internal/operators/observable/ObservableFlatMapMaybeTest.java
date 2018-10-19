@@ -188,7 +188,7 @@ public class ObservableFlatMapMaybeTest {
 
     @Test
     public void middleError() {
-        Observable.fromArray(new String[]{"1","a","2"}).flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
+        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(final String s) throws NumberFormatException {
                 //return Single.just(Integer.valueOf(s)); //This works

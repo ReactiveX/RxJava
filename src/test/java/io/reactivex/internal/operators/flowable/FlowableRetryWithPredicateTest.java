@@ -335,7 +335,7 @@ public class FlowableRetryWithPredicateTest {
                 System.out.println(t);
                 list.add(t);
             }});
-        assertEquals(Arrays.asList(1L,1L,2L,3L), list);
+        assertEquals(Arrays.asList(1L, 1L, 2L, 3L), list);
     }
 
     @Test
@@ -359,7 +359,7 @@ public class FlowableRetryWithPredicateTest {
                 System.out.println(t);
                 list.add(t);
             }});
-        assertEquals(Arrays.asList(1L,1L,2L,3L), list);
+        assertEquals(Arrays.asList(1L, 1L, 2L, 3L), list);
     }
 
     @Test

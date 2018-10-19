@@ -1026,7 +1026,7 @@ public class FlowableTests {
     public void testTakeWhileToList() {
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i = 0;i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Predicate<Boolean>() {

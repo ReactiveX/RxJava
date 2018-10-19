@@ -59,6 +59,7 @@ public class ExceptionsTest {
     }
 
     /**
+     * Outdated test: Observer should not suppress errors from onCompleted.
      * https://github.com/ReactiveX/RxJava/issues/3885
      */
     @Ignore("v2 components should not throw")
@@ -200,6 +201,7 @@ public class ExceptionsTest {
     }
 
     /**
+     * Outdated test: throwing from onError handler.
      * https://github.com/ReactiveX/RxJava/issues/969
      */
     @Ignore("v2 components should not throw")
@@ -237,6 +239,7 @@ public class ExceptionsTest {
     }
 
     /**
+     * Outdated test: throwing from onError.
      * https://github.com/ReactiveX/RxJava/issues/2998
      * @throws Exception on arbitrary errors
      */
@@ -276,6 +279,7 @@ public class ExceptionsTest {
     }
 
     /**
+     * Outdated test: throwing from onError.
      * https://github.com/ReactiveX/RxJava/issues/2998
      * @throws Exception on arbitrary errors
      */

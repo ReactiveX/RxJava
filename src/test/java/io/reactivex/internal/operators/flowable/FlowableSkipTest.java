@@ -167,7 +167,7 @@ public class FlowableSkipTest {
         ts.assertTerminated();
         ts.assertComplete();
         ts.assertNoErrors();
-        assertEquals(Arrays.asList(6,7,8,9,10), ts.values());
+        assertEquals(Arrays.asList(6, 7, 8, 9, 10), ts.values());
     }
 
     @Test

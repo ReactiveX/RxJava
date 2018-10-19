@@ -779,8 +779,8 @@ public class FlowableConcatTest {
 
     @Test
     public void testRequestOverflowDoesNotStallStream() {
-        Flowable<Integer> f1 = Flowable.just(1,2,3);
-        Flowable<Integer> f2 = Flowable.just(4,5,6);
+        Flowable<Integer> f1 = Flowable.just(1, 2, 3);
+        Flowable<Integer> f2 = Flowable.just(4, 5, 6);
         final AtomicBoolean completed = new AtomicBoolean(false);
         f1.concatWith(f2).subscribe(new DefaultSubscriber<Integer>() {
 

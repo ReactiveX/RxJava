@@ -708,7 +708,7 @@ public class FlowableRetryTest {
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
-        for (int j = 0;j < NUM_LOOPS; j++) {
+        for (int j = 0; j < NUM_LOOPS; j++) {
             final int numRetries = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -852,7 +852,7 @@ public class FlowableRetryTest {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedFlowable<String,String>, Flowable<String>>() {
+        .flatMap(new Function<GroupedFlowable<String, String>, Flowable<String>>() {
             @Override
             public Flowable<String> apply(GroupedFlowable<String, String> t1) {
                 return t1.take(1);
@@ -897,7 +897,7 @@ public class FlowableRetryTest {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedFlowable<String,String>, Flowable<String>>() {
+        .flatMap(new Function<GroupedFlowable<String, String>, Flowable<String>>() {
             @Override
             public Flowable<String> apply(GroupedFlowable<String, String> t1) {
                 return t1.take(1);

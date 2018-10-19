@@ -520,7 +520,7 @@ public class ObservableReplayTest {
         Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockObserver();
 
         // Observable under test
-        Observable<Integer> source = Observable.just(1,2);
+        Observable<Integer> source = Observable.just(1, 2);
 
         ConnectableObservable<Integer> replay = source
                 .doOnNext(sourceNext)

@@ -553,7 +553,7 @@ public class FlowableScanTest {
 
     @Test
     public void testScanWithSeedCompletesNormally() {
-        Flowable.just(1,2,3).scan(0, SUM)
+        Flowable.just(1, 2, 3).scan(0, SUM)
           .test()
           .assertValues(0, 1, 3, 6)
           .assertComplete();
@@ -562,7 +562,7 @@ public class FlowableScanTest {
     @Test
     public void testScanWithSeedWhenScanSeedProviderThrows() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1,2,3).scanWith(throwingCallable(e),
+        Flowable.just(1, 2, 3).scanWith(throwingCallable(e),
             SUM)
           .test()
           .assertError(e)
@@ -631,7 +631,7 @@ public class FlowableScanTest {
         assertEquals(1, count.get());
     }
 
-    private static BiFunction<Integer,Integer, Integer> throwingBiFunction(final RuntimeException e) {
+    private static BiFunction<Integer, Integer, Integer> throwingBiFunction(final RuntimeException e) {
         return new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer n1, Integer n2) throws Exception {

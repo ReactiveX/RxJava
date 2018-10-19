@@ -292,7 +292,7 @@ public class FlowableTakeLastTest {
                 cancel();
             }
         });
-        assertEquals(1,count.get());
+        assertEquals(1, count.get());
     }
 
     @Test(timeout = 10000)

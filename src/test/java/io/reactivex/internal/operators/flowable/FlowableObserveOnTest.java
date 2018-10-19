@@ -799,7 +799,7 @@ public class FlowableObserveOnTest {
     public void testErrorDelayed() {
         TestScheduler s = new TestScheduler();
 
-        Flowable<Integer> source = Flowable.just(1, 2 ,3)
+        Flowable<Integer> source = Flowable.just(1, 2, 3)
                 .concatWith(Flowable.<Integer>error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
@@ -833,7 +833,7 @@ public class FlowableObserveOnTest {
 
     @Test
     public void testErrorDelayedAsync() {
-        Flowable<Integer> source = Flowable.just(1, 2 ,3)
+        Flowable<Integer> source = Flowable.just(1, 2, 3)
                 .concatWith(Flowable.<Integer>error(new TestException()));
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -1862,7 +1862,7 @@ public class FlowableObserveOnTest {
     static final class TestSubscriberFusedCanceling
             extends TestSubscriber<Integer> {
 
-        public TestSubscriberFusedCanceling() {
+        TestSubscriberFusedCanceling() {
             super();
             initialFusionMode = QueueFuseable.ANY;
         }

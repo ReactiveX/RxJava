@@ -172,7 +172,7 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testFromIterableRequestOverflow() throws InterruptedException {
-        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1,2,3,4));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4));
 
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);

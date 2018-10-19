@@ -326,7 +326,7 @@ public class ObservableScanTest {
                     o.onNext(2);
                     o.onError(err2);
                 }})
-            .scan(new BiFunction<Integer,Integer,Integer>() {
+            .scan(new BiFunction<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer t1, Integer t2) throws Exception {
                     throw err;
@@ -351,7 +351,7 @@ public class ObservableScanTest {
                 o.onNext(2);
                 o.onComplete();
             }})
-        .scan(new BiFunction<Integer,Integer,Integer>() {
+        .scan(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) throws Exception {
                 throw err;
@@ -374,7 +374,7 @@ public class ObservableScanTest {
                 o.onNext(2);
                 o.onNext(3);
             }})
-        .scan(new BiFunction<Integer,Integer,Integer>() {
+        .scan(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) throws Exception {
                 count.incrementAndGet();

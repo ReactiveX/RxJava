@@ -801,7 +801,7 @@ public class ObservableRetryTest {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedObservable<String,String>, Observable<String>>() {
+        .flatMap(new Function<GroupedObservable<String, String>, Observable<String>>() {
             @Override
             public Observable<String> apply(GroupedObservable<String, String> t1) {
                 return t1.take(1);
@@ -846,7 +846,7 @@ public class ObservableRetryTest {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedObservable<String,String>, Observable<String>>() {
+        .flatMap(new Function<GroupedObservable<String, String>, Observable<String>>() {
             @Override
             public Observable<String> apply(GroupedObservable<String, String> t1) {
                 return t1.take(1);

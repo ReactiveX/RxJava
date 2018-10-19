@@ -82,7 +82,7 @@ public class ObservableTakeLastOneTest {
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Observable.range(1,num).doOnNext(new Consumer<Integer>() {
+        long count = Observable.range(1, num).doOnNext(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t) {

@@ -807,8 +807,8 @@ public class FlowableCombineLatestTest {
     public void testCombineLatestRequestOverflow() throws InterruptedException {
         @SuppressWarnings("unchecked")
         List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
-                Flowable.fromArray(5,6,7,8));
-        Flowable<Integer> f = Flowable.combineLatest(sources,new Function<Object[], Integer>() {
+                Flowable.fromArray(5, 6, 7, 8));
+        Flowable<Integer> f = Flowable.combineLatest(sources, new Function<Object[], Integer>() {
             @Override
             public Integer apply(Object[] args) {
                return (Integer) args[0];

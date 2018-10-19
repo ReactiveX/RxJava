@@ -520,7 +520,7 @@ public class FlowableReplayTest {
         Subscriber<Integer> spiedSubscriberAfterConnect = TestHelper.mockSubscriber();
 
         // Flowable under test
-        Flowable<Integer> source = Flowable.just(1,2);
+        Flowable<Integer> source = Flowable.just(1, 2);
 
         ConnectableFlowable<Integer> replay = source
                 .doOnNext(sourceNext)

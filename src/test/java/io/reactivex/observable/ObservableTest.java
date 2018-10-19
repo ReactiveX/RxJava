@@ -1048,7 +1048,7 @@ public class ObservableTest {
     public void testTakeWhileToList() {
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i = 0;i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Predicate<Boolean>() {

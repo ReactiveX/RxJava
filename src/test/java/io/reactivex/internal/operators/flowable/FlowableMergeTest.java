@@ -335,8 +335,8 @@ public class FlowableMergeTest {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
-        final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
-        final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));// we expect to lose all of these since o2 is done first and fails
+        final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null)); // we expect to lose all of these since o2 is done first and fails
+        final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine")); // we expect to lose all of these since o2 is done first and fails
 
         Flowable<String> m = Flowable.merge(f1, f2, f3, f4);
         m.subscribe(stringSubscriber);
@@ -1269,8 +1269,8 @@ public class FlowableMergeTest {
     @Test
     public void testMergeRequestOverflow() throws InterruptedException {
         //do a non-trivial merge so that future optimisations with EMPTY don't invalidate this test
-        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1,2))
-                .mergeWith(Flowable.fromIterable(Arrays.asList(3,4)));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2))
+                .mergeWith(Flowable.fromIterable(Arrays.asList(3, 4)));
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
         f.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {

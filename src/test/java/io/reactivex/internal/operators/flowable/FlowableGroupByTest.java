@@ -2069,10 +2069,10 @@ public class FlowableGroupByTest {
     }
 
     //not thread safe
-    private static final class SingleThreadEvictingHashMap<K,V> implements Map<K,V> {
+    private static final class SingleThreadEvictingHashMap<K, V> implements Map<K, V> {
 
         private final List<K> list = new ArrayList<K>();
-        private final Map<K,V> map = new HashMap<K,V>();
+        private final Map<K, V> map = new HashMap<K, V>();
         private final int maxSize;
         private final Consumer<V> evictedListener;
 
@@ -2175,7 +2175,7 @@ public class FlowableGroupByTest {
                         .maximumSize(maxSize) //
                         .removalListener(new RemovalListener<Integer, Object>() {
                             @Override
-                            public void onRemoval(RemovalNotification<Integer,Object> notification) {
+                            public void onRemoval(RemovalNotification<Integer, Object> notification) {
                                 try {
                                     notify.accept(notification.getValue());
                                 } catch (Exception e) {
@@ -2194,7 +2194,7 @@ public class FlowableGroupByTest {
 
                     @Override
                     public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                        return new SingleThreadEvictingHashMap<Integer,Object>(maxSize, new Consumer<Object>() {
+                        return new SingleThreadEvictingHashMap<Integer, Object>(maxSize, new Consumer<Object>() {
                                     @Override
                                     public void accept(Object object) {
                                         try {

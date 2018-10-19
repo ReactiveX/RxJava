@@ -129,7 +129,7 @@ public final class ExceptionHelper {
                 + unit.toString().toLowerCase()
                 + " and has been terminated.";
     }
-    
+
     static final class Termination extends Throwable {
 
         private static final long serialVersionUID = -4649703670690200604L;

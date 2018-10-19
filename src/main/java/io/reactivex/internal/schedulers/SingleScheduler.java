@@ -53,6 +53,8 @@ public final class SingleScheduler extends Scheduler {
     }
 
     /**
+     * Constructs a SingleScheduler with the given ThreadFactory and prepares the
+     * single scheduler thread.
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      */

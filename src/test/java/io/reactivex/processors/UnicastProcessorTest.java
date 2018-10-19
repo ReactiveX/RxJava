@@ -110,7 +110,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
             public void run() {
             }
         };
-        UnicastProcessor<Integer> ap = UnicastProcessor.create(16, noop,false);
+        UnicastProcessor<Integer> ap = UnicastProcessor.create(16, noop, false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
 

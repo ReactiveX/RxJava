@@ -175,7 +175,7 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void middleError() {
-        Observable.fromArray(new String[]{"1","a","2"}).flatMapSingle(new Function<String, SingleSource<Integer>>() {
+        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapSingle(new Function<String, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(final String s) throws NumberFormatException {
                 //return Single.just(Integer.valueOf(s)); //This works

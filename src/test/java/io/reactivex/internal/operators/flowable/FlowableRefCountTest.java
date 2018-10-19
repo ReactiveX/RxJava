@@ -537,7 +537,7 @@ public class FlowableRefCountTest {
         try {
             final AtomicInteger intervalSubscribed = new AtomicInteger();
             Flowable<String> interval =
-                    Flowable.interval(200,TimeUnit.MILLISECONDS)
+                    Flowable.interval(200, TimeUnit.MILLISECONDS)
                             .doOnSubscribe(new Consumer<Subscription>() {
                                 @Override
                                 public void accept(Subscription s) {

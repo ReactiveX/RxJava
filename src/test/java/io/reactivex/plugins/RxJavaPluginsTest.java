@@ -269,7 +269,7 @@ public class RxJavaPluginsTest {
                         fail("Should have thrown InvocationTargetException(IllegalStateException)");
                     } catch (InvocationTargetException ex) {
                         if (ex.getCause() instanceof IllegalStateException) {
-                            assertEquals("Plugins can't be changed anymore",ex.getCause().getMessage());
+                            assertEquals("Plugins can't be changed anymore", ex.getCause().getMessage());
                         } else {
                             fail("Should have thrown InvocationTargetException(IllegalStateException)");
                         }

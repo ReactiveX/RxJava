@@ -466,7 +466,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void intervalRangeUnitNull() {
-        Flowable.intervalRange(1,1, 1, 1, null);
+        Flowable.intervalRange(1, 1, 1, 1, null);
     }
 
     @Test(expected = NullPointerException.class)
