@@ -36,6 +36,7 @@ import io.reactivex.subscribers.*;
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
 
     /**
+     * Make sure canceling through {@code subscribeOn} works.
      * Bug report: https://github.com/ReactiveX/RxJava/issues/431
      * @throws InterruptedException if the test is interrupted
      */

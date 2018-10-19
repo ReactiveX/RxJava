@@ -516,7 +516,7 @@ public class ObservableRefCountTest {
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
-                Observable.interval(200,TimeUnit.MILLISECONDS)
+                Observable.interval(200, TimeUnit.MILLISECONDS)
                         .doOnSubscribe(new Consumer<Disposable>() {
                             @Override
                             public void accept(Disposable d) {

@@ -91,7 +91,7 @@ public class FlowableTakeLastOneTest {
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Flowable.range(1,num).doOnNext(new Consumer<Integer>() {
+        long count = Flowable.range(1, num).doOnNext(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t) {

@@ -388,7 +388,8 @@ public class FlowableReduceTest {
     }
 
     /**
-     * https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     * Make sure an asynchronous reduce with flatMap works.
+     * Original Reactor-Core test case: https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
      */
     @Test
     public void shouldReduceTo10Events() {
@@ -414,7 +415,8 @@ public class FlowableReduceTest {
                     @Override
                     public void accept(String s) throws Exception {
                         count.incrementAndGet();
-                        System.out.println("Completed with " + s);}
+                        System.out.println("Completed with " + s);
+                    }
                 })
                 .toFlowable();
             }
@@ -425,7 +427,8 @@ public class FlowableReduceTest {
     }
 
     /**
-     * https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     * Make sure an asynchronous reduce with flatMap works.
+     * Original Reactor-Core test case: https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
      */
     @Test
     public void shouldReduceTo10EventsFlowable() {
@@ -452,7 +455,8 @@ public class FlowableReduceTest {
                     @Override
                     public void accept(String s) throws Exception {
                         count.incrementAndGet();
-                        System.out.println("Completed with " + s);}
+                        System.out.println("Completed with " + s);
+                    }
                 })
                 ;
             }

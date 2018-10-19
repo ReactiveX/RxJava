@@ -1557,7 +1557,7 @@ public class ObservableBufferTest {
                                 return integer;
                             }
                         })
-                .buffer(Observable.interval(0,200, TimeUnit.MILLISECONDS),
+                .buffer(Observable.interval(0, 200, TimeUnit.MILLISECONDS),
                         new Function<Long, Observable<?>>() {
                             @Override
                             public Observable<?> apply(Long a) {
@@ -1580,7 +1580,7 @@ public class ObservableBufferTest {
                                 return integer;
                             }
                         })
-                .buffer(Observable.interval(0,100, TimeUnit.MILLISECONDS),
+                .buffer(Observable.interval(0, 100, TimeUnit.MILLISECONDS),
                         new Function<Long, Observable<?>>() {
                             @Override
                             public Observable<?> apply(Long a) {

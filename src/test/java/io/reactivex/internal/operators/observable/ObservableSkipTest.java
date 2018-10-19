@@ -142,7 +142,7 @@ public class ObservableSkipTest {
         to.assertTerminated();
         to.assertComplete();
         to.assertNoErrors();
-        assertEquals(Arrays.asList(6,7,8,9,10), to.values());
+        assertEquals(Arrays.asList(6, 7, 8, 9, 10), to.values());
     }
 
     @Test

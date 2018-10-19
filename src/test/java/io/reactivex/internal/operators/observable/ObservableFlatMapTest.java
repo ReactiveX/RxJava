@@ -515,7 +515,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void flatMapIntPassthruAsync() {
-        for (int i = 0;i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             TestObserver<Integer> to = new TestObserver<Integer>();
 
             Observable.range(1, 1000).flatMap(new Function<Integer, Observable<Integer>>() {

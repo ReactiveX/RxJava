@@ -179,7 +179,7 @@ public class ObservableTakeLastTest {
                 cancel();
             }
         });
-        assertEquals(1,count.get());
+        assertEquals(1, count.get());
     }
 
     @Test

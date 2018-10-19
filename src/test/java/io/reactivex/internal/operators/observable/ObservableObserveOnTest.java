@@ -791,7 +791,7 @@ public class ObservableObserveOnTest {
     static final class TestObserverFusedCanceling
             extends TestObserver<Integer> {
 
-        public TestObserverFusedCanceling() {
+        TestObserverFusedCanceling() {
             super();
             initialFusionMode = QueueFuseable.ANY;
         }

@@ -467,7 +467,7 @@ public class FlowableSubscriberTest {
     public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Flowable.just(1,2,3,4).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.just(1, 2, 3, 4).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -498,7 +498,8 @@ public class FlowableSubscriberTest {
     @Test
     public void testOnStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.just(1,2,3,4,5).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.just(1, 2, 3, 4, 5)
+        .subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onStart() {
                 request(3);
@@ -519,13 +520,13 @@ public class FlowableSubscriberTest {
             public void onNext(Integer t) {
                 list.add(t);
             }});
-        assertEquals(Arrays.asList(1,2,3,4,5), list);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
 
     @Test
     public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<Integer>();
-        Flowable.just(1,2,3,4,5).subscribe(new DefaultSubscriber<Integer>() {
+        Flowable.just(1, 2, 3, 4, 5).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onStart() {
                 request(2);
@@ -546,7 +547,7 @@ public class FlowableSubscriberTest {
             public void onNext(Integer t) {
                 list.add(t);
             }});
-        assertEquals(Arrays.asList(1,2,3,4,5), list);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), list);
     }
 
     @Test

@@ -522,7 +522,7 @@ public class FlowableFlatMapTest {
 
     @Test
     public void flatMapIntPassthruAsync() {
-        for (int i = 0;i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             Flowable.range(1, 1000).flatMap(new Function<Integer, Flowable<Integer>>() {

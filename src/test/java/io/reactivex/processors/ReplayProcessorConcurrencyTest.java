@@ -284,6 +284,7 @@ public class ReplayProcessorConcurrencyTest {
     }
 
     /**
+     * Make sure emission-subscription races are handled correctly.
      * https://github.com/ReactiveX/RxJava/issues/1147
      */
     @Test

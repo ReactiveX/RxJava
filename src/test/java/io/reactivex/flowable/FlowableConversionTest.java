@@ -206,7 +206,7 @@ public class FlowableConversionTest {
     public void testConvertToConcurrentQueue() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
-        ConcurrentLinkedQueue<? extends Integer> queue = Flowable.range(0,5)
+        ConcurrentLinkedQueue<? extends Integer> queue = Flowable.range(0, 5)
                 .flatMap(new Function<Integer, Publisher<Integer>>() {
                     @Override
                     public Publisher<Integer> apply(final Integer i) {

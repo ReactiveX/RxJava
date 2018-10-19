@@ -89,12 +89,12 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
         final long index = consumerIndex.get();
         final int offset = calcElementOffset(index);
         // local load of field to avoid repeated loads after volatile reads
-        final E e = lvElement(offset);// LoadLoad
+        final E e = lvElement(offset); // LoadLoad
         if (null == e) {
             return null;
         }
         soConsumerIndex(index + 1); // ordered store -> atomic and ordered for size()
-        soElement(offset, null);// StoreStore
+        soElement(offset, null); // StoreStore
         return e;
     }
 

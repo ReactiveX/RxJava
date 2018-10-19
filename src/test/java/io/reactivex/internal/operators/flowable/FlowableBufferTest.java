@@ -2130,7 +2130,7 @@ public class FlowableBufferTest {
                                 return integer;
                             }
                         })
-                .buffer(Flowable.interval(0,200, TimeUnit.MILLISECONDS),
+                .buffer(Flowable.interval(0, 200, TimeUnit.MILLISECONDS),
                         new Function<Long, Publisher<?>>() {
                             @Override
                             public Publisher<?> apply(Long a) {
@@ -2153,7 +2153,7 @@ public class FlowableBufferTest {
                                 return integer;
                             }
                         })
-                .buffer(Flowable.interval(0,100, TimeUnit.MILLISECONDS),
+                .buffer(Flowable.interval(0, 100, TimeUnit.MILLISECONDS),
                         new Function<Long, Publisher<?>>() {
                             @Override
                             public Publisher<?> apply(Long a) {

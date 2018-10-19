@@ -83,7 +83,7 @@ public class FlowableDoOnRequestTest {
                         request(t);
                     }
                 });
-        assertEquals(Arrays.asList(3L,1L,2L,3L,4L,5L), requests);
+        assertEquals(Arrays.asList(3L, 1L, 2L, 3L, 4L, 5L), requests);
     }
 
     @Test

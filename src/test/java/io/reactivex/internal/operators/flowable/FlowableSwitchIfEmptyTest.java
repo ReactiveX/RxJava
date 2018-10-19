@@ -166,7 +166,7 @@ public class FlowableSwitchIfEmptyTest {
     @Test
     public void testBackpressureOnFirstObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
-        Flowable.just(1,2,3).switchIfEmpty(Flowable.just(4, 5, 6)).subscribe(ts);
+        Flowable.just(1, 2, 3).switchIfEmpty(Flowable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotComplete();
         ts.assertNoErrors();
         ts.assertNoValues();

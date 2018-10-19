@@ -546,7 +546,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void intervalRangeUnitNull() {
-        Observable.intervalRange(1,1, 1, 1, null);
+        Observable.intervalRange(1, 1, 1, 1, null);
     }
 
     @Test(expected = NullPointerException.class)

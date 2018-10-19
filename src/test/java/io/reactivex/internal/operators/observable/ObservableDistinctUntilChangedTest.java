@@ -140,7 +140,7 @@ public class ObservableDistinctUntilChangedTest {
 
     @Test
     public void customComparator() {
-        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        Observable<String> source = Observable.just("a", "b", "B", "A", "a", "C");
 
         TestObserver<String> to = TestObserver.create();
 
@@ -159,7 +159,7 @@ public class ObservableDistinctUntilChangedTest {
 
     @Test
     public void customComparatorThrows() {
-        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        Observable<String> source = Observable.just("a", "b", "B", "A", "a", "C");
 
         TestObserver<String> to = TestObserver.create();
 
