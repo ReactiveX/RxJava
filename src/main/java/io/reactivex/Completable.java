@@ -1391,6 +1391,51 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param delay the time to delay the subscription
+     * @param unit  the time unit of {@code delay}
+     * @return a Completable that delays the subscription to the source CompletableSource by the given amount
+     * @since 2.2.3 - experimental
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @CheckReturnValue
+    @Experimental
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Completable delaySubscription(long delay, TimeUnit unit) {
+        return delaySubscription(delay, unit, Schedulers.computation());
+    }
+
+    /**
+     * Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time,
+     * both waiting and subscribing on a given Scheduler.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param delay     the time to delay the subscription
+     * @param unit      the time unit of {@code delay}
+     * @param scheduler the Scheduler on which the waiting and subscription will happen
+     * @return a Completable that delays the subscription to the source CompletableSource by a given
+     * amount, waiting and subscribing on the given Scheduler
+     * @since 2.2.3 - experimental
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @CheckReturnValue
+    @Experimental
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Completable delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
+        return Completable.timer(delay, unit, scheduler).andThen(this);
+    }
+
+    /**
      * Returns a Completable which calls the given onComplete callback if this Completable completes.
      * <p>
      * <img width="640" height="304" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doOnComplete.png" alt="">
