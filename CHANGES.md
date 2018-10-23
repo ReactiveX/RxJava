@@ -2,6 +2,24 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.3 - October 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.3%7C))
+
+#### API changes
+
+  - [Pull 6242](https://github.com/ReactiveX/RxJava/pull/6242): Add timed `Completable.delaySubscription()` operator.
+
+#### Documentation changes
+
+  - [Pull 6220](https://github.com/ReactiveX/RxJava/pull/6220): Remove unnecessary 's' from `ConnectableObservable`.
+  - [Pull 6241](https://github.com/ReactiveX/RxJava/pull/6241): Remove mention of `io.reactivex.functions.Functions` nonexistent utility class.
+
+#### Other changes
+
+  - [Pull 6232](https://github.com/ReactiveX/RxJava/pull/6232): Cleanup `Observable.flatMap` drain logic.
+  - [Pull 6234](https://github.com/ReactiveX/RxJava/pull/6234): Add timeout and unit to `TimeoutException` message in the `timeout` operators.
+  - [Pull 6236](https://github.com/ReactiveX/RxJava/pull/6236): Adjust `UndeliverableException` and `OnErrorNotImplementedException` message to use the full inner exception.
+  - [Pull 6244](https://github.com/ReactiveX/RxJava/pull/6244): Add `@Nullable` annotations for blocking methods in `Completable`.
+
 ### Version 2.2.2 - September 6, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.2%7C))
 
 #### Bugfixes
