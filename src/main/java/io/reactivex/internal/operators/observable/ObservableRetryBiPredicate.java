@@ -58,7 +58,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
 
         @Override
         public void onSubscribe(Disposable d) {
-            upstream.update(d);
+            upstream.replace(d);
         }
 
         @Override

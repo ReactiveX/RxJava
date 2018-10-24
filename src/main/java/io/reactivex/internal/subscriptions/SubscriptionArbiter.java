@@ -55,11 +55,14 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
 
     final AtomicLong missedProduced;
 
+    final boolean cancelOnReplace;
+
     volatile boolean cancelled;
 
     protected boolean unbounded;
 
-    public SubscriptionArbiter() {
+    public SubscriptionArbiter(boolean cancelOnReplace) {
+        this.cancelOnReplace = cancelOnReplace;
         missedSubscription = new AtomicReference<Subscription>();
         missedRequested = new AtomicLong();
         missedProduced = new AtomicLong();
@@ -80,7 +83,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
 
-            if (a != null) {
+            if (a != null && cancelOnReplace) {
                 a.cancel();
             }
 
@@ -100,7 +103,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         }
 
         Subscription a = missedSubscription.getAndSet(s);
-        if (a != null) {
+        if (a != null && cancelOnReplace) {
             a.cancel();
         }
         drain();
@@ -240,7 +243,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
                 }
 
                 if (ms != null) {
-                    if (a != null) {
+                    if (a != null && cancelOnReplace) {
                         a.cancel();
                     }
                     actual = ms;

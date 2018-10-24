@@ -229,7 +229,7 @@ public class ObservableRetryWithPredicateTest {
         Observer<Long> observer = TestHelper.mockObserver();
 
         // Observable that always fails after 100ms
-        ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 0);
+        ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 0, "testUnsubscribeAfterError");
         Observable<Long> o = Observable
                 .unsafeCreate(so)
                 .retry(retry5);
@@ -255,7 +255,7 @@ public class ObservableRetryWithPredicateTest {
         Observer<Long> observer = TestHelper.mockObserver();
 
         // Observable that sends every 100ms (timeout fails instead)
-        ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 10);
+        ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 10, "testTimeoutWithRetry");
         Observable<Long> o = Observable
                 .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)

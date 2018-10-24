@@ -196,6 +196,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
 
         TimeoutFallbackSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit,
                 Scheduler.Worker worker, Publisher<? extends T> fallback) {
+            super(true);
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;

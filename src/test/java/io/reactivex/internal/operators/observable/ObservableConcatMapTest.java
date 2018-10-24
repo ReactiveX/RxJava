@@ -14,20 +14,29 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.*;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subjects.*;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableConcatMapTest {
 
@@ -497,5 +506,27 @@ public class ObservableConcatMapTest {
         ps.onNext(0);
 
         to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void noCancelPrevious() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Observable.range(1, 5)
+        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.just(v).doOnDispose(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        counter.getAndIncrement();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(0, counter.get());
     }
 }

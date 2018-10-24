@@ -143,6 +143,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
                 Subscription receiver) {
+            super(false);
             this.downstream = actual;
             this.processor = processor;
             this.receiver = receiver;
@@ -160,6 +161,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         }
 
         protected final void again(U signal) {
+            setSubscription(EmptySubscription.INSTANCE);
             long p = produced;
             if (p != 0L) {
                 produced = 0L;

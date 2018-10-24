@@ -59,6 +59,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
         long produced;
 
         ConcatArraySubscriber(Publisher<? extends T>[] sources, boolean delayError, Subscriber<? super T> downstream) {
+            super(false);
             this.downstream = downstream;
             this.sources = sources;
             this.delayError = delayError;

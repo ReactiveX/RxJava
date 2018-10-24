@@ -13,27 +13,57 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.mockito.*;
-import org.reactivestreams.*;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableRetryTest {
 
@@ -355,7 +385,7 @@ public class FlowableRetryTest {
         Consumer<Integer> throwException = mock(Consumer.class);
         doThrow(new RuntimeException()).when(throwException).accept(Mockito.anyInt());
 
-        // create a retrying observable based on a PublishProcessor
+        // create a retrying Flowable based on a PublishProcessor
         PublishProcessor<Integer> processor = PublishProcessor.create();
         processor
         // record item
@@ -492,7 +522,7 @@ public class FlowableRetryTest {
     }
 
     @Test
-    public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
+    public void testSourceFlowableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -523,7 +553,7 @@ public class FlowableRetryTest {
     }
 
     @Test
-    public void testSourceObservableRetry1() throws InterruptedException {
+    public void testSourceFlowableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -542,7 +572,7 @@ public class FlowableRetryTest {
     }
 
     @Test
-    public void testSourceObservableRetry0() throws InterruptedException {
+    public void testSourceFlowableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -566,12 +596,14 @@ public class FlowableRetryTest {
         final AtomicInteger active = new AtomicInteger(0);
         final AtomicInteger maxActive = new AtomicInteger(0);
         final AtomicInteger nextBeforeFailure;
+        final String context;
 
         private final int emitDelay;
 
-        SlowFlowable(int emitDelay, int countNext) {
+        SlowFlowable(int emitDelay, int countNext, String context) {
             this.emitDelay = emitDelay;
             this.nextBeforeFailure = new AtomicInteger(countNext);
+            this.context = context;
         }
 
         @Override
@@ -593,7 +625,7 @@ public class FlowableRetryTest {
             efforts.getAndIncrement();
             active.getAndIncrement();
             maxActive.set(Math.max(active.get(), maxActive.get()));
-            final Thread thread = new Thread() {
+            final Thread thread = new Thread(context) {
                 @Override
                 public void run() {
                     long nr = 0;
@@ -603,7 +635,9 @@ public class FlowableRetryTest {
                             if (nextBeforeFailure.getAndDecrement() > 0) {
                                 subscriber.onNext(nr++);
                             } else {
+                                active.decrementAndGet();
                                 subscriber.onError(new RuntimeException("expected-failed"));
+                                break;
                             }
                         }
                     } catch (InterruptedException t) {
@@ -664,7 +698,7 @@ public class FlowableRetryTest {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         // Flowable that always fails after 100ms
-        SlowFlowable so = new SlowFlowable(100, 0);
+        SlowFlowable so = new SlowFlowable(100, 0, "testUnsubscribeAfterError");
         Flowable<Long> f = Flowable.unsafeCreate(so).retry(5);
 
         AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
@@ -688,7 +722,7 @@ public class FlowableRetryTest {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         // Flowable that sends every 100ms (timeout fails instead)
-        SlowFlowable sf = new SlowFlowable(100, 10);
+        SlowFlowable sf = new SlowFlowable(100, 10, "testTimeoutWithRetry");
         Flowable<Long> f = Flowable.unsafeCreate(sf).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
@@ -1001,7 +1035,7 @@ public class FlowableRetryTest {
     }
 
     @Test
-    public void shouldDisposeInnerObservable() {
+    public void shouldDisposeInnerFlowable() {
       final PublishProcessor<Object> processor = PublishProcessor.create();
       final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
           .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
@@ -1020,5 +1054,200 @@ public class FlowableRetryTest {
       assertTrue(processor.hasSubscribers());
       disposable.dispose();
       assertFalse(processor.hasSubscribers());
+    }
+
+    @Test
+    public void noCancelPreviousRetry() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (times.getAndIncrement() < 4) {
+                    return Flowable.error(new TestException());
+                }
+                return Flowable.just(1);
+            }
+        })
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retry(5)
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void noCancelPreviousRetryWhile() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (times.getAndIncrement() < 4) {
+                    return Flowable.error(new TestException());
+                }
+                return Flowable.just(1);
+            }
+        })
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retry(5, Functions.alwaysTrue())
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void noCancelPreviousRetryWhile2() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (times.getAndIncrement() < 4) {
+                    return Flowable.error(new TestException());
+                }
+                return Flowable.just(1);
+            }
+        })
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retry(new BiPredicate<Integer, Throwable>() {
+            @Override
+            public boolean test(Integer a, Throwable b) throws Exception {
+                return a < 5;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void noCancelPreviousRetryUntil() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (times.getAndIncrement() < 4) {
+                    return Flowable.error(new TestException());
+                }
+                return Flowable.just(1);
+            }
+        })
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retryUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void noCancelPreviousRepeatWhen() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (times.get() < 4) {
+                    return Flowable.error(new TestException());
+                }
+                return Flowable.just(1);
+            }
+        }).doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retryWhen(new Function<Flowable<Throwable>, Flowable<?>>() {
+            @Override
+            public Flowable<?> apply(Flowable<Throwable> e) throws Exception {
+                return e.takeWhile(new Predicate<Object>() {
+                    @Override
+                    public boolean test(Object v) throws Exception {
+                        return times.getAndIncrement() < 4;
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void noCancelPreviousRepeatWhen2() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        final AtomicInteger times = new AtomicInteger();
+
+        Flowable<Integer> source = Flowable.<Integer>error(new TestException())
+                .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        source.retryWhen(new Function<Flowable<Throwable>, Flowable<?>>() {
+            @Override
+            public Flowable<?> apply(Flowable<Throwable> e) throws Exception {
+                return e.takeWhile(new Predicate<Object>() {
+                    @Override
+                    public boolean test(Object v) throws Exception {
+                        return times.getAndIncrement() < 4;
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult();
+
+        assertEquals(0, counter.get());
     }
 }

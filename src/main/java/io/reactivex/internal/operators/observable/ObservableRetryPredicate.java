@@ -61,7 +61,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
 
         @Override
         public void onSubscribe(Disposable d) {
-            upstream.update(d);
+            upstream.replace(d);
         }
 
         @Override
