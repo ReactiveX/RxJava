@@ -199,6 +199,27 @@ observable.subscribe(
     () -> System.out.println("Done"));
 ```
 
+## generate
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/create.html](http://reactivex.io/documentation/operators/create.html)
+
+Creates a cold, synchronous and stateful generator of values.
+
+#### generate example:
+
+```java
+int startValue = 1;
+int incrementValue = 1;
+Flowable<Integer> flowable = Flowable.generate(() -> startValue, (s, emitter) -> {
+	int nextValue = s + incrementValue;
+	emitter.onNext(nextValue);
+	return nextValue;
+});
+flowable.subscribe(value -> System.out.println(value));
+```
+
 ## create
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Completable`
