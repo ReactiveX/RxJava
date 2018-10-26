@@ -1407,7 +1407,7 @@ public class TestObserverTest {
         Observable.just("a", "b", "c").subscribe(to);
 
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Expected: b (class: String), Actual: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
+        thrown.expectMessage("expected: b (class: String) but was: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
         to.assertValueAt(2, "b");
     }
 
