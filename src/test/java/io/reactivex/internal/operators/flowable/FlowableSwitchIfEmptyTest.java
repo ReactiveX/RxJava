@@ -127,7 +127,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchShouldTriggerUnsubscribe() {
+    public void testSwitchShouldNotTriggerUnsubscribe() {
         final BooleanSubscription bs = new BooleanSubscription();
 
         Flowable.unsafeCreate(new Publisher<Long>() {
@@ -137,7 +137,7 @@ public class FlowableSwitchIfEmptyTest {
                 subscriber.onComplete();
             }
         }).switchIfEmpty(Flowable.<Long>never()).subscribe();
-        assertTrue(bs.isCancelled());
+        assertFalse(bs.isCancelled());
     }
 
     @Test

@@ -43,7 +43,7 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
             this.downstream = actual;
             this.other = other;
             this.empty = true;
-            this.arbiter = new SubscriptionArbiter();
+            this.arbiter = new SubscriptionArbiter(false);
         }
 
         @Override

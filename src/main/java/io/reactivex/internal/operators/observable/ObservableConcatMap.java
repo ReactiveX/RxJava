@@ -244,7 +244,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
             @Override
             public void onSubscribe(Disposable d) {
-                DisposableHelper.set(this, d);
+                DisposableHelper.replace(this, d);
             }
 
             @Override

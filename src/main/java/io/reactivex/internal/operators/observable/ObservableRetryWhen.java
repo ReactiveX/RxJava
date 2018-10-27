@@ -102,6 +102,7 @@ public final class ObservableRetryWhen<T> extends AbstractObservableWithUpstream
 
         @Override
         public void onError(Throwable e) {
+            DisposableHelper.replace(upstream, null);
             active = false;
             signaller.onNext(e);
         }

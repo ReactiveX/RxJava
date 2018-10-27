@@ -58,6 +58,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
         long produced;
 
         OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
+            super(false);
             this.downstream = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;

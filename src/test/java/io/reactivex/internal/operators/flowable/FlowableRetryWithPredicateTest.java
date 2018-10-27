@@ -230,7 +230,7 @@ public class FlowableRetryWithPredicateTest {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         // Flowable that always fails after 100ms
-        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 0);
+        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 0, "testUnsubscribeAfterError");
         Flowable<Long> f = Flowable
                 .unsafeCreate(so)
                 .retry(retry5);
@@ -256,7 +256,7 @@ public class FlowableRetryWithPredicateTest {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         // Flowable that sends every 100ms (timeout fails instead)
-        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 10);
+        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 10, "testTimeoutWithRetry");
         Flowable<Long> f = Flowable
                 .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)

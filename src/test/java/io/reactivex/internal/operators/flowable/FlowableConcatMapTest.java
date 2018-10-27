@@ -13,14 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.WeakScalarSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -142,5 +145,27 @@ public class FlowableConcatMapTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void noCancelPrevious() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Flowable.range(1, 5)
+        .concatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(v).doOnCancel(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        counter.getAndIncrement();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(0, counter.get());
     }
 }

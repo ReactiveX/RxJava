@@ -571,6 +571,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         long produced;
 
         ConcatMapInner(ConcatMapSupport<R> parent) {
+            super(false);
             this.parent = parent;
         }
 

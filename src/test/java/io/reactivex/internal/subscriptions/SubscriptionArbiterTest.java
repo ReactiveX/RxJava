@@ -26,7 +26,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void setSubscriptionMissed() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.getAndIncrement();
 
@@ -45,7 +45,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void invalidDeferredRequest() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -59,7 +59,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void unbounded() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.request(Long.MAX_VALUE);
 
@@ -86,7 +86,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void cancelled() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
         sa.cancelled = true;
 
         BooleanSubscription bs1 = new BooleanSubscription();
@@ -102,7 +102,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void drainUnbounded() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.getAndIncrement();
 
@@ -113,7 +113,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void drainMissedRequested() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.getAndIncrement();
 
@@ -128,7 +128,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void drainMissedRequestedProduced() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.getAndIncrement();
 
@@ -147,7 +147,7 @@ public class SubscriptionArbiterTest {
     public void drainMissedRequestedMoreProduced() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            SubscriptionArbiter sa = new SubscriptionArbiter();
+            SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
             sa.getAndIncrement();
 
@@ -169,7 +169,7 @@ public class SubscriptionArbiterTest {
 
     @Test
     public void missedSubscriptionNoPrior() {
-        SubscriptionArbiter sa = new SubscriptionArbiter();
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
 
         sa.getAndIncrement();
 
@@ -180,5 +180,131 @@ public class SubscriptionArbiterTest {
         sa.drainLoop();
 
         assertSame(bs1, sa.actual);
+    }
+
+    @Test
+    public void noCancelFastPath() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(false);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+        sa.setSubscription(bs2);
+
+        assertFalse(bs1.isCancelled());
+        assertFalse(bs2.isCancelled());
+    }
+
+    @Test
+    public void cancelFastPath() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+        sa.setSubscription(bs2);
+
+        assertTrue(bs1.isCancelled());
+        assertFalse(bs2.isCancelled());
+    }
+
+    @Test
+    public void noCancelSlowPathReplace() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(false);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+        BooleanSubscription bs3 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+
+        sa.getAndIncrement();
+
+        sa.setSubscription(bs2);
+        sa.setSubscription(bs3);
+
+        sa.drainLoop();
+
+        assertFalse(bs1.isCancelled());
+        assertFalse(bs2.isCancelled());
+        assertFalse(bs3.isCancelled());
+    }
+
+    @Test
+    public void cancelSlowPathReplace() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+        BooleanSubscription bs3 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+
+        sa.getAndIncrement();
+
+        sa.setSubscription(bs2);
+        sa.setSubscription(bs3);
+
+        sa.drainLoop();
+
+        assertTrue(bs1.isCancelled());
+        assertTrue(bs2.isCancelled());
+        assertFalse(bs3.isCancelled());
+    }
+
+    @Test
+    public void noCancelSlowPath() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(false);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+
+        sa.getAndIncrement();
+
+        sa.setSubscription(bs2);
+
+        sa.drainLoop();
+
+        assertFalse(bs1.isCancelled());
+        assertFalse(bs2.isCancelled());
+    }
+
+    @Test
+    public void cancelSlowPath() {
+        SubscriptionArbiter sa = new SubscriptionArbiter(true);
+
+        BooleanSubscription bs1 = new BooleanSubscription();
+        BooleanSubscription bs2 = new BooleanSubscription();
+
+        sa.setSubscription(bs1);
+
+        sa.getAndIncrement();
+
+        sa.setSubscription(bs2);
+
+        sa.drainLoop();
+
+        assertTrue(bs1.isCancelled());
+        assertFalse(bs2.isCancelled());
+    }
+
+    @Test
+    public void moreProducedViolationFastPath() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            SubscriptionArbiter sa = new SubscriptionArbiter(true);
+
+            sa.produced(2);
+
+            assertEquals(0, sa.requested);
+
+            TestHelper.assertError(errors, 0, IllegalStateException.class, "More produced than requested: -2");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
