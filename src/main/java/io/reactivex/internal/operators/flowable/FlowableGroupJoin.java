@@ -411,7 +411,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
+            return get() == SubscriptionHelper.CANCELLED;
         }
 
         @Override
@@ -462,7 +462,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
+            return get() == SubscriptionHelper.CANCELLED;
         }
 
         @Override

@@ -108,6 +108,6 @@ implements FlowableSubscriber<T>, Disposable {
 
     @Override
     public boolean isDisposed() {
-        return SubscriptionHelper.isCancelled(this.get());
+        return this.get() == SubscriptionHelper.CANCELLED;
     }
 }
