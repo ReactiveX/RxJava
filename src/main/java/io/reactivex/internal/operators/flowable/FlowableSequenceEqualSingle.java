@@ -98,7 +98,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(first.get());
+            return first.get() == SubscriptionHelper.CANCELLED;
         }
 
         void cancelAndClear() {

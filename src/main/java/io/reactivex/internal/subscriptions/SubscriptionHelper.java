@@ -92,14 +92,6 @@ public enum SubscriptionHelper implements Subscription {
     public static void reportMoreProduced(long n) {
         RxJavaPlugins.onError(new ProtocolViolationException("More produced than requested: " + n));
     }
-    /**
-     * Check if the given subscription is the common cancelled subscription.
-     * @param s the subscription to check
-     * @return true if the subscription is the common cancelled subscription
-     */
-    public static boolean isCancelled(Subscription s) {
-        return s == CANCELLED;
-    }
 
     /**
      * Atomically sets the subscription on the field and cancels the

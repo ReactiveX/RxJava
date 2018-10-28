@@ -179,7 +179,7 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
+            return get() == SubscriptionHelper.CANCELLED;
         }
     }
 }

@@ -65,7 +65,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(other.get());
+            return other.get() == SubscriptionHelper.CANCELLED;
         }
 
         @Override

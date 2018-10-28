@@ -382,7 +382,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(this.get());
+            return this.get() == SubscriptionHelper.CANCELLED;
         }
     }
 

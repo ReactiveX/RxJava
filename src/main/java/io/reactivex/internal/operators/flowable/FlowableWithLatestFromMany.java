@@ -133,7 +133,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             WithLatestInnerSubscriber[] subscribers = this.subscribers;
             AtomicReference<Subscription> upstream = this.upstream;
             for (int i = 0; i < n; i++) {
-                if (SubscriptionHelper.isCancelled(upstream.get())) {
+                if (upstream.get() == SubscriptionHelper.CANCELLED) {
                     return;
                 }
                 others[i].subscribe(subscribers[i]);

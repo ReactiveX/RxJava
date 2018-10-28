@@ -167,6 +167,6 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
      */
     @Override
     public final boolean isDisposed() {
-        return SubscriptionHelper.isCancelled(upstream.get());
+        return upstream.get() == SubscriptionHelper.CANCELLED;
     }
 }

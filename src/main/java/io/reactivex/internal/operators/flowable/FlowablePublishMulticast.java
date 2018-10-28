@@ -205,7 +205,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(upstream.get());
+            return upstream.get() == SubscriptionHelper.CANCELLED;
         }
 
         @Override
