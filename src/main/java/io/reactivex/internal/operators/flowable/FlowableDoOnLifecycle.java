@@ -108,13 +108,17 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void cancel() {
-            try {
-                onCancel.run();
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                RxJavaPlugins.onError(e);
+            Subscription s = upstream;
+            if (s != SubscriptionHelper.CANCELLED) {
+                upstream = SubscriptionHelper.CANCELLED;
+                try {
+                    onCancel.run();
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    RxJavaPlugins.onError(e);
+                }
+                s.cancel();
             }
-            upstream.cancel();
         }
     }
 }

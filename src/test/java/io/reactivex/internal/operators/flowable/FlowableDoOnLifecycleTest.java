@@ -87,7 +87,7 @@ public class FlowableDoOnLifecycleTest {
             );
 
         assertEquals(1, calls[0]);
-        assertEquals(2, calls[1]);
+        assertEquals(1, calls[1]);
     }
 
     @Test

@@ -8046,7 +8046,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Calls the appropriate onXXX method (shared between all Observer) for the lifecycle events of
-     * the sequence (subscription, disposal, requesting).
+     * the sequence (subscription, disposal).
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnLifecycle.o.png" alt="">
      * <dl>

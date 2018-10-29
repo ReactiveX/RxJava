@@ -61,6 +61,7 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     @Override
     public void onError(Throwable t) {
         if (upstream != DisposableHelper.DISPOSED) {
+            upstream = DisposableHelper.DISPOSED;
             downstream.onError(t);
         } else {
             RxJavaPlugins.onError(t);
@@ -70,19 +71,24 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     @Override
     public void onComplete() {
         if (upstream != DisposableHelper.DISPOSED) {
+            upstream = DisposableHelper.DISPOSED;
             downstream.onComplete();
         }
     }
 
     @Override
     public void dispose() {
-        try {
-            onDispose.run();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            RxJavaPlugins.onError(e);
+        Disposable d = upstream;
+        if (d != DisposableHelper.DISPOSED) {
+            upstream = DisposableHelper.DISPOSED;
+            try {
+                onDispose.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
+            d.dispose();
         }
-        upstream.dispose();
     }
 
     @Override
