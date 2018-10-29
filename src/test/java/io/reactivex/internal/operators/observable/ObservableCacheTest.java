@@ -113,7 +113,7 @@ public class ObservableCacheTest {
         o.subscribe();
         o.subscribe();
         o.subscribe();
-        verify(unsubscribe, times(1)).run();
+        verify(unsubscribe, never()).run();
     }
 
     @Test

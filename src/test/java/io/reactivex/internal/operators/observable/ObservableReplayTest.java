@@ -938,11 +938,11 @@ public class ObservableReplayTest {
     @Test
     public void testUnsubscribeSource() throws Exception {
         Action unsubscribe = mock(Action.class);
-        Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
+        Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).replay().autoConnect();
         o.subscribe();
         o.subscribe();
         o.subscribe();
-        verify(unsubscribe, times(1)).run();
+        verify(unsubscribe, never()).run();
     }
 
     @Test
