@@ -7,6 +7,7 @@ This page shows methods that create reactive sources, such as `Observable`s.
 - [`empty`](#empty)
 - [`error`](#error)
 - [`from`](#from)
+- [`generate`](#generate)
 - [`interval`](#interval)
 - [`just`](#just)
 - [`never`](#never)
