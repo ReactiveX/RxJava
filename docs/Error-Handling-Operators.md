@@ -23,7 +23,7 @@ There are a variety of operators that you can use to react to or recover from `o
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/do.html](http://reactivex.io/documentation/operators/do.html)
 
-When the source reactive type signals an error event, the given `io.reactivex.functions.Consumer` is invoked.
+Instructs a reactive type to invoke the given `io.reactivex.functions.Consumer` when it encounters an error.
 
 ### doOnError example
 
@@ -42,9 +42,9 @@ Observable.error(new IOException("Something went wrong"))
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/catch.html](http://reactivex.io/documentation/operators/catch.html)
 
-When the reactive type signals an error event, the error will be swallowed and replaced by a complete event.
+Instructs a reactive type to swallow an error event and replace it by a completion event.
 
-Optionally, a `io.reactivex.functions.Predicate` can be specified that gives more control over when an error event should be replaced by a complete event, and when not.
+Optionally, a `io.reactivex.functions.Predicate` can be specified that gives more control over when an error event should be replaced by a completion event, and when not.
 
 ### onErrorComplete example
 
@@ -175,7 +175,7 @@ Observable.concat(exception, error)
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/retry.html](http://reactivex.io/documentation/operators/retry.html)
 
-If a source reactive type emits an error, resubscribe to it in the hopes that it will complete without error.
+Instructs a reactive type to resubscribe to the source reactive type if it encounters an error in the hopes that it will complete without error.
 
 ### retry example
 
@@ -207,7 +207,7 @@ source.retry((retryCount, error) -> retryCount < 3)
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/retry.html](http://reactivex.io/documentation/operators/retry.html)
 
-If a source reactive type emits an error, resubscribe to it until the given `io.reactivex.functions.BooleanSupplier` returns `true`.
+Instructs a reactive type to resubscribe to the source reactive type if it encounters an error until the given `io.reactivex.functions.BooleanSupplier` returns `true`.
 
 ### retryUntil example
 
@@ -241,7 +241,7 @@ source.retryUntil(() -> errorCounter.intValue() >= 3)
 
 **ReactiveX documentation:** [http://reactivex.io/documentation/operators/retry.html](http://reactivex.io/documentation/operators/retry.html)
 
-If a source reactive type emits an error, pass that error to another `Observable` or `Flowable` to determine whether to resubscribe to the source.
+Instructs a reactive type to pass any error to another `Observable` or `Flowable` to determine whether to resubscribe to the source.
 
 ### retryWhen example
 
