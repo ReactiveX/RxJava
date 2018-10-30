@@ -52,7 +52,7 @@ Optionally, a `io.reactivex.functions.Predicate` can be specified that gives mor
 Completable.fromAction(() -> {
     throw new IOException();
 }).onErrorComplete(error -> {
-    // only ignore errors of type java.io.IOException
+    // Only ignore errors of type java.io.IOException.
     return error instanceof IOException;
 }).subscribe(
     () -> System.out.println("IOException was ignored"),
@@ -255,15 +255,15 @@ Observable<Long> source = Observable.interval(0, 1, TimeUnit.SECONDS)
 source.retryWhen(errors -> {
     return errors.map(error -> 1)
 
-    // count the number of errors
+    // Count the number of errors.
     .scan(Math::addExact)
 
     .doOnNext(errorCount -> System.out.println("No. of errors: " + errorCount))
 
-    // limit the maximum number of retries
+    // Limit the maximum number of retries.
     .takeWhile(errorCount -> errorCount < 3)
 
-    // signal resubscribe event after some delay
+    // Signal resubscribe event after some delay.
     .flatMapSingle(errorCount -> Single.timer(errorCount, TimeUnit.SECONDS));
 }).blockingSubscribe(
     x -> System.out.println("onNext: " + x),
