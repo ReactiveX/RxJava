@@ -31,9 +31,9 @@ When the source reactive type signals an error event, the given `io.reactivex.fu
 Observable.error(new IOException("Something went wrong"))
     .doOnError(error -> System.err.println("The error message is: " + error.getMessage()))
     .subscribe(
-        x -> System.out.println("This should never be printed!"),
+        x -> System.out.println("onNext should never be printed!"),
         Throwable::printStackTrace,
-        () -> System.out.println("This should never be printed!"));
+        () -> System.out.println("onComplete should never be printed!"));
 ```
 
 ## onErrorComplete
@@ -56,7 +56,7 @@ Completable.fromAction(() -> {
     return error instanceof IOException;
 }).subscribe(
     () -> System.out.println("IOException was ignored"),
-    error -> System.err.println("This should not be printed!"));
+    error -> System.err.println("onError should not be printed!"));
 ```
 
 ## onErrorResumeNext
@@ -80,7 +80,7 @@ numbers.scan(Math::multiplyExact)
     .onErrorResumeNext(Observable.empty())
     .subscribe(
         System.out::println,
-        error -> System.err.println("This should not be printed!"));
+        error -> System.err.println("onError should not be printed!"));
 
 // prints:
 // 1
@@ -116,7 +116,7 @@ Single.just("2A")
     })
     .subscribe(
         System.out::println,
-        error -> System.err.println("This should not be printed!"));
+        error -> System.err.println("onError should not be printed!"));
 
 // prints 0
 ```
@@ -137,7 +137,7 @@ Single.just("2A")
     .onErrorReturnItem(0)
     .subscribe(
         System.out::println,
-        error -> System.err.println("This should not be printed!"));
+        error -> System.err.println("onError should not be printed!"));
 
 // prints 0
 ```
