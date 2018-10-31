@@ -6164,7 +6164,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> cache() {
-        return ObservableCache.from(this);
+        return cacheWithInitialCapacity(16);
     }
 
     /**
@@ -6222,7 +6222,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> cacheWithInitialCapacity(int initialCapacity) {
-        return ObservableCache.from(this, initialCapacity);
+        ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
+        return RxJavaPlugins.onAssembly(new ObservableCache<T>(this, initialCapacity));
     }
 
     /**

@@ -951,11 +951,11 @@ public class FlowableReplayTest {
     @Test
     public void testUnsubscribeSource() throws Exception {
         Action unsubscribe = mock(Action.class);
-        Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).cache();
+        Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).replay().autoConnect();
         f.subscribe();
         f.subscribe();
         f.subscribe();
-        verify(unsubscribe, times(1)).run();
+        verify(unsubscribe, never()).run();
     }
 
     @Test

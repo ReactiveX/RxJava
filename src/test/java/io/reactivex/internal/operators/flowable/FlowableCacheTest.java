@@ -139,7 +139,7 @@ public class FlowableCacheTest {
         f.subscribe();
         f.subscribe();
         f.subscribe();
-        verify(unsubscribe, times(1)).run();
+        verify(unsubscribe, never()).run();
     }
 
     @Test
