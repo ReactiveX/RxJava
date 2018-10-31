@@ -35,7 +35,7 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
-        ObservableCache<Integer> source = (ObservableCache<Integer>)new ObservableCache<Integer>(Observable.range(0, 1000), 16);
+        ObservableCache<Integer> source = new ObservableCache<Integer>(Observable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
@@ -120,7 +120,7 @@ public class ObservableCacheTest {
     public void testTake() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
-        ObservableCache<Integer> cached = (ObservableCache<Integer>)new ObservableCache<Integer>(Observable.range(1, 1000), 16);
+        ObservableCache<Integer> cached = new ObservableCache<Integer>(Observable.range(1, 1000), 16);
         cached.take(10).subscribe(to);
 
         to.assertNoErrors();
@@ -136,7 +136,7 @@ public class ObservableCacheTest {
         for (int i = 0; i < 100; i++) {
             TestObserver<Integer> to1 = new TestObserver<Integer>();
 
-            ObservableCache<Integer> cached = (ObservableCache<Integer>)new ObservableCache<Integer>(source, 16);
+            ObservableCache<Integer> cached = new ObservableCache<Integer>(source, 16);
 
             cached.observeOn(Schedulers.computation()).subscribe(to1);
 
