@@ -160,7 +160,7 @@ public class ObservableCacheTest {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        ObservableCache<Long> cached = (ObservableCache<Long>)new ObservableCache<Long>(source, 16);
+        ObservableCache<Long> cached = new ObservableCache<Long>(source, 16);
 
         Observable<Long> output = cached.observeOn(Schedulers.computation());
 
