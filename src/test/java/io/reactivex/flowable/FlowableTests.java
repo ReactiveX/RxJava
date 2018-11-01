@@ -14,22 +14,24 @@
 package io.reactivex.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observable;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
@@ -341,7 +343,8 @@ public class FlowableTests {
     @Test
     public void testMaterializeDematerializeChaining() {
         Flowable<Integer> obs = Flowable.just(1);
-        Flowable<Integer> chained = obs.materialize().dematerialize();
+        Flowable<Integer> chained = obs.materialize()
+                .dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -1076,7 +1079,7 @@ public class FlowableTests {
             Flowable.error(new RuntimeException("oops"))
                 .materialize()
                 .delay(1, TimeUnit.SECONDS)
-                .dematerialize()
+                .dematerialize(Functions.<Notification<Object>>identity())
                 .subscribe(processor);
 
             processor.subscribe();

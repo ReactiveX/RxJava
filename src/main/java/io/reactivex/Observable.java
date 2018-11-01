@@ -7587,6 +7587,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>
      * Observable.just(createOnNext(1), createOnComplete(), createOnNext(2))
      * .doOnDispose(() -&gt; System.out.println("Disposed!"));
+     * .dematerialize()
      * .test()
      * .assertResult(1);
      * </code></pre>
@@ -7594,6 +7595,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * with the same event.
      * <pre><code>
      * Observable.just(createOnNext(1), createOnNext(2))
+     * .dematerialize()
      * .test()
      * .assertResult(1, 2);
      * </code></pre>
@@ -7608,13 +7610,69 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
+     * @see #dematerialize(Function)
+     * @deprecated in 2.2.4; inherently type-unsafe as it overrides the output generic type. Use {@link #dematerialize(Function)} instead.
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
+    @Deprecated
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T2> Observable<T2> dematerialize() {
-        @SuppressWarnings("unchecked")
-        Observable<Notification<T2>> m = (Observable<Notification<T2>>)this;
-        return RxJavaPlugins.onAssembly(new ObservableDematerialize<T2>(m));
+        return RxJavaPlugins.onAssembly(new ObservableDematerialize(this, Functions.identity()));
+    }
+
+    /**
+     * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the
+     * {@link Notification} objects extracted from the source items via a selector function
+     * into their respective {@code Observer} signal types.
+     * <p>
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <p>
+     * The intended use of the {@code selector} function is to perform a
+     * type-safe identity mapping (see example) on a source that is already of type
+     * {@code Notification<T>}. The Java language doesn't allow
+     * limiting instance methods to a certain generic argument shape, therefore,
+     * a function is used to ensure the conversion remains type safe.
+     * <p>
+     * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
+     * {@link Notification#createOnComplete() onComplete} item, the
+     * returned Observable disposes of the flow and terminates with that type of terminal event:
+     * <pre><code>
+     * Observable.just(createOnNext(1), createOnComplete(), createOnNext(2))
+     * .doOnDispose(() -&gt; System.out.println("Disposed!"));
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
+     * with the same event.
+     * <pre><code>
+     * Observable.just(createOnNext(1), createOnNext(2))
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1, 2);
+     * </code></pre>
+     * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(ObservableSource)}
+     * with a {@link #never()} source.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the output value type
+     * @param selector function that returns the upstream item and should return a Notification to signal
+     * the corresponding {@code Observer} event to the downstream.
+     * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
+     *         selected from the items emitted by the source ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
+     * @since 2.2.4 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> dematerialize(Function<? super T, Notification<R>> selector) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        return RxJavaPlugins.onAssembly(new ObservableDematerialize<T, R>(this, selector));
     }
 
     /**
@@ -9620,6 +9678,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits items that are the result of materializing the items and notifications
      *         of the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Materialize</a>
+     * @see #dematerialize(Function)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

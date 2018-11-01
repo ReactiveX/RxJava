@@ -14,6 +14,7 @@
 package io.reactivex.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
@@ -357,7 +359,8 @@ public class ObservableTest {
     @Test
     public void testMaterializeDematerializeChaining() {
         Observable<Integer> obs = Observable.just(1);
-        Observable<Integer> chained = obs.materialize().dematerialize();
+        Observable<Integer> chained = obs.materialize()
+                .dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -1096,7 +1099,7 @@ public class ObservableTest {
         Observable.error(new RuntimeException("oops"))
             .materialize()
             .delay(1, TimeUnit.SECONDS)
-            .dematerialize()
+            .dematerialize(Functions.<Notification<Object>>identity())
             .subscribe(subject);
 
         subject.subscribe();
