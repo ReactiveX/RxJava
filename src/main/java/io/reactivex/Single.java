@@ -2317,7 +2317,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * a type argument on this method (see example below).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code delaySubscription} does by default subscribe to the current Single
+     * <dd>{@code dematerialize} does by default subscribe to the current Single
      * on the {@link Scheduler} you provided, after the delay.</dd>
      * </dl>
      * <p>
