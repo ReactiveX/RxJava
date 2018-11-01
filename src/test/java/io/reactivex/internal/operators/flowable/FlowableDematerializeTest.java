@@ -221,4 +221,19 @@ public class FlowableDematerializeTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void nonNotificationInstanceAfterDispose() {
+        new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                observer.onNext(Notification.createOnComplete());
+                observer.onNext(1);
+            }
+        }
+        .dematerialize()
+        .test()
+        .assertResult();
+    }
 }

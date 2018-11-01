@@ -220,4 +220,19 @@ public class ObservableDematerializeTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void nonNotificationInstanceAfterDispose() {
+        new Observable<Object>() {
+            @Override
+            protected void subscribeActual(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext(Notification.createOnComplete());
+                observer.onNext(1);
+            }
+        }
+        .dematerialize()
+        .test()
+        .assertResult();
+    }
 }
