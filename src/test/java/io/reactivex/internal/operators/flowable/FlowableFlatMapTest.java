@@ -1084,4 +1084,44 @@ public class FlowableFlatMapTest {
 
         assertEquals(1, counter.get());
     }
+
+    @Test
+    public void maxConcurrencySustained() {
+        final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> pp3 = PublishProcessor.create();
+        PublishProcessor<Integer> pp4 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.just(pp1, pp2, pp3, pp4)
+        .flatMap(new Function<PublishProcessor<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(PublishProcessor<Integer> v) throws Exception {
+                return v;
+            }
+        }, 2)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                if (v == 1) {
+                    // this will make sure the drain loop detects two completed
+                    // inner sources and replaces them with fresh ones
+                    pp1.onComplete();
+                    pp2.onComplete();
+                }
+            }
+        })
+        .test();
+
+        pp1.onNext(1);
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+        assertTrue(pp3.hasSubscribers());
+        assertTrue(pp4.hasSubscribers());
+
+        ts.dispose();
+
+        assertFalse(pp3.hasSubscribers());
+        assertFalse(pp4.hasSubscribers());
+    }
 }
