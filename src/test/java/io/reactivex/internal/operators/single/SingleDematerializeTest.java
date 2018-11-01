@@ -18,6 +18,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.subjects.SingleSubject;
 
 public class SingleDematerializeTest {
@@ -25,31 +26,31 @@ public class SingleDematerializeTest {
     @Test
     public void success() {
         Single.just(Notification.createOnNext(1))
-        .<Integer>dematerialize()
+        .dematerialize(Functions.<Notification<Integer>>identity())
         .test()
         .assertResult(1);
     }
 
     @Test
     public void empty() {
-        Single.just(Notification.createOnComplete())
-        .<Integer>dematerialize()
+        Single.just(Notification.<Integer>createOnComplete())
+        .dematerialize(Functions.<Notification<Integer>>identity())
         .test()
         .assertResult();
     }
 
     @Test
     public void error() {
-        Single.error(new TestException())
-        .<Integer>dematerialize()
+        Single.<Notification<Integer>>error(new TestException())
+        .dematerialize(Functions.<Notification<Integer>>identity())
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void errorNotification() {
-        Single.just(Notification.createOnError(new TestException()))
-        .<Integer>dematerialize()
+        Single.just(Notification.<Integer>createOnError(new TestException()))
+        .dematerialize(Functions.<Notification<Integer>>identity())
         .test()
         .assertFailure(TestException.class);
     }
@@ -57,23 +58,50 @@ public class SingleDematerializeTest {
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public MaybeSource<Object> apply(Single<Object> v) throws Exception {
-                return v.dematerialize();
+                return v.dematerialize((Function)Functions.identity());
             }
         });
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(SingleSubject.create().dematerialize());
+        TestHelper.checkDisposed(SingleSubject.<Notification<Integer>>create().dematerialize(Functions.<Notification<Integer>>identity()));
     }
 
     @Test
-    public void wrongType() {
-        Single.just(1)
-        .<String>dematerialize()
+    public void selectorCrash() {
+        Single.just(Notification.createOnNext(1))
+        .dematerialize(new Function<Notification<Integer>, Notification<Integer>>() {
+            @Override
+            public Notification<Integer> apply(Notification<Integer> v) throws Exception {
+                throw new TestException();
+            }
+        })
         .test()
-        .assertFailure(ClassCastException.class);
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void selectorNull() {
+        Single.just(Notification.createOnNext(1))
+        .dematerialize(Functions.justFunction((Notification<Integer>)null))
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void selectorDifferentType() {
+        Single.just(Notification.createOnNext(1))
+        .dematerialize(new Function<Notification<Integer>, Notification<String>>() {
+            @Override
+            public Notification<String> apply(Notification<Integer> v) throws Exception {
+                return Notification.createOnNext("Value-" + 1);
+            }
+        })
+        .test()
+        .assertResult("Value-1");
     }
 }

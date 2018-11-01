@@ -16,36 +16,47 @@ package io.reactivex.internal.operators.single;
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
- * Maps the Notification success value of the source back to normal
- * onXXX method call as a Maybe.
- * @param <T> the element type of the notification and result
+ * Maps the success value of the source to a Notification, then
+ * maps it back to the corresponding signal type.
+ * @param <T> the element type of the source
+ * @param <R> the element type of the Notification and result
  * @since 2.2.4 - experimental
  */
 @Experimental
-public final class SingleDematerialize<T> extends Maybe<T> {
+public final class SingleDematerialize<T, R> extends Maybe<R> {
 
-    final Single<Object> source;
+    final Single<T> source;
 
-    public SingleDematerialize(Single<Object> source) {
+    final Function<? super T, Notification<R>> selector;
+
+    public SingleDematerialize(Single<T> source, Function<? super T, Notification<R>> selector) {
         this.source = source;
+        this.selector = selector;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DematerializeObserver<T>(observer));
+    protected void subscribeActual(MaybeObserver<? super R> observer) {
+        source.subscribe(new DematerializeObserver<T, R>(observer, selector));
     }
 
-    static final class DematerializeObserver<T> implements SingleObserver<Object>, Disposable {
+    static final class DematerializeObserver<T, R> implements SingleObserver<T>, Disposable {
 
-        final MaybeObserver<? super T> downstream;
+        final MaybeObserver<? super R> downstream;
+
+        final Function<? super T, Notification<R>> selector;
 
         Disposable upstream;
 
-        DematerializeObserver(MaybeObserver<? super T> downstream) {
+        DematerializeObserver(MaybeObserver<? super R> downstream,
+                Function<? super T, Notification<R>> selector) {
             this.downstream = downstream;
+            this.selector = selector;
         }
 
         @Override
@@ -67,19 +78,22 @@ public final class SingleDematerialize<T> extends Maybe<T> {
         }
 
         @Override
-        public void onSuccess(Object t) {
-            if (t instanceof Notification) {
-                @SuppressWarnings("unchecked")
-                Notification<T> notification = (Notification<T>)t;
-                if (notification.isOnNext()) {
-                    downstream.onSuccess(notification.getValue());
-                } else if (notification.isOnComplete()) {
-                    downstream.onComplete();
-                } else {
-                    downstream.onError(notification.getError());
-                }
+        public void onSuccess(T t) {
+            Notification<R> notification;
+
+            try {
+                notification = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null Notification");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                downstream.onError(ex);
+                return;
+            }
+            if (notification.isOnNext()) {
+                downstream.onSuccess(notification.getValue());
+            } else if (notification.isOnComplete()) {
+                downstream.onComplete();
             } else {
-                downstream.onError(new ClassCastException("io.reactivex.Notification expected but got " + t.getClass()));
+                downstream.onError(notification.getError());
             }
         }
 

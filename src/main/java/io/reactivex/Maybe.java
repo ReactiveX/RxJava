@@ -3388,6 +3388,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @return the new Single instance
      * @since 2.2.4 - experimental
+     * @see Single#dematerialize(Function)
      */
     @Experimental
     @CheckReturnValue

@@ -2307,37 +2307,36 @@ public abstract class Single<T> implements SingleSource<T> {
      * {@code onSuccess}, {@code onError} or {@code onComplete} signals as a
      * {@link Maybe} source.
      * <p>
-     * Note that {@code this} should be of type {@code Single<Notification<T>>} or
-     * the transformation will result in an {@code onError} signal of
-     * {@link ClassCastException}. Currently, the Java language doesn't allow specifying
-     * methods for certain type argument shapes only (unlike extension methods would),
-     * hence the forced casting in this operator.
-     * <p>
-     * In addition, usually the inner value type (T2) has to be expressed again via
-     * a type argument on this method (see example below).
+     * The intended use of the {@code selector} function is to perform a
+     * type-safe identity mapping (see example) on a source that is already of type
+     * {@code Notification<T>}. The Java language doesn't allow
+     * limiting instance methods to a certain generic argument shape, therefore,
+     * a function is used to ensure the conversion remains type safe.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code dematerialize} does by default subscribe to the current Single
-     * on the {@link Scheduler} you provided, after the delay.</dd>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>
      * Example:
      * <pre><code>
      * Single.just(Notification.createOnNext(1))
-     * .&lt;Integer&gt;dematerialize()
+     * .dematerialize(notification -&gt; notification)
      * .test()
      * .assertResult(1);
      * </code></pre>
-     * @param <T2> the type inside the Notification
+     * @param <R> the result type
+     * @param selector the function called with the success item and should
+     * return a {@link Notification} instance.
      * @return the new Maybe instance
      * @since 2.2.4 - experimental
+     * @see #materialize()
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final <T2> Maybe<T2> dematerialize() {
-        return RxJavaPlugins.onAssembly(new SingleDematerialize<T2>((Single<Object>)this));
+    public final <R> Maybe<R> dematerialize(Function<? super T, Notification<R>> selector) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        return RxJavaPlugins.onAssembly(new SingleDematerialize<T, R>(this, selector));
     }
 
     /**
@@ -2920,6 +2919,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @return the new Single instance
      * @since 2.2.4 - experimental
+     * @see #dematerialize(Function)
      */
     @Experimental
     @CheckReturnValue

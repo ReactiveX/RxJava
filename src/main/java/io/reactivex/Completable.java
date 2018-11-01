@@ -1794,6 +1794,7 @@ public abstract class Completable implements CompletableSource {
      * @param <T> the intended target element type of the notification
      * @return the new Single instance
      * @since 2.2.4 - experimental
+     * @see Single#dematerialize(Function)
      */
     @Experimental
     @CheckReturnValue
