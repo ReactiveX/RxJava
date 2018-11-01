@@ -226,10 +226,10 @@ public class FlowableDematerializeTest {
     public void nonNotificationInstanceAfterDispose() {
         new Flowable<Object>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(Notification.createOnComplete());
-                observer.onNext(1);
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(Notification.createOnComplete());
+                subscriber.onNext(1);
             }
         }
         .dematerialize()
