@@ -2303,6 +2303,33 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Maps the {@link Notification} success value of this Single back into normal
+     * {@code onSuccess}, {@code onError} or {@code onComplete} signals as a
+     * {@link Maybe} source.
+     * <p>
+     * Note that {@code this} should be of type {@code Single<Notification<T>>} or
+     * the transformation will result in an {@code onError} signal of
+     * {@link ClassCastException}. Currently, the Java language doesn't allow specifying
+     * methods for certain type argument shapes only (unlike extension methods would),
+     * hence the forced casting in this operator.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code delaySubscription} does by default subscribe to the current Single
+     * on the {@link Scheduler} you provided, after the delay.</dd>
+     * </dl>
+     * @param <T2> the type inside the Notification
+     * @return the new Maybe instance
+     * @since 2.2.4 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final <T2> Maybe<T2> dematerialize() {
+        return RxJavaPlugins.onAssembly(new SingleDematerialize<T2>((Single<Object>)this));
+    }
+
+    /**
      * Calls the specified consumer with the success item after this item has been emitted to the downstream.
      * <p>
      * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterSuccess.png" alt="">
@@ -2869,6 +2896,25 @@ public abstract class Single<T> implements SingleSource<T> {
     public final <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleMap<T, R>(this, mapper));
+    }
+
+    /**
+     * Maps the signal types of this Single into a {@link Notification} of the same kind
+     * and emits it as a single success value to downstream.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Single instance
+     * @since 2.2.4 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<Notification<T>> materialize() {
+        return RxJavaPlugins.onAssembly(new SingleMaterialize<T>(this));
     }
 
     /**
