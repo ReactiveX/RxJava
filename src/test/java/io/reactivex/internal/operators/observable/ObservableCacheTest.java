@@ -35,7 +35,7 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
-        ObservableCache<Integer> source = (ObservableCache<Integer>)ObservableCache.from(Observable.range(0, 1000));
+        ObservableCache<Integer> source = new ObservableCache<Integer>(Observable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
@@ -120,7 +120,7 @@ public class ObservableCacheTest {
     public void testTake() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
-        ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(Observable.range(1, 100));
+        ObservableCache<Integer> cached = new ObservableCache<Integer>(Observable.range(1, 1000), 16);
         cached.take(10).subscribe(to);
 
         to.assertNoErrors();
@@ -136,7 +136,7 @@ public class ObservableCacheTest {
         for (int i = 0; i < 100; i++) {
             TestObserver<Integer> to1 = new TestObserver<Integer>();
 
-            ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(source);
+            ObservableCache<Integer> cached = new ObservableCache<Integer>(source, 16);
 
             cached.observeOn(Schedulers.computation()).subscribe(to1);
 
@@ -160,7 +160,7 @@ public class ObservableCacheTest {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        ObservableCache<Long> cached = (ObservableCache<Long>)ObservableCache.from(source);
+        ObservableCache<Long> cached = new ObservableCache<Long>(source, 16);
 
         Observable<Long> output = cached.observeOn(Schedulers.computation());
 
@@ -350,5 +350,24 @@ public class ObservableCacheTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
         }
+    }
+
+    @Test
+    public void cancelledUpFront() {
+        final AtomicInteger call = new AtomicInteger();
+        Observable<Object> f = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return call.incrementAndGet();
+            }
+        }).concatWith(Observable.never())
+        .cache();
+
+        f.test().assertValuesOnly(1);
+
+        f.test(true)
+        .assertEmpty();
+
+        assertEquals(1, call.get());
     }
 }

@@ -17,10 +17,6 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.SequentialDisposable;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.*;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * An observable which auto-connects to another observable, caches the elements
@@ -28,61 +24,94 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the source element type
  */
-public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T> {
-    /** The cache and replay state. */
-    final CacheState<T> state;
+public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T>
+implements Observer<T> {
 
+    /**
+     * The subscription to the source should happen at most once.
+     */
     final AtomicBoolean once;
 
     /**
-     * Creates a cached Observable with a default capacity hint of 16.
-     * @param <T> the value type
-     * @param source the source Observable to cache
-     * @return the CachedObservable instance
+     * The number of items per cached nodes.
      */
-    public static <T> Observable<T> from(Observable<T> source) {
-        return from(source, 16);
-    }
+    final int capacityHint;
 
     /**
-     * Creates a cached Observable with the given capacity hint.
-     * @param <T> the value type
-     * @param source the source Observable to cache
-     * @param capacityHint the hint for the internal buffer size
-     * @return the CachedObservable instance
+     * The current known array of observer state to notify.
      */
-    public static <T> Observable<T> from(Observable<T> source, int capacityHint) {
-        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return RxJavaPlugins.onAssembly(new ObservableCache<T>(source, state));
-    }
+    final AtomicReference<CacheDisposable<T>[]> observers;
 
     /**
-     * Private constructor because state needs to be shared between the Observable body and
-     * the onSubscribe function.
-     * @param source the source Observable to cache
-     * @param state the cache state object
+     * A shared instance of an empty array of observers to avoid creating
+     * a new empty array when all observers dispose.
      */
-    private ObservableCache(Observable<T> source, CacheState<T> state) {
+    @SuppressWarnings("rawtypes")
+    static final CacheDisposable[] EMPTY = new CacheDisposable[0];
+    /**
+     * A shared instance indicating the source has no more events and there
+     * is no need to remember observers anymore.
+     */
+    @SuppressWarnings("rawtypes")
+    static final CacheDisposable[] TERMINATED = new CacheDisposable[0];
+
+    /**
+     * The total number of elements in the list available for reads.
+     */
+    volatile long size;
+
+    /**
+     * The starting point of the cached items.
+     */
+    final Node<T> head;
+
+    /**
+     * The current tail of the linked structure holding the items.
+     */
+    Node<T> tail;
+
+    /**
+     * How many items have been put into the tail node so far.
+     */
+    int tailOffset;
+
+    /**
+     * If {@link #observers} is {@link #TERMINATED}, this holds the terminal error if not null.
+     */
+    Throwable error;
+
+    /**
+     * True if the source has terminated.
+     */
+    volatile boolean done;
+
+    /**
+     * Constructs an empty, non-connected cache.
+     * @param source the source to subscribe to for the first incoming observer
+     * @param capacityHint the number of items expected (reduce allocation frequency)
+     */
+    @SuppressWarnings("unchecked")
+    public ObservableCache(Observable<T> source, int capacityHint) {
         super(source);
-        this.state = state;
+        this.capacityHint = capacityHint;
         this.once = new AtomicBoolean();
+        Node<T> n = new Node<T>(capacityHint);
+        this.head = n;
+        this.tail = n;
+        this.observers = new AtomicReference<CacheDisposable<T>[]>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> t) {
-        // we can connect first because we replay everything anyway
-        ReplayDisposable<T> rp = new ReplayDisposable<T>(t, state);
-        t.onSubscribe(rp);
+        CacheDisposable<T> consumer = new CacheDisposable<T>(t, this);
+        t.onSubscribe(consumer);
+        add(consumer);
 
-        state.addChild(rp);
-
-        // we ensure a single connection here to save an instance field of AtomicBoolean in state.
         if (!once.get() && once.compareAndSet(false, true)) {
-            state.connect();
+            source.subscribe(this);
+        } else {
+            replay(consumer);
         }
-
-        rp.replay();
     }
 
     /**
@@ -90,290 +119,281 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @return true if already connected
      */
     /* public */boolean isConnected() {
-        return state.isConnected;
+        return once.get();
     }
 
     /**
      * Returns true if there are observers subscribed to this observable.
-     * @return true if the cache has downstream Observers
+     * @return true if the cache has observers
      */
     /* public */ boolean hasObservers() {
-        return state.observers.get().length != 0;
+        return observers.get().length != 0;
     }
 
     /**
      * Returns the number of events currently cached.
-     * @return the current number of elements in the cache
+     * @return the number of currently cached event count
      */
-    /* public */ int cachedEventCount() {
-        return state.size();
+    /* public */ long cachedEventCount() {
+        return size;
     }
 
     /**
-     * Contains the active child observers and the values to replay.
-     *
-     * @param <T>
+     * Atomically adds the consumer to the {@link #observers} copy-on-write array
+     * if the source has not yet terminated.
+     * @param consumer the consumer to add
      */
-    static final class CacheState<T> extends LinkedArrayList implements Observer<T> {
-        /** The source observable to connect to. */
-        final Observable<? extends T> source;
-        /** Holds onto the subscriber connected to source. */
-        final SequentialDisposable connection;
-        /** Guarded by connection (not this). */
-        final AtomicReference<ReplayDisposable<T>[]> observers;
-        /** The default empty array of observers. */
-        @SuppressWarnings("rawtypes")
-        static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
-        /** The default empty array of observers. */
-        @SuppressWarnings("rawtypes")
-        static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
+    void add(CacheDisposable<T> consumer) {
+        for (;;) {
+            CacheDisposable<T>[] current = observers.get();
+            if (current == TERMINATED) {
+                return;
+            }
+            int n = current.length;
 
-        /** Set to true after connection. */
-        volatile boolean isConnected;
-        /**
-         * Indicates that the source has completed emitting values or the
-         * Observable was forcefully terminated.
-         */
-        boolean sourceDone;
+            @SuppressWarnings("unchecked")
+            CacheDisposable<T>[] next = new CacheDisposable[n + 1];
+            System.arraycopy(current, 0, next, 0, n);
+            next[n] = consumer;
 
-        @SuppressWarnings("unchecked")
-        CacheState(Observable<? extends T> source, int capacityHint) {
-            super(capacityHint);
-            this.source = source;
-            this.observers = new AtomicReference<ReplayDisposable<T>[]>(EMPTY);
-            this.connection = new SequentialDisposable();
-        }
-        /**
-         * Adds a ReplayDisposable to the observers array atomically.
-         * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
-         * @return true if the disposable was added, false otherwise
-         */
-        public boolean addChild(ReplayDisposable<T> p) {
-            // guarding by connection to save on allocating another object
-            // thus there are two distinct locks guarding the value-addition and child come-and-go
-            for (;;) {
-                ReplayDisposable<T>[] a = observers.get();
-                if (a == TERMINATED) {
-                    return false;
-                }
-                int n = a.length;
-
-                @SuppressWarnings("unchecked")
-                ReplayDisposable<T>[] b = new ReplayDisposable[n + 1];
-                System.arraycopy(a, 0, b, 0, n);
-                b[n] = p;
-                if (observers.compareAndSet(a, b)) {
-                    return true;
-                }
+            if (observers.compareAndSet(current, next)) {
+                return;
             }
         }
-        /**
-         * Removes the ReplayDisposable (if present) from the observers array atomically.
-         * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
-         */
-        @SuppressWarnings("unchecked")
-        public void removeChild(ReplayDisposable<T> p) {
-            for (;;) {
-                ReplayDisposable<T>[] a = observers.get();
-                int n = a.length;
-                if (n == 0) {
-                    return;
+    }
+
+    /**
+     * Atomically removes the consumer from the {@link #observers} copy-on-write array.
+     * @param consumer the consumer to remove
+     */
+    @SuppressWarnings("unchecked")
+    void remove(CacheDisposable<T> consumer) {
+        for (;;) {
+            CacheDisposable<T>[] current = observers.get();
+            int n = current.length;
+            if (n == 0) {
+                return;
+            }
+
+            int j = -1;
+            for (int i = 0; i < n; i++) {
+                if (current[i] == consumer) {
+                    j = i;
+                    break;
                 }
-                int j = -1;
-                for (int i = 0; i < n; i++) {
-                    if (a[i].equals(p)) {
-                        j = i;
-                        break;
-                    }
-                }
-                if (j < 0) {
-                    return;
-                }
-                ReplayDisposable<T>[] b;
-                if (n == 1) {
-                    b = EMPTY;
+            }
+
+            if (j < 0) {
+                return;
+            }
+            CacheDisposable<T>[] next;
+
+            if (n == 1) {
+                next = EMPTY;
+            } else {
+                next = new CacheDisposable[n - 1];
+                System.arraycopy(current, 0, next, 0, j);
+                System.arraycopy(current, j + 1, next, j, n - j - 1);
+            }
+
+            if (observers.compareAndSet(current, next)) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Replays the contents of this cache to the given consumer based on its
+     * current state and number of items requested by it.
+     * @param consumer the consumer to continue replaying items to
+     */
+    void replay(CacheDisposable<T> consumer) {
+        // make sure there is only one replay going on at a time
+        if (consumer.getAndIncrement() != 0) {
+            return;
+        }
+
+        // see if there were more replay request in the meantime
+        int missed = 1;
+        // read out state into locals upfront to avoid being re-read due to volatile reads
+        long index = consumer.index;
+        int offset = consumer.offset;
+        Node<T> node = consumer.node;
+        Observer<? super T> downstream = consumer.downstream;
+        int capacity = capacityHint;
+
+        for (;;) {
+            // if the consumer got disposed, clear the node and quit
+            if (consumer.disposed) {
+                consumer.node = null;
+                return;
+            }
+
+            // first see if the source has terminated, read order matters!
+            boolean sourceDone = done;
+            // and if the number of items is the same as this consumer has received
+            boolean empty = size == index;
+
+            // if the source is done and we have all items so far, terminate the consumer
+            if (sourceDone && empty) {
+                // release the node object to avoid leaks through retained consumers
+                consumer.node = null;
+                // if error is not null then the source failed
+                Throwable ex = error;
+                if (ex != null) {
+                    downstream.onError(ex);
                 } else {
-                    b = new ReplayDisposable[n - 1];
-                    System.arraycopy(a, 0, b, 0, j);
-                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                    downstream.onComplete();
                 }
-                if (observers.compareAndSet(a, b)) {
-                    return;
-                }
+                return;
             }
-        }
 
-        @Override
-        public void onSubscribe(Disposable d) {
-            connection.update(d);
-        }
-
-        /**
-         * Connects the cache to the source.
-         * Make sure this is called only once.
-         */
-        public void connect() {
-            source.subscribe(this);
-            isConnected = true;
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (!sourceDone) {
-                Object o = NotificationLite.next(t);
-                add(o);
-                for (ReplayDisposable<?> rp : observers.get()) {
-                    rp.replay();
+            // there are still items not sent to the consumer
+            if (!empty) {
+             // if the offset in the current node has reached the node capacity
+                if (offset == capacity) {
+                    // switch to the subsequent node
+                    node = node.next;
+                    // reset the in-node offset
+                    offset = 0;
                 }
+
+                // emit the cached item
+                downstream.onNext(node.values[offset]);
+
+                // move the node offset forward
+                offset++;
+                // move the total consumed item count forward
+                index++;
+
+                // retry for the next item/terminal event if any
+                continue;
             }
-        }
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public void onError(Throwable e) {
-            if (!sourceDone) {
-                sourceDone = true;
-                Object o = NotificationLite.error(e);
-                add(o);
-                connection.dispose();
-                for (ReplayDisposable<?> rp : observers.getAndSet(TERMINATED)) {
-                    rp.replay();
-                }
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void onComplete() {
-            if (!sourceDone) {
-                sourceDone = true;
-                Object o = NotificationLite.complete();
-                add(o);
-                connection.dispose();
-                for (ReplayDisposable<?> rp : observers.getAndSet(TERMINATED)) {
-                    rp.replay();
-                }
+            // commit the changed references back
+            consumer.index = index;
+            consumer.offset = offset;
+            consumer.node = node;
+            // release the changes and see if there were more replay request in the meantime
+            missed = consumer.addAndGet(-missed);
+            if (missed == 0) {
+                break;
             }
         }
     }
 
-    /**
-     * Keeps track of the current request amount and the replay position for a child Observer.
-     *
-     * @param <T>
-     */
-    static final class ReplayDisposable<T>
-    extends AtomicInteger
-    implements Disposable {
-        private static final long serialVersionUID = 7058506693698832024L;
+    @Override
+    public void onSubscribe(Disposable d) {
+        // we can't do much with the upstream disposable
+    }
 
-        /** The actual child subscriber. */
-        final Observer<? super T> child;
-        /** The cache state object. */
-        final CacheState<T> state;
-
-        /**
-         * Contains the reference to the buffer segment in replay.
-         * Accessed after reading state.size() and when emitting == true.
-         */
-        Object[] currentBuffer;
-        /**
-         * Contains the index into the currentBuffer where the next value is expected.
-         * Accessed after reading state.size() and when emitting == true.
-         */
-        int currentIndexInBuffer;
-        /**
-         * Contains the absolute index up until the values have been replayed so far.
-         */
-        int index;
-
-        /** Set if the ReplayDisposable has been cancelled/disposed. */
-        volatile boolean cancelled;
-
-        ReplayDisposable(Observer<? super T> child, CacheState<T> state) {
-            this.child = child;
-            this.state = state;
+    @Override
+    public void onNext(T t) {
+        int tailOffset = this.tailOffset;
+        // if the current tail node is full, create a fresh node
+        if (tailOffset == capacityHint) {
+            Node<T> n = new Node<T>(tailOffset);
+            n.values[0] = t;
+            this.tailOffset = 1;
+            tail.next = n;
+            tail = n;
+        } else {
+            tail.values[tailOffset] = t;
+            this.tailOffset = tailOffset + 1;
         }
+        size++;
+        for (CacheDisposable<T> consumer : observers.get()) {
+            replay(consumer);
+        }
+    }
 
-        @Override
-        public boolean isDisposed() {
-            return cancelled;
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onError(Throwable t) {
+        error = t;
+        done = true;
+        for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+            replay(consumer);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onComplete() {
+        done = true;
+        for (CacheDisposable<T> consumer : observers.getAndSet(TERMINATED)) {
+            replay(consumer);
+        }
+    }
+
+    /**
+     * Hosts the downstream consumer and its current requested and replay states.
+     * {@code this} holds the work-in-progress counter for the serialized replay.
+     * @param <T> the value type
+     */
+    static final class CacheDisposable<T> extends AtomicInteger
+    implements Disposable {
+
+        private static final long serialVersionUID = 6770240836423125754L;
+
+        final Observer<? super T> downstream;
+
+        final ObservableCache<T> parent;
+
+        Node<T> node;
+
+        int offset;
+
+        long index;
+
+        volatile boolean disposed;
+
+        /**
+         * Constructs a new instance with the actual downstream consumer and
+         * the parent cache object.
+         * @param downstream the actual consumer
+         * @param parent the parent that holds onto the cached items
+         */
+        CacheDisposable(Observer<? super T> downstream, ObservableCache<T> parent) {
+            this.downstream = downstream;
+            this.parent = parent;
+            this.node = parent.head;
         }
 
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                state.removeChild(this);
+            if (!disposed) {
+                disposed = true;
+                parent.remove(this);
             }
         }
 
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+    }
+
+    /**
+     * Represents a segment of the cached item list as
+     * part of a linked-node-list structure.
+     * @param <T> the element type
+     */
+    static final class Node<T> {
+
         /**
-         * Continue replaying available values if there are requests for them.
+         * The array of values held by this node.
          */
-        public void replay() {
-            // make sure there is only a single thread emitting
-            if (getAndIncrement() != 0) {
-                return;
-            }
+        final T[] values;
 
-            final Observer<? super T> child = this.child;
-            int missed = 1;
+        /**
+         * The next node if not null.
+         */
+        volatile Node<T> next;
 
-            for (;;) {
-
-                if (cancelled) {
-                    return;
-                }
-
-                // read the size, if it is non-zero, we can safely read the head and
-                // read values up to the given absolute index
-                int s = state.size();
-                if (s != 0) {
-                    Object[] b = currentBuffer;
-
-                    // latch onto the very first buffer now that it is available.
-                    if (b == null) {
-                        b = state.head();
-                        currentBuffer = b;
-                    }
-                    final int n = b.length - 1;
-                    int j = index;
-                    int k = currentIndexInBuffer;
-
-                    while (j < s) {
-                        if (cancelled) {
-                            return;
-                        }
-                        if (k == n) {
-                            b = (Object[])b[n];
-                            k = 0;
-                        }
-                        Object o = b[k];
-
-                        if (NotificationLite.accept(o, child)) {
-                            return;
-                        }
-
-                        k++;
-                        j++;
-                    }
-
-                    if (cancelled) {
-                        return;
-                    }
-
-                    index = j;
-                    currentIndexInBuffer = k;
-                    currentBuffer = b;
-
-                }
-
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
+        @SuppressWarnings("unchecked")
+        Node(int capacityHint) {
+            this.values = (T[])new Object[capacityHint];
         }
     }
 }
