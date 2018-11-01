@@ -2312,11 +2312,22 @@ public abstract class Single<T> implements SingleSource<T> {
      * {@link ClassCastException}. Currently, the Java language doesn't allow specifying
      * methods for certain type argument shapes only (unlike extension methods would),
      * hence the forced casting in this operator.
+     * <p>
+     * In addition, usually the inner value type (T2) has to be expressed again via
+     * a type argument on this method (see example below).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delaySubscription} does by default subscribe to the current Single
      * on the {@link Scheduler} you provided, after the delay.</dd>
      * </dl>
+     * <p>
+     * Example:
+     * <pre><code>
+     * Single.just(Notification.createOnNext(1))
+     * .&lt;Integer&gt;dematerialize()
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
      * @param <T2> the type inside the Notification
      * @return the new Maybe instance
      * @since 2.2.4 - experimental

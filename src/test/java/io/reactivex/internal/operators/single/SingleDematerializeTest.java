@@ -16,6 +16,9 @@ package io.reactivex.internal.operators.single;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
+import io.reactivex.subjects.SingleSubject;
 
 public class SingleDematerializeTest {
 
@@ -25,5 +28,52 @@ public class SingleDematerializeTest {
         .<Integer>dematerialize()
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void empty() {
+        Single.just(Notification.createOnComplete())
+        .<Integer>dematerialize()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void error() {
+        Single.error(new TestException())
+        .<Integer>dematerialize()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorNotification() {
+        Single.just(Notification.createOnError(new TestException()))
+        .<Integer>dematerialize()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Single<Object> v) throws Exception {
+                return v.dematerialize();
+            }
+        });
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(SingleSubject.create().dematerialize());
+    }
+
+    @Test
+    public void wrongType() {
+        Single.just(1)
+        .<String>dematerialize()
+        .test()
+        .assertFailure(ClassCastException.class);
     }
 }
