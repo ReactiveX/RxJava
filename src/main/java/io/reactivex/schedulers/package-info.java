@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 /**
- * Scheduler implementations, value+time record class and the standard factory class to
- * return standard RxJava schedulers or wrap any Executor-based (thread pool) instances.
+ * Contains notably the factory class of {@link io.reactivex.schedulers.Schedulers Schedulers} providing methods for
+ * retrieving the standard scheduler instances, the {@link io.reactivex.schedulers.TestScheduler TestScheduler} for testing flows
+ * with scheduling in a controlled manner and the class {@link io.reactivex.schedulers.Timed Timed} that can hold
+ * a value and a timestamp associated with it.
  */
 package io.reactivex.schedulers;
