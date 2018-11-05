@@ -34,7 +34,11 @@ public final class IoScheduler extends Scheduler {
     private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor";
     static final RxThreadFactory EVICTOR_THREAD_FACTORY;
 
-    private static final long KEEP_ALIVE_TIME = 60;
+    /** The name of the system property for setting the keep-alive time (in seconds) for this Scheduler workers. */
+    private static final String KEY_KEEP_ALIVE_TIME = "rx2.io-keep-alive-time";
+    public static final long KEEP_ALIVE_TIME_DEFAULT = 60;
+
+    private static final long KEEP_ALIVE_TIME;
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
 
     static final ThreadWorker SHUTDOWN_THREAD_WORKER;
@@ -45,7 +49,10 @@ public final class IoScheduler extends Scheduler {
     private static final String KEY_IO_PRIORITY = "rx2.io-priority";
 
     static final CachedWorkerPool NONE;
+
     static {
+        KEEP_ALIVE_TIME = Long.getLong(KEY_KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_DEFAULT);
+
         SHUTDOWN_THREAD_WORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown"));
         SHUTDOWN_THREAD_WORKER.dispose();
 

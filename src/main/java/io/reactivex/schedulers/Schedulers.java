@@ -29,6 +29,7 @@ import java.util.concurrent.*;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
+ * <li>{@code rx2.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
  * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
  * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
  * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
@@ -155,6 +156,7 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
+     * <li>{@code rx2.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
      * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
