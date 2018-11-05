@@ -376,7 +376,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     return;
                 }
 
-                boolean innerCompleted = false;
+                int innerCompleted = 0;
                 if (n != 0) {
                     long startId = lastId;
                     int index = lastIndex;
@@ -423,7 +423,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                         return;
                                     }
                                     removeInner(is);
-                                    innerCompleted = true;
+                                    innerCompleted++;
                                     j++;
                                     if (j == n) {
                                         j = 0;
@@ -449,7 +449,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                             if (checkTerminate()) {
                                 return;
                             }
-                            innerCompleted = true;
+                            innerCompleted++;
                         }
 
                         j++;
@@ -461,17 +461,19 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     lastId = inner[j].id;
                 }
 
-                if (innerCompleted) {
+                if (innerCompleted != 0) {
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        ObservableSource<? extends U> p;
-                        synchronized (this) {
-                            p = sources.poll();
-                            if (p == null) {
-                                wip--;
-                                continue;
+                        while (innerCompleted-- != 0) {
+                            ObservableSource<? extends U> p;
+                            synchronized (this) {
+                                p = sources.poll();
+                                if (p == null) {
+                                    wip--;
+                                    continue;
+                                }
                             }
+                            subscribeInner(p);
                         }
-                        subscribeInner(p);
                     }
                     continue;
                 }
