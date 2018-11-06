@@ -24,11 +24,56 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
+@SuppressWarnings("deprecation")
 public class FlowableDematerializeTest {
+
+    @Test
+    public void simpleSelector() {
+        Flowable<Notification<Integer>> notifications = Flowable.just(1, 2).materialize();
+        Flowable<Integer> dematerialize = notifications.dematerialize(Functions.<Notification<Integer>>identity());
+
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+
+        dematerialize.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void selectorCrash() {
+        Flowable.just(1, 2)
+        .materialize()
+        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
+            @Override
+            public Notification<Object> apply(Notification<Integer> v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void selectorNull() {
+        Flowable.just(1, 2)
+        .materialize()
+        .dematerialize(new Function<Notification<Integer>, Notification<Object>>() {
+            @Override
+            public Notification<Object> apply(Notification<Integer> v) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
 
     @Test
     public void testDematerialize1() {
@@ -175,5 +220,20 @@ public class FlowableDematerializeTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void nonNotificationInstanceAfterDispose() {
+        new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(Notification.createOnComplete());
+                subscriber.onNext(1);
+            }
+        }
+        .dematerialize()
+        .test()
+        .assertResult();
     }
 }

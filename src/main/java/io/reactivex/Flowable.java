@@ -27,7 +27,7 @@ import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.mixed.*;
-import io.reactivex.internal.operators.observable.ObservableFromPublisher;
+import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
@@ -8484,6 +8484,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>
      * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
      * .doOnCancel(() -&gt; System.out.println("Cancelled!"));
+     * .dematerialize()
      * .test()
      * .assertResult(1);
      * </code></pre>
@@ -8491,6 +8492,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * with the same event.
      * <pre><code>
      * Flowable.just(createOnNext(1), createOnNext(2))
+     * .dematerialize()
      * .test()
      * .assertResult(1, 2);
      * </code></pre>
@@ -8508,14 +8510,74 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
+     * @see #dematerialize(Function)
+     * @deprecated in 2.2.4; inherently type-unsafe as it overrides the output generic type. Use {@link #dematerialize(Function)} instead.
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @Deprecated
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T2> Flowable<T2> dematerialize() {
-        @SuppressWarnings("unchecked")
-        Flowable<Notification<T2>> m = (Flowable<Notification<T2>>)this;
-        return RxJavaPlugins.onAssembly(new FlowableDematerialize<T2>(m));
+        return RxJavaPlugins.onAssembly(new FlowableDematerialize(this, Functions.identity()));
+    }
+
+    /**
+     * Returns a Flowable that reverses the effect of {@link #materialize materialize} by transforming the
+     * {@link Notification} objects extracted from the source items via a selector function
+     * into their respective {@code Subscriber} signal types.
+     * <p>
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <p>
+     * The intended use of the {@code selector} function is to perform a
+     * type-safe identity mapping (see example) on a source that is already of type
+     * {@code Notification<T>}. The Java language doesn't allow
+     * limiting instance methods to a certain generic argument shape, therefore,
+     * a function is used to ensure the conversion remains type safe.
+     * <p>
+     * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
+     * {@link Notification#createOnComplete() onComplete} item, the
+     * returned Flowable cancels of the flow and terminates with that type of terminal event:
+     * <pre><code>
+     * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
+     * .doOnCancel(() -&gt; System.out.println("Canceled!"));
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
+     * with the same event.
+     * <pre><code>
+     * Flowable.just(createOnNext(1), createOnNext(2))
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1, 2);
+     * </code></pre>
+     * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(Publisher)}
+     * with a {@link #never()} source.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the output value type
+     * @param selector function that returns the upstream item and should return a Notification to signal
+     * the corresponding {@code Subscriber} event to the downstream.
+     * @return a Flowable that emits the items and notifications embedded in the {@link Notification} objects
+     *         selected from the items emitted by the source Flowable
+     * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
+     * @since 2.2.4 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    public final <R> Flowable<R> dematerialize(Function<? super T, Notification<R>> selector) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        return RxJavaPlugins.onAssembly(new FlowableDematerialize<T, R>(this, selector));
     }
 
     /**
@@ -11069,6 +11131,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of materializing the items and notifications
      *         of the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Materialize</a>
+     * @see #dematerialize(Function)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
