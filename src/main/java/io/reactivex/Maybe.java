@@ -3378,6 +3378,26 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Maps the signal types of this Maybe into a {@link Notification} of the same kind
+     * and emits it as a single success value to downstream.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Single instance
+     * @since 2.2.4 - experimental
+     * @see Single#dematerialize(Function)
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<Notification<T>> materialize() {
+        return RxJavaPlugins.onAssembly(new MaybeMaterialize<T>(this));
+    }
+
+    /**
      * Flattens this and another Maybe into a single Flowable, without any transformation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">

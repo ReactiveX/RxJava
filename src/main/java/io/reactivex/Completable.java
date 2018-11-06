@@ -26,7 +26,7 @@ import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.mixed.*;
-import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
+import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -1780,6 +1780,27 @@ public abstract class Completable implements CompletableSource {
     public final Completable lift(final CompletableOperator onLift) {
         ObjectHelper.requireNonNull(onLift, "onLift is null");
         return RxJavaPlugins.onAssembly(new CompletableLift(this, onLift));
+    }
+
+    /**
+     * Maps the signal types of this Completable into a {@link Notification} of the same kind
+     * and emits it as a single success value to downstream.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the intended target element type of the notification
+     * @return the new Single instance
+     * @since 2.2.4 - experimental
+     * @see Single#dematerialize(Function)
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Single<Notification<T>> materialize() {
+        return RxJavaPlugins.onAssembly(new CompletableMaterialize<T>(this));
     }
 
     /**

@@ -2303,6 +2303,43 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Maps the {@link Notification} success value of this Single back into normal
+     * {@code onSuccess}, {@code onError} or {@code onComplete} signals as a
+     * {@link Maybe} source.
+     * <p>
+     * The intended use of the {@code selector} function is to perform a
+     * type-safe identity mapping (see example) on a source that is already of type
+     * {@code Notification<T>}. The Java language doesn't allow
+     * limiting instance methods to a certain generic argument shape, therefore,
+     * a function is used to ensure the conversion remains type safe.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * <p>
+     * Example:
+     * <pre><code>
+     * Single.just(Notification.createOnNext(1))
+     * .dematerialize(notification -&gt; notification)
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * @param <R> the result type
+     * @param selector the function called with the success item and should
+     * return a {@link Notification} instance.
+     * @return the new Maybe instance
+     * @since 2.2.4 - experimental
+     * @see #materialize()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final <R> Maybe<R> dematerialize(Function<? super T, Notification<R>> selector) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        return RxJavaPlugins.onAssembly(new SingleDematerialize<T, R>(this, selector));
+    }
+
+    /**
      * Calls the specified consumer with the success item after this item has been emitted to the downstream.
      * <p>
      * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterSuccess.png" alt="">
@@ -2869,6 +2906,26 @@ public abstract class Single<T> implements SingleSource<T> {
     public final <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleMap<T, R>(this, mapper));
+    }
+
+    /**
+     * Maps the signal types of this Single into a {@link Notification} of the same kind
+     * and emits it as a single success value to downstream.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/materialize.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Single instance
+     * @since 2.2.4 - experimental
+     * @see #dematerialize(Function)
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<Notification<T>> materialize() {
+        return RxJavaPlugins.onAssembly(new SingleMaterialize<T>(this));
     }
 
     /**
