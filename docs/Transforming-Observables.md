@@ -1,10 +1,94 @@
-This page shows operators with which you can transform items that are emitted by an Observable.
+This page shows operators with which you can transform items that are emitted by reactive sources, such as `Observable`s.
 
-* [**`map( )`**](http://reactivex.io/documentation/operators/map.html) — transform the items emitted by an Observable by applying a function to each of them
-* [**`flatMap( )`, `concatMap( )`, and `flatMapIterable( )`**](http://reactivex.io/documentation/operators/flatmap.html) — transform the items emitted by an Observable into Observables (or Iterables), then flatten this into a single Observable
-* [**`switchMap( )`**](http://reactivex.io/documentation/operators/flatmap.html) — transform the items emitted by an Observable into Observables, and mirror those items emitted by the most-recently transformed Observable
-* [**`scan( )`**](http://reactivex.io/documentation/operators/scan.html) — apply a function to each item emitted by an Observable, sequentially, and emit each successive value
-* [**`groupBy( )`**](http://reactivex.io/documentation/operators/groupby.html) — divide an Observable into a set of Observables that emit groups of items from the original Observable, organized by key
-* [**`buffer( )`**](http://reactivex.io/documentation/operators/buffer.html) — periodically gather items from an Observable into bundles and emit these bundles rather than emitting the items one at a time 
-* [**`window( )`**](http://reactivex.io/documentation/operators/window.html) — periodically subdivide items from an Observable into Observable windows and emit these windows rather than emitting the items one at a time 
-* [**`cast( )`**](http://reactivex.io/documentation/operators/map.html) — cast all items from the source Observable into a particular type before reemitting them
+# Outline
+
+- [`buffer`](#buffer)
+- [`cast`](#cast)
+- [`concatMap`](#concatmap)
+- [`flatMap`](#flatmap)
+- [`flatMapIterable`](#flatmapiterable)
+- [`groupBy`](#groupby)
+- [`map`](#map)
+- [`scan`](#scan)
+- [`switchMap`](#switchmap)
+- [`window`](#window)
+
+## buffer
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/buffer.html](http://reactivex.io/documentation/operators/buffer.html)
+
+Collects the items emitted by a reactive source into buffers, and emits these buffers.
+
+## cast
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/map.html](http://reactivex.io/documentation/operators/map.html)
+
+Converts each item emitted by a reactive source to the specified type, and emits these items.
+
+## concatMap
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/flatmap.html](http://reactivex.io/documentation/operators/flatmap.html)
+
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a reactive source, and emits the items that result from concatenating the results of these function applications.
+
+## flatMap
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/flatmap.html](http://reactivex.io/documentation/operators/flatmap.html)
+
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a reactive source, and emits the items that result from merging the results of these function applications.
+
+## flatMapIterable
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/flatmap.html](http://reactivex.io/documentation/operators/flatmap.html)
+
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a `java.lang.Iterable`, and emits the items that result from merging the results of these function applications.
+
+## groupBy
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/groupby.html](http://reactivex.io/documentation/operators/groupby.html)
+
+Groups the items emitted by a reactive source according to a specified criterion, and emits these grouped items as a `GroupedObservable` or `GroupedFlowable`.
+
+## map
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/map.html](http://reactivex.io/documentation/operators/map.html)
+
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source and emits the results of these function applications.
+
+## scan
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/scan.html](http://reactivex.io/documentation/operators/scan.html)
+
+Applies the given `io.reactivex.functions.BiFunction` to a seed value and the first item emitted by a reactive source, then feeds the result of that function application along with the second item emitted by the reactive source into the same function, and so on until all items have been emitted by the reactive source, emitting each intermediate result.
+
+## switchMap
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/flatmap.html](http://reactivex.io/documentation/operators/flatmap.html)
+
+Applies the given `io.reactivex.functions.Function` to each item emitted by a reactive source, where that function returns a reactive source, and emits the items emitted by the most recently projected of these reactive sources.
+
+## window
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/window.html](http://reactivex.io/documentation/operators/window.html)
+
+Collects the items emitted by a reactive source into windows, and emits these windows as a `Flowable` or `Observable`.
