@@ -130,7 +130,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     if (!hasNext) {
                         state = null;
                         onError(new IllegalStateException("The generator didn't call any of the " +
-                                "SynchronousSink method"));
+                                "SynchronousEmitter method"));
                         return;
                     }
                     e++;
