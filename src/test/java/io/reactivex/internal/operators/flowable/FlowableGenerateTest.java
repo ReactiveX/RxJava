@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -13,19 +13,27 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import org.junit.Test;
-
-import io.reactivex.*;
+import io.reactivex.Emitter;
+import io.reactivex.Flowable;
+import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Callable;
+
+import static java.lang.Thread.sleep;
+import static org.junit.Assert.assertEquals;
 
 public class FlowableGenerateTest {
 
@@ -47,9 +55,9 @@ public class FlowableGenerateTest {
 
             }
         })
-        .take(5)
-        .test()
-        .assertResult(10, 10, 10, 10, 10);
+                .take(5)
+                .test()
+                .assertResult(10, 10, 10, 10, 10);
     }
 
     @Test
@@ -65,8 +73,8 @@ public class FlowableGenerateTest {
                 e.onNext(s);
             }
         }, Functions.emptyConsumer())
-        .test()
-        .assertFailure(TestException.class);
+                .test()
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -82,8 +90,8 @@ public class FlowableGenerateTest {
                 throw new TestException();
             }
         }, Functions.emptyConsumer())
-        .test()
-        .assertFailure(TestException.class);
+                .test()
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -106,8 +114,8 @@ public class FlowableGenerateTest {
                     throw new TestException();
                 }
             })
-            .test()
-            .assertResult();
+                    .test()
+                    .assertResult();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -118,34 +126,34 @@ public class FlowableGenerateTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.generate(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, Functions.emptyConsumer()));
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onComplete();
+            }
+        }, Functions.emptyConsumer()));
     }
 
     @Test
     public void nullError() {
-        final int[] call = { 0 };
+        final int[] call = {0};
         Flowable.generate(Functions.justCallable(1),
-        new BiConsumer<Integer, Emitter<Object>>() {
-            @Override
-            public void accept(Integer s, Emitter<Object> e) throws Exception {
-                try {
-                    e.onError(null);
-                } catch (NullPointerException ex) {
-                    call[0]++;
-                }
-            }
-        }, Functions.emptyConsumer())
-        .test()
-        .assertFailure(NullPointerException.class);
+                new BiConsumer<Integer, Emitter<Object>>() {
+                    @Override
+                    public void accept(Integer s, Emitter<Object> e) throws Exception {
+                        try {
+                            e.onError(null);
+                        } catch (NullPointerException ex) {
+                            call[0]++;
+                        }
+                    }
+                }, Functions.emptyConsumer())
+                .test()
+                .assertFailure(NullPointerException.class);
 
         assertEquals(0, call[0]);
     }
@@ -153,16 +161,16 @@ public class FlowableGenerateTest {
     @Test
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.generate(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return 1;
-                }
-            }, new BiConsumer<Object, Emitter<Object>>() {
-                @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
-                    e.onComplete();
-                }
-            }, Functions.emptyConsumer()));
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onComplete();
+            }
+        }, Functions.emptyConsumer()));
     }
 
     @Test
@@ -178,10 +186,10 @@ public class FlowableGenerateTest {
                 e.onNext(1);
             }
         }, Functions.emptyConsumer())
-        .rebatchRequests(1)
-        .take(5)
-        .test()
-        .assertResult(1, 1, 1, 1, 1);
+                .rebatchRequests(1)
+                .take(5)
+                .test()
+                .assertResult(1, 1, 1, 1, 1);
     }
 
     @Test
@@ -197,12 +205,12 @@ public class FlowableGenerateTest {
                 e.onNext(1);
             }
         }, Functions.emptyConsumer())
-        .rebatchRequests(1)
-        .test(5)
-        .assertSubscribed()
-        .assertValues(1, 1, 1, 1, 1)
-        .assertNoErrors()
-        .assertNotComplete();
+                .rebatchRequests(1)
+                .test(5)
+                .assertSubscribed()
+                .assertValues(1, 1, 1, 1, 1)
+                .assertNoErrors()
+                .assertNotComplete();
     }
 
     @Test
@@ -246,8 +254,8 @@ public class FlowableGenerateTest {
                 e.onNext(2);
             }
         })
-        .test(1)
-        .assertFailure(IllegalStateException.class, 1);
+                .test(1)
+                .assertFailure(IllegalStateException.class, 1);
     }
 
     @Test
@@ -261,8 +269,8 @@ public class FlowableGenerateTest {
                     e.onError(new TestException("Second"));
                 }
             })
-            .test(1)
-            .assertFailure(TestException.class);
+                    .test(1)
+                    .assertFailure(TestException.class);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
@@ -279,7 +287,71 @@ public class FlowableGenerateTest {
                 e.onComplete();
             }
         })
-        .test(1)
-        .assertResult();
+                .test(1)
+                .assertResult();
+    }
+
+    @Test
+    public void flowable_bug_generate() {
+        final Random random = new Random();
+        Flowable.generate(new Callable<ArrayList>() {
+            @Override
+            public ArrayList call() throws Exception {
+                return new ArrayList();
+            }
+        }, new BiFunction<ArrayList, Emitter<Integer>, ArrayList>() {
+            @Override
+            public ArrayList apply(final ArrayList list, final Emitter<Integer> emitter) throws Exception {
+                final int value = random.nextInt(100);
+                list.add(value);
+                // change the state value in the emitter.onNext
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Thread 1");
+                        emitter.onNext(value);
+                    }
+                }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Thread 1");
+                        emitter.onNext(value);
+                    }
+                }).start();
+
+                // emitter.onNext(value);
+                if (list.size() == 5) {
+                    emitter.onComplete();
+                }
+                return list;
+            }
+        })
+                .subscribeOn(Schedulers.computation())
+                .map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(Integer integer) throws Exception {
+                        return String.format("[%s] %s", Thread.currentThread().getName(), integer);
+                    }
+                })
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        System.out.println(
+                                Thread.currentThread().getName() +
+                                        ": " + o);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("The Error: " + throwable.getMessage());
+                    }
+                });
+
+        try {
+            sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

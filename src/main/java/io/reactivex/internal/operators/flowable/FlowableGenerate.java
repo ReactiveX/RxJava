@@ -13,17 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.reactivestreams.*;
-
-import io.reactivex.*;
+import io.reactivex.Emitter;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
     final Callable<S> stateSupplier;
@@ -122,7 +125,14 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                         dispose(s);
                         return;
                     }
-
+                    //Multiple production threads cannot asynchronously
+                    //invoke synchronous delivery element methods at the same time
+                    if (!hasNext) {
+                        state = null;
+                        onError(new IllegalStateException("The generator didn't call any of the " +
+                                "SynchronousSink method"));
+                        return;
+                    }
                     e++;
                 }
 
