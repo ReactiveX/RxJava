@@ -1403,7 +1403,6 @@ public class FlowableRefCountTest {
                 .replay(1)
                 .refCount();
 
-        // This line causes the test to fail.
         flowable.takeUntil(Flowable.just(1)).test();
 
         processor.onNext(2);
