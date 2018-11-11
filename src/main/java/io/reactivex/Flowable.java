@@ -18043,7 +18043,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
-     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -18090,7 +18090,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
-     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -18140,7 +18140,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
-     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
