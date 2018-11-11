@@ -12119,7 +12119,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null, or
-     *             if {@code onComplete} is null
+     *             if {@code onComplete} is null, or
+     *             if {@code onSubscribe} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @CheckReturnValue
