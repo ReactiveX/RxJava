@@ -1394,4 +1394,19 @@ public class FlowableRefCountTest {
 
         assertTrue(((Disposable)o.source).isDisposed());
     }
+
+    @Test
+    public void disconnectBeforeConnect() {
+        BehaviorProcessor<Integer> processor = BehaviorProcessor.create();
+
+        Flowable<Integer> flowable = processor
+                .replay(1)
+                .refCount();
+
+        flowable.takeUntil(Flowable.just(1)).test();
+
+        processor.onNext(2);
+
+        flowable.take(1).test().assertResult(2);
+    }
 }
