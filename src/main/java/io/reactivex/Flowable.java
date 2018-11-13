@@ -2210,6 +2210,11 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a cold, synchronous, stateless and backpressure-aware generator of values.
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>
@@ -2236,6 +2241,11 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>
@@ -2263,6 +2273,11 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>
@@ -2292,6 +2307,11 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>
@@ -2318,6 +2338,11 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure.</dd>

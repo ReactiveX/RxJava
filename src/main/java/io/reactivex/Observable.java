@@ -1992,6 +1992,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a cold, synchronous and stateless generator of values.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2016,6 +2021,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2041,6 +2051,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2071,6 +2086,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2096,6 +2116,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+     * <p>
+     * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+     * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+     * never concurrently and only while the function body is executing. Calling them from multiple threads
+     * or outside the function call is not supported and leads to an undefined behavior.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
