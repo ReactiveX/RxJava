@@ -17,6 +17,11 @@ import io.reactivex.annotations.NonNull;
 /**
  * Base interface for emitting signals in a push-fashion in various generator-like source
  * operators (create, generate).
+ * <p>
+ * Note that the {@link Emitter#onNext}, {@link Emitter#onError} and
+ * {@link Emitter#onComplete} methods provided to the function via the {@link Emitter} instance should be called synchronously,
+ * never concurrently. Calling them from multiple threads is not supported and leads to an
+ * undefined behavior.
  *
  * @param <T> the value type emitted
  */
