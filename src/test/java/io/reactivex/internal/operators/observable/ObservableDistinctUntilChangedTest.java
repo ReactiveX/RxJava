@@ -108,6 +108,84 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
+    public void testDistinctUntilChangedOfMutableType() {
+        final StringBuilder charSequence = new StringBuilder();
+        Observable<CharSequence> src = Observable.create(new ObservableOnSubscribe<CharSequence>() {
+            @Override
+            public void subscribe(ObservableEmitter<CharSequence> emitter) throws Exception {
+                charSequence.append("a");
+                emitter.onNext(charSequence);
+                charSequence.append("b");
+                emitter.onNext(charSequence);
+                emitter.onComplete();
+            }
+        });
+
+        TestObserver<CharSequence> testObserver = TestObserver.create();
+
+        src.distinctUntilChanged().subscribe(testObserver);
+
+        testObserver.assertValue(charSequence);
+        testObserver.assertComplete();
+    }
+
+    @Test
+    public void testDistinctUntilChangedOfMutableTypeWithKeyTypeSelector() {
+        final StringBuilder charSequence = new StringBuilder();
+        Observable<CharSequence> src = Observable.create(new ObservableOnSubscribe<CharSequence>() {
+            @Override
+            public void subscribe(ObservableEmitter<CharSequence> emitter) throws Exception {
+                charSequence.append("a");
+                emitter.onNext(charSequence);
+                charSequence.append("b");
+                emitter.onNext(charSequence);
+                emitter.onComplete();
+            }
+        });
+
+        TestObserver<CharSequence> testObserver = TestObserver.create();
+
+        src.distinctUntilChanged(new Function<CharSequence, String>() {
+            @Override
+            public String apply(CharSequence charSequence) throws Exception {
+                return charSequence.toString();
+            }
+        })
+        .subscribe(testObserver);
+
+        testObserver.assertValues(charSequence, charSequence);
+        testObserver.assertComplete();
+    }
+
+    @Test
+    public void testDistinctUntilChangedOfMutableTypeWithPredicate() {
+        final StringBuilder charSequence = new StringBuilder();
+        Observable<CharSequence> src = Observable.create(new ObservableOnSubscribe<CharSequence>() {
+            @Override
+            public void subscribe(ObservableEmitter<CharSequence> emitter) throws Exception {
+                charSequence.append("a");
+                emitter.onNext(charSequence);
+                charSequence.append("b");
+                emitter.onNext(charSequence);
+                emitter.onComplete();
+            }
+        });
+
+        TestObserver<CharSequence> testObserver = TestObserver.create();
+
+        src.distinctUntilChanged(new BiPredicate<CharSequence, CharSequence>() {
+            @Override
+            public boolean test(CharSequence seq1, CharSequence seq2) throws Exception {
+                return seq1.length() != seq2.length();
+            }
+        })
+        .subscribe(testObserver);
+
+        testObserver.assertValues(charSequence, charSequence);
+        testObserver.assertComplete();
+    }
+
+    @Test
     @Ignore("Null values no longer allowed")
     public void testDistinctUntilChangedOfSourceWithNulls() {
         Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null, null);
