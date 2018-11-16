@@ -10345,6 +10345,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10385,6 +10393,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10428,6 +10443,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10473,6 +10496,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10521,6 +10552,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10617,6 +10656,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedFlowable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note that the {@link GroupedFlowable}s should be subscribed to as soon as possible, otherwise,
+     * the unconsumed groups may starve other groups due to the internal backpressure
+     * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
+     * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
+     * value to be greater or equal to the expected number of groups, possibly using
+     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code GroupedFlowable}s honor backpressure and the source {@code Publisher}
