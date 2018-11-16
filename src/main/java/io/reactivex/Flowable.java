@@ -10345,6 +10345,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10385,6 +10396,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10428,6 +10450,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10473,6 +10506,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10521,6 +10565,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedPublisher}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10617,6 +10672,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedFlowable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * By default, a {@link GroupedFlowable} buffers only {@code Flowable.BUFFER_SIZE} items to emit.
+     * So, it is important that a subscription to consume these items begin as soon as the {@link GroupedFlowable}s are created.
+     * If not, it may result in groups upstream not being consumed.
+     * Typically {@code flatMap} or {@code concatMapEager} can be used to ensure all {@link GroupedFlowable} items are consumed.
+     * <p>
+     * Note that, while using {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} operators,
+     * we need to ensure that the maximum concurrency parameter is a value greater than
+     * or equal to the number of expected groups, or {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * Using the default maximum concurrency may also sometimes lead to starvation of unconsumed groups upstream.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code GroupedFlowable}s honor backpressure and the source {@code Publisher}
