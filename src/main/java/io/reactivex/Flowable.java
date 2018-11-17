@@ -87,6 +87,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> amb(Iterable<? extends Publisher<? extends T>> sources) {
@@ -116,6 +117,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> ambArray(Publisher<? extends T>... sources) {
@@ -269,6 +271,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -366,6 +369,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -556,6 +560,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -747,6 +752,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> combineLatest(
@@ -799,6 +805,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> combineLatest(
@@ -855,6 +862,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> combineLatest(
@@ -916,6 +924,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> combineLatest(
@@ -981,6 +990,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> combineLatest(
@@ -1051,6 +1061,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> combineLatest(
@@ -1125,6 +1136,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> combineLatest(
@@ -1166,6 +1178,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
@@ -1261,6 +1274,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Publisher<? extends T> source1, Publisher<? extends T> source2) {
@@ -1297,6 +1311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
@@ -1338,6 +1353,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
@@ -1470,6 +1486,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1564,6 +1581,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(Iterable<? extends Publisher<? extends T>> sources) {
@@ -1668,6 +1686,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1727,6 +1746,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1784,6 +1804,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see Cancellable
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, BackpressureStrategy mode) {
@@ -1820,6 +1841,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> defer(Callable<? extends Publisher<? extends T>> supplier) {
@@ -1874,6 +1896,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(Callable<? extends Throwable> supplier) {
@@ -1902,6 +1925,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(final Throwable throwable) {
@@ -1929,6 +1953,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromArray(T... items) {
@@ -1974,6 +1999,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromCallable(Callable<? extends T> supplier) {
@@ -2010,6 +2036,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future) {
@@ -2050,6 +2077,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
@@ -2095,6 +2123,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "cast" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
@@ -2133,6 +2162,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
@@ -2161,6 +2191,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromIterable(Iterable<? extends T> source) {
@@ -2196,6 +2227,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #create(FlowableOnSubscribe, BackpressureStrategy)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -2230,6 +2262,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> generate(final Consumer<Emitter<T>> generator) {
@@ -2263,6 +2296,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
@@ -2297,6 +2331,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator,
@@ -2363,6 +2398,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator, Consumer<? super S> disposeState) {
@@ -2432,6 +2468,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 1.0.12
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
@@ -2539,6 +2576,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
@@ -2590,6 +2628,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #fromIterable(Iterable)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item) {
@@ -2619,6 +2658,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2) {
@@ -2652,6 +2692,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3) {
@@ -2688,6 +2729,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4) {
@@ -2727,6 +2769,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5) {
@@ -2769,6 +2812,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
@@ -2814,6 +2858,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
@@ -2862,6 +2907,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
@@ -2913,6 +2959,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
@@ -2967,6 +3014,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
@@ -3357,6 +3405,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends T> source1, Publisher<? extends T> source2) {
@@ -3406,6 +3455,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Publisher<? extends T> source1, Publisher<? extends T> source2, Publisher<? extends T> source3) {
@@ -3458,6 +3508,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(
@@ -3767,6 +3818,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> source1, Publisher<? extends T> source2) {
@@ -3809,6 +3861,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> source1, Publisher<? extends T> source2, Publisher<? extends T> source3) {
@@ -3854,6 +3907,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(
@@ -4069,6 +4123,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
@@ -4319,6 +4374,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
@@ -4347,6 +4403,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * instead.
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> unsafeCreate(Publisher<T> onSubscribe) {
@@ -4420,6 +4477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Flowable<T> using(Callable<? extends D> resourceSupplier,
@@ -4476,6 +4534,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zip(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
@@ -4530,6 +4589,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
@@ -4588,6 +4648,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
@@ -4649,6 +4710,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
@@ -4711,6 +4773,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
@@ -4775,6 +4838,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> zip(
@@ -4843,6 +4907,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> zip(
@@ -4916,6 +4981,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> zip(
@@ -4992,6 +5058,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> zip(
@@ -5072,6 +5139,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> zip(
@@ -5157,6 +5225,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> zip(
@@ -5246,6 +5315,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> zip(
@@ -5316,6 +5386,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zipArray(Function<? super Object[], ? extends R> zipper,
@@ -5378,6 +5449,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zipIterable(Iterable<? extends Publisher<? extends T>> sources,
@@ -5413,6 +5485,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/all.html">ReactiveX operators documentation: All</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> all(Predicate<? super T> predicate) {
@@ -5442,6 +5515,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ambWith(Publisher<? extends T> other) {
@@ -5473,6 +5547,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> any(Predicate<? super T> predicate) {
@@ -6203,6 +6278,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> buffer(int count, int skip, Callable<U> bufferSupplier) {
@@ -6352,6 +6428,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Flowable<U> buffer(long timespan, long timeskip, TimeUnit unit,
@@ -6965,6 +7042,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> cast(final Class<U> clazz) {
@@ -7002,6 +7080,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
@@ -7040,6 +7119,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
@@ -7137,6 +7217,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch) {
@@ -7205,6 +7286,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, int prefetch) {
@@ -7307,6 +7389,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public final Completable concatMapCompletableDelayError(Function<? super T, ? extends CompletableSource> mapper, boolean tillTheEnd, int prefetch) {
@@ -7370,6 +7453,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Publisher instance with the concatenation behavior
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
@@ -7437,6 +7521,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEager(Function<? super T, ? extends Publisher<? extends R>> mapper,
@@ -7506,6 +7591,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
@@ -7570,6 +7656,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
@@ -7638,6 +7725,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper, int prefetch) {
@@ -7748,6 +7836,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapMaybeDelayError(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
@@ -7816,6 +7905,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper, int prefetch) {
@@ -7926,6 +8016,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapSingleDelayError(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
@@ -7955,6 +8046,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> concatWith(Publisher<? extends T> other) {
@@ -8059,6 +8151,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> contains(final Object item) {
@@ -8114,6 +8207,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceIndicator) {
@@ -8187,6 +8281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
@@ -8217,6 +8312,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> defaultIfEmpty(T defaultItem) {
@@ -8252,6 +8348,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelayIndicator) {
@@ -8367,6 +8464,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> delay(long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
@@ -8435,6 +8533,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> delaySubscription(Publisher<U> subscriptionIndicator) {
@@ -8598,6 +8697,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @Experimental
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final <R> Flowable<R> dematerialize(Function<? super T, Notification<R>> selector) {
@@ -9011,6 +9111,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     private Flowable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
@@ -9040,6 +9141,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Consumer<? super Notification<T>> onNotification) {
@@ -9076,6 +9178,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Subscriber<? super T> subscriber) {
@@ -9138,6 +9241,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnLifecycle(final Consumer<? super Subscription> onSubscribe,
@@ -9312,6 +9416,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> elementAt(long index, T defaultItem) {
@@ -9373,6 +9478,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> filter(Predicate<? super T> predicate) {
@@ -9629,6 +9735,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper,
@@ -9677,6 +9784,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(
@@ -9723,6 +9831,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMap(
@@ -9893,6 +10002,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(final Function<? super T, ? extends Publisher<? extends U>> mapper,
@@ -9981,6 +10091,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable flatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors, int maxConcurrency) {
@@ -10045,6 +10156,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
@@ -10081,6 +10193,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper,
@@ -10123,6 +10236,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper,
@@ -10172,6 +10286,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
@@ -10220,6 +10335,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
@@ -10340,6 +10456,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, final Consumer<? super Throwable> onError,
@@ -10611,6 +10728,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
@@ -10723,6 +10841,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
@@ -10772,6 +10891,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/join.html">ReactiveX operators documentation: Join</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TRight, TLeftEnd, TRightEnd, R> Flowable<R> groupJoin(
@@ -10893,6 +11013,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/join.html">ReactiveX operators documentation: Join</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TRight, TLeftEnd, TRightEnd, R> Flowable<R> join(
@@ -10950,6 +11071,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> last(T defaultItem) {
@@ -11127,6 +11249,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #compose(FlowableTransformer)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> lift(FlowableOperator<? extends R, ? super T> lifter) {
@@ -11201,6 +11324,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> map(Function<? super T, ? extends R> mapper) {
@@ -11254,6 +11378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(Publisher<? extends T> other) {
@@ -11281,6 +11406,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(@NonNull SingleSource<? extends T> other) {
@@ -11309,6 +11435,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(@NonNull MaybeSource<? extends T> other) {
@@ -11334,6 +11461,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(@NonNull CompletableSource other) {
@@ -11446,6 +11574,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #observeOn(Scheduler, boolean)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
@@ -11473,6 +11602,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> ofType(final Class<U> clazz) {
@@ -11649,6 +11779,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 1.1.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded,
@@ -11720,6 +11851,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
@@ -11776,6 +11908,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 1.1.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureDrop(Consumer<? super T> onDrop) {
@@ -11851,6 +11984,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(Function<? super Throwable, ? extends Publisher<? extends T>> resumeFunction) {
@@ -11894,6 +12028,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(final Publisher<? extends T> next) {
@@ -11933,6 +12068,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
@@ -11972,6 +12108,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturnItem(final T item) {
@@ -12018,6 +12155,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onExceptionResumeNext(final Publisher<? extends T> next) {
@@ -12226,6 +12364,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch) {
@@ -12320,6 +12459,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
@@ -12381,6 +12521,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #reduceWith(Callable, BiFunction)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
@@ -12425,6 +12566,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
@@ -12512,6 +12654,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatUntil(BooleanSupplier stop) {
@@ -12542,6 +12685,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
@@ -12600,6 +12744,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector) {
@@ -12638,6 +12783,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
@@ -12728,6 +12874,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
@@ -12772,6 +12919,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final Scheduler scheduler) {
@@ -12851,6 +12999,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
@@ -12887,6 +13036,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
@@ -13195,6 +13345,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
@@ -13252,6 +13403,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retry(long times, Predicate<? super Throwable> predicate) {
@@ -13296,6 +13448,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryUntil(final BooleanSupplier stop) {
@@ -13381,6 +13534,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryWhen(
@@ -13504,6 +13658,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #throttleLast(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
@@ -13544,6 +13699,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> sample(long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
@@ -13575,6 +13731,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> sample(Publisher<U> sampler) {
@@ -13612,6 +13769,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> sample(Publisher<U> sampler, boolean emitLast) {
@@ -13644,6 +13802,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/scan.html">ReactiveX operators documentation: Scan</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> scan(BiFunction<T, T, T> accumulator) {
@@ -13697,6 +13856,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/scan.html">ReactiveX operators documentation: Scan</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
@@ -13736,6 +13896,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/scan.html">ReactiveX operators documentation: Scan</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
@@ -13847,6 +14008,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> single(T defaultItem) {
@@ -14168,6 +14330,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
@@ -14201,6 +14364,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/skipuntil.html">ReactiveX operators documentation: SkipUntil</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> skipUntil(Publisher<U> other) {
@@ -14228,6 +14392,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/skipwhile.html">ReactiveX operators documentation: SkipWhile</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skipWhile(Predicate<? super T> predicate) {
@@ -14283,6 +14448,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items emitted by the source Publisher in sorted order
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(Comparator<? super T> sortFunction) {
@@ -14340,6 +14506,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(Publisher<? extends T> other) {
@@ -14369,6 +14536,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(T value) {
@@ -14559,6 +14727,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
@@ -14719,6 +14888,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #subscribeOn(Scheduler, boolean)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler) {
@@ -14756,6 +14926,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler, boolean requestOn) {
@@ -14786,6 +14957,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 1.1.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> switchIfEmpty(Publisher<? extends T> other) {
@@ -14899,6 +15071,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable switchMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
@@ -14945,6 +15118,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable switchMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
@@ -15071,6 +15245,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
@@ -15101,6 +15276,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
@@ -15141,6 +15317,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
@@ -15171,6 +15348,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
@@ -15414,6 +15592,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
@@ -15625,6 +15804,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 1.1.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeUntil(Predicate<? super T> stopPredicate) {
@@ -15654,6 +15834,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> takeUntil(Publisher<U> other) {
@@ -15682,6 +15863,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see Flowable#takeUntil(Predicate)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeWhile(Predicate<? super T> predicate) {
@@ -15746,6 +15928,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
@@ -15965,6 +16148,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleLatest(long timeout, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
@@ -16218,6 +16402,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <V> Flowable<T> timeout(Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator, Flowable<? extends T> other) {
@@ -16280,6 +16465,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit, Publisher<? extends T> other) {
@@ -16316,6 +16502,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler, Publisher<? extends T> other) {
@@ -16387,6 +16574,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<T> timeout(Publisher<U> firstTimeoutIndicator,
@@ -16432,6 +16620,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<T> timeout(
@@ -16556,6 +16745,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timestamp.html">ReactiveX operators documentation: Timestamp</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE) // Supplied scheduler is only used for creating timestamps.
     public final Flowable<Timed<T>> timestamp(final TimeUnit unit, final Scheduler scheduler) {
@@ -16726,6 +16916,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
@@ -16764,6 +16955,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
@@ -16802,6 +16994,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector,
@@ -16915,6 +17108,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
@@ -17046,6 +17240,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<List<T>> toSortedList(final Comparator<? super T> comparator) {
@@ -17081,6 +17276,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
@@ -17142,6 +17338,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> unsubscribeOn(Scheduler scheduler) {
@@ -17352,6 +17549,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
@@ -17630,6 +17828,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(
@@ -17698,6 +17897,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Publisher<B> boundaryIndicator, int bufferSize) {
@@ -17774,6 +17974,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<Flowable<T>> window(
@@ -17847,6 +18048,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundaryIndicatorSupplier, int bufferSize) {
@@ -17884,6 +18086,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> withLatestFrom(Publisher<? extends U> other,
@@ -17921,6 +18124,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, R> Flowable<R> withLatestFrom(Publisher<T1> source1, Publisher<T2> source2,
@@ -17960,6 +18164,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, T3, R> Flowable<R> withLatestFrom(
@@ -18004,6 +18209,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, T3, T4, R> Flowable<R> withLatestFrom(
@@ -18042,6 +18248,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> withLatestFrom(Publisher<?>[] others, Function<? super Object[], R> combiner) {
@@ -18074,6 +18281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> withLatestFrom(Iterable<? extends Publisher<?>> others, Function<? super Object[], R> combiner) {
@@ -18113,6 +18321,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
@@ -18161,6 +18370,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {

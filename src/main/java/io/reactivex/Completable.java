@@ -118,6 +118,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable ambArray(final CompletableSource... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -146,6 +147,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable amb(final Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -164,6 +166,7 @@ public abstract class Completable implements CompletableSource {
      * @return a Completable instance that completes immediately
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable complete() {
         return RxJavaPlugins.onAssembly(CompletableEmpty.INSTANCE);
@@ -182,6 +185,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concatArray(CompletableSource... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -207,6 +211,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -253,6 +258,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static Completable concat(Publisher<? extends CompletableSource> sources, int prefetch) {
@@ -297,6 +303,7 @@ public abstract class Completable implements CompletableSource {
      * @see Cancellable
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable create(CompletableOnSubscribe source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -319,6 +326,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if source is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable unsafeCreate(CompletableSource source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -340,6 +348,7 @@ public abstract class Completable implements CompletableSource {
      * @return the Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable defer(final Callable<? extends CompletableSource> completableSupplier) {
         ObjectHelper.requireNonNull(completableSupplier, "completableSupplier");
@@ -363,6 +372,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if errorSupplier is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable error(final Callable<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
@@ -382,6 +392,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if error is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable error(final Throwable error) {
         ObjectHelper.requireNonNull(error, "error is null");
@@ -409,6 +420,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if run is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromAction(final Action run) {
         ObjectHelper.requireNonNull(run, "run is null");
@@ -435,6 +447,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromCallable(final Callable<?> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
@@ -455,6 +468,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromFuture(final Future<?> future) {
         ObjectHelper.requireNonNull(future, "future is null");
@@ -479,6 +493,7 @@ public abstract class Completable implements CompletableSource {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromMaybe(final MaybeSource<T> maybe) {
         ObjectHelper.requireNonNull(maybe, "maybe is null");
@@ -499,6 +514,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if run is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromRunnable(final Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
@@ -520,6 +536,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if flowable is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromObservable(final ObservableSource<T> observable) {
         ObjectHelper.requireNonNull(observable, "observable is null");
@@ -556,6 +573,7 @@ public abstract class Completable implements CompletableSource {
      * @see #create(CompletableOnSubscribe)
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromPublisher(final Publisher<T> publisher) {
@@ -578,6 +596,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if single is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable fromSingle(final SingleSource<T> single) {
         ObjectHelper.requireNonNull(single, "single is null");
@@ -612,6 +631,7 @@ public abstract class Completable implements CompletableSource {
      * @see #mergeArrayDelayError(CompletableSource...)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable mergeArray(CompletableSource... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -652,6 +672,7 @@ public abstract class Completable implements CompletableSource {
      * @see #mergeDelayError(Iterable)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable merge(Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -753,6 +774,7 @@ public abstract class Completable implements CompletableSource {
      * @throws IllegalArgumentException if maxConcurrency is less than 1
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     private static Completable merge0(Publisher<? extends CompletableSource> sources, int maxConcurrency, boolean delayErrors) {
@@ -776,6 +798,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable mergeArrayDelayError(CompletableSource... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -797,6 +820,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if sources is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable mergeDelayError(Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -902,6 +926,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Completable timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -968,6 +993,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
             final Callable<R> resourceSupplier,
@@ -995,6 +1021,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if source is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable wrap(CompletableSource source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -1019,6 +1046,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable ambWith(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -1042,6 +1070,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if next is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> andThen(ObservableSource<T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
@@ -1068,6 +1097,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if next is null
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Flowable<T> andThen(Publisher<T> next) {
@@ -1092,6 +1122,7 @@ public abstract class Completable implements CompletableSource {
      * @return Single that composes this Completable and next
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<T> andThen(SingleSource<T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
@@ -1115,6 +1146,7 @@ public abstract class Completable implements CompletableSource {
      * @return Maybe that composes this Completable and next
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Maybe<T> andThen(MaybeSource<T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
@@ -1207,6 +1239,7 @@ public abstract class Completable implements CompletableSource {
      * @throws RuntimeException wrapping an InterruptedException if the current thread is interrupted
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final boolean blockingAwait(long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -1320,6 +1353,7 @@ public abstract class Completable implements CompletableSource {
      * @see #andThen(Publisher)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable concatWith(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -1383,6 +1417,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if unit or scheduler is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable delay(final long delay, final TimeUnit unit, final Scheduler scheduler, final boolean delayError) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -1514,6 +1549,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if onEvent is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnEvent(final Consumer<? super Throwable> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
@@ -1535,6 +1571,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     private Completable doOnLifecycle(
             final Consumer<? super Disposable> onSubscribe,
@@ -1639,6 +1676,7 @@ public abstract class Completable implements CompletableSource {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doFinally(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
@@ -1776,6 +1814,7 @@ public abstract class Completable implements CompletableSource {
      * @see #compose(CompletableTransformer)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable lift(final CompletableOperator onLift) {
         ObjectHelper.requireNonNull(onLift, "onLift is null");
@@ -1817,6 +1856,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable mergeWith(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -1836,6 +1876,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if scheduler is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable observeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -1873,6 +1914,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorComplete(final Predicate<? super Throwable> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
@@ -1895,6 +1937,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends CompletableSource> errorMapper) {
         ObjectHelper.requireNonNull(errorMapper, "errorMapper is null");
@@ -2153,6 +2196,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable startWith(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2174,6 +2218,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> startWith(Observable<T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2197,6 +2242,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if other is null
      */
     @CheckReturnValue
+    @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Flowable<T> startWith(Publisher<T> other) {
@@ -2319,6 +2365,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if either callback is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
@@ -2346,6 +2393,7 @@ public abstract class Completable implements CompletableSource {
      * @return the Disposable that allows disposing the subscription
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -2369,6 +2417,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if scheduler is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable subscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -2395,6 +2444,7 @@ public abstract class Completable implements CompletableSource {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable takeUntil(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2439,6 +2489,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if unit or other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Completable timeout(long timeout, TimeUnit unit, CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2486,6 +2537,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if unit, scheduler or other is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2509,6 +2561,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if unit or scheduler
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource other) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -2625,6 +2678,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if completionValueSupplier is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<T> toSingle(final Callable<? extends T> completionValueSupplier) {
         ObjectHelper.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
@@ -2646,6 +2700,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if completionValue is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<T> toSingleDefault(final T completionValue) {
         ObjectHelper.requireNonNull(completionValue, "completionValue is null");
@@ -2666,6 +2721,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if scheduler is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
