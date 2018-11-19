@@ -8746,7 +8746,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code CharSequence}s or {@code List}s where the objects will actually have the same
      * references when they are modified and {@code distinctUntilChanged} will evaluate subsequent items as same.
      * To avoid such situation, it is recommended that mutable data is converted to an immutable one,
-     * for example using `map(CharSequence::toString)` or `map(Collections::unmodifiableList)`.
+     * for example using `map(CharSequence::toString)` or `map(list -> Collections.unmodifiableList(new ArrayList<>(list)))`.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
@@ -8789,7 +8789,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code CharSequence}s or {@code List}s where the objects will actually have the same
      * references when they are modified and {@code distinctUntilChanged} will evaluate subsequent items as same.
      * To avoid such situation, it is recommended that mutable data is converted to an immutable one,
-     * for example using `map(CharSequence::toString)` or `map(Collections::unmodifiableList)`.
+     * for example using `map(CharSequence::toString)` or `map(list -> Collections.unmodifiableList(new ArrayList<>(list)))`.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
@@ -8828,7 +8828,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code CharSequence}s or {@code List}s where the objects will actually have the same
      * references when they are modified and {@code distinctUntilChanged} will evaluate subsequent items as same.
      * To avoid such situation, it is recommended that mutable data is converted to an immutable one,
-     * for example using `map(CharSequence::toString)` or `map(Collections::unmodifiableList)`.
+     * for example using `map(CharSequence::toString)` or `map(list -> Collections.unmodifiableList(new ArrayList<>(list)))`.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
