@@ -42,12 +42,18 @@ public class BaseTypeAnnotations {
                 continue;
             }
             if (m.getDeclaringClass() == clazz) {
-                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterTypes().length == 0;
+                boolean isSubscribeMethod = "subscribe".equals(m.getName());
+                boolean isNoArgSubscribeMethod = isSubscribeMethod && m.getParameterTypes().length == 0;
                 boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
+                boolean isVoid = m.getReturnType().equals(Void.TYPE);
 
                 if (isSubscribeMethod) {
-                    if (isAnnotationPresent) {
-                        b.append("subscribe() method has @CheckReturnValue: ").append(m).append("\r\n");
+                    if (isNoArgSubscribeMethod) {
+                        if (isAnnotationPresent) {
+                            b.append("subscribe() method has @CheckReturnValue: ").append(m).append("\r\n");
+                        }
+                    } else if (!isVoid && !m.isAnnotationPresent(OptionalCheckReturnValue.class)) {
+                            b.append("subscribe() method missing @OptionalCheckReturnValue: ").append(m).append("\r\n");
                     }
                     continue;
                 }
@@ -57,7 +63,7 @@ public class BaseTypeAnnotations {
                     continue;
                 }
 
-                if (m.getReturnType().equals(Void.TYPE)) {
+                if (isVoid) {
                     if (isAnnotationPresent) {
                         b.append("Void method has @CheckReturnValue: ").append(m).append("\r\n");
                     }
