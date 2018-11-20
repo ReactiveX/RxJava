@@ -2318,7 +2318,7 @@ public abstract class Completable implements CompletableSource {
      * @return the Disposable that can be used for disposing the subscription asynchronously
      * @throws NullPointerException if either callback is null
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
@@ -2345,7 +2345,7 @@ public abstract class Completable implements CompletableSource {
      * @param onComplete the runnable called when this Completable completes normally
      * @return the Disposable that allows disposing the subscription
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");

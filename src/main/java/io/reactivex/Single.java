@@ -3418,7 +3418,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @throws NullPointerException
      *             if {@code onCallback} is null
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final BiConsumer<? super T, ? super Throwable> onCallback) {
         ObjectHelper.requireNonNull(onCallback, "onCallback is null");
@@ -3446,7 +3446,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *             if {@code onSuccess} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
         return subscribe(onSuccess, Functions.ON_ERROR_MISSING);
@@ -3471,7 +3471,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Consumer<? super T> onSuccess, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");

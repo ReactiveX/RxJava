@@ -12079,7 +12079,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if {@code onNext} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
         return subscribe(onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION, Functions.emptyConsumer());
@@ -12105,7 +12105,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if {@code onNext} is null, or
      *             if {@code onError} is null
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
         return subscribe(onNext, onError, Functions.EMPTY_ACTION, Functions.emptyConsumer());
@@ -12135,7 +12135,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if {@code onComplete} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Action onComplete) {
@@ -12169,7 +12169,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if {@code onSubscribe} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
+    @OptionalCheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Action onComplete, Consumer<? super Disposable> onSubscribe) {
