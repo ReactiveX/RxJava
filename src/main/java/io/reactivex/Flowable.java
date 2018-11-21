@@ -16983,7 +16983,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toObservable() {
         return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(this));
