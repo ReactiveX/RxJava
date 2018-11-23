@@ -2,6 +2,46 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.4 - November 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.4%7C))
+
+#### API changes
+
+  - [Pull 6278](https://github.com/ReactiveX/RxJava/pull/6278): Add `Maybe`/`Single`/`Completable` `materialize` operator, 
+  - [Pull 6278](https://github.com/ReactiveX/RxJava/pull/6278): Add `Single.dematerialize(selector)` operator.
+  - [Pull 6281](https://github.com/ReactiveX/RxJava/pull/6281): Add `Flowable`/`Observable` `dematerialize(selector)` operator.
+
+#### Bugfixes
+
+  - [Pull 6258](https://github.com/ReactiveX/RxJava/pull/6258): Fix cancel/dispose upon upstream switch for some operators.
+  - [Pull 6269](https://github.com/ReactiveX/RxJava/pull/6269): Call the `doOn{Dispose|Cancel}` handler at most once.
+  - [Pull 6283](https://github.com/ReactiveX/RxJava/pull/6283): Fix `Observable.flatMap` to sustain concurrency level.
+  - [Pull 6297](https://github.com/ReactiveX/RxJava/pull/6297): Fix refCount eager disconnect not resetting the connection.
+
+#### Documentation changes
+
+  - [Pull 6280](https://github.com/ReactiveX/RxJava/pull/6280): Improve the package docs of `io.reactivex.schedulers`.
+  - [Pull 6301](https://github.com/ReactiveX/RxJava/pull/6301): Add missing `onSubscribe` null-checks to NPE docs on `Flowable`/`Observable` `subscribe`.
+  - [Pull 6303](https://github.com/ReactiveX/RxJava/pull/6303): Fix incorrect image placement in `Flowable.zip` docs.
+  - [Pull 6305](https://github.com/ReactiveX/RxJava/pull/6305): Explain the non-concurrency requirement of the `Emitter` interface methods.
+  - [Pull 6308](https://github.com/ReactiveX/RxJava/pull/6308): Explain the need to consume both the group sequence and each group specifically with `Flowable.groupBy`.
+  - [Pull 6311](https://github.com/ReactiveX/RxJava/pull/6311): Explain that `distinctUntilChanged` requires non-mutating data to work as expected.
+
+#### Wiki changes
+
+  - [Pull 6260](https://github.com/ReactiveX/RxJava/pull/6260): Add `generate` examples to `Creating-Observables.md`.
+  - [Pull 6267](https://github.com/ReactiveX/RxJava/pull/6267): Fix `Creating-Observables.md` docs stlye mistake.
+  - [Pull 6273](https://github.com/ReactiveX/RxJava/pull/6273): Fix broken markdown of `How-to-Contribute.md`.
+  - [Pull 6266](https://github.com/ReactiveX/RxJava/pull/6266): Update Error Handling Operators docs.
+  - [Pull 6291](https://github.com/ReactiveX/RxJava/pull/6291): Update Transforming Observables docs.
+
+#### Other changes
+
+  - [Pull 6262](https://github.com/ReactiveX/RxJava/pull/6262): Use JUnit's assert format for assert messages for better IDE interoperation.
+  - [Pull 6263](https://github.com/ReactiveX/RxJava/pull/6263): Inline `SubscriptionHelper.isCancelled()`.
+  - [Pull 6275](https://github.com/ReactiveX/RxJava/pull/6275): Improve the `Observable`/`Flowable` `cache()` operators.
+  - [Pull 6287](https://github.com/ReactiveX/RxJava/pull/6287): Expose the Keep-Alive value of the IO `Scheduler` as System property.
+  - [Pull 6321](https://github.com/ReactiveX/RxJava/pull/6321): Fix `Flowable.toObservable` backpressure annotation.
+
 ### Version 2.2.3 - October 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.3%7C))
 
 #### API changes
