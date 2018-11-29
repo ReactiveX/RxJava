@@ -70,10 +70,23 @@ summer.subscribe({println(it);});
 How could you create an Observable that emits [the Fibonacci sequence](http://en.wikipedia.org/wiki/Fibonacci_number)?
 
 The most direct way would be to use the [`create`](Creating-Observables#wiki-create) operator to make an Observable "from scratch," and then use a traditional loop within the closure you pass to that operator to generate the sequence. Something like this:
+### Java
+```java
+Observable<Integer> fibonacci = Observable.create(observer -> {
+    int f1 = 0, f2 = 1, f = 1;
+    while (!observer.isUnsubscribed()) {
+        observer.onNext(f);
+        f = f1 + f2;
+        f1 = f2;
+        f2 = f;
+    }
+});
+```
+### Groovy
 ````groovy
 def fibonacci = Observable.create({ observer ->
-  def f1=0; f2=1, f=1;
-  while(!observer.isUnsubscribed() {
+  def f1=0, f2=1, f=1;
+  while(!observer.isUnsubscribed()) {
     observer.onNext(f);
     f  = f1+f2;
     f1 = f2;
@@ -84,7 +97,15 @@ def fibonacci = Observable.create({ observer ->
 But this is a little too much like ordinary linear programming. Is there some way we can instead create this sequence by composing together existing Observable operators?
 
 Here's an option that does this:
-````
+### Java
+```java
+Observable<Integer> fibonacci = Observable.fromArray(0)
+                                          .repeat()
+                                          .scan(new int[]{0, 1}, (a, b) -> new int[]{a[1], a[0] + a[1]})
+                                          .map(a -> a[1]);
+```
+### Groovy
+````groovy
 def fibonacci = Observable.from(0).repeat().scan([0,1], { a,b -> [a[1], a[0]+a[1]] }).map({it[1]});
 ````
 It's a little [janky](http://www.urbandictionary.com/define.php?term=janky). Let's walk through it:
@@ -96,6 +117,11 @@ This has the effect of emitting the following sequence of items: `[0,1], [1,1], 
 The second item in this array describes the Fibonacci sequence. We can use `map` to reduce the sequence to just that item.
 
 To print out a portion of this sequence (using either method), you would use code like the following:
+### Java
+```java
+fibonacci.take(15).subscribe(System.out::println);
+```
+### Groovy
 ````groovy
 fibonnaci.take(15).subscribe({println(it)})];
 ````
