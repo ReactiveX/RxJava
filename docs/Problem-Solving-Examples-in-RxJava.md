@@ -35,7 +35,7 @@ Next, we want to sum up the numbers in the resulting sequence. If you have insta
 There are a number of operators that reduce a sequence emitted by a source Observable to a single value emitted by the resulting Observable. Most of the ones that are not in the `rxjava-math` module emit boolean evaluations of the sequence; we want something that can emit a number. The [`reduce`](Mathematical-and-Aggregate-Operators#reduce) operator will do the job:
 ### Java
 ```java
-Single<Integer> reduce = threesAndFives.reduce(0, (a, b) -> a + b);
+Single<Integer> summer = threesAndFives.reduce(0, (a, b) -> a + b);
 ```
 ### Groovy
 ````groovy
@@ -58,7 +58,7 @@ Finally, we want to see the result. This means we must [subscribe](Observable#on
 
 ### Java
 ```java
-threesAndFives.subscribe(System.out::print);
+summer.subscribe(System.out::print);
 ```
 ### Groovy
 ````groovy
