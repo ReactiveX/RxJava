@@ -72,10 +72,10 @@ How could you create an Observable that emits [the Fibonacci sequence](http://en
 The most direct way would be to use the [`create`](Creating-Observables#wiki-create) operator to make an Observable "from scratch," and then use a traditional loop within the closure you pass to that operator to generate the sequence. Something like this:
 ### Java
 ```java
-Observable<Integer> fibonacci = Observable.create(observer -> {
+Observable<Integer> fibonacci = Observable.create(emitter -> {
     int f1 = 0, f2 = 1, f = 1;
-    while (!observer.isUnsubscribed()) {
-        observer.onNext(f);
+    while (!emitter.isDisposed()) {
+        emitter.onNext(f);
         f = f1 + f2;
         f1 = f2;
         f2 = f;
@@ -84,10 +84,10 @@ Observable<Integer> fibonacci = Observable.create(observer -> {
 ```
 ### Groovy
 ````groovy
-def fibonacci = Observable.create({ observer ->
+def fibonacci = Observable.create({ emitter ->
   def f1=0, f2=1, f=1;
-  while(!observer.isUnsubscribed()) {
-    observer.onNext(f);
+  while(!emitter.isDisposed()) {
+    emitter.onNext(f);
     f  = f1+f2;
     f1 = f2;
     f2 = f;
@@ -99,10 +99,11 @@ But this is a little too much like ordinary linear programming. Is there some wa
 Here's an option that does this:
 ### Java
 ```java
-Observable<Integer> fibonacci = Observable.fromArray(0)
-                                          .repeat()
-                                          .scan(new int[]{0, 1}, (a, b) -> new int[]{a[1], a[0] + a[1]})
-                                          .map(a -> a[1]);
+Observable<Integer> fibonacci =
+        Observable.fromArray(0)
+                  .repeat()
+                  .scan(new int[]{0, 1}, (a, b) -> new int[]{a[1], a[0] + a[1]})
+                  .map(a -> a[1]);
 ```
 ### Groovy
 ````groovy
