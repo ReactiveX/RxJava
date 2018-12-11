@@ -1,12 +1,18 @@
 language: java
 jdk:
-- oraclejdk8
+ - oraclejdk8
+ - openjdk8
+ - oraclejdk9
+ - openjdk9
+#  - oraclejdk10
+  - openjdk10
+  - oraclejdk11
+  - openjdk11
+  - openjdk-ea
 
-# force upgrade Java8 as per https://github.com/travis-ci/travis-ci/issues/4042 (fixes compilation issue)
-#addons:
-#  apt:
-#    packages:
-#      - oracle-java8-installer
+matrix:
+  allow_failures:
+    - jdk: openjdk-ea
 
 # prevent travis running gradle assemble; let the build script do it anyway
 install: true
