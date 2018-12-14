@@ -9712,6 +9712,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an Observable that allows user to 'peek' at each item emitted by the source ObservableSource
+     *
+     * @param peeker a function to apply to each item emitted by the ObservableSource
+     * @return an Observable that emits the items from the source ObservableSource
+     *
+     * @see <a href="http://reactivex.io/documentation/operators/peek.html">ReactiveX operators documentation: Peek</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> peek(ImmutableConsumer<T> peeker) {
+        ObjectHelper.requireNonNull(peeker, "peeker is null");
+        return RxJavaPlugins.onAssembly(new ObservablePeek<T>(this, peeker));
+    }
+
+    /**
      * Returns an Observable that represents all of the emissions <em>and</em> notifications from the source
      * ObservableSource into emissions marked with their original types within {@link Notification} objects.
      * <p>

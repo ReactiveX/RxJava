@@ -13,15 +13,16 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
-import org.junit.Test;
-
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 public class ObservableDoOnTest {
 
@@ -102,4 +103,5 @@ public class ObservableDoOnTest {
         .assertFailure(TestException.class);
         assertTrue(r.get());
     }
+
 }
