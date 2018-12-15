@@ -9289,7 +9289,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from
+     * Returns a Single that emits the item found at a specified index in a sequence of emissions from
      * this Flowable, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
@@ -9305,7 +9305,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the zero-based index of the item to retrieve
      * @param defaultItem
      *            the default item
-     * @return a Flowable that emits the item at the specified position in the sequence emitted by the source
+     * @return a Single that emits the item at the specified position in the sequence emitted by the source
      *         Publisher, or the default item if that index is outside the bounds of the source sequence
      * @throws IndexOutOfBoundsException
      *             if {@code index} is less than 0
@@ -9323,7 +9323,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from
+     * Returns a Single that emits the item found at a specified index in a sequence of emissions from
      * this Flowable or signals a {@link NoSuchElementException} if this Flowable has fewer elements than index.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
@@ -9337,7 +9337,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param index
      *            the zero-based index of the item to retrieve
-     * @return a Flowable that emits the item at the specified position in the sequence emitted by the source
+     * @return a Single that emits the item at the specified position in the sequence emitted by the source
      *         Publisher, or the default item if that index is outside the bounds of the source sequence
      * @throws IndexOutOfBoundsException
      *             if {@code index} is less than 0
