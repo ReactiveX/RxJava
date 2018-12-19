@@ -9507,7 +9507,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param defaultItem
      *            the default item to emit if the source ObservableSource is empty
-     * @return an Observable that emits only the last item emitted by the source ObservableSource, or a default item
+     * @return a Single that emits only the last item emitted by the source ObservableSource, or a default item
      *         if the source ObservableSource is empty
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
