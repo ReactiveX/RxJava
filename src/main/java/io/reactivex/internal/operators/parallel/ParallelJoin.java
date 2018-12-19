@@ -110,15 +110,13 @@ public final class ParallelJoin<T> extends Flowable<T> {
         }
 
         void cancelAll() {
-            for (int i = 0; i < subscribers.length; i++) {
-                JoinInnerSubscriber<T> s = subscribers[i];
+            for (JoinInnerSubscriber<T> s : subscribers) {
                 s.cancel();
             }
         }
 
         void cleanup() {
-            for (int i = 0; i < subscribers.length; i++) {
-                JoinInnerSubscriber<T> s = subscribers[i];
+            for (JoinInnerSubscriber<T> s : subscribers) {
                 s.queue = null;
             }
         }
