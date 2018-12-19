@@ -124,6 +124,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> amb(final Iterable<? extends MaybeSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -174,6 +175,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Iterable<? extends MaybeSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -201,6 +203,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2) {
@@ -232,6 +235,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
@@ -267,6 +271,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
@@ -322,6 +327,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> concat(Publisher<? extends MaybeSource<? extends T>> sources, int prefetch) {
@@ -346,6 +352,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concatArray(MaybeSource<? extends T>... sources) {
@@ -434,6 +441,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(Iterable<? extends MaybeSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -557,6 +565,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see Cancellable
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> create(MaybeOnSubscribe<T> onSubscribe) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
@@ -576,6 +585,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> defer(final Callable<? extends MaybeSource<? extends T>> maybeSupplier) {
         ObjectHelper.requireNonNull(maybeSupplier, "maybeSupplier is null");
@@ -620,6 +630,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> error(Throwable exception) {
         ObjectHelper.requireNonNull(exception, "exception is null");
@@ -645,6 +656,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> error(Callable<? extends Throwable> supplier) {
         ObjectHelper.requireNonNull(supplier, "errorSupplier is null");
@@ -671,6 +683,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if run is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromAction(final Action run) {
         ObjectHelper.requireNonNull(run, "run is null");
@@ -690,6 +703,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if completable is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromCompletable(CompletableSource completableSource) {
         ObjectHelper.requireNonNull(completableSource, "completableSource is null");
@@ -709,6 +723,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if single is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromSingle(SingleSource<T> singleSource) {
         ObjectHelper.requireNonNull(singleSource, "singleSource is null");
@@ -750,6 +765,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return a new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromCallable(@NonNull final Callable<? extends T> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
@@ -783,6 +799,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromFuture(Future<? extends T> future) {
         ObjectHelper.requireNonNull(future, "future is null");
@@ -820,6 +837,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(future, "future is null");
@@ -840,6 +858,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if run is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromRunnable(final Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
@@ -866,6 +885,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> just(T item) {
         ObjectHelper.requireNonNull(item, "item is null");
@@ -970,6 +990,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> merge(Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
@@ -1002,6 +1023,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Maybe<T> merge(MaybeSource<? extends MaybeSource<? extends T>> source) {
@@ -1047,6 +1069,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
@@ -1097,6 +1120,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
@@ -1151,6 +1175,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
@@ -1193,6 +1218,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> mergeArray(MaybeSource<? extends T>... sources) {
@@ -1347,6 +1373,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
         ObjectHelper.requireNonNull(sources, "source is null");
@@ -1385,6 +1412,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SuppressWarnings({ "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
@@ -1426,6 +1454,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SuppressWarnings({ "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(MaybeSource<? extends T> source1,
             MaybeSource<? extends T> source2, MaybeSource<? extends T> source3) {
@@ -1471,6 +1500,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SuppressWarnings({ "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(
             MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
@@ -1554,6 +1584,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> sequenceEqual(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual) {
@@ -1604,6 +1635,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Maybe<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -1624,6 +1656,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> unsafeCreate(MaybeSource<T> onSubscribe) {
         if (onSubscribe instanceof Maybe) {
@@ -1690,6 +1723,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Maybe<T> using(Callable<? extends D> resourceSupplier,
             Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
@@ -1712,6 +1746,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the Maybe wrapper or the source cast to Maybe (if possible)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> wrap(MaybeSource<T> source) {
         if (source instanceof Maybe) {
@@ -1749,6 +1784,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Maybe<R> zip(Iterable<? extends MaybeSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
@@ -1783,6 +1819,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2,
@@ -1822,6 +1859,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -1865,6 +1903,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -1913,6 +1952,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -1965,6 +2005,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -2021,6 +2062,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -2082,6 +2124,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -2147,6 +2190,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2, MaybeSource<? extends T3> source3,
@@ -2194,6 +2238,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Maybe<R> zipArray(Function<? super Object[], ? extends R> zipper,
             MaybeSource<? extends T>... sources) {
@@ -2227,6 +2272,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> ambWith(MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2335,6 +2381,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<U> cast(final Class<? extends U> clazz) {
         ObjectHelper.requireNonNull(clazz, "clazz is null");
@@ -2383,6 +2430,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> concatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -2409,6 +2457,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> concatWith(MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2432,6 +2481,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> contains(final Object item) {
         ObjectHelper.requireNonNull(item, "item is null");
@@ -2480,6 +2530,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> defaultIfEmpty(T defaultItem) {
         ObjectHelper.requireNonNull(defaultItem, "item is null");
@@ -2529,6 +2580,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Maybe<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -2559,6 +2611,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     public final <U, V> Maybe<T> delay(Publisher<U> delayIndicator) {
@@ -2584,6 +2637,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> delaySubscription(Publisher<U> subscriptionIndicator) {
         ObjectHelper.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
@@ -2652,6 +2706,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
         ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
@@ -2676,6 +2731,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doAfterTerminate(Action onAfterTerminate) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2705,6 +2761,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doFinally(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
@@ -2723,6 +2780,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doOnDispose(Action onDispose) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2750,6 +2808,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doOnComplete(Action onComplete) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2775,6 +2834,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doOnError(Consumer<? super Throwable> onError) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2819,6 +2879,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2844,6 +2905,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doOnSuccess(Consumer<? super T> onSuccess) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
@@ -2874,6 +2936,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> filter(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
@@ -2898,6 +2961,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> flatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -2926,6 +2990,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> flatMap(
             Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
@@ -2960,6 +3025,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Maybe<R> flatMap(Function<? super T, ? extends MaybeSource<? extends U>> mapper,
             BiFunction<? super T, ? super U, ? extends R> resultSelector) {
@@ -2990,6 +3056,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flattenAsFlowable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3014,6 +3081,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flattenAsObservable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3037,6 +3105,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3064,6 +3133,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3089,6 +3159,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> flatMapSingle(final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3116,6 +3187,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @since 2.1
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> flatMapSingleElement(final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3139,6 +3211,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable flatMapCompletable(final Function<? super T, ? extends CompletableSource> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3348,6 +3421,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see #compose(MaybeTransformer)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> lift(final MaybeOperator<? extends R, ? super T> lift) {
         ObjectHelper.requireNonNull(lift, "onLift is null");
@@ -3371,6 +3445,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -3418,6 +3493,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -3443,6 +3519,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see #subscribeOn
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Maybe<T> observeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -3466,6 +3543,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<U> ofType(final Class<U> clazz) {
         ObjectHelper.requireNonNull(clazz, "clazz is null");
@@ -3486,6 +3564,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the value returned by the convert function
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R to(Function<? super Maybe<T>, R> convert) {
         try {
@@ -3549,6 +3628,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Single instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
@@ -3597,6 +3677,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Completable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorComplete(final Predicate<? super Throwable> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
@@ -3624,6 +3705,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorResumeNext(final MaybeSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
@@ -3650,6 +3732,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorResumeNext(Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction) {
         ObjectHelper.requireNonNull(resumeFunction, "resumeFunction is null");
@@ -3676,6 +3759,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
         ObjectHelper.requireNonNull(valueSupplier, "valueSupplier is null");
@@ -3701,6 +3785,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorReturnItem(final T item) {
         ObjectHelper.requireNonNull(item, "item is null");
@@ -3730,6 +3815,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onExceptionResumeNext(final MaybeSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
@@ -3970,6 +4056,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> retryUntil(final BooleanSupplier stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
@@ -4152,6 +4239,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
             Action onComplete) {
@@ -4208,6 +4296,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see #observeOn
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Maybe<T> subscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -4260,6 +4349,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *          alternate MaybeSource if the source Maybe is empty.
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> switchIfEmpty(MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -4283,6 +4373,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> switchIfEmpty(SingleSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -4308,6 +4399,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> takeUntil(MaybeSource<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -4337,6 +4429,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> takeUntil(Publisher<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -4388,6 +4481,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Maybe<T> timeout(long timeout, TimeUnit timeUnit, MaybeSource<? extends T> fallback) {
         ObjectHelper.requireNonNull(fallback, "other is null");
@@ -4417,6 +4511,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Maybe<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler, MaybeSource<? extends T> fallback) {
         ObjectHelper.requireNonNull(fallback, "fallback is null");
@@ -4463,6 +4558,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(MaybeSource<U> timeoutIndicator) {
         ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
@@ -4484,6 +4580,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Maybe instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(MaybeSource<U> timeoutIndicator, MaybeSource<? extends T> fallback) {
         ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
@@ -4508,6 +4605,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(Publisher<U> timeoutIndicator) {
         ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
@@ -4533,6 +4631,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(Publisher<U> timeoutIndicator, MaybeSource<? extends T> fallback) {
         ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
@@ -4552,6 +4651,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if scheduler is null
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Maybe<T> unsubscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -4585,6 +4685,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Maybe<R> zipWith(MaybeSource<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");

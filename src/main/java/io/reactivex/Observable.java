@@ -116,6 +116,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> amb(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -142,6 +143,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> ambArray(ObservableSource<? extends T>... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -289,6 +291,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatest(Iterable<? extends ObservableSource<? extends T>> sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -381,6 +384,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -426,6 +430,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -468,6 +473,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -515,6 +521,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -566,6 +573,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -622,6 +630,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -682,6 +691,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -747,6 +757,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -816,6 +827,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
@@ -962,6 +974,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatestDelayError(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -1057,6 +1070,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatestDelayError(Iterable<? extends ObservableSource<? extends T>> sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
@@ -1084,6 +1098,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -1134,6 +1149,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -1162,6 +1178,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
@@ -1192,6 +1209,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(
             ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
@@ -1227,6 +1245,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(
             ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
@@ -1410,6 +1429,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource with the concatenating behavior
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatDelayError(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -1455,6 +1475,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -1607,6 +1628,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see Cancellable
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> create(ObservableOnSubscribe<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -1638,6 +1660,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> defer(Callable<? extends ObservableSource<? extends T>> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
@@ -1686,6 +1709,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(Callable<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
@@ -1711,6 +1735,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(final Throwable exception) {
         ObjectHelper.requireNonNull(exception, "e is null");
@@ -1735,6 +1760,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
     public static <T> Observable<T> fromArray(T... items) {
         ObjectHelper.requireNonNull(items, "items is null");
         if (items.length == 0) {
@@ -1775,6 +1801,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
@@ -1808,6 +1835,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future) {
         ObjectHelper.requireNonNull(future, "future is null");
@@ -1845,6 +1873,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(future, "future is null");
@@ -1886,6 +1915,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -1921,6 +1951,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Observable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -1946,6 +1977,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -1982,6 +2014,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromPublisher(Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
@@ -2010,6 +2043,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> generate(final Consumer<Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
@@ -2041,6 +2075,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
@@ -2073,6 +2108,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(
             final Callable<S> initialState,
@@ -2139,6 +2175,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator,
             Consumer<? super S> disposeState) {
@@ -2199,6 +2236,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 1.0.12
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -2295,6 +2333,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Observable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         if (count < 0) {
@@ -2344,6 +2383,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see #fromIterable(Iterable)
      */
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item) {
         ObjectHelper.requireNonNull(item, "The item is null");
@@ -2370,6 +2410,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2400,6 +2441,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2433,6 +2475,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2469,6 +2512,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2508,6 +2552,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2550,6 +2595,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2595,6 +2641,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2643,6 +2690,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
@@ -2694,6 +2742,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
+    @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
         ObjectHelper.requireNonNull(item1, "The first item is null");
