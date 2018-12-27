@@ -11,15 +11,21 @@ You can find additional code examples in the `/src/examples` folders of each [la
 ### Java
 
 ```java
-public static void hello(String... names) {
-    Observable.fromArray(names).subscribe(s -> System.out.println("Hello " + s));
+public static void main(String[] args) {
+    Flowable.just("Hello world").subscribe(System.out::println);
 }
 ```
+If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of ```Consumer``` manually:
 
 ```java
-hello("Ben", "George");
-Hello Ben!
-Hello George!
+public static void main(String[] args) {
+    Flowable.just("Hello world")
+        .subscribe(new Consumer<String>() {
+	    @Override public void accept(String s) {
+		System.out.println(s);
+	    }
+	});
+}
 ```
 
 ### Groovy
