@@ -12,14 +12,7 @@ You can find additional code examples in the `/src/examples` folders of each [la
 
 ```java
 public static void hello(String... names) {
-    Observable.from(names).subscribe(new Action1<String>() {
-
-        @Override
-        public void call(String s) {
-            System.out.println("Hello " + s + "!");
-        }
-
-    });
+    Observable.fromArray(names).subscribe(s -> System.out.println("Hello " + s));
 }
 ```
 
