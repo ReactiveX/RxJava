@@ -11,15 +11,20 @@ You can find additional code examples in the `/src/examples` folders of each [la
 ### Java
 
 ```java
-public static void hello(String... names) {
-    Observable.from(names).subscribe(new Action1<String>() {
+public static void hello(String... args) {
+  Flowable.fromArray(args).subscribe(s -> System.out.println("Hello " + s + "!"));
+}
+```
 
-        @Override
-        public void call(String s) {
-            System.out.println("Hello " + s + "!");
-        }
-
-    });
+If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of ```Consumer``` manually:
+```java
+public static void hello(String... args) {
+  Flowable.fromArray(args).subscribe(new Consumer<String>() {
+      @Override
+      public void accept(String s) {
+          System.out.println("Hello " + s + "!");
+      }
+  });
 }
 ```
 
