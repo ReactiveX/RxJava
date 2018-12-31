@@ -2,6 +2,24 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.5 - December 31, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.5%7C))
+
+#### Documentation changes
+
+  - [Pull 6344](https://github.com/ReactiveX/RxJava/pull/6344): Use correct return type in JavaDocs documentation in `elementAtOrDefault`.
+  - [Pull 6346](https://github.com/ReactiveX/RxJava/pull/6346): Fix JavaDoc examples using markdown instead of `@code`.
+
+#### Wiki changes
+
+  - [Pull 6324](https://github.com/ReactiveX/RxJava/pull/6324): Java 8 version for [Problem-Solving-Examples-in-RxJava](https://github.com/ReactiveX/RxJava/wiki/Problem-Solving-Examples-in-RxJava). 
+  - [Pull 6343](https://github.com/ReactiveX/RxJava/pull/6343): Update [Filtering Observables](https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables) docs. 
+  - [Pull 6351](https://github.com/ReactiveX/RxJava/pull/6351): Updated java example in [How-To-Use-RxJava.md](https://github.com/ReactiveX/RxJava/wiki/How-To-Use-RxJava) file with java 8 version.
+
+#### Other changes
+
+  - [Pull 6313](https://github.com/ReactiveX/RxJava/pull/6313): Adding `@NonNull` annotation factory methods.
+  - [Pull 6335](https://github.com/ReactiveX/RxJava/pull/6335): Replace indexed loop with for-each java5 syntax.
+
 ### Version 2.2.4 - November 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.4%7C))
 
 #### API changes
