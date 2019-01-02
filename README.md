@@ -369,7 +369,7 @@ Each reactive base class features operators that can perform such conversions, i
 |----------|----------|------------|--------|-------|-------------|
 |**Flowable**  |          | `toObservable` | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` |
 |**Observable**| `toFlowable`<sup>2</sup> |  | `first`, `firstOrError`, `single`, `singleOrError`, `last`, `lastOrError`<sup>1</sup> | `firstElement`, `singleElement`, `lastElement` | `ignoreElements` |
-|**Single** | `toFlowable`<sup>3</sup> | `toObservable` |  | `toMaybe` | `toCompletable` |
+|**Single** | `toFlowable`<sup>3</sup> | `toObservable` |  | `toMaybe` | `ignoreElement` |
 |**Maybe** | `toFlowable`<sup>3</sup> | `toObservable` | `toSingle` |  | `ignoreElement` |
 |**Completable** | `toFlowable` | `toObservable` | `toSingle` | `toMaybe` |  |
 
