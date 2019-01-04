@@ -29,6 +29,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -440,5 +441,57 @@ public class FlowableRepeatTest {
         .assertResult(1, 1, 1, 1, 1);
 
         assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void repeatFloodNoSubscriptionError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            final PublishProcessor<Integer> source = PublishProcessor.create();
+            final PublishProcessor<Integer> signaller = PublishProcessor.create();
+
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+                TestSubscriber<Integer> ts = source.take(1)
+                .repeatWhen(new Function<Flowable<Object>, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Flowable<Object> v)
+                            throws Exception {
+                        return signaller;
+                    }
+                }).test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                            source.onNext(1);
+                        }
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                            signaller.offer(1);
+                        }
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.dispose();
+            }
+
+            if (!errors.isEmpty()) {
+                for (Throwable e : errors) {
+                    e.printStackTrace();
+                }
+                fail(errors + "");
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

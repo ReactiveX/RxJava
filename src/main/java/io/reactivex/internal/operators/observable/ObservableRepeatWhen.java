@@ -108,8 +108,8 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
         @Override
         public void onComplete() {
-            active = false;
             DisposableHelper.replace(upstream, null);
+            active = false;
             signaller.onNext(0);
         }
 
