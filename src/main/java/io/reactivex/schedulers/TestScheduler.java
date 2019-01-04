@@ -23,9 +23,60 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**
- * A special, non thread-safe scheduler for testing operators that require
- * a scheduler without introducing real concurrency and allows manually advancing
- * a virtual time.
+ * This special {@link Scheduler} allows testing asynchronous and/or timed operators
+ * and flows by programatically executing the scheduled tasks up to a certain virtual
+ * time, allowing checking for intermediate results, state changes or preparing the relevant
+ * context (global/captured object state) before executing the next set of tasks.
+ * <p>
+ * Tasks scheduled via {@link #scheduleDirect(Runnable)} or
+ * {@link Scheduler.Worker#schedule(Runnable)},
+ * with or without delay, won't be executed until the virtual time is moved forward
+ * via the {@link #advanceTimeBy} or {@link #advanceTimeTo} methods of this
+ * {@code TestScheduler}. Tasks scheduled without delay can be executed without
+ * moving the virtual time forward via the {@link #triggerActions} method.
+ * Note that these methods are not thread safe and only one thread should be
+ * allowed to call any of them at a time. Note also that these methods will only
+ * return control to the caller once all tasks scheduled up to the target virtual
+ * time have been executed.
+ * <p>
+ * All the standard {@code Scheduler} and {@link Scheduler.Worker} methods are thread safe.
+ * <p>
+ * Example:
+ * <pre><code>
+ * TestScheduler sch = new TestScheduler();
+ * AtomicLong offset = new AtomicLong();
+ *
+ * TestObserver<Long> to =
+ * Observable.interval(1, TimeUnit.HOURS, sch)
+ * .map(time -> offset.get() + time)
+ * .test();
+ *
+ * // the virtual time hasn't moved, no data should be present
+ * to.assertEmpty();
+ *
+ * // move time forward two hours
+ * // this won't actually wait two hours
+ * sch.advanceTimeBy(2, TimeUnit.HOURS);
+ *
+ * // we should have two values
+ * to.assertValues(0L, 1L);
+ *
+ * // change the offset value so future intervals are shifted
+ * offset.set(10L);
+ *
+ * // the scheduler has not moved its time, no new
+ * // values should emerge
+ * to.assertValues(0L, 1L);
+ *
+ * // move the time ahead again
+ * sch.advanceTimeBy(3, TimeUnit.HOURS);
+ *
+ * // more values should be received
+ * to.assertValues(0L, 1L, 12L, 13L, 14L);
+ *
+ * // we don't need further values, cleanup
+ * to.dispose();
+ * </code></pre>
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
