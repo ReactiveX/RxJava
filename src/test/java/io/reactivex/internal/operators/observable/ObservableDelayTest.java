@@ -33,6 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class ObservableDelayTest {
     private Observer<Long> observer;
@@ -976,5 +977,63 @@ public class ObservableDelayTest {
         })
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null ObservableSource");
+    }
+
+    @Test
+    public void delaySubscriptionWithRepeatWhen() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            Observable<Object> subscriptionSignal = Observable.merge(
+                    Observable.just(new Object()).delay(0, TimeUnit.MILLISECONDS),
+                    Observable.just(new Object()).delay(0, TimeUnit.MILLISECONDS)
+            );
+
+            final Subject<Boolean> boolStream = PublishSubject.<Boolean>create().toSerialized();
+
+            Observable<Boolean> brokenStream = boolStream
+                    .delaySubscription(subscriptionSignal)
+                    .takeUntil(new Predicate<Boolean>()  {
+                        @Override
+                        public boolean test(Boolean state) throws Exception {
+                            return state;
+                        }
+                    })
+                    .repeatWhen(new Function<Observable<Object>, ObservableSource<?>>() {
+                        @Override
+                        public ObservableSource<?> apply(Observable<Object> objectObservable) throws Exception {
+                            return boolStream.filter(new Predicate<Boolean>() {
+                                @Override
+                                public boolean test(Boolean state) throws Exception {
+                                    return !state;
+                                }
+                            });
+                        }
+                    });
+
+            final Random random = new Random();
+            for (int i = 0; i < 1000000; i++) {
+                final TestObserver<Boolean> testObserver = brokenStream.test();
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolStream.onNext(random.nextBoolean());
+                        testObserver
+                                .assertNoErrors()
+                                .dispose();
+                    }
+                });
+                if (!errors.isEmpty()) {
+                    fail("Uncaught fatal errors: " + errors);
+                }
+            }
+        } finally {
+            executor.shutdown();
+            try {
+                executor.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+            }
+        }
     }
 }
