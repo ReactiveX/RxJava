@@ -1171,7 +1171,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable andThen(CompletableSource next) {
-        return concatWith(next);
+        ObjectHelper.requireNonNull(next, "next is null");
+        return RxJavaPlugins.onAssembly(new CompletableAndThenCompletable(this, next));
     }
 
     /**
@@ -1356,8 +1357,8 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable concatWith(CompletableSource other) {
-        ObjectHelper.requireNonNull(other, "other is null");
-        return concatArray(this, other);
+        ObjectHelper.requireNonNull(other, "next is null");
+        return RxJavaPlugins.onAssembly(new CompletableAndThenCompletable(this, other));
     }
 
     /**
