@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -43,11 +44,11 @@ public class CompletableAndThenCompletableabTest {
     @Test
     public void andThenCompletableCompleteError() {
         Completable.complete()
-                .andThen(Completable.error(new RuntimeException("test")))
+                .andThen(Completable.error(new TestException("test")))
                 .test()
                 .assertNotComplete()
                 .assertNoValues()
-                .assertError(RuntimeException.class)
+                .assertError(TestException.class)
                 .assertErrorMessage("test");
     }
 
@@ -63,34 +64,34 @@ public class CompletableAndThenCompletableabTest {
 
     @Test
     public void andThenCompletableErrorComplete() {
-        Completable.error(new RuntimeException("bla"))
+        Completable.error(new TestException("bla"))
                 .andThen(Completable.complete())
                 .test()
                 .assertNotComplete()
                 .assertNoValues()
-                .assertError(RuntimeException.class)
+                .assertError(TestException.class)
                 .assertErrorMessage("bla");
     }
 
     @Test
     public void andThenCompletableErrorNever() {
-        Completable.error(new RuntimeException("bla"))
+        Completable.error(new TestException("bla"))
                 .andThen(Completable.never())
                 .test()
                 .assertNotComplete()
                 .assertNoValues()
-                .assertError(RuntimeException.class)
+                .assertError(TestException.class)
                 .assertErrorMessage("bla");
     }
 
     @Test
     public void andThenCompletableErrorError() {
-        Completable.error(new RuntimeException("error1"))
-                .andThen(Completable.error(new RuntimeException("error2")))
+        Completable.error(new TestException("error1"))
+                .andThen(Completable.error(new TestException("error2")))
                 .test()
                 .assertNotComplete()
                 .assertNoValues()
-                .assertError(RuntimeException.class)
+                .assertError(TestException.class)
                 .assertErrorMessage("error1");
     }
 
