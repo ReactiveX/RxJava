@@ -13617,7 +13617,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that mirrors the source ObservableSource but applies a timeout policy for each emitted
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
-     * the resulting ObservableSource begins instead to mirror a fallback ObservableSource.
+     * the source ObservableSource is disposed and resulting ObservableSource begins instead
+     * to mirror a fallback ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
      * <dl>
@@ -13644,7 +13645,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that mirrors the source ObservableSource but applies a timeout policy for each emitted
      * item using a specified Scheduler. If the next item isn't emitted within the specified timeout duration
-     * starting from its predecessor, the resulting ObservableSource begins instead to mirror a fallback ObservableSource.
+     * starting from its predecessor, the source ObservableSource is disposed and resulting ObservableSource
+     * begins instead to mirror a fallback ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * <dl>

@@ -16442,7 +16442,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that mirrors the source Publisher but applies a timeout policy for each emitted
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
-     * the resulting Publisher begins instead to mirror a fallback Publisher.
+     * the source Publisher is disposed and resulting Publisher begins instead to mirror a fallback Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
      * <dl>
@@ -16476,7 +16476,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that mirrors the source Publisher but applies a timeout policy for each emitted
      * item using a specified Scheduler. If the next item isn't emitted within the specified timeout duration
-     * starting from its predecessor, the resulting Publisher begins instead to mirror a fallback Publisher.
+     * starting from its predecessor, the source Publisher is disposed and resulting Publisher begins
+     * instead to mirror a fallback Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * <dl>
