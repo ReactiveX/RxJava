@@ -557,12 +557,20 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         InnerSubscriber<T>[] freshArray = subscribers.get();
                         if (subscribersChanged || freshArray != ps) {
                             ps = freshArray;
+
+                            // if we did emit at least one element, request more to replenish the queue
+                            if (d != 0) {
+                                if (sourceMode != QueueSubscription.SYNC) {
+                                    upstream.get().request(d);
+                                }
+                            }
+
                             continue outer;
                         }
                     }
 
                     // if we did emit at least one element, request more to replenish the queue
-                    if (d > 0) {
+                    if (d != 0) {
                         if (sourceMode != QueueSubscription.SYNC) {
                             upstream.get().request(d);
                         }
