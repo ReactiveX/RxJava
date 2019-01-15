@@ -4463,7 +4463,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Maybe that mirrors the source Maybe but applies a timeout policy for each emitted
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
-     * the resulting Maybe begins instead to mirror a fallback MaybeSource.
+     * the source MaybeSource is disposed and resulting Maybe begins instead to mirror a fallback MaybeSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
      * <dl>
@@ -4491,7 +4491,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Maybe that mirrors the source Maybe but applies a timeout policy for each emitted
      * item using a specified Scheduler. If the next item isn't emitted within the specified timeout duration
-     * starting from its predecessor, the resulting Maybe begins instead to mirror a fallback MaybeSource.
+     * starting from its predecessor, the source MaybeSource is disposed and resulting Maybe begins instead
+     * to mirror a fallback MaybeSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * <dl>
