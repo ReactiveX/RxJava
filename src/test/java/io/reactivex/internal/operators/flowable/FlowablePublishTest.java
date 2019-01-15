@@ -1368,4 +1368,134 @@ public class FlowablePublishTest {
     public void badRequest() {
         TestHelper.assertBadRequestReported(Flowable.range(1, 5).publish());
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void splitCombineSubscriberChangeAfterOnNext() {
+        Flowable<Integer> source = Flowable.range(0, 20)
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription v) throws Exception {
+                System.out.println("Subscribed");
+            }
+        })
+        .publish(10)
+        .refCount()
+        ;
+
+        Flowable<Integer> evenNumbers = source.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        });
+
+        Flowable<Integer> oddNumbers = source.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 != 0;
+            }
+        });
+
+        final Single<Integer> getNextOdd = oddNumbers.first(0);
+
+        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(new Function<Integer, Publisher<List<Integer>>>() {
+            @Override
+            public Publisher<List<Integer>> apply(Integer v) throws Exception {
+                return Single.zip(
+                        Single.just(v), getNextOdd,
+                        new BiFunction<Integer, Integer, List<Integer>>() {
+                            @Override
+                            public List<Integer> apply(Integer a, Integer b) throws Exception {
+                                return Arrays.asList( a, b );
+                            }
+                        }
+                )
+                .toFlowable();
+            }
+        })
+        .takeWhile(new Predicate<List<Integer>>() {
+            @Override
+            public boolean test(List<Integer> v) throws Exception {
+                return v.get(0) < 20;
+            }
+        })
+        .test();
+
+        ts
+        .assertResult(
+                Arrays.asList(0, 1),
+                Arrays.asList(2, 3),
+                Arrays.asList(4, 5),
+                Arrays.asList(6, 7),
+                Arrays.asList(8, 9),
+                Arrays.asList(10, 11),
+                Arrays.asList(12, 13),
+                Arrays.asList(14, 15),
+                Arrays.asList(16, 17),
+                Arrays.asList(18, 19)
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void splitCombineSubscriberChangeAfterOnNextFused() {
+        Flowable<Integer> source = Flowable.range(0, 20)
+        .publish(10)
+        .refCount()
+        ;
+
+        Flowable<Integer> evenNumbers = source.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        });
+
+        Flowable<Integer> oddNumbers = source.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 != 0;
+            }
+        });
+
+        final Single<Integer> getNextOdd = oddNumbers.first(0);
+
+        TestSubscriber<List<Integer>> ts = evenNumbers.concatMap(new Function<Integer, Publisher<List<Integer>>>() {
+            @Override
+            public Publisher<List<Integer>> apply(Integer v) throws Exception {
+                return Single.zip(
+                        Single.just(v), getNextOdd,
+                        new BiFunction<Integer, Integer, List<Integer>>() {
+                            @Override
+                            public List<Integer> apply(Integer a, Integer b) throws Exception {
+                                return Arrays.asList( a, b );
+                            }
+                        }
+                )
+                .toFlowable();
+            }
+        })
+        .takeWhile(new Predicate<List<Integer>>() {
+            @Override
+            public boolean test(List<Integer> v) throws Exception {
+                return v.get(0) < 20;
+            }
+        })
+        .test();
+
+        ts
+        .assertResult(
+                Arrays.asList(0, 1),
+                Arrays.asList(2, 3),
+                Arrays.asList(4, 5),
+                Arrays.asList(6, 7),
+                Arrays.asList(8, 9),
+                Arrays.asList(10, 11),
+                Arrays.asList(12, 13),
+                Arrays.asList(14, 15),
+                Arrays.asList(16, 17),
+                Arrays.asList(18, 19)
+        );
+    }
 }
