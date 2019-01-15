@@ -122,8 +122,7 @@ public abstract class ResourceCompletableObserver implements CompletableObserver
     }
 
     /**
-     * Returns true if this ResourceObserver has been disposed/cancelled.
-     * @return true if this ResourceObserver has been disposed/cancelled
+     * {@inheritDoc}
      */
     @Override
     public final boolean isDisposed() {

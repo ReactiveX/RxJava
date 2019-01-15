@@ -130,8 +130,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     }
 
     /**
-     * Returns true if this ResourceObserver has been disposed/cancelled.
-     * @return true if this ResourceObserver has been disposed/cancelled
+     * {@inheritDoc}
      */
     @Override
     public final boolean isDisposed() {

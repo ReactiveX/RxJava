@@ -22,8 +22,8 @@ public interface Disposable {
     void dispose();
 
     /**
-     * Returns true if this resource has been disposed.
-     * @return true if this resource has been disposed
+     * Returns true if this resource has been disposed/cancelled.
+     * @return true if this resource has been disposed/cancelled
      */
     boolean isDisposed();
 }
