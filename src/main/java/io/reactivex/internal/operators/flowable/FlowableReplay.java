@@ -566,6 +566,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 // the others had non-zero. By removing this 'blocking' child, the others
                 // are now free to receive events
                 parent.manageRequests();
+                // make sure the last known node is not retained
+                index = null;
             }
         }
         /**
@@ -824,6 +826,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             }
             for (;;) {
                 if (output.isDisposed()) {
+                    output.index = null;
                     return;
                 }
 
@@ -864,6 +867,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         break;
                     }
                     if (output.isDisposed()) {
+                        output.index = null;
                         return;
                     }
                 }
