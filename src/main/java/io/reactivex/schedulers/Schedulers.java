@@ -13,12 +13,12 @@
 
 package io.reactivex.schedulers;
 
+import java.util.concurrent.*;
+
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.concurrent.*;
 
 /**
  * Static factory methods for returning standard Scheduler instances.
@@ -299,6 +299,9 @@ public final class Schedulers {
      * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
      * before posting the actual task to the given executor.
      * <p>
+     * Tasks submitted to the {@link Scheduler.Worker} of this {@code Scheduler} are also not interruptible. Use the
+     * {@link #from(Executor, boolean)} overload to enable task interruption via this wrapper.
+     * <p>
      * If the provided executor supports the standard Java {@link ExecutorService} API,
      * cancelling tasks scheduled by this scheduler can be cancelled/interrupted by calling
      * {@link io.reactivex.disposables.Disposable#dispose()}. In addition, tasks scheduled with
@@ -329,7 +332,7 @@ public final class Schedulers {
      * }
      * </code></pre>
      * <p>
-     * This type of scheduler is less sensitive to leaking {@link io.reactivex.Scheduler.Worker} instances, although
+     * This type of scheduler is less sensitive to leaking {@link Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
      * execute those tasks "unexpectedly".
      * <p>
@@ -340,7 +343,67 @@ public final class Schedulers {
      */
     @NonNull
     public static Scheduler from(@NonNull Executor executor) {
-        return new ExecutorScheduler(executor);
+        return new ExecutorScheduler(executor, false);
+    }
+
+    /**
+     * Wraps an {@link Executor} into a new Scheduler instance and delegates {@code schedule()}
+     * calls to it.
+     * <p>
+     * The tasks scheduled by the returned {@link Scheduler} and its {@link Scheduler.Worker}
+     * can be optionally interrupted.
+     * <p>
+     * If the provided executor doesn't support any of the more specific standard Java executor
+     * APIs, tasks scheduled with a time delay or periodically will use the
+     * {@link #single()} scheduler for the timed waiting
+     * before posting the actual task to the given executor.
+     * <p>
+     * If the provided executor supports the standard Java {@link ExecutorService} API,
+     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * {@link io.reactivex.disposables.Disposable#dispose()}. In addition, tasks scheduled with
+     * a time delay or periodically will use the {@link #single()} scheduler for the timed waiting
+     * before posting the actual task to the given executor.
+     * <p>
+     * If the provided executor supports the standard Java {@link ScheduledExecutorService} API,
+     * canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+     * {@link io.reactivex.disposables.Disposable#dispose()}. In addition, tasks scheduled with
+     * a time delay or periodically will use the provided executor. Note, however, if the provided
+     * {@code ScheduledExecutorService} instance is not single threaded, tasks scheduled
+     * with a time delay close to each other may end up executing in different order than
+     * the original schedule() call was issued. This limitation may be lifted in a future patch.
+     * <p>
+     * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
+     * executor's lifecycle must be managed externally:
+     * <pre><code>
+     * ExecutorService exec = Executors.newSingleThreadedExecutor();
+     * try {
+     *     Scheduler scheduler = Schedulers.from(exec, true);
+     *     Flowable.just(1)
+     *        .subscribeOn(scheduler)
+     *        .map(v -&gt; v + 1)
+     *        .observeOn(scheduler)
+     *        .blockingSubscribe(System.out::println);
+     * } finally {
+     *     exec.shutdown();
+     * }
+     * </code></pre>
+     * <p>
+     * This type of scheduler is less sensitive to leaking {@link Scheduler.Worker} instances, although
+     * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
+     * execute those tasks "unexpectedly".
+     * <p>
+     * Note that this method returns a new {@link Scheduler} instance, even for the same {@link Executor} instance.
+     * @param executor
+     *          the executor to wrap
+     * @param interruptibleWorker if {@code true} the tasks submitted to the {@link Scheduler.Worker} will
+     * be interrupted when the task is disposed.
+     * @return the new Scheduler wrapping the Executor
+     * @since 2.2.6 - experimental
+     */
+    @NonNull
+    @Experimental
+    public static Scheduler from(@NonNull Executor executor, boolean interruptibleWorker) {
+        return new ExecutorScheduler(executor, interruptibleWorker);
     }
 
     /**

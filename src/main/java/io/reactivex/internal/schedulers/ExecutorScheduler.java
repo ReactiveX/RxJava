@@ -22,7 +22,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.BooleanRunnable;
+import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 
@@ -31,19 +31,22 @@ import io.reactivex.schedulers.*;
  */
 public final class ExecutorScheduler extends Scheduler {
 
+    final boolean interruptibleWorker;
+
     @NonNull
     final Executor executor;
 
     static final Scheduler HELPER = Schedulers.single();
 
-    public ExecutorScheduler(@NonNull Executor executor) {
+    public ExecutorScheduler(@NonNull Executor executor, boolean interruptibleWorker) {
         this.executor = executor;
+        this.interruptibleWorker = interruptibleWorker;
     }
 
     @NonNull
     @Override
     public Worker createWorker() {
-        return new ExecutorWorker(executor);
+        return new ExecutorWorker(executor, interruptibleWorker);
     }
 
     @NonNull
@@ -58,9 +61,15 @@ public final class ExecutorScheduler extends Scheduler {
                 return task;
             }
 
-            BooleanRunnable br = new BooleanRunnable(decoratedRun);
-            executor.execute(br);
-            return br;
+            if (interruptibleWorker) {
+                InterruptibleRunnable interruptibleTask = new InterruptibleRunnable(decoratedRun, null);
+                executor.execute(interruptibleTask);
+                return interruptibleTask;
+            } else {
+                BooleanRunnable br = new BooleanRunnable(decoratedRun);
+                executor.execute(br);
+                return br;
+            }
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -111,6 +120,9 @@ public final class ExecutorScheduler extends Scheduler {
     }
     /* public: test support. */
     public static final class ExecutorWorker extends Scheduler.Worker implements Runnable {
+
+        final boolean interruptibleWorker;
+
         final Executor executor;
 
         final MpscLinkedQueue<Runnable> queue;
@@ -121,9 +133,10 @@ public final class ExecutorScheduler extends Scheduler {
 
         final CompositeDisposable tasks = new CompositeDisposable();
 
-        public ExecutorWorker(Executor executor) {
+        public ExecutorWorker(Executor executor, boolean interruptibleWorker) {
             this.executor = executor;
             this.queue = new MpscLinkedQueue<Runnable>();
+            this.interruptibleWorker = interruptibleWorker;
         }
 
         @NonNull
@@ -134,9 +147,24 @@ public final class ExecutorScheduler extends Scheduler {
             }
 
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-            BooleanRunnable br = new BooleanRunnable(decoratedRun);
 
-            queue.offer(br);
+            Runnable task;
+            Disposable disposable;
+
+            if (interruptibleWorker) {
+                InterruptibleRunnable interruptibleTask = new InterruptibleRunnable(decoratedRun, tasks);
+                tasks.add(interruptibleTask);
+
+                task = interruptibleTask;
+                disposable = interruptibleTask;
+            } else {
+                BooleanRunnable runnableTask = new BooleanRunnable(decoratedRun);
+
+                task = runnableTask;
+                disposable = runnableTask;
+            }
+
+            queue.offer(task);
 
             if (wip.getAndIncrement() == 0) {
                 try {
@@ -149,7 +177,7 @@ public final class ExecutorScheduler extends Scheduler {
                 }
             }
 
-            return br;
+            return disposable;
         }
 
         @NonNull
@@ -286,6 +314,97 @@ public final class ExecutorScheduler extends Scheduler {
             @Override
             public void run() {
                 mar.replace(schedule(decoratedRun));
+            }
+        }
+
+        /**
+         * Wrapper for a {@link Runnable} with additional logic for handling interruption on
+         * a shared thread, similar to how Java Executors do it.
+         */
+        static final class InterruptibleRunnable extends AtomicInteger implements Runnable, Disposable {
+
+            private static final long serialVersionUID = -3603436687413320876L;
+
+            final Runnable run;
+
+            final DisposableContainer tasks;
+
+            volatile Thread thread;
+
+            static final int READY = 0;
+
+            static final int RUNNING = 1;
+
+            static final int FINISHED = 2;
+
+            static final int INTERRUPTING = 3;
+
+            static final int INTERRUPTED = 4;
+
+            InterruptibleRunnable(Runnable run, DisposableContainer tasks) {
+                this.run = run;
+                this.tasks = tasks;
+            }
+
+            @Override
+            public void run() {
+                if (get() == READY) {
+                    thread = Thread.currentThread();
+                    if (compareAndSet(READY, RUNNING)) {
+                        try {
+                            run.run();
+                        } finally {
+                            thread = null;
+                            if (compareAndSet(RUNNING, FINISHED)) {
+                                cleanup();
+                            } else {
+                                while (get() == INTERRUPTING) {
+                                    Thread.yield();
+                                }
+                                Thread.interrupted();
+                            }
+                        }
+                    } else {
+                        thread = null;
+                    }
+                }
+            }
+
+            @Override
+            public void dispose() {
+                for (;;) {
+                    int state = get();
+                    if (state >= FINISHED) {
+                        break;
+                    } else if (state == READY) {
+                        if (compareAndSet(READY, INTERRUPTED)) {
+                            cleanup();
+                            break;
+                        }
+                    } else {
+                        if (compareAndSet(RUNNING, INTERRUPTING)) {
+                            Thread t = thread;
+                            if (t != null) {
+                                t.interrupt();
+                                thread = null;
+                            }
+                            set(INTERRUPTED);
+                            cleanup();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            void cleanup() {
+                if (tasks != null) {
+                    tasks.delete(this);
+                }
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return get() >= FINISHED;
             }
         }
     }
