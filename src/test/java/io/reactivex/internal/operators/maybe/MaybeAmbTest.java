@@ -30,6 +30,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.*;
 
 public class MaybeAmbTest {
 
@@ -211,6 +212,45 @@ public class MaybeAmbTest {
 
             assertTrue(cdl.await(500, TimeUnit.SECONDS));
             assertFalse("Interrupted!", interrupted.get());
+        }
+    }
+
+    @Test
+    public void nullSourceSuccessRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+
+                final Subject<Integer> ps = ReplaySubject.create();
+                ps.onNext(1);
+
+                @SuppressWarnings("unchecked")
+                final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
+                        Maybe.<Integer>never(), Maybe.<Integer>never(), null);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        source.test();
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, NullPointerException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
         }
     }
 }
