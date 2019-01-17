@@ -59,21 +59,21 @@ public final class SingleAmb<T> extends Single<T> {
             count = sources.length;
         }
 
+        final AtomicBoolean winner = new AtomicBoolean();
         final CompositeDisposable set = new CompositeDisposable();
 
-        AmbSingleObserver<T> shared = new AmbSingleObserver<T>(observer, set);
         observer.onSubscribe(set);
 
         for (int i = 0; i < count; i++) {
             SingleSource<? extends T> s1 = sources[i];
-            if (shared.get()) {
+            if (set.isDisposed()) {
                 return;
             }
 
             if (s1 == null) {
                 set.dispose();
                 Throwable e = new NullPointerException("One of the sources is null");
-                if (shared.compareAndSet(false, true)) {
+                if (winner.compareAndSet(false, true)) {
                     observer.onError(e);
                 } else {
                     RxJavaPlugins.onError(e);
@@ -81,31 +81,36 @@ public final class SingleAmb<T> extends Single<T> {
                 return;
             }
 
-            s1.subscribe(shared);
+            s1.subscribe(new AmbSingleObserver<T>(observer, set, winner));
         }
     }
 
-    static final class AmbSingleObserver<T> extends AtomicBoolean implements SingleObserver<T> {
-
-        private static final long serialVersionUID = -1944085461036028108L;
+    static final class AmbSingleObserver<T> implements SingleObserver<T> {
 
         final CompositeDisposable set;
 
         final SingleObserver<? super T> downstream;
 
-        AmbSingleObserver(SingleObserver<? super T> observer, CompositeDisposable set) {
+        final AtomicBoolean winner;
+
+        Disposable upstream;
+
+        AmbSingleObserver(SingleObserver<? super T> observer, CompositeDisposable set, AtomicBoolean winner) {
             this.downstream = observer;
             this.set = set;
+            this.winner = winner;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
+            this.upstream = d;
             set.add(d);
         }
 
         @Override
         public void onSuccess(T value) {
-            if (compareAndSet(false, true)) {
+            if (winner.compareAndSet(false, true)) {
+                set.delete(upstream);
                 set.dispose();
                 downstream.onSuccess(value);
             }
@@ -113,7 +118,8 @@ public final class SingleAmb<T> extends Single<T> {
 
         @Override
         public void onError(Throwable e) {
-            if (compareAndSet(false, true)) {
+            if (winner.compareAndSet(false, true)) {
+                set.delete(upstream);
                 set.dispose();
                 downstream.onError(e);
             } else {

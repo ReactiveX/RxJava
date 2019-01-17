@@ -19,8 +19,8 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -30,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -712,5 +713,84 @@ public class FlowableAmbTest {
     public void ambArrayOrder() {
         Flowable<Integer> error = Flowable.error(new RuntimeException());
         Flowable.ambArray(Flowable.just(1), error).test().assertValue(1).assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noWinnerSuccessDispose() throws Exception {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable.ambArray(
+                Flowable.just(1)
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Flowable.never()
+            )
+            .subscribe(new Consumer<Object>() {
+                @Override
+                public void accept(Object v) throws Exception {
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noWinnerErrorDispose() throws Exception {
+        final TestException ex = new TestException();
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable.ambArray(
+                Flowable.error(ex)
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Flowable.never()
+            )
+            .subscribe(Functions.emptyConsumer(), new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) throws Exception {
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noWinnerCompleteDispose() throws Exception {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable.ambArray(
+                Flowable.empty()
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Flowable.never()
+            )
+            .subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
+                @Override
+                public void run() throws Exception {
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
     }
 }
