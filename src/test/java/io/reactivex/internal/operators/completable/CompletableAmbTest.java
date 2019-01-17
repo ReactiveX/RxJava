@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -23,10 +24,13 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.completable.CompletableAmb.Amb;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 
 public class CompletableAmbTest {
@@ -173,6 +177,7 @@ public class CompletableAmbTest {
         CompositeDisposable cd = new CompositeDisposable();
         AtomicBoolean once = new AtomicBoolean();
         Amb a = new Amb(once, cd, to);
+        a.onSubscribe(Disposables.empty());
 
         a.onComplete();
         a.onComplete();
@@ -259,4 +264,54 @@ public class CompletableAmbTest {
         to.assertFailure(TestException.class);
     }
 
+    @Test
+    public void noWinnerErrorDispose() throws Exception {
+        final TestException ex = new TestException();
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Completable.ambArray(
+                    Completable.error(ex)
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                    Completable.never()
+            )
+            .subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) throws Exception {
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
+    }
+
+    @Test
+    public void noWinnerCompleteDispose() throws Exception {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Completable.ambArray(
+                Completable.complete()
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Completable.never()
+            )
+            .subscribe(new Action() {
+                @Override
+                public void run() throws Exception {
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
+    }
 }

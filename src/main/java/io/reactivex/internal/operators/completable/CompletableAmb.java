@@ -63,8 +63,6 @@ public final class CompletableAmb extends Completable {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        CompletableObserver inner = new Amb(once, set, observer);
-
         for (int i = 0; i < count; i++) {
             CompletableSource c = sources[i];
             if (set.isDisposed()) {
@@ -82,7 +80,7 @@ public final class CompletableAmb extends Completable {
             }
 
             // no need to have separate subscribers because inner is stateless
-            c.subscribe(inner);
+            c.subscribe(new Amb(once, set, observer));
         }
 
         if (count == 0) {
@@ -91,9 +89,14 @@ public final class CompletableAmb extends Completable {
     }
 
     static final class Amb implements CompletableObserver {
-        private final AtomicBoolean once;
-        private final CompositeDisposable set;
-        private final CompletableObserver downstream;
+
+        final AtomicBoolean once;
+
+        final CompositeDisposable set;
+
+        final CompletableObserver downstream;
+
+        Disposable upstream;
 
         Amb(AtomicBoolean once, CompositeDisposable set, CompletableObserver observer) {
             this.once = once;
@@ -104,6 +107,7 @@ public final class CompletableAmb extends Completable {
         @Override
         public void onComplete() {
             if (once.compareAndSet(false, true)) {
+                set.delete(upstream);
                 set.dispose();
                 downstream.onComplete();
             }
@@ -112,6 +116,7 @@ public final class CompletableAmb extends Completable {
         @Override
         public void onError(Throwable e) {
             if (once.compareAndSet(false, true)) {
+                set.delete(upstream);
                 set.dispose();
                 downstream.onError(e);
             } else {
@@ -121,8 +126,8 @@ public final class CompletableAmb extends Completable {
 
         @Override
         public void onSubscribe(Disposable d) {
+            upstream = d;
             set.add(d);
         }
-
     }
 }

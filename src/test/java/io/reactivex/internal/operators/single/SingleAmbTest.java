@@ -16,14 +16,18 @@ package io.reactivex.internal.operators.single;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 
 public class SingleAmbTest {
@@ -279,5 +283,62 @@ public class SingleAmbTest {
     public void ambArrayOrder() {
         Single<Integer> error = Single.error(new RuntimeException());
         Single.ambArray(Single.just(1), error).test().assertValue(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noWinnerSuccessDispose() throws Exception {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Single.ambArray(
+                Single.just(1)
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Single.never()
+            )
+            .subscribe(new BiConsumer<Object, Throwable>() {
+                @Override
+                public void accept(Object v, Throwable e) throws Exception {
+                    assertNotNull(v);
+                    assertNull(e);
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noWinnerErrorDispose() throws Exception {
+        final TestException ex = new TestException();
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Single.ambArray(
+                Single.error(ex)
+                    .subscribeOn(Schedulers.single())
+                    .observeOn(Schedulers.computation()),
+                Single.never()
+            )
+            .subscribe(new BiConsumer<Object, Throwable>() {
+                @Override
+                public void accept(Object v, Throwable e) throws Exception {
+                    assertNull(v);
+                    assertNotNull(e);
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                    cdl.countDown();
+                }
+            });
+
+            assertTrue(cdl.await(500, TimeUnit.SECONDS));
+            assertFalse("Interrupted!", interrupted.get());
+        }
     }
 }
