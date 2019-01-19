@@ -7297,6 +7297,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * source ObservableSource that are followed by another item within a computed debounce duration.
      * <p>
      * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.f.png" alt="">
+     * <p>
+     * The delivery of the item happens on the thread of the first {@code onNext} or {@code onComplete}
+     * signal of the generated {@code ObservableSource} sequence,
+     * which if takes too long, a newer item may arrive from the upstream, causing the
+     * generated sequence to get disposed, which may also interrupt any downstream blocking operation
+     * (yielding an {@code InterruptedException}). It is recommended processing items
+     * that may take long time to be moved to another thread via {@link #observeOn} applied after
+     * {@code debounce} itself.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7326,6 +7334,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
+     * <p>
+     * Delivery of the item after the grace period happens on the {@code computation} {@code Scheduler}'s
+     * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
+     * {@code Worker}'s task to get disposed, which may also interrupt any downstream blocking operation
+     * (yielding an {@code InterruptedException}). It is recommended processing items
+     * that may take long time to be moved to another thread via {@link #observeOn} applied after
+     * {@code debounce} itself.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -7357,6 +7372,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
+     * <p>
+     * Delivery of the item after the grace period happens on the given {@code Scheduler}'s
+     * {@code Worker} which if takes too long, a newer item may arrive from the upstream, causing the
+     * {@code Worker}'s task to get disposed, which may also interrupt any downstream blocking operation
+     * (yielding an {@code InterruptedException}). It is recommended processing items
+     * that may take long time to be moved to another thread via {@link #observeOn} applied after
+     * {@code debounce} itself.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
