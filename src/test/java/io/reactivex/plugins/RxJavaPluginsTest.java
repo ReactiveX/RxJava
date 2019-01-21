@@ -2247,4 +2247,66 @@ public class RxJavaPluginsTest {
         assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
     }
+
+    @Test
+    public void defaultOnUncaughtHandler() {
+        UncaughtExceptionHandler original = Thread.currentThread().getUncaughtExceptionHandler();
+        try {
+            final AtomicReference<Throwable> holder = new AtomicReference<Throwable>();
+            UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
+                @Override public void uncaughtException(Thread t, Throwable e) {
+                    holder.compareAndSet(null, e);
+                }
+            };
+            Thread.setDefaultUncaughtExceptionHandler(handler);
+            RuntimeException expected = new RuntimeException("Test");
+            RxJavaPlugins.uncaught(expected);
+            assertSame(holder.get(), expected);
+        } finally {
+            Thread.currentThread().setUncaughtExceptionHandler(original);
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void customOnUncaughtHandler() {
+        try {
+            RxJavaPlugins.setOnUncaughtHandler(new ThrowablePermittingConsumer<Throwable>() {
+                @Override public void accept(Throwable throwable) throws Throwable {
+                    throw throwable;
+                }
+            });
+            RuntimeException expected = new RuntimeException("Test");
+            try {
+                RxJavaPlugins.uncaught(expected);
+                fail("Should not reach here!");
+            } catch (RuntimeException caught) {
+                assertSame(caught, expected);
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onErrorHandler_supersedesUncaughtHandler() {
+        try {
+            RxJavaPlugins.setOnUncaughtHandler(new ThrowablePermittingConsumer<Throwable>() {
+                @Override public void accept(Throwable throwable) throws Throwable {
+                    throw throwable;
+                }
+            });
+            final AtomicReference<Throwable> errorHandlerHolder = new AtomicReference<Throwable>();
+            RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+                @Override public void accept(Throwable throwable) {
+                    errorHandlerHolder.compareAndSet(null, throwable);
+                }
+            });
+            OnErrorNotImplementedException expected = new OnErrorNotImplementedException(new RuntimeException("Test"));
+            RxJavaPlugins.onError(expected);
+            assertSame(errorHandlerHolder.get(), expected);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

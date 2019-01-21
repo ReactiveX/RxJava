@@ -36,6 +36,9 @@ public final class RxJavaPlugins {
     static volatile Consumer<? super Throwable> errorHandler;
 
     @Nullable
+    static volatile ThrowablePermittingConsumer<? super Throwable> onUncaughtHandler;
+
+    @Nullable
     static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
 
     @Nullable
@@ -184,6 +187,15 @@ public final class RxJavaPlugins {
     @Nullable
     public static Consumer<? super Throwable> getErrorHandler() {
         return errorHandler;
+    }
+
+    /**
+     * Returns the a hook consumer.
+     * @return the hook consumer, may be null
+     */
+    @Nullable
+    public static ThrowablePermittingConsumer<? super Throwable> getOnUncaughtHandler() {
+        return onUncaughtHandler;
     }
 
     /**
@@ -424,9 +436,28 @@ public final class RxJavaPlugins {
     }
 
     static void uncaught(@NonNull Throwable error) {
-        Thread currentThread = Thread.currentThread();
-        UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
-        handler.uncaughtException(currentThread, error);
+        ThrowablePermittingConsumer<? super Throwable> f = onUncaughtHandler;
+        if (f == null) {
+            Thread currentThread = Thread.currentThread();
+            UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
+            handler.uncaughtException(currentThread, error);
+        } else {
+            try {
+                f.accept(error);
+            } catch (Throwable e) {
+                RxJavaPlugins.<Error>sneakyThrow(e);
+            }
+        }
+    }
+
+    /**
+     * Throws {@code t}, even if the declared throws clause doesn't permit it.
+     * This is a terrible – but terribly convenient – hack that makes it easy to
+     * catch and rethrow exceptions after cleanup. See Java Puzzlers #43.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
 
     /**
@@ -550,6 +581,18 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         errorHandler = handler;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
+    public static void setOnUncaughtHandler(@Nullable
+        ThrowablePermittingConsumer<? super Throwable> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onUncaughtHandler = handler;
     }
 
     /**
