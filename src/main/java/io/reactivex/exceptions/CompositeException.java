@@ -280,7 +280,7 @@ public final class CompositeException extends RuntimeException {
      */
     /*private */Throwable getRootCause(Throwable e) {
         Throwable root = e.getCause();
-        if (root == null || cause == root) {
+        if (root == null || e == root) {
             return e;
         }
         while (true) {
