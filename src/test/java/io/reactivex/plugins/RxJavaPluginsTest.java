@@ -218,6 +218,11 @@ public class RxJavaPluginsTest {
                     return null;
                 }
             };
+            ThrowablePermittingConsumer tpc = new ThrowablePermittingConsumer() {
+                @Override public void accept(Object o) {
+
+                }
+            };
             Function f1 = Functions.identity();
             BiFunction f2 = new BiFunction() {
                 @Override
@@ -263,6 +268,9 @@ public class RxJavaPluginsTest {
                         } else
                         if (paramType.isAssignableFrom(BooleanSupplier.class)) {
                             m.invoke(null, bs);
+                        } else
+                        if (paramType.isAssignableFrom(ThrowablePermittingConsumer.class)) {
+                            m.invoke(null, tpc);
                         } else {
                             m.invoke(null, f2);
                         }

@@ -523,6 +523,7 @@ public final class RxJavaPlugins {
      */
     public static void reset() {
         setErrorHandler(null);
+        setOnUncaughtHandler(null);
         setScheduleHandler(null);
 
         setComputationSchedulerHandler(null);
