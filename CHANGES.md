@@ -2,6 +2,29 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.6 - January 23, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.6%7C))
+
+#### API enhancements
+
+  - [Pull 6370](https://github.com/ReactiveX/RxJava/pull/6370): Add interruptible mode via the new `Schedulers.from(Executor, boolean)` overload.
+
+#### Bugfixes
+
+  - [Pull 6359](https://github.com/ReactiveX/RxJava/pull/6359): Fix the error/race in `Observable.repeatWhen` due to flooding repeat signal.
+  - [Pull 6362 ](https://github.com/ReactiveX/RxJava/pull/6362 ): Fix `Completable.andThen(Completable)` not running on `observeOn`'s `Scheduler`.
+  - [Pull 6364](https://github.com/ReactiveX/RxJava/pull/6364): Fix `Flowable.publish` not requesting upon client change.
+  - [Pull 6371](https://github.com/ReactiveX/RxJava/pull/6371): Fix bounded `replay()` memory leak due to bad node retention.
+  - [Pull 6375](https://github.com/ReactiveX/RxJava/pull/6375): Don't dispose the winner of `{Single|Maybe|Completable}.amb()`.
+  - [Pull 6380](https://github.com/ReactiveX/RxJava/pull/6380): Fix `CompositeException.getRootCause()` detecting loops in the cause graph.
+
+#### Documentation changes
+
+  - [Pull 6365](https://github.com/ReactiveX/RxJava/pull/6365): Indicate source disposal in `timeout(fallback)`.
+
+#### Other changes
+
+  - [Pull 6353](https://github.com/ReactiveX/RxJava/pull/6353): Use `ignoreElement` to convert `Single` to `Completable` in the `README.md`.
+  
 ### Version 2.2.5 - December 31, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.5%7C))
 
 #### Documentation changes
