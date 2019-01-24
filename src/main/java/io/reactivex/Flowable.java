@@ -2409,6 +2409,56 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Returns a Flowable that emits items until a global timeout time has passed after
+     * subscription.
+     * <p>
+     * If the Flowable is not completed within the defined time frame, the resulting Flowable
+     * terminates and the observer(s) will be notified with a {@link TimeoutException}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code globalTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            duration until a {@link TimeoutException} occurs.
+     * @param timeUnit
+     *            the unit of time that applies to the {@code timeout} argument.
+     * @return the new Flowable instance
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public Flowable<T> globalTimeout(long timeout, TimeUnit timeUnit) {
+        return takeUntil(Flowable.never().timeout(timeout, timeUnit));
+    }
+
+
+    /**
+     * Returns a Flowable that emits items until a global timeout time has passed after
+     * subscription.
+     * <p>
+     * If the Flowable is not completed within the defined time frame, the resulting Flowable
+     * terminates and the observer(s) will be notified with a {@link TimeoutException}.
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param timeout
+     *            duration until a {@link TimeoutException} occurs.
+     * @param timeUnit
+     *            the unit of time that applies to the {@code timeout} argument.
+     * @param scheduler
+     *            the {@link Scheduler} to run the timeout timers on
+     * @return the new Flowable instance
+     */
+    public Flowable<T> globalTimeout(long timeout, TimeUnit timeUnit, Scheduler scheduler) {
+        return takeUntil(Flowable.never().timeout(timeout, timeUnit, scheduler));
+    }
+
+    /**
      * Returns a Flowable that emits a {@code 0L} after the {@code initialDelay} and ever-increasing numbers
      * after each {@code period} of time thereafter.
      * <p>

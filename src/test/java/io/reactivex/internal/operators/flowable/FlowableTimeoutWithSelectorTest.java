@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.schedulers.TestScheduler;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -892,5 +893,20 @@ public class FlowableTimeoutWithSelectorTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void testGlobalTimeoutOnFlowable() {
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber t = Flowable
+            .interval(0, 1, TimeUnit.SECONDS, sched)
+            .globalTimeout(3, TimeUnit.SECONDS, sched)
+            .test();
+
+        sched.advanceTimeBy(2100, TimeUnit.MILLISECONDS);
+        t.assertValueCount(3);
+
+        sched.advanceTimeBy(1, TimeUnit.SECONDS);
+        t.assertError(TimeoutException.class);
     }
 }
