@@ -2893,6 +2893,33 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a Maybe instance that calls the given onTerminate callback
+     * just before this Maybe completes normally or with an exception.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+     * <p>
+     * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
+     * {@code onError} notification.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onTerminate the action to invoke when the consumer calls {@code onComplete} or {@code onError}
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @see #doOnTerminate(Action)
+     * @since 2.2.7 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> doOnTerminate(final Action onTerminate) {
+        ObjectHelper.requireNonNull(onTerminate, "onTerminate is null");
+        return RxJavaPlugins.onAssembly(new MaybeDoOnTerminate<T>(this, onTerminate));
+    }
+
+    /**
      * Calls the shared consumer with the success value sent via onSuccess for each
      * MaybeObserver that subscribes to the current Maybe.
      * <p>
