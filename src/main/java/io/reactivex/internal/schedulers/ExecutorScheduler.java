@@ -270,6 +270,13 @@ public final class ExecutorScheduler extends Scheduler {
             }
         }
 
+        public boolean hasTasks() {
+            if (tasks == null || tasks.size() == 0) {
+                return false;
+            }
+            return true;
+        }
+
         static final class BooleanRunnable extends AtomicBoolean implements Runnable, Disposable {
 
             private static final long serialVersionUID = -2421395018820541164L;

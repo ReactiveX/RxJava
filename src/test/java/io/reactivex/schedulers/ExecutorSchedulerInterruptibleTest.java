@@ -15,6 +15,7 @@ package io.reactivex.schedulers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker;
 import java.lang.management.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -227,74 +228,59 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         assertEquals(0, calls.get());
     }
 
-    // FIXME the internal structure changed and these can't be tested
-//
-//    @Test
-//    public void testNoTimedTaskAfterScheduleRetention() throws InterruptedException {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//                command.run();
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        w.schedule(Functions.emptyRunnable(), 50, TimeUnit.MILLISECONDS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        Thread.sleep(150);
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
-//
-//    @Test
-//    public void testNoTimedTaskPartRetention() {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        Disposable task = w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        task.dispose();
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
-//
-//    @Test
-//    public void testNoPeriodicTimedTaskPartRetention() throws InterruptedException {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//                command.run();
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        final CountDownLatch cdl = new CountDownLatch(1);
-//        final Runnable action = new Runnable() {
-//            @Override
-//            public void run() {
-//                cdl.countDown();
-//            }
-//        };
-//
-//        Disposable task = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        cdl.await();
-//
-//        task.dispose();
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
+    @Test
+    public void testNoTimedTaskAfterScheduleRetention() throws InterruptedException {
+        Executor e = new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
+        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
+        w.schedule(Functions.EMPTY_RUNNABLE, 50, TimeUnit.MILLISECONDS);
+        assertTrue(w.hasTasks());
+        Thread.sleep(150);
+        assertFalse(w.hasTasks());
+    }
+
+    @Test
+    public void testNoTimedTaskPartRetention() {
+        Executor e = new Executor() {
+            @Override
+            public void execute(Runnable command) {
+
+            }
+        };
+        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
+        Disposable task = w.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.DAYS);
+        assertTrue(w.hasTasks());
+        task.dispose();
+        assertFalse(w.hasTasks());
+    }
+
+    @Test
+    public void testNoPeriodicTimedTaskPartRetention() throws InterruptedException {
+        Executor e = new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
+        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final Runnable action = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        Disposable task = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+        assertTrue(w.hasTasks());
+        cdl.await();
+        task.dispose();
+        assertFalse(w.hasTasks());
+    }
 
     @Test
     public void plainExecutor() throws Exception {
