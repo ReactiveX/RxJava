@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.*;
 
@@ -256,8 +257,8 @@ public class ObservableWindowWithStartEndObservableTest {
 
         to.dispose();
 
-        // FIXME subject has subscribers because of the open window
-        assertTrue(open.hasObservers());
+        // Disposing the outer sequence stops the opening of new windows
+        assertFalse(open.hasObservers());
         // FIXME subject has subscribers because of the open window
         assertTrue(close.hasObservers());
     }
@@ -422,5 +423,39 @@ public class ObservableWindowWithStartEndObservableTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    static Observable<Integer> observableDisposed(final AtomicBoolean ref) {
+        return Observable.just(1).concatWith(Observable.<Integer>never())
+                .doOnDispose(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        ref.set(true);
+                    }
+                });
+    }
+
+    @Test
+    public void mainAndBoundaryDisposeOnNoWindows() {
+        AtomicBoolean mainDisposed = new AtomicBoolean();
+        AtomicBoolean openDisposed = new AtomicBoolean();
+        final AtomicBoolean closeDisposed = new AtomicBoolean();
+
+        observableDisposed(mainDisposed)
+        .window(observableDisposed(openDisposed), new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return observableDisposed(closeDisposed);
+            }
+        })
+        .test()
+        .assertSubscribed()
+        .assertNoErrors()
+        .assertNotComplete()
+        .dispose();
+
+        assertTrue(mainDisposed.get());
+        assertTrue(openDisposed.get());
+        assertTrue(closeDisposed.get());
     }
 }

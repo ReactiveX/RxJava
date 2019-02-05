@@ -69,6 +69,8 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         final AtomicLong windows = new AtomicLong();
 
+        final AtomicBoolean stopWindows = new AtomicBoolean();
+
         WindowBoundaryMainObserver(Observer<? super Observable<T>> actual,
                                             ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
@@ -87,14 +89,13 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
                 downstream.onSubscribe(this);
 
-                if (cancelled) {
+                if (stopWindows.get()) {
                     return;
                 }
 
                 OperatorWindowBoundaryOpenObserver<T, B> os = new OperatorWindowBoundaryOpenObserver<T, B>(this);
 
                 if (boundary.compareAndSet(null, os)) {
-                    windows.getAndIncrement();
                     open.subscribe(os);
                 }
             }
@@ -164,12 +165,17 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         @Override
         public void dispose() {
-            cancelled = true;
+            if (stopWindows.compareAndSet(false, true)) {
+                DisposableHelper.dispose(boundary);
+                if (windows.decrementAndGet() == 0) {
+                    upstream.dispose();
+                }
+            }
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return stopWindows.get();
         }
 
         void disposeBoundary() {
@@ -229,7 +235,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                             continue;
                         }
 
-                        if (cancelled) {
+                        if (stopWindows.get()) {
                             continue;
                         }
 
@@ -244,7 +250,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                             p = ObjectHelper.requireNonNull(close.apply(wo.open), "The ObservableSource supplied is null");
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
-                            cancelled = true;
+                            stopWindows.set(true);
                             a.onError(e);
                             continue;
                         }
