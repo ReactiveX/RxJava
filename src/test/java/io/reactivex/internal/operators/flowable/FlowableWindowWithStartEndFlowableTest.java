@@ -23,7 +23,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -464,5 +464,25 @@ public class FlowableWindowWithStartEndFlowableTest {
         assertTrue(mainDisposed.get());
         assertTrue(openDisposed.get());
         assertTrue(closeDisposed.get());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void mainWindowMissingBackpressure() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> boundary = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = source.window(boundary, Functions.justFunction(Flowable.never()))
+        .test(0L)
+        ;
+
+        ts.assertEmpty();
+
+        boundary.onNext(1);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        assertFalse(source.hasSubscribers());
+        assertFalse(boundary.hasSubscribers());
     }
 }

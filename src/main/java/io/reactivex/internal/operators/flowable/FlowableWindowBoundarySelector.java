@@ -256,7 +256,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                                 produced(1);
                             }
                         } else {
-                            stopWindows.set(true);
+                            cancel();
                             a.onError(new MissingBackpressureException("Could not deliver new window due to lack of requests"));
                             continue;
                         }
@@ -266,7 +266,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                         try {
                             p = ObjectHelper.requireNonNull(close.apply(wo.open), "The publisher supplied is null");
                         } catch (Throwable e) {
-                            stopWindows.set(true);
+                            cancel();
                             a.onError(e);
                             continue;
                         }
