@@ -1141,4 +1141,37 @@ public class ObservableConcatMapEagerTest {
 
         to.assertFailure(TestException.class, 1, 2);
     }
+
+    @Test
+    public void cancelActive() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable
+                .concatEager(Observable.just(ps1, ps2))
+                .test();
+
+        assertTrue(ps1.hasObservers());
+        assertTrue(ps2.hasObservers());
+
+        to.dispose();
+
+        assertFalse(ps1.hasObservers());
+        assertFalse(ps2.hasObservers());
+    }
+
+    @Test
+    public void cancelNoInnerYet() {
+        PublishSubject<Observable<Integer>> ps1 = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable
+                .concatEager(ps1)
+                .test();
+
+        assertTrue(ps1.hasObservers());
+
+        to.dispose();
+
+        assertFalse(ps1.hasObservers());
+    }
 }
