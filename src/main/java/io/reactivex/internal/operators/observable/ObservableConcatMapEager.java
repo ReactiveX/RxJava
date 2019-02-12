@@ -162,10 +162,21 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void dispose() {
+            if (cancelled) {
+                return;
+            }
             cancelled = true;
+            upstream.dispose();
+
+            drainAndDispose();
+        }
+
+        void drainAndDispose() {
             if (getAndIncrement() == 0) {
-                queue.clear();
-                disposeAll();
+                do {
+                    queue.clear();
+                    disposeAll();
+                } while (decrementAndGet() != 0);
             }
         }
 

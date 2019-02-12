@@ -1333,4 +1333,37 @@ public class FlowableConcatMapEagerTest {
 
         ts.assertFailure(TestException.class, 1, 2);
     }
+
+    @Test
+    public void cancelActive() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable
+                .concatEager(Flowable.just(pp1, pp2))
+                .test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+    }
+
+    @Test
+    public void cancelNoInnerYet() {
+        PublishProcessor<Flowable<Integer>> pp1 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable
+                .concatEager(pp1)
+                .test();
+
+        assertTrue(pp1.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp1.hasSubscribers());
+    }
 }

@@ -176,7 +176,12 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
         }
 
         void cancelAll() {
-            InnerQueuedSubscriber<R> inner;
+            InnerQueuedSubscriber<R> inner = current;
+            current = null;
+
+            if (inner != null) {
+                inner.cancel();
+            }
 
             while ((inner = subscribers.poll()) != null) {
                 inner.cancel();
