@@ -16,8 +16,11 @@ package io.reactivex.schedulers;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 
+import io.reactivex.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.*;
@@ -197,5 +200,39 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
 
         assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public final void testComputationSchedulerChooseWorker() {
+        int processors = Runtime.getRuntime().availableProcessors();
+        System.out.println("cpu cores are: " + processors);
+        int random = new Random().nextInt();
+        if ( random % 2 == 0){
+            System.setProperty("rx2.computation-threads", "3");
+            System.setProperty("rx2.no-round-robin","true");
+        }
+        int keyMaxThreads = Integer.getInteger("rx2.computation-threads", 0);
+        System.out.println("property: rx2.computation-threads value is " + keyMaxThreads);
+        System.out.println("property: rx2.no-round-robin value is " + Boolean.getBoolean("rx2.no-round-robin"));
+        for (int i=0; i<processors*10; i++) {
+            Flowable<String> f = Flowable.<Integer>just(1, 2, 3, 4).map(new Function<Integer, String>() {
+
+                @Override
+                public String apply(Integer t) {
+                    assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
+                    return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+                }
+            });
+
+            f.subscribeOn(Schedulers.computation()).subscribe(new Consumer<String>() {
+
+                @Override
+                public void accept(String t) {
+                    System.out.println("t: " + t);
+                }
+            });
+        }
+
+        LockSupport.parkNanos(10000000L);
     }
 }

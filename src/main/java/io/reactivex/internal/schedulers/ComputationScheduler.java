@@ -23,6 +23,9 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.DefaultSchedulerWorkerChooserFactory;
+import io.reactivex.internal.util.SchedulerWorkerChooserFactory;
+import io.reactivex.internal.util.SchedulerWorkerChooserFactory.SchedulerWorkerChooser;
 
 /**
  * Holds a fixed pool of worker threads and assigns them
@@ -72,6 +75,9 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
         final int cores;
 
         final PoolWorker[] eventLoops;
+
+        final SchedulerWorkerChooser chooser;
+
         long n;
 
         FixedSchedulerPool(int maxThreads, ThreadFactory threadFactory) {
@@ -81,6 +87,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
             for (int i = 0; i < maxThreads; i++) {
                 this.eventLoops[i] = new PoolWorker(threadFactory);
             }
+            this.chooser = DefaultSchedulerWorkerChooserFactory.INSTANCE.newChooser(eventLoops);
         }
 
         public PoolWorker getEventLoop() {
@@ -89,7 +96,8 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
                 return SHUTDOWN_WORKER;
             }
             // simple round robin, improvements to come
-            return eventLoops[(int)(n++ % c)];
+            //return eventLoops[(int)(n++ % c)];
+            return (PoolWorker) chooser.next();
         }
 
         public void shutdown() {

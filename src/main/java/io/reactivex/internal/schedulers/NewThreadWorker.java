@@ -179,4 +179,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     public boolean isDisposed() {
         return disposed;
     }
+
+    /**
+     *  Get queue size of private field executor {@link ScheduledThreadPoolExecutor}.
+     */
+    public int getInnerQueueSize() {
+        return ((ScheduledThreadPoolExecutor)this.executor).getQueue().size();
+    }
 }
