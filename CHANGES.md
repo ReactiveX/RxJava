@@ -2,6 +2,22 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.7 - February 23, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.7%7C))
+
+#### API enhancements
+
+  - [Pull 6386](https://github.com/ReactiveX/RxJava/pull/6386): Add `doOnTerminate` to `Single`/`Maybe` for consistency.
+
+#### Bugfixes
+
+  - [Pull 6405](https://github.com/ReactiveX/RxJava/pull/6405): Fix concatEager to dispose sources & clean up properly.
+  - [Pull 6398](https://github.com/ReactiveX/RxJava/pull/6398): Fix `window()` with start/end selector not disposing/cancelling properly.
+
+#### Documentation changes
+
+  - [Pull 6377](https://github.com/ReactiveX/RxJava/pull/6377): Expand `Observable#debounce` and `Flowable#debounce` javadoc.
+  - [Pull 6408](https://github.com/ReactiveX/RxJava/pull/6408): Improving Javadoc of `flattenAsFlowable` and `flattenAsObservable` methods.
+
 ### Version 2.2.6 - January 23, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.6%7C))
 
 #### API enhancements
