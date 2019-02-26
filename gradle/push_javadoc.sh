@@ -55,19 +55,27 @@ if [ "$buildTag" != "snapshot" ]; then
 	# for releases, add a new directory with the new version
 	# and carefully replace the others
 	
+	# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # enable once 3.x is mainstream
+    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    
 	# 1.) main javadoc
 	# ----------------
 	# remove the io subdir
-    echo -e "Removing javadoc/io" 
-	rm -r javadoc/io
+    #echo -e "Removing javadoc/io" 
+	#rm -r javadoc/io
 
 	# remove the html files
-    echo -e "Removing javadoc/*.html" 
-	rm javadoc/*.html
+    #echo -e "Removing javadoc/*.html" 
+	#rm javadoc/*.html
 
 	# copy the new doc
-    echo -e "Copying to javadoc/" 
-	yes | cp -rf ./build/docs/javadoc/ .
+    #echo -e "Copying to javadoc/" 
+	#yes | cp -rf ./build/docs/javadoc/ .
+
+    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    # enable once 3.x is mainstream
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	# 2.) 3.x javadoc
 	# remove the io subdir
