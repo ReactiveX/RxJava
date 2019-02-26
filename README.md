@@ -35,7 +35,7 @@ The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life a
 
 ### Setting up the dependency
 
-The first step is to include RxJava 2 into your project, for example, as a Gradle compile dependency:
+The first step is to include RxJava 3 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
 implementation "io.reactivex.rxjava3:rxjava:3.x.y"
@@ -75,7 +75,7 @@ Flowable.just("Hello world")
 
 ### Base classes
 
-RxJava 2 features several base classes you can discover operators on:
+RxJava 3 features several base classes you can discover operators on:
 
   - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
   - [`io.reactivex.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure,
@@ -198,7 +198,7 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 ### Schedulers
 
-RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. 
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 3 features several standard schedulers accessible via `Schedulers` utility class. 
 
 - `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default `Scheduler`.
 - `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
@@ -473,7 +473,7 @@ Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources);
 
 #### Base class vs base type
 
-The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 2's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
+The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 3's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
 
 | Type | Class | Interface | Consumer |
 |------|-------|-----------|----------|
