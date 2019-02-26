@@ -3,8 +3,8 @@
 
 buildTag="$TRAVIS_TAG"
 
-if [ "$buildTag" != "" ] && [ "${buildTag:0:3}" != "v2." ]; then
-   echo -e "Wrong tag on the 2.x brach: $buildTag : build stopped"
+if [ "$buildTag" != "" ] && [ "${buildTag:0:3}" != "v3." ]; then
+   echo -e "Wrong tag on the 3.x brach: $buildTag : build stopped"
    exit 1
 fi
 

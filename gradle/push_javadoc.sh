@@ -69,28 +69,28 @@ if [ "$buildTag" != "snapshot" ]; then
     echo -e "Copying to javadoc/" 
 	yes | cp -rf ./build/docs/javadoc/ .
 	
-	# 2.) 2.x javadoc
+	# 2.) 3.x javadoc
 	# remove the io subdir
-    echo -e "Removing 2.x/javadoc/io" 
-	rm -r 2.x/javadoc/io
+    echo -e "Removing 3.x/javadoc/io" 
+	rm -r 3.x/javadoc/io
 
 	# remove the html files
-    echo -e "Removing 2.x/javadoc/*.html" 
-	rm 2.x/javadoc/*.html
+    echo -e "Removing 3.x/javadoc/*.html" 
+	rm 3.x/javadoc/*.html
 
 	# copy the new doc
-    echo -e "Copying to 2.x/javadoc/" 
-	yes | cp -rf ./build/docs/javadoc/ 2.x/
+    echo -e "Copying to 3.x/javadoc/" 
+	yes | cp -rf ./build/docs/javadoc/ 3.x/
 fi
 
 # 3.) create a version/snapshot specific copy of the docs
 # clear the existing tag
-echo -e "Removing to 2.x/javadoc/${buildTag}" 
-rm -r 2.x/javadoc/${buildTag}
+echo -e "Removing to 3.x/javadoc/${buildTag}" 
+rm -r 3.x/javadoc/${buildTag}
 
 # copy the new doc
-echo -e "Copying to 2.x/javadoc/${buildTag}" 
-yes | cp -rf ./build/docs/javadoc/ 2.x/javadoc/${buildTag}/
+echo -e "Copying to 3.x/javadoc/${buildTag}" 
+yes | cp -rf ./build/docs/javadoc/ 3.x/javadoc/${buildTag}/
 
 
 # stage all changed and new files

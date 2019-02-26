@@ -1,6 +1,6 @@
-## RxJava v2 Design
+## RxJava v3 Design
 
-This document explains the terminology, principles, contracts, and other aspects of the design of RxJava v2.
+This document explains the terminology, principles, contracts, and other aspects of the design of RxJava v3.
 Its intended audience is the implementers of the library.
 
 ### Terminology & Definitions
@@ -41,7 +41,7 @@ Examples:
 - `Observable` (RxJS, Rx.Net, RxJava v1.x without backpressure, RxJava v2).
 - Callbacks (the producer calls the function at its convenience).
 - IRQ, mouse events, IO interrupts.
-- 2.x `Flowable` (with `request(n)` credit always granted faster or in larger quantity than producer).
+- 3.x `Flowable` (with `request(n)` credit always granted faster or in larger quantity than producer).
 - Reactive Streams `Publisher` (with `request(n)` credit always granted faster or in larger quantity than producer).
 - Java 9 `Flow.Publisher` (with `request(n)` credit always granted faster than or in larger quantity than producer).
 
@@ -53,8 +53,8 @@ Consumer is in charge. Producer has to do whatever it needs to keep up.
 Examples:
 
 - `Iterable`.
-- 2.x/1.x `Observable` (without concurrency, producer and consumer on the same thread).
-- 2.x `Flowable` (without concurrency, producer and consumer on the same thread).
+- 3.x/1.x `Observable` (without concurrency, producer and consumer on the same thread).
+- 3.x `Flowable` (without concurrency, producer and consumer on the same thread).
 - Reactive Streams `Publisher` (without concurrency, producer and consumer on the same thread).
 - Java 9 `Flow.Publisher` (without concurrency, producer and consumer on the same thread).
 
@@ -67,13 +67,13 @@ Examples:
 
 - `Future` & `Promise`.
 - `Single` (lazy `Future`).
-- 2.x `Flowable`.
+- 3.x `Flowable`.
 - Reactive Streams `Publisher`.
 - Java 9 `Flow.Publisher`.
 - 1.x `Observable` (with backpressure).
 - `AsyncEnumerable`/`AsyncIterable`.
 
-There is an overhead (performance and mental) for achieving this, which is why we also have the 2.x `Observable` without backpressure.
+There is an overhead (performance and mental) for achieving this, which is why we also have the 3.x `Observable` without backpressure.
 
 
 ##### Flow Control
@@ -325,7 +325,7 @@ In the addition of the previous rules, an operator for `Flowable`:
 
 ### Creation
 
-Unlike RxJava 1.x, 2.x base classes are to be abstract, stateless and generally no longer wrap an `onSubscribe` callback - this saves allocation in assembly time without limiting the expressiveness. Operator methods and standard factories still live as final on the base classes.
+Unlike RxJava 1.x, 3.x base classes are to be abstract, stateless and generally no longer wrap an `onSubscribe` callback - this saves allocation in assembly time without limiting the expressiveness. Operator methods and standard factories still live as final on the base classes.
 
 Instead of the indirection of an `onSubscribe` and `lift`, operators are to be implemented by extending the base classes. For example, the `map`
 operator will look like this:
@@ -489,11 +489,11 @@ The final `subscribe` will *not* invoke `cancel`/`dispose` after receiving an `o
 
 ### JVM target and source compatibility
 
-The 2.x version will target JDK6+ to let Android users consume the new version of RxJava.
+The 3.x version will target JDK6+ to let Android users consume the new version of RxJava.
 
 ### Future work
 
-This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 2.x.
+This section contains current design work which needs more discussion and elaboration before it is merged into this document as a stated goal for 3.x.
 
 #### Custom Observable, Single, Completable, or Flowable
 
@@ -586,7 +586,7 @@ interface QueueSubscription<T> implements Queue<T>, Subscription {
 
 For performance, the mode is an integer bitflags setup, called early during subscription time, and allows negotiating the fusion mode. Usually, producers can do only one mode and consumers can do both mode. Because fused, intermediate operators attach logic (which is many times user-callback) to the exit point of the queue interface (poll()), it may change the computation location of those callbacks in an unwanted way. The flag `BOUNDARY` is added by consumers indicating that they will consume the queue over an async boundary. Intermediate operators, such as `map` and `filter` then can reject the fusion in such sequences.
 
-Since RxJava 2.x is still JDK 6 compatible, the `QueueSubscription` can't itself default unnecessary methods and implementations are required to throw `UnsupportedOperationException` for `Queue` methods other than the following:
+Since RxJava 3.x is still JDK 6 compatible, the `QueueSubscription` can't itself default unnecessary methods and implementations are required to throw `UnsupportedOperationException` for `Queue` methods other than the following:
 
   - `poll()`.
   - `isEmpty()`.

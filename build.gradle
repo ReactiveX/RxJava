@@ -15,7 +15,7 @@ buildscript {
   }
 }
 
-group = "io.reactivex.rxjava2"
+group = "io.reactivex.rxjava3"
 ext.githubProjectName = "rxjava"
 
 version = project.properties["release.version"]
@@ -131,7 +131,7 @@ jar {
         instruction "Bundle-DocURL", "https://github.com/ReactiveX/RxJava"
         instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
         instruction "Eclipse-ExtensibleAPI", "true"
-        instruction "Automatic-Module-Name", "io.reactivex.rxjava2"
+        instruction "Automatic-Module-Name", "io.reactivex.rxjava3"
     }
 }
 
