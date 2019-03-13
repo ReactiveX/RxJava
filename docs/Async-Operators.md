@@ -1,5 +1,60 @@
-The following operators are part of the distinct `rxjava-async` module. They are used to convert synchronous methods into Observables.
+The following operators are part of the distinct `rxjava-async` module. They are used to convert synchronous methods into `Observable`s.
 
+### Outline
+
+- [`start`](#start)
+- [`toAsync`](#toasync)
+- [`asyncAction`](#asyncaction)
+- [`asyncFunc`](#asyncfunc)
+- [`startFuture`](#startfuture)
+- [`deferFuture`](#startfuture)
+- [`deferFuture`](#deferfuture)
+- [`forEachFuture`](#foreachfuture)
+- [`fromAction`](#fromaction)
+- [`fromCallable`](#fromcallable)
+- [`fromRunnable`](#fromrunnable)
+- [`runAsync`](#runasync)
+
+## start
+
+**ReactiveX documentation:** [http://reactivex.io/documentation/operators/start.html](http://reactivex.io/documentation/operators/start.html)
+
+## toAsync
+
+## asyncAction
+
+## asyncFunc
+
+## startFuture
+
+## deferFuture
+
+## forEachFuture
+
+## fromAction
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Completable`
+
+When a consumer subscribes, the given `io.reactivex.function.Action` is invoked and the consumer completes or receives the exception the `Action` threw.
+
+#### fromAction example:
+
+```java
+Action action = () -> System.out.println("Hello World!");
+
+Completable completable = Completable.fromAction(action);
+
+completable.subscribe(() -> System.out.println("Done"), error -> error.printStackTrace());
+```
+
+## fromRunnable
+
+## fromCallable
+
+## runAsync
+
+
+//todo remove this
 * [**`start( )`**](http://reactivex.io/documentation/operators/start.html) — create an Observable that emits the return value of a function
 * [**`toAsync( )` or `asyncAction( )` or `asyncFunc( )`**](http://reactivex.io/documentation/operators/start.html) — convert a function or Action into an Observable that executes the function and emits its return value
 * [**`startFuture( )`**](http://reactivex.io/documentation/operators/start.html) — convert a function that returns Future into an Observable that emits that Future's return value
