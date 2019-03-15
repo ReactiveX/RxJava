@@ -93,7 +93,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     @Override
     public boolean add(@NonNull Disposable d) {
-        ObjectHelper.requireNonNull(d, "d is null");
+        ObjectHelper.requireNonNull(d, "Disposable item is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
