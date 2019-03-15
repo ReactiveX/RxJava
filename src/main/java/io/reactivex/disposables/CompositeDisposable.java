@@ -128,7 +128,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                         resources = set;
                     }
                     for (Disposable d : ds) {
-                        ObjectHelper.requireNonNull(d, "d is null");
+                        ObjectHelper.requireNonNull(d, "Disposable item is null");
                         set.add(d);
                     }
                     return true;
