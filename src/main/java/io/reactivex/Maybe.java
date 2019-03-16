@@ -2533,7 +2533,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> defaultIfEmpty(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "item is null");
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return switchIfEmpty(just(defaultItem));
     }
 
@@ -2709,7 +2709,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
-        ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
+        ObjectHelper.requireNonNull(onAfterSuccess, "onAfterSuccess is null");
         return RxJavaPlugins.onAssembly(new MaybeDoAfterSuccess<T>(this, onAfterSuccess));
     }
 
@@ -2937,7 +2937,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final Maybe<T> doOnSuccess(Consumer<? super T> onSuccess) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
-                ObjectHelper.requireNonNull(onSuccess, "onSubscribe is null"),
+                ObjectHelper.requireNonNull(onSuccess, "onSuccess is null"),
                 Functions.emptyConsumer(), // onError
                 Functions.EMPTY_ACTION,    // onComplete
                 Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
@@ -3452,7 +3452,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> lift(final MaybeOperator<? extends R, ? super T> lift) {
-        ObjectHelper.requireNonNull(lift, "onLift is null");
+        ObjectHelper.requireNonNull(lift, "lift is null");
         return RxJavaPlugins.onAssembly(new MaybeLift<T, R>(this, lift));
     }
 
@@ -4512,7 +4512,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Maybe<T> timeout(long timeout, TimeUnit timeUnit, MaybeSource<? extends T> fallback) {
-        ObjectHelper.requireNonNull(fallback, "other is null");
+        ObjectHelper.requireNonNull(fallback, "fallback is null");
         return timeout(timeout, timeUnit, Schedulers.computation(), fallback);
     }
 

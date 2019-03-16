@@ -1900,7 +1900,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(Callable<? extends Throwable> supplier) {
-        ObjectHelper.requireNonNull(supplier, "errorSupplier is null");
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableError<T>(supplier));
     }
 
@@ -2235,7 +2235,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (source instanceof Flowable) {
             return RxJavaPlugins.onAssembly((Flowable<T>)source);
         }
-        ObjectHelper.requireNonNull(source, "publisher is null");
+        ObjectHelper.requireNonNull(source, "source is null");
 
         return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(source));
     }
@@ -2662,8 +2662,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
 
         return fromArray(item1, item2);
     }
@@ -2696,9 +2696,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
 
         return fromArray(item1, item2, item3);
     }
@@ -2733,10 +2733,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
 
         return fromArray(item1, item2, item3, item4);
     }
@@ -2773,11 +2773,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
 
         return fromArray(item1, item2, item3, item4, item5);
     }
@@ -2816,12 +2816,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
+        ObjectHelper.requireNonNull(item6, "item6 is null");
 
         return fromArray(item1, item2, item3, item4, item5, item6);
     }
@@ -2862,13 +2862,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
+        ObjectHelper.requireNonNull(item6, "item6 is null");
+        ObjectHelper.requireNonNull(item7, "item7 is null");
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
@@ -2911,14 +2911,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
+        ObjectHelper.requireNonNull(item6, "item6 is null");
+        ObjectHelper.requireNonNull(item7, "item7 is null");
+        ObjectHelper.requireNonNull(item8, "item8 is null");
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
@@ -2963,15 +2963,15 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
-        ObjectHelper.requireNonNull(item9, "The ninth is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
+        ObjectHelper.requireNonNull(item6, "item6 is null");
+        ObjectHelper.requireNonNull(item7, "item7 is null");
+        ObjectHelper.requireNonNull(item8, "item8 is null");
+        ObjectHelper.requireNonNull(item9, "item9 is null");
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
@@ -3018,16 +3018,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
-        ObjectHelper.requireNonNull(item9, "The ninth item is null");
-        ObjectHelper.requireNonNull(item10, "The tenth item is null");
+        ObjectHelper.requireNonNull(item1, "item1 is null");
+        ObjectHelper.requireNonNull(item2, "item2 is null");
+        ObjectHelper.requireNonNull(item3, "item3 is null");
+        ObjectHelper.requireNonNull(item4, "item4 is null");
+        ObjectHelper.requireNonNull(item5, "item5 is null");
+        ObjectHelper.requireNonNull(item6, "item6 is null");
+        ObjectHelper.requireNonNull(item7, "item7 is null");
+        ObjectHelper.requireNonNull(item8, "item8 is null");
+        ObjectHelper.requireNonNull(item9, "item9 is null");
+        ObjectHelper.requireNonNull(item10, "item10 is null");
 
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
@@ -4485,7 +4485,7 @@ public abstract class Flowable<T> implements Publisher<T> {
                     Consumer<? super D> resourceDisposer, boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(sourceSupplier, "sourceSupplier is null");
-        ObjectHelper.requireNonNull(resourceDisposer, "disposer is null");
+        ObjectHelper.requireNonNull(resourceDisposer, "resourceDisposer is null");
         return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, resourceDisposer, eager));
     }
 
@@ -8338,7 +8338,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> defaultIfEmpty(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "item is null");
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return switchIfEmpty(just(defaultItem));
     }
 
@@ -9167,7 +9167,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Consumer<? super Notification<T>> onNotification) {
-        ObjectHelper.requireNonNull(onNotification, "consumer is null");
+        ObjectHelper.requireNonNull(onNotification, "onNotification is null");
         return doOnEach(
                 Functions.notificationOnNext(onNotification),
                 Functions.notificationOnError(onNotification),
@@ -11769,7 +11769,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded) {
-        ObjectHelper.verifyPositive(capacity, "bufferSize");
+        ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, Functions.EMPTY_ACTION));
     }
 
@@ -11877,7 +11877,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
-        ObjectHelper.requireNonNull(overflowStrategy, "strategy is null");
+        ObjectHelper.requireNonNull(overflowStrategy, "overflowStrategy is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy));
     }
@@ -13882,7 +13882,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
-        ObjectHelper.requireNonNull(initialValue, "seed is null");
+        ObjectHelper.requireNonNull(initialValue, "initialValue is null");
         return scanWith(Functions.justCallable(initialValue), accumulator);
     }
 
@@ -14562,7 +14562,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(T value) {
-        ObjectHelper.requireNonNull(value, "item is null");
+        ObjectHelper.requireNonNull(value, "value is null");
         return concatArray(just(value), this);
     }
 

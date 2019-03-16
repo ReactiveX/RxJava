@@ -2292,7 +2292,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(CompletableObserver observer) {
-        ObjectHelper.requireNonNull(observer, "s is null");
+        ObjectHelper.requireNonNull(observer, "observer is null");
         try {
 
             observer = RxJavaPlugins.onSubscribe(this, observer);
