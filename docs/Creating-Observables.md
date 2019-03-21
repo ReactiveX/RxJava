@@ -37,8 +37,8 @@ There exist overloads with 2 to 9 arguments for convenience, which objects (with
 ```java
 Observable<Object> observable = Observable.just("1", "A", "3.2", "def");
 
-observable.subscribe(item -> System.out.print(item), error -> error.printStackTrace, 
-    () -> System.out.println());
+  observable.subscribe(item -> System.out.print(item), error -> error.printStackTrace(),
+                () -> System.out.println());
 ```
 
 ## From
@@ -80,7 +80,7 @@ for (int i = 0; i < array.length; i++) {
     array[i] = i;
 }
 
-Observable<Integer> observable = Observable.fromIterable(array);
+Observable<Integer> observable = Observable.fromArray(array);
 
 observable.subscribe(item -> System.out.println(item), error -> error.printStackTrace(), 
      () -> System.out.println("Done"));
@@ -155,7 +155,7 @@ Given a pre-existing, already running or already completed `java.util.concurrent
 #### fromFuture example:
 
 ```java
-ScheduledExecutorService executor = Executors.newSingleThreadedScheduledExecutor();
+ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
 Future<String> future = executor.schedule(() -> "Hello world!", 1, TimeUnit.SECONDS);
 
@@ -298,10 +298,10 @@ String greeting = "Hello World!";
 
 Observable<Integer> indexes = Observable.range(0, greeting.length());
 
-Observable<Char> characters = indexes
+Observable<Character> characters = indexes
     .map(index -> greeting.charAt(index));
 
-characters.subscribe(character -> System.out.print(character), erro -> error.printStackTrace(),
+characters.subscribe(character -> System.out.print(character), error -> error.printStackTrace(),
         () -> System.out.println());
 ```
 
@@ -396,7 +396,7 @@ Observable<String> error = Observable.error(new IOException());
 
 error.subscribe(
     v -> System.out.println("This should never be printed!"), 
-    error -> error.printStackTrace(),
+    e -> e.printStackTrace(),
     () -> System.out.println("This neither!"));
 ```
 
