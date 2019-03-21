@@ -584,7 +584,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> error(final Throwable exception) {
-        ObjectHelper.requireNonNull(exception, "error is null");
+        ObjectHelper.requireNonNull(exception, "exception is null");
         return error(Functions.justCallable(exception));
     }
 
@@ -834,7 +834,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <T> Single<T> just(final T item) {
-        ObjectHelper.requireNonNull(item, "value is null");
+        ObjectHelper.requireNonNull(item, "item is null");
         return RxJavaPlugins.onAssembly(new SingleJust<T>(item));
     }
 
@@ -2413,7 +2413,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
-        ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
+        ObjectHelper.requireNonNull(onAfterSuccess, "onAfterSuccess is null");
         return RxJavaPlugins.onAssembly(new SingleDoAfterSuccess<T>(this, onAfterSuccess));
     }
 
@@ -2980,7 +2980,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> lift(final SingleOperator<? extends R, ? super T> lift) {
-        ObjectHelper.requireNonNull(lift, "onLift is null");
+        ObjectHelper.requireNonNull(lift, "lift is null");
         return RxJavaPlugins.onAssembly(new SingleLift<T, R>(this, lift));
     }
 
@@ -3593,7 +3593,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(SingleObserver<? super T> observer) {
-        ObjectHelper.requireNonNull(observer, "subscriber is null");
+        ObjectHelper.requireNonNull(observer, "observer is null");
 
         observer = RxJavaPlugins.onSubscribe(this, observer);
 
