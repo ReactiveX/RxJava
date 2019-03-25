@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableFromAction extends Completable {
 
@@ -36,6 +37,8 @@ public final class CompletableFromAction extends Completable {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
                 observer.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
             return;
         }
