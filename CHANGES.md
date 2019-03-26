@@ -2,6 +2,23 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.8 - March 26, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.8%7C))
+
+#### Bugfixes
+
+  - [Pull 6442](https://github.com/ReactiveX/RxJava/pull/6442):  Add missing undeliverable error handling logic for `Completable.fromRunnable` & `fromAction` operators.
+
+#### Documentation changes
+
+  - [Pull 6432](https://github.com/ReactiveX/RxJava/pull/6432): Improve the docs of `CompositeDisposable`.
+  - [Pull 6434](https://github.com/ReactiveX/RxJava/pull/6434): Improve subjects and processors package doc.
+  - [Pull 6436](https://github.com/ReactiveX/RxJava/pull/6436): Improve `Creating-Observables` wiki doc.
+ 
+
+#### Other
+
+  - [Pull 6433](https://github.com/ReactiveX/RxJava/pull/6433): Make error messages of parameter checks consistent.
+  
 ### Version 2.2.7 - February 23, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.7%7C))
 
 #### API enhancements
