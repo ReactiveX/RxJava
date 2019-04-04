@@ -3685,7 +3685,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Completable instance
+     * @return the new Maybe instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3702,7 +3702,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @param predicate the predicate to call when an Throwable is emitted which should return true
      * if the Throwable should be swallowed and replaced with an onComplete.
-     * @return the new Completable instance
+     * @return the new Maybe instance
      */
     @CheckReturnValue
     @NonNull
@@ -3984,7 +3984,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the nww Maybe instance
+     * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
@@ -4006,7 +4006,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param predicate
      *            the predicate that determines if a resubscription may happen in case of a specific exception
      *            and retry count
-     * @return the nww Maybe instance
+     * @return the new Maybe instance
      * @see #retry()
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
