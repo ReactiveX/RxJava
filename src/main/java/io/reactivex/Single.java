@@ -476,7 +476,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
+     * Provides an API (via a cold Single) that bridges the reactive world with the callback-style world.
      * <p>
      * <img width="640" height="454" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.png" alt="">
      * <p>
