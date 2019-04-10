@@ -2398,18 +2398,20 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void retryTimes5Normal() {
-        final AtomicInteger calls = new AtomicInteger(5);
+        final AtomicInteger calls = new AtomicInteger();
 
         Completable c = Completable.fromAction(new Action() {
             @Override
             public void run() {
-                if (calls.decrementAndGet() != 0) {
+                if (calls.incrementAndGet() != 6) {
                     throw new TestException();
                 }
             }
         }).retry(5);
 
         c.blockingAwait();
+
+        assertEquals(6, calls.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
