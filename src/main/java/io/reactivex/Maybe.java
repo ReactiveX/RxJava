@@ -4031,7 +4031,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param count
-     *            number of retry attempts before failing
+     *            the number of times to resubscribe if the current Maybe fails
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
@@ -4048,7 +4048,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param times the number of times to repeat
+     * @param times the number of times to resubscribe if the current Maybe fails
      * @param predicate the predicate called with the failure Throwable and should return true to trigger a retry.
      * @return the new Maybe instance
      */

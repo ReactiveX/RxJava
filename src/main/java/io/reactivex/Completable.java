@@ -2090,7 +2090,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param times the number of times the returned Completable should retry this Completable
+     * @param times the number of times to resubscribe if the current Completable fails
      * @return the new Completable instance
      * @throws IllegalArgumentException if times is negative
      */
@@ -2110,7 +2110,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.8 - experimental
-     * @param times the number of times the returned Completable should retry this Completable
+     * @param times the number of times to resubscribe if the current Completable fails
      * @param predicate the predicate that is called with the latest throwable and should return
      * true to indicate the returned Completable should resubscribe to this Completable.
      * @return the new Completable instance

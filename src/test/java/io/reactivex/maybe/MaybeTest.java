@@ -3185,6 +3185,19 @@ public class MaybeTest {
                 return (Publisher)v;
             }
         }).test().assertResult(1);
+
+        final AtomicInteger calls = new AtomicInteger();
+        try {
+            Maybe.error(new Callable<Throwable>() {
+                @Override
+                public Throwable call() {
+                    calls.incrementAndGet();
+                    return new TestException();
+                }
+            }).retry(5).test();
+        } finally {
+            assertEquals(6, calls.get());
+        }
     }
 
     @Test

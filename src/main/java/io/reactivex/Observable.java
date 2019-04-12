@@ -11075,7 +11075,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param times
-     *            number of retry attempts before failing
+     *            the number of times to resubscribe if the current Observable fails
      * @return the source ObservableSource modified with retry logic
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
@@ -11093,7 +11093,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param times the number of times to repeat
+     * @param times the number of times to resubscribe if the current Observable fails
      * @param predicate the predicate called with the failure Throwable and should return true to trigger a retry.
      * @return the new Observable instance
      */
