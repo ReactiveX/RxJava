@@ -117,7 +117,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         public void complete() {
             upstream.cancel();
-            completeOther();
+            completion();
         }
 
         void emit() {
