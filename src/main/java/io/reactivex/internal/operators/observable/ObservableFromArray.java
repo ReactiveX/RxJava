@@ -102,7 +102,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
             for (int i = 0; i < n && !isDisposed(); i++) {
                 T value = a[i];
                 if (value == null) {
-                    downstream.onError(new NullPointerException("The " + i + "th element is null"));
+                    downstream.onError(new NullPointerException("The element at index " + i + " is null"));
                     return;
                 }
                 downstream.onNext(value);
