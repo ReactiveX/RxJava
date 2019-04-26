@@ -90,7 +90,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         @Override
         public void onComplete() {
             SubscriptionHelper.cancel(other);
-            completeMain();
+            completion();
         }
 
         void setOther(Subscription o) {
@@ -117,7 +117,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         public void complete() {
             upstream.cancel();
-            completeOther();
+            completion();
         }
 
         void emit() {
@@ -134,9 +134,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
             }
         }
 
-        abstract void completeMain();
-
-        abstract void completeOther();
+        abstract void completion();
 
         abstract void run();
     }
@@ -178,12 +176,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
 
         @Override
-        void completeMain() {
-            downstream.onComplete();
-        }
-
-        @Override
-        void completeOther() {
+        void completion() {
             downstream.onComplete();
         }
 
@@ -207,16 +200,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
 
         @Override
-        void completeMain() {
-            done = true;
-            if (wip.getAndIncrement() == 0) {
-                emit();
-                downstream.onComplete();
-            }
-        }
-
-        @Override
-        void completeOther() {
+        void completion() {
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();

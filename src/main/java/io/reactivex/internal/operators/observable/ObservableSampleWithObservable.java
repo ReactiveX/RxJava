@@ -84,7 +84,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         @Override
         public void onComplete() {
             DisposableHelper.dispose(other);
-            completeMain();
+            completion();
         }
 
         boolean setOther(Disposable o) {
@@ -109,7 +109,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         public void complete() {
             upstream.dispose();
-            completeOther();
+            completion();
         }
 
         void emit() {
@@ -119,9 +119,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
             }
         }
 
-        abstract void completeMain();
-
-        abstract void completeOther();
+        abstract void completion();
 
         abstract void run();
     }
@@ -163,12 +161,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         @Override
-        void completeMain() {
-            downstream.onComplete();
-        }
-
-        @Override
-        void completeOther() {
+        void completion() {
             downstream.onComplete();
         }
 
@@ -192,16 +185,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         @Override
-        void completeMain() {
-            done = true;
-            if (wip.getAndIncrement() == 0) {
-                emit();
-                downstream.onComplete();
-            }
-        }
-
-        @Override
-        void completeOther() {
+        void completion() {
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();
