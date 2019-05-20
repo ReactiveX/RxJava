@@ -258,12 +258,10 @@ Flowable.range(1, 10)
 ```java
 Flowable<Inventory> inventorySource = warehouse.getInventoryAsync();
 
-inventorySource.flatMap(inventoryItem ->
-    erp.getDemandAsync(inventoryItem.getId())
-    .map(demand 
-        -> System.out.println("Item " + inventoryItem.getName() + " has demand " + demand));
-  )
-  .subscribe();
+inventorySource
+    .flatMap(inventoryItem -> erp.getDemandAsync(inventoryItem.getId())
+            .map(demand -> "Item " + inventoryItem.getName() + " has demand " + demand))
+    .subscribe(System.out::println);
 ```
 
 ### Continuations
