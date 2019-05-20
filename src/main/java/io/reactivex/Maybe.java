@@ -2489,7 +2489,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that counts the total number of items emitted (0 or 1) by the source Maybe and emits
+     * Returns a Single that counts the total number of items emitted (0 or 1) by the source Maybe and emits
      * this count as a 64-bit Long.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
