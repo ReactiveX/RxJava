@@ -84,12 +84,12 @@ import io.reactivex.schedulers.*;
  *             System.out.println("Done!");
  *         }
  *     });
- * 
+ *
  * Thread.sleep(500);
  * // the sequence can now be disposed via dispose()
  * d.dispose();
  * </code></pre>
- * 
+ *
  * @param <T>
  *            the type of the items emitted by the Observable
  * @see Flowable
@@ -1278,7 +1278,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> concatArray(ObservableSource<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
-        } else
+        }
         if (sources.length == 1) {
             return wrap((ObservableSource<T>)sources[0]);
         }
@@ -1305,7 +1305,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> concatArrayDelayError(ObservableSource<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
-        } else
+        }
         if (sources.length == 1) {
             return (Observable<T>)wrap(sources[0]);
         }
@@ -1765,7 +1765,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(items, "items is null");
         if (items.length == 0) {
             return empty();
-        } else
+        }
         if (items.length == 1) {
             return just(items[0]);
         }
@@ -9626,7 +9626,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the ObservableOperator.apply():
-     * 
+     *
      * public final class CustomObserver&lt;T&gt; implements Observer&lt;T&gt;, Disposable {
      *
      *     // The downstream's Observer that will receive the onXXX events
@@ -12816,10 +12816,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> takeLast(int count) {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
+        }
         if (count == 0) {
             return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
-        } else
+        }
         if (count == 1) {
             return RxJavaPlugins.onAssembly(new ObservableTakeLastOne<T>(this));
         }
