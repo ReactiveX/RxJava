@@ -13,70 +13,26 @@
 
 package io.reactivex;
 
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.reactivestreams.Publisher;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.BackpressureKind;
-import io.reactivex.annotations.BackpressureSupport;
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.SchedulerSupport;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.BiConsumer;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.BiPredicate;
-import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.functions.Cancellable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Function3;
-import io.reactivex.functions.Function4;
-import io.reactivex.functions.Function5;
-import io.reactivex.functions.Function6;
-import io.reactivex.functions.Function7;
-import io.reactivex.functions.Function8;
-import io.reactivex.functions.Function9;
-import io.reactivex.functions.Predicate;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
-import io.reactivex.internal.observers.BlockingFirstObserver;
-import io.reactivex.internal.observers.BlockingLastObserver;
-import io.reactivex.internal.observers.ForEachWhileObserver;
-import io.reactivex.internal.observers.FutureObserver;
-import io.reactivex.internal.observers.LambdaObserver;
-import io.reactivex.internal.operators.flowable.FlowableFromObservable;
-import io.reactivex.internal.operators.flowable.FlowableOnBackpressureError;
-import io.reactivex.internal.operators.mixed.ObservableConcatMapCompletable;
-import io.reactivex.internal.operators.mixed.ObservableConcatMapMaybe;
-import io.reactivex.internal.operators.mixed.ObservableConcatMapSingle;
-import io.reactivex.internal.operators.mixed.ObservableSwitchMapCompletable;
-import io.reactivex.internal.operators.mixed.ObservableSwitchMapMaybe;
-import io.reactivex.internal.operators.mixed.ObservableSwitchMapSingle;
+import io.reactivex.internal.observers.*;
+import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.mixed.*;
 import io.reactivex.internal.operators.observable.*;
-import io.reactivex.internal.util.ArrayListSupplier;
-import io.reactivex.internal.util.ErrorMode;
-import io.reactivex.internal.util.ExceptionHelper;
-import io.reactivex.internal.util.HashMapSupplier;
-import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.observables.GroupedObservable;
-import io.reactivex.observers.SafeObserver;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.internal.util.*;
+import io.reactivex.observables.*;
+import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.schedulers.Timed;
+import io.reactivex.schedulers.*;
 
 /**
  * The Observable class is the non-backpressured, optionally multi-valued base reactive class that
