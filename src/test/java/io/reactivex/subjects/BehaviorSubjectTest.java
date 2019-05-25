@@ -42,6 +42,12 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         return BehaviorSubject.create();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test(expected = NullPointerException.class)
+    public void testNullEmitting() {
+        BehaviorSubject.createDefault(null);
+    }
+
     @Test
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");

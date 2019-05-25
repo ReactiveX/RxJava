@@ -58,8 +58,7 @@ public class BlockingFlowableToFutureTest {
             // we expect an exception since there are more than 1 element
             f.get();
             fail("Should have thrown!");
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             throw e.getCause();
         }
     }
@@ -109,16 +108,22 @@ public class BlockingFlowableToFutureTest {
         Future<String> f = obs.toFuture();
         try {
             f.get();
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             throw e.getCause();
         }
     }
 
-    @Ignore("null value is not allowed")
     @Test
     public void testGetWithASingleNullItem() throws Exception {
-        Flowable<String> obs = Flowable.just((String)null);
+        Flowable<String> obs = Flowable
+                .fromCallable(new Callable<String>() {
+                                  @Override public String call() {
+                                      return null;
+                                  }
+                              }
+
+                );
+
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());
     }

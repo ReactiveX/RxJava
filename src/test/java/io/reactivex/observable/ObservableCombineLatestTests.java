@@ -15,14 +15,18 @@
  */
 package io.reactivex.observable;
 
-import static io.reactivex.Observable.combineLatest;
-
 import org.junit.*;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.*;
 import io.reactivex.observable.ObservableCovarianceTest.*;
-import io.reactivex.subjects.BehaviorSubject;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class ObservableCombineLatestTests {
     /**
@@ -33,13 +37,13 @@ public class ObservableCombineLatestTests {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.just(new CoolRating());
 
-        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
-        Observable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult>combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
+        Observable.<Media, Rating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult>combineLatest(horrors, ratings, combine).blockingForEach(action);
 
-        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
+        Observable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine);
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
@@ -63,24 +67,41 @@ public class ObservableCombineLatestTests {
         }
     };
 
-    @Ignore("No longer allowed")
     @Test
     public void testNullEmitting() throws Exception {
-        // FIXME this is no longer allowed
-        Observable<Boolean> nullObservable = BehaviorSubject.createDefault((Boolean) null);
-        Observable<Boolean> nonNullObservable = BehaviorSubject.createDefault(true);
-        Observable<Boolean> combined =
-                combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {
-                    @Override
-                    public Boolean apply(Boolean bool1, Boolean bool2) {
-                        return bool1 == null ? null : bool2;
-                    }
-                });
-        combined.subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean aBoolean) {
-                Assert.assertNull(aBoolean);
+        final Consumer<Boolean> onNext = spy(new Consumer<Boolean>() {
+            @Override public void accept(final Boolean aBoolean) {
             }
         });
+
+        final Consumer<Throwable> onError = spy(new Consumer<Throwable>() {
+            @Override public void accept(final Throwable throwable) throws Exception {
+            }
+        });
+
+        Observable<Boolean> nullObservable = Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override public void subscribe(final ObservableEmitter<Boolean> emitter) {
+                emitter.onNext(null);
+            }
+        });
+
+        Observable<Boolean> nonNullObservable = Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override public void subscribe(final ObservableEmitter<Boolean> emitter) {
+                emitter.onNext(true);
+            }
+        });
+
+        Observable<Boolean> combined =
+                Observable.combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {
+                    @Override
+                    public Boolean apply(Boolean bool1, Boolean bool2) {
+                        return false;
+                    }
+                });
+
+        combined.subscribe(onNext, onError);
+
+        verify(onNext, never()).accept(any(Boolean.class));
+        verify(onError).accept(any(NullPointerException.class));
     }
 }

@@ -293,8 +293,7 @@ public class FlowableAllTest {
                 return i % 2 == 1;
             }
         })
-        .toFlowable()
-        ;
+        .toFlowable();
 
         assertFalse(allOdd.blockingFirst());
     }

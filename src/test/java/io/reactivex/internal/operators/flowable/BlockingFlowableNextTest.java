@@ -332,9 +332,9 @@ public class BlockingFlowableNextTest {
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
     }
 
-    @Ignore("THe target is an enum")
+    @Ignore("The target is an enum")
     @Test
-    public void constructorshouldbeprivate() {
+    public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(BlockingFlowableNext.class);
     }
 

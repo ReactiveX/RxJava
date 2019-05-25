@@ -16,14 +16,18 @@
 package io.reactivex.flowable;
 
 import static io.reactivex.Flowable.combineLatest;
-import static org.junit.Assert.assertNull;
 
 import org.junit.*;
+
+import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.BehaviorProcessor;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class FlowableCombineLatestTests {
     /**
@@ -34,13 +38,13 @@ public class FlowableCombineLatestTests {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<CoolRating> ratings = Flowable.just(new CoolRating());
 
-        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
-        Flowable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
-        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult>combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
+        Flowable.<Media, Rating, Result>combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult>combineLatest(horrors, ratings, combine).blockingForEach(action);
 
-        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
+        Flowable.<Movie, CoolRating, Result>combineLatest(horrors, ratings, combine);
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
@@ -64,12 +68,17 @@ public class FlowableCombineLatestTests {
         }
     };
 
-    @Ignore("No longer allowed")
     @Test
-    public void testNullEmitting() throws Exception {
-        // FIXME this is no longer allowed
-        Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault((Boolean) null);
+    public void testNullEmit() throws Exception {
+        Flowable<Boolean> nullObservable = Flowable.fromCallable(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                return null;
+            }
+        });
+
         Flowable<Boolean> nonNullObservable = BehaviorProcessor.createDefault(true);
+
         Flowable<Boolean> combined =
                 combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {
                     @Override
@@ -77,11 +86,22 @@ public class FlowableCombineLatestTests {
                         return bool1 == null ? null : bool2;
                     }
                 });
-        combined.subscribe(new Consumer<Boolean>() {
+
+        final Consumer<Boolean> onNext = spy(new Consumer<Boolean>() {
             @Override
             public void accept(Boolean aBoolean) {
-                assertNull(aBoolean);
             }
         });
+
+        final Consumer<Throwable> onError = spy(new Consumer<Throwable>() {
+            @Override
+            public void accept(final Throwable throwable) {
+            }
+        });
+
+        combined.subscribe(onNext, onError);
+
+        verify(onNext, never()).accept(any(Boolean.class));
+        verify(onError).accept(any(NullPointerException.class));
     }
 }

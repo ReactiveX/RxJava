@@ -3921,6 +3921,303 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Publisher, Publisher, Publisher, Publisher)} except that if any of
+     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * will refrain from propagating that error notification until all of the merged Publishers have finished
+     * emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param source1
+     *            a Publisher to be merged
+     * @param source2
+     *            a Publisher to be merged
+     * @param source3
+     *            a Publisher to be merged
+     * @param source4
+     *            a Publisher to be merged
+     * @param source5
+     *            a Publisher to be merged
+     * @return a Flowable that emits all of the items that are emitted by the source Publishers
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> mergeDelayError(
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4, Publisher<? extends T> source5) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return fromArray(source1, source2, source3, source4, source5).flatMap((Function)Functions.identity(), true, 5);
+    }
+
+    /**
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Publisher, Publisher, Publisher, Publisher)} except that if any of
+     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * will refrain from propagating that error notification until all of the merged Publishers have finished
+     * emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param source1
+     *            a Publisher to be merged
+     * @param source2
+     *            a Publisher to be merged
+     * @param source3
+     *            a Publisher to be merged
+     * @param source4
+     *            a Publisher to be merged
+     * @param source5
+     *            a Publisher to be merged
+     * @param source6
+     *            a Publisher to be merged
+     * @return a Flowable that emits all of the items that are emitted by the source Publishers
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> mergeDelayError(
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4,
+            Publisher<? extends T> source5, Publisher<? extends T> source6) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return fromArray(source1, source2, source3, source4, source5, source6).flatMap((Function)Functions.identity(), true, 6);
+    }
+
+    /**
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Publisher, Publisher, Publisher, Publisher)} except that if any of
+     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * will refrain from propagating that error notification until all of the merged Publishers have finished
+     * emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param source1
+     *            a Publisher to be merged
+     * @param source2
+     *            a Publisher to be merged
+     * @param source3
+     *            a Publisher to be merged
+     * @param source4
+     *            a Publisher to be merged
+     * @param source5
+     *            a Publisher to be merged
+     * @param source6
+     *            a Publisher to be merged
+     * @param source7
+     *            a Publisher to be merged
+     * @return a Flowable that emits all of the items that are emitted by the source Publishers
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> mergeDelayError(
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4,
+            Publisher<? extends T> source5, Publisher<? extends T> source6, Publisher<? extends T> source7) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return fromArray(source1, source2, source3, source4, source5, source6, source7).flatMap((Function)Functions.identity(), true, 7);
+    }
+
+    /**
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Publisher, Publisher, Publisher, Publisher)} except that if any of
+     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * will refrain from propagating that error notification until all of the merged Publishers have finished
+     * emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param source1
+     *            a Publisher to be merged
+     * @param source2
+     *            a Publisher to be merged
+     * @param source3
+     *            a Publisher to be merged
+     * @param source4
+     *            a Publisher to be merged
+     * @param source5
+     *            a Publisher to be merged
+     * @param source6
+     *            a Publisher to be merged
+     * @param source7
+     *            a Publisher to be merged
+     * @param source8
+     *            a Publisher to be merged
+     * @return a Flowable that emits all of the items that are emitted by the source Publishers
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> mergeDelayError(
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4,
+            Publisher<? extends T> source5, Publisher<? extends T> source6,
+            Publisher<? extends T> source7, Publisher<? extends T> source8) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return fromArray(source1, source2, source3, source4, source5, source6, source7, source8).flatMap((Function)Functions.identity(), true, 8);
+    }
+
+    /**
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Publisher, Publisher, Publisher, Publisher)} except that if any of
+     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * will refrain from propagating that error notification until all of the merged Publishers have finished
+     * emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s are expected to honor
+     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param source1
+     *            a Publisher to be merged
+     * @param source2
+     *            a Publisher to be merged
+     * @param source3
+     *            a Publisher to be merged
+     * @param source4
+     *            a Publisher to be merged
+     * @param source5
+     *            a Publisher to be merged
+     * @param source6
+     *            a Publisher to be merged
+     * @param source7
+     *            a Publisher to be merged
+     * @param source8
+     *            a Publisher to be merged
+     * @param source9
+     *            a Publisher to be merged
+     * @return a Flowable that emits all of the items that are emitted by the source Publishers
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> mergeDelayError(
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4,
+            Publisher<? extends T> source5, Publisher<? extends T> source6,
+            Publisher<? extends T> source7, Publisher<? extends T> source8,
+            Publisher<? extends T> source9) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source3 is null");
+        ObjectHelper.requireNonNull(source5, "source4 is null");
+        ObjectHelper.requireNonNull(source6, "source5 is null");
+        ObjectHelper.requireNonNull(source7, "source6 is null");
+        ObjectHelper.requireNonNull(source8, "source7 is null");
+        ObjectHelper.requireNonNull(source9, "source8 is null");
+        return fromArray(source1, source2, source3, source4, source5, source6, source7, source8, source9).flatMap((Function)Functions.identity(), true, 9);
+    }
+
+    /**
      * Returns a Flowable that never sends any items or notifications to a {@link Subscriber}.
      * <p>
      * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
@@ -10774,15 +11071,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * map has been evicted. The next source emission will bring about the completion of the evicted
      * {@link GroupedFlowable}s and the arrival of an item with the same key as a completed {@link GroupedFlowable}
      * will prompt the creation and emission of a new {@link GroupedFlowable} with that key.
-     * 
+     *
      * <p>A use case for specifying an {@code evictingMapFactory} is where the source is infinite and fast and
      * over time the number of keys grows enough to be a concern in terms of the memory footprint of the
      * internal hash map containing the {@link GroupedFlowable}s.
-     * 
+     *
      * <p>The map created by an {@code evictingMapFactory} must be thread-safe.
-     * 
+     *
      * <p>An example of an {@code evictingMapFactory} using <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a> from the Guava library is below:
-     * 
+     *
      * <pre><code>
      * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory =
      *   notify -&gt;
@@ -10809,7 +11106,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   .flatMap(g -&gt; g)
      *   .forEach(System.out::println);
      * </code></pre>
-     * 
+     *
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
@@ -11142,7 +11439,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the FlowableOperator.apply():
-     * 
+     *
      * public final class CustomSubscriber&lt;T&gt; implements FlowableSubscriber&lt;T&gt;, Subscription {
      *
      *     // The downstream's Subscriber that will receive the onXXX events

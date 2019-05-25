@@ -461,6 +461,7 @@ public class FlowableMergeDelayErrorTest {
 
         result.subscribe(new DefaultSubscriber<Integer>() {
             int calls;
+
             @Override
             public void onNext(Integer t) {
                 if (calls++ == 0) {
@@ -654,20 +655,19 @@ public class FlowableMergeDelayErrorTest {
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
 
-        CompositeException ce = (CompositeException)ts.errors().get(0);
+        CompositeException ce = (CompositeException) ts.errors().get(0);
 
         assertEquals(2, ce.getExceptions().size());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore("No 2-9 parameter mergeDelayError() overloads")
     public void mergeMany() throws Exception {
         for (int i = 2; i < 10; i++) {
             Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
+            Arrays.fill(clazz, Publisher.class);
 
-            Flowable<Integer>[] obs = new Flowable[i];
+            Publisher<Integer>[] obs = new Flowable[i];
             Arrays.fill(obs, Flowable.just(1));
 
             Integer[] expected = new Integer[i];
@@ -691,11 +691,10 @@ public class FlowableMergeDelayErrorTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore("No 2-9 parameter mergeDelayError() overloads")
     public void mergeManyError() throws Exception {
         for (int i = 2; i < 10; i++) {
             Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
+            Arrays.fill(clazz, Publisher.class);
 
             Flowable<Integer>[] obs = new Flowable[i];
             for (int j = 0; j < i; j++) {
@@ -709,13 +708,13 @@ public class FlowableMergeDelayErrorTest {
 
             TestSubscriber<Integer> ts = TestSubscriber.create();
 
-            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
+            ((Flowable<Integer>) m.invoke(null, (Object[]) obs)).subscribe(ts);
 
             ts.assertValues(expected);
             ts.assertError(CompositeException.class);
             ts.assertNotComplete();
 
-            CompositeException ce = (CompositeException)ts.errors().get(0);
+            CompositeException ce = (CompositeException) ts.errors().get(0);
 
             assertEquals(i, ce.getExceptions().size());
         }

@@ -97,10 +97,12 @@ public class FlowableRefCountTest {
         d2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
         d1.dispose();
 
-        System.out.println("onNext: " + nextCount.get());
+        int next = nextCount.get();
+
+        System.out.println("onNext: " + next);
 
         // should emit once for both subscribers
-        assertEquals(nextCount.get(), receivedCount.get());
+        assertEquals(next, receivedCount.get());
         // only 1 subscribe
         assertEquals(1, subscribeCount.get());
     }

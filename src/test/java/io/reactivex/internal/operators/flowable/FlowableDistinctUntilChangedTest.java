@@ -37,6 +37,7 @@ import io.reactivex.subscribers.*;
 public class FlowableDistinctUntilChangedTest {
 
     Subscriber<String> w;
+
     Subscriber<String> w2;
 
     // nulls lead to exceptions

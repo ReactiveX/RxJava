@@ -1337,7 +1337,6 @@ public class FlowableMergeTest {
             return Flowable.just(t).hide();
         }
     };
-    ;
 
     void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriber<Integer> ts) {
         List<Integer> list = new ArrayList<Integer>();
@@ -1426,7 +1425,6 @@ public class FlowableMergeTest {
     }
 
     @Test
-    @Ignore("Nulls are not allowed with RS")
     public void mergeJustNull() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
 
@@ -1438,9 +1436,7 @@ public class FlowableMergeTest {
         }).subscribe(ts);
 
         ts.request(2);
-        ts.assertValues(null, null);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        ts.assertError(NullPointerException.class);
     }
 
     @Test

@@ -59,8 +59,7 @@ public class BlockingObservableToFutureTest {
             // we expect an exception since there are more than 1 element
             f.get();
             fail("Should have thrown!");
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             throw e.getCause();
         }
     }
@@ -110,17 +109,8 @@ public class BlockingObservableToFutureTest {
         Future<String> f = obs.toFuture();
         try {
             f.get();
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             throw e.getCause();
         }
-    }
-
-    @Ignore("null value is not allowed")
-    @Test
-    public void testGetWithASingleNullItem() throws Exception {
-        Observable<String> obs = Observable.just((String)null);
-        Future<String> f = obs.toFuture();
-        assertEquals(null, f.get());
     }
 }

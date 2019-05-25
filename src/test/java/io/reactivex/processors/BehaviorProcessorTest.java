@@ -43,6 +43,12 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         return BehaviorProcessor.create();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test(expected = NullPointerException.class)
+    public void testNullEmitting() {
+        BehaviorProcessor.createDefault(null);
+    }
+
     @Test
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");

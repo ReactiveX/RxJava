@@ -168,9 +168,9 @@ public class BlockingFlowableLatestTest {
         Assert.assertEquals(false, it.hasNext());
     }
 
-    @Ignore("THe target is an enum")
+    @Ignore("The target is an enum")
     @Test
-    public void constructorshouldbeprivate() {
+    public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(BlockingFlowableLatest.class);
     }
 

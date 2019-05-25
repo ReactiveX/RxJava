@@ -73,20 +73,10 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         verify(subscriber, times(1)).onComplete();
     }
 
-    @Test
-    @Ignore("Null values not allowed")
+    @Test(expected = NullPointerException.class)
     public void testNull() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        processor.subscribe(subscriber);
-
         processor.onNext(null);
-        processor.onComplete();
-
-        verify(subscriber, times(1)).onNext(null);
-        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -259,6 +249,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     private static class SubjectSubscriberThread extends Thread {
 
         private final AsyncProcessor<String> processor;
+
         private final AtomicReference<String> value = new AtomicReference<String>();
 
         SubjectSubscriberThread(AsyncProcessor<String> processor) {

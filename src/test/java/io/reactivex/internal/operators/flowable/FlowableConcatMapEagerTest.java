@@ -641,7 +641,6 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    @Ignore("Null values are not allowed in RS")
     public void testInnerNull() {
         Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -650,9 +649,7 @@ public class FlowableConcatMapEagerTest {
             }
         }).subscribe(ts);
 
-        ts.assertNoErrors();
-        ts.assertComplete();
-        ts.assertValue(null);
+        ts.assertError(NullPointerException.class);
     }
 
     @Test

@@ -72,20 +72,10 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         verify(observer, times(1)).onComplete();
     }
 
-    @Test
-    @Ignore("Null values not allowed")
+    @Test(expected = NullPointerException.class)
     public void testNull() {
         AsyncSubject<String> subject = AsyncSubject.create();
-
-        Observer<String> observer = TestHelper.mockObserver();
-        subject.subscribe(observer);
-
         subject.onNext(null);
-        subject.onComplete();
-
-        verify(observer, times(1)).onNext(null);
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
