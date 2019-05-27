@@ -1895,4 +1895,34 @@ public class FlowableZipTest {
 
         ts.assertResult(4);
     }
+
+    @Test
+    public void firstErrorPreventsSecondSubscription() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        List<Flowable<?>> flowableList = new ArrayList<Flowable<?>>();
+        flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> e)
+                    throws Exception { throw new TestException(); }
+        }, BackpressureStrategy.MISSING));
+        flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> e)
+                    throws Exception { counter.getAndIncrement(); }
+        }, BackpressureStrategy.MISSING));
+
+        Flowable.zip(flowableList,
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return a;
+                    }
+                })
+        .test()
+        .assertFailure(TestException.class)
+        ;
+
+        assertEquals(0, counter.get());
+    }
 }

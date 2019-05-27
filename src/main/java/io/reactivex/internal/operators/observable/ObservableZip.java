@@ -179,6 +179,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                             if (z.done && !delayError) {
                                 Throwable ex = z.error;
                                 if (ex != null) {
+                                    cancelled = true;
                                     cancel();
                                     a.onError(ex);
                                     return;
@@ -224,6 +225,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                 if (delayError) {
                     if (empty) {
                         Throwable e = source.error;
+                        cancelled = true;
                         cancel();
                         if (e != null) {
                             a.onError(e);
@@ -235,11 +237,13 @@ public final class ObservableZip<T, R> extends Observable<R> {
                 } else {
                     Throwable e = source.error;
                     if (e != null) {
+                        cancelled = true;
                         cancel();
                         a.onError(e);
                         return true;
                     } else
                     if (empty) {
+                        cancelled = true;
                         cancel();
                         a.onComplete();
                         return true;
