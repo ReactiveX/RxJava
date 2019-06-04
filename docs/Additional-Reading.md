@@ -10,6 +10,7 @@ A more complete and up-to-date list of resources can be found at the [reactivex.
 * [Your Mouse is a Database](http://queue.acm.org/detail.cfm?id=2169076) by Erik Meijer
 * [A Playful Introduction to Rx](https://www.youtube.com/watch?v=WKore-AkisY) a video lecture by Erik Meijer
 * Wikipedia: [Reactive Programming](http://en.wikipedia.org/wiki/Reactive_programming) and [Functional Reactive Programming](http://en.wikipedia.org/wiki/Functional_reactive_programming)
+* [What is Reactive Programming?](https://www.youtube.com/watch?v=-8Y1-lE6NSA) a video presentation by Jafar Husain.
 * [2 minute introduction to Rx](https://medium.com/@andrestaltz/2-minute-introduction-to-rx-24c8ca793877) by André Staltz
 * StackOverflow: [What is (functional) reactive programming?](http://stackoverflow.com/a/1030631/1946802)
 * [The Reactive Manifesto](http://www.reactivemanifesto.org/)
