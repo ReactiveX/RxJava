@@ -1,26 +1,31 @@
 # RxJava: Reactive Extensions for the JVM
 
-<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=2.x'></a>
-[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=2.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/2.x)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
+<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=3.x'></a>
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=3.x)](https://codecov.io/gh/ReactiveX/RxJava/branch/3.x)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava)
 
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-#### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
+#### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
 - continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
-- performance gains through design changes learned through the 1.x cycle and through [Reactive-Streams-Commons](https://github.com/reactor/reactive-streams-commons) research project.
+- fixed API mistakes and many limits of RxJava 2
+- intended to be a replacement for RxJava 2 with relatively few binary incompatible changes
 - Java 8 lambda-friendly API
-- non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
+- non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc.)
 - async or synchronous execution
 - virtual time and schedulers for parameterized concurrency
+- test and diagnostic support via test schedulers, test consumers and plugin hooks
 
-Version 2.x and 1.x will live side-by-side for several years. They will have different group ids (`io.reactivex.rxjava2` vs `io.reactivex`) and namespaces (`io.reactivex` vs `rx`). 
+Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
-See the differences between version 1.x and 2.x in the wiki article [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
+#### Version 2.x
+
+The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) will be supported with bugfixes and important documentation updates till
+**December 31, 2020**. No new features will be added to 2.x.
 
 #### Version 1.x
 
@@ -30,13 +35,13 @@ The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life a
 
 ### Setting up the dependency
 
-The first step is to include RxJava 2 into your project, for example, as a Gradle compile dependency:
+The first step is to include RxJava 3 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
-implementation "io.reactivex.rxjava2:rxjava:2.x.y"
+implementation "io.reactivex.rxjava3:rxjava:3.x.y"
 ```
 
-(Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
+(Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava3/rxjava)
 )
 
 ### Hello World
@@ -70,13 +75,13 @@ Flowable.just("Hello world")
 
 ### Base classes
 
-RxJava 2 features several base classes you can discover operators on:
+RxJava 3 features several base classes you can discover operators on:
 
-  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
-  - [`io.reactivex.Observable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure,
-  - [`io.reactivex.Single`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html): a flow of exactly 1 item or an error,
-  - [`io.reactivex.Completable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Completable.html): a flow without items but only a completion or error signal,
-  - [`io.reactivex.Maybe`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Maybe.html): a flow with no items, exactly one item or an error.
+  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure,
+  - [`io.reactivex.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Single.html): a flow of exactly 1 item or an error,
+  - [`io.reactivex.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Completable.html): a flow without items but only a completion or error signal,
+  - [`io.reactivex.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Maybe.html): a flow with no items, exactly one item or an error.
 
 ### Some terminology
 
@@ -193,7 +198,7 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 ### Schedulers
 
-RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. 
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 3 features several standard schedulers accessible via `Schedulers` utility class. 
 
 - `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default `Scheduler`.
 - `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
@@ -468,7 +473,7 @@ Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources);
 
 #### Base class vs base type
 
-The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 2's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
+The base classes can be considered heavy due to the sheer number of static and instance methods on them. RxJava 3's design was heavily influenced by the [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams) specification, therefore, the library features a class and an interface per each reactive type:
 
 | Type | Class | Interface | Consumer |
 |------|-------|-----------|----------|
@@ -496,11 +501,11 @@ For further details, consult the [wiki](https://github.com/ReactiveX/RxJava/wiki
 
 ## Versioning
 
-Version 2.x is now considered stable and final. Version 1.x will be supported for several years along with 2.x. Enhancements and bugfixes will be synchronized between the two in a timely manner.
+Version 3.x is in development. Bugfixes will be applied to both 2.x and 3.x branches, but new features will only be added to 3.x.
 
-Minor 2.x increments (such as 2.1, 2.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
+Minor 3.x increments (such as 3.1, 3.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 2.x.y increments (such as 2.0.0 -> 2.0.1, 2.3.1 -> 2.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 3.x.y increments (such as 3.0.0 -> 3.0.1, 3.3.1 -> 3.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
 
 #### @Beta
 
@@ -521,25 +526,25 @@ All code inside the `io.reactivex.internal.*` packages is considered private API
 ## Full Documentation
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
-- [Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)
-- [Latest snaphot Javadoc](http://reactivex.io/RxJava/2.x/javadoc/snapshot/)
-- Javadoc of a specific [release version](https://github.com/ReactiveX/RxJava/tags): `http://reactivex.io/RxJava/2.x/javadoc/2.x.y/`
+- [Javadoc](http://reactivex.io/RxJava/3.x/javadoc/)
+- [Latest snaphot Javadoc](http://reactivex.io/RxJava/3.x/javadoc/snapshot/)
+- Javadoc of a specific [release version](https://github.com/ReactiveX/RxJava/tags): `http://reactivex.io/RxJava/3.x/javadoc/3.x.y/`
 
 ## Binaries
 
-Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava2).
+Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava3).
 
 Example for Gradle:
 
 ```groovy
-compile 'io.reactivex.rxjava2:rxjava:x.y.z'
+compile 'io.reactivex.rxjava3:rxjava:x.y.z'
 ```
 
 and for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex.rxjava2</groupId>
+    <groupId>io.reactivex.rxjava3</groupId>
     <artifactId>rxjava</artifactId>
     <version>x.y.z</version>
 </dependency>
@@ -547,10 +552,10 @@ and for Maven:
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava2" name="rxjava" rev="x.y.z" />
+<dependency org="io.reactivex.rxjava3" name="rxjava" rev="x.y.z" />
 ```
 
-Snapshots are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava2/rxjava/
+Snapshots are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/
 
 ```groovy
 repositories {
@@ -558,7 +563,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.2.0-SNAPSHOT'
+    compile 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
 }
 ```
 
@@ -595,5 +600,5 @@ For bugs, questions and discussions please use the [Github Issues](https://githu
     See the License for the specific language governing permissions and
     limitations under the License.
 
-[beta source link]: https://github.com/ReactiveX/RxJava/blob/2.x/src/main/java/io/reactivex/annotations/Beta.java
-[experimental source link]: https://github.com/ReactiveX/RxJava/blob/2.x/src/main/java/io/reactivex/annotations/Experimental.java
+[beta source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/annotations/Beta.java
+[experimental source link]: https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/annotations/Experimental.java
