@@ -2489,7 +2489,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that counts the total number of items emitted (0 or 1) by the source Maybe and emits
+     * Returns a Single that counts the total number of items emitted (0 or 1) by the source Maybe and emits
      * this count as a 64-bit Long.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
@@ -2533,7 +2533,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> defaultIfEmpty(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "item is null");
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return switchIfEmpty(just(defaultItem));
     }
 
@@ -2709,7 +2709,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
-        ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
+        ObjectHelper.requireNonNull(onAfterSuccess, "onAfterSuccess is null");
         return RxJavaPlugins.onAssembly(new MaybeDoAfterSuccess<T>(this, onAfterSuccess));
     }
 
@@ -2937,7 +2937,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final Maybe<T> doOnSuccess(Consumer<? super T> onSuccess) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
-                ObjectHelper.requireNonNull(onSuccess, "onSubscribe is null"),
+                ObjectHelper.requireNonNull(onSuccess, "onSuccess is null"),
                 Functions.emptyConsumer(), // onError
                 Functions.EMPTY_ACTION,    // onComplete
                 Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
@@ -3452,7 +3452,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> lift(final MaybeOperator<? extends R, ? super T> lift) {
-        ObjectHelper.requireNonNull(lift, "onLift is null");
+        ObjectHelper.requireNonNull(lift, "lift is null");
         return RxJavaPlugins.onAssembly(new MaybeLift<T, R>(this, lift));
     }
 
@@ -3685,7 +3685,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorComplete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Completable instance
+     * @return the new Maybe instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3702,7 +3702,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @param predicate the predicate to call when an Throwable is emitted which should return true
      * if the Throwable should be swallowed and replaced with an onComplete.
-     * @return the new Completable instance
+     * @return the new Maybe instance
      */
     @CheckReturnValue
     @NonNull
@@ -3984,7 +3984,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the nww Maybe instance
+     * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
@@ -4006,7 +4006,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param predicate
      *            the predicate that determines if a resubscription may happen in case of a specific exception
      *            and retry count
-     * @return the nww Maybe instance
+     * @return the new Maybe instance
      * @see #retry()
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
@@ -4031,7 +4031,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param count
-     *            number of retry attempts before failing
+     *            the number of times to resubscribe if the current Maybe fails
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
@@ -4048,7 +4048,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param times the number of times to repeat
+     * @param times the number of times to resubscribe if the current Maybe fails
      * @param predicate the predicate called with the failure Throwable and should return true to trigger a retry.
      * @return the new Maybe instance
      */
@@ -4512,7 +4512,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Maybe<T> timeout(long timeout, TimeUnit timeUnit, MaybeSource<? extends T> fallback) {
-        ObjectHelper.requireNonNull(fallback, "other is null");
+        ObjectHelper.requireNonNull(fallback, "fallback is null");
         return timeout(timeout, timeUnit, Schedulers.computation(), fallback);
     }
 

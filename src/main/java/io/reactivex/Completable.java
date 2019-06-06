@@ -508,6 +508,13 @@ public abstract class Completable implements CompletableSource {
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@link Runnable} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link CompletableObserver#onError(Throwable)},
+     *  except when the downstream has disposed this {@code Completable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
      * </dl>
      * @param run the runnable to run for each subscriber
      * @return the new Completable instance
@@ -2083,7 +2090,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param times the number of times the returned Completable should retry this Completable
+     * @param times the number of times to resubscribe if the current Completable fails
      * @return the new Completable instance
      * @throws IllegalArgumentException if times is negative
      */
@@ -2103,7 +2110,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.8 - experimental
-     * @param times the number of times the returned Completable should retry this Completable
+     * @param times the number of times to resubscribe if the current Completable fails
      * @param predicate the predicate that is called with the latest throwable and should return
      * true to indicate the returned Completable should resubscribe to this Completable.
      * @return the new Completable instance
@@ -2292,7 +2299,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(CompletableObserver observer) {
-        ObjectHelper.requireNonNull(observer, "s is null");
+        ObjectHelper.requireNonNull(observer, "observer is null");
         try {
 
             observer = RxJavaPlugins.onSubscribe(this, observer);

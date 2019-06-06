@@ -126,7 +126,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                 }
                 T t = arr[i];
                 if (t == null) {
-                    a.onError(new NullPointerException("array element is null"));
+                    a.onError(new NullPointerException("The element at index " + i + " is null"));
                     return;
                 } else {
                     a.onNext(t);
@@ -156,7 +156,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                     T t = arr[i];
 
                     if (t == null) {
-                        a.onError(new NullPointerException("array element is null"));
+                        a.onError(new NullPointerException("The element at index " + i + " is null"));
                         return;
                     } else {
                         a.onNext(t);
@@ -209,7 +209,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                 }
                 T t = arr[i];
                 if (t == null) {
-                    a.onError(new NullPointerException("array element is null"));
+                    a.onError(new NullPointerException("The element at index " + i + " is null"));
                     return;
                 } else {
                     a.tryOnNext(t);
@@ -239,7 +239,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                     T t = arr[i];
 
                     if (t == null) {
-                        a.onError(new NullPointerException("array element is null"));
+                        a.onError(new NullPointerException("The element at index " + i + " is null"));
                         return;
                     } else {
                         if (a.tryOnNext(t)) {
