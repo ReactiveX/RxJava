@@ -13,32 +13,65 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.*;
-import org.reactivestreams.*;
-
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
+import io.reactivex.exceptions.ProtocolViolationException;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableBufferBoundarySupplier.BufferBoundarySupplierSubscriber;
-import io.reactivex.internal.operators.flowable.FlowableBufferTimed.*;
+import io.reactivex.internal.operators.flowable.FlowableBufferTimed.BufferExactBoundedSubscriber;
+import io.reactivex.internal.operators.flowable.FlowableBufferTimed.BufferExactUnboundedSubscriber;
+import io.reactivex.internal.operators.flowable.FlowableBufferTimed.BufferSkipBoundedSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ArrayListSupplier;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.*;
-import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.*;
+import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.subscribers.ResourceSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableBufferTest {
 
@@ -2768,5 +2801,16 @@ public class FlowableBufferTest {
         assertTrue(sub.isDisposed());
 
         sub.run();
+    }
+
+    @Test
+    public void bufferExactFailingSupplier() {
+        Scheduler.Worker w = new TestScheduler().createWorker();
+        TestSubscriber<List<Integer>> observer = new TestSubscriber<List<Integer>>();
+
+        FlowableBufferTimed.BufferExactBoundedSubscriber<Integer, List<Integer>> buf = new FlowableBufferTimed.BufferExactBoundedSubscriber<Integer, List<Integer>>(observer, ArrayListSupplier.<Integer>asCallable(), 100, TimeUnit.MILLISECONDS, 10, false, w);
+
+        buf.onError(new Throwable());
+        buf.onComplete();
     }
 }
