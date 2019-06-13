@@ -504,7 +504,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffer = null;
             }
 
-            if(b != null) {
+            if (b != null) {
                 queue.offer(b);
                 done = true;
                 if (enter()) {
