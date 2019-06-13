@@ -38,26 +38,28 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
 
     /**
      * Creates a CompositeDisposables with the given array of initial elements.
-     * @param resources the array of Disposables to start with
+     * @param disposables the array of Disposables to start with
+     * @throws NullPointerException if {@code disposables} or any of its array items is null
      */
-    public CompositeDisposable(@NonNull Disposable... resources) {
-        ObjectHelper.requireNonNull(resources, "resources is null");
-        this.resources = new OpenHashSet<Disposable>(resources.length + 1);
-        for (Disposable d : resources) {
-            ObjectHelper.requireNonNull(d, "Disposable item is null");
+    public CompositeDisposable(@NonNull Disposable... disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        this.resources = new OpenHashSet<Disposable>(disposables.length + 1);
+        for (Disposable d : disposables) {
+            ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
             this.resources.add(d);
         }
     }
 
     /**
      * Creates a CompositeDisposables with the given Iterable sequence of initial elements.
-     * @param resources the Iterable sequence of Disposables to start with
+     * @param disposables the Iterable sequence of Disposables to start with
+     * @throws NullPointerException if {@code disposables} or any of its items is null
      */
-    public CompositeDisposable(@NonNull Iterable<? extends Disposable> resources) {
-        ObjectHelper.requireNonNull(resources, "resources is null");
+    public CompositeDisposable(@NonNull Iterable<? extends Disposable> disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
         this.resources = new OpenHashSet<Disposable>();
-        for (Disposable d : resources) {
-            ObjectHelper.requireNonNull(d, "Disposable item is null");
+        for (Disposable d : disposables) {
+            ObjectHelper.requireNonNull(d, "A Disposable item in the disposables sequence is null");
             this.resources.add(d);
         }
     }
@@ -88,12 +90,13 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     /**
      * Adds a disposable to this container or disposes it if the
      * container has been disposed.
-     * @param d the disposable to add, not null
+     * @param disposable the disposable to add, not null
      * @return true if successful, false if this container has been disposed
+     * @throws NullPointerException if {@code disposable} is null
      */
     @Override
-    public boolean add(@NonNull Disposable d) {
-        ObjectHelper.requireNonNull(d, "d is null");
+    public boolean add(@NonNull Disposable disposable) {
+        ObjectHelper.requireNonNull(disposable, "disposable is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
@@ -102,40 +105,41 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                         set = new OpenHashSet<Disposable>();
                         resources = set;
                     }
-                    set.add(d);
+                    set.add(disposable);
                     return true;
                 }
             }
         }
-        d.dispose();
+        disposable.dispose();
         return false;
     }
 
     /**
      * Atomically adds the given array of Disposables to the container or
      * disposes them all if the container has been disposed.
-     * @param ds the array of Disposables
+     * @param disposables the array of Disposables
      * @return true if the operation was successful, false if the container has been disposed
+     * @throws NullPointerException if {@code disposables} or any of its array items is null
      */
-    public boolean addAll(@NonNull Disposable... ds) {
-        ObjectHelper.requireNonNull(ds, "ds is null");
+    public boolean addAll(@NonNull Disposable... disposables) {
+        ObjectHelper.requireNonNull(disposables, "disposables is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
                     OpenHashSet<Disposable> set = resources;
                     if (set == null) {
-                        set = new OpenHashSet<Disposable>(ds.length + 1);
+                        set = new OpenHashSet<Disposable>(disposables.length + 1);
                         resources = set;
                     }
-                    for (Disposable d : ds) {
-                        ObjectHelper.requireNonNull(d, "d is null");
+                    for (Disposable d : disposables) {
+                        ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
                         set.add(d);
                     }
                     return true;
                 }
             }
         }
-        for (Disposable d : ds) {
+        for (Disposable d : disposables) {
             d.dispose();
         }
         return false;
@@ -144,13 +148,13 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     /**
      * Removes and disposes the given disposable if it is part of this
      * container.
-     * @param d the disposable to remove and dispose, not null
+     * @param disposable the disposable to remove and dispose, not null
      * @return true if the operation was successful
      */
     @Override
-    public boolean remove(@NonNull Disposable d) {
-        if (delete(d)) {
-            d.dispose();
+    public boolean remove(@NonNull Disposable disposable) {
+        if (delete(disposable)) {
+            disposable.dispose();
             return true;
         }
         return false;
@@ -159,12 +163,13 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     /**
      * Removes (but does not dispose) the given disposable if it is part of this
      * container.
-     * @param d the disposable to remove, not null
+     * @param disposable the disposable to remove, not null
      * @return true if the operation was successful
+     * @throws NullPointerException if {@code disposable} is null
      */
     @Override
-    public boolean delete(@NonNull Disposable d) {
-        ObjectHelper.requireNonNull(d, "Disposable item is null");
+    public boolean delete(@NonNull Disposable disposable) {
+        ObjectHelper.requireNonNull(disposable, "disposables is null");
         if (disposed) {
             return false;
         }
@@ -174,7 +179,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
             }
 
             OpenHashSet<Disposable> set = resources;
-            if (set == null || !set.remove(d)) {
+            if (set == null || !set.remove(disposable)) {
                 return false;
             }
         }

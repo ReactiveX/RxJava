@@ -15,7 +15,25 @@
  */
 
 /**
- * Classes extending the Flowable base reactive class and implementing
- * the Subscriber interface at the same time (aka hot Flowables).
+ * Classes representing so-called hot backpressure-aware sources, aka <strong>processors</strong>,
+ * that implement the {@link FlowableProcessor} class,
+ * the Reactive Streams {@link org.reactivestreams.Processor Processor} interface
+ * to allow forms of multicasting events to one or more subscribers as well as consuming another
+ * Reactive Streams {@link org.reactivestreams.Publisher Publisher}.
+ * <p>
+ * Available processor implementations:
+ * <br>
+ * <ul>
+ *     <li>{@link io.reactivex.processors.AsyncProcessor AsyncProcessor} - replays the very last item</li>
+ *     <li>{@link io.reactivex.processors.BehaviorProcessor BehaviorProcessor} - remembers the latest item</li>
+ *     <li>{@link io.reactivex.processors.MulticastProcessor MulticastProcessor} - coordinates its source with its consumers</li>
+ *     <li>{@link io.reactivex.processors.PublishProcessor PublishProcessor} - dispatches items to current consumers</li>
+ *     <li>{@link io.reactivex.processors.ReplayProcessor ReplayProcessor} - remembers some or all items and replays them to consumers</li>
+ *     <li>{@link io.reactivex.processors.UnicastProcessor UnicastProcessor} - remembers or relays items to a single consumer</li>
+ * </ul>
+ * <p>
+ * The non-backpressured variants of the {@code FlowableProcessor} class are called
+ * {@link io.reactivex.Subject}s and reside in the {@code io.reactivex.subjects} package.
+ * @see io.reactivex.subjects
  */
 package io.reactivex.processors;

@@ -29,7 +29,7 @@
  *     <br>&nbsp;&nbsp;&nbsp;{@link io.reactivex.subjects.BehaviorSubject BehaviorSubject}
  *     <br>&nbsp;&nbsp;&nbsp;{@link io.reactivex.subjects.PublishSubject PublishSubject}
  *     <br>&nbsp;&nbsp;&nbsp;{@link io.reactivex.subjects.ReplaySubject ReplaySubject}
- *     <br>&nbsp;&nbsp;&nbsp;{@link io.reactivex.subjects.UnicastSubject UnicastSubjectSubject}
+ *     <br>&nbsp;&nbsp;&nbsp;{@link io.reactivex.subjects.UnicastSubject UnicastSubject}
  *     </td>
  *     <td>{@link io.reactivex.Observable Observable}</td>
  *     <td>{@link io.reactivex.Observer Observer}</td>
