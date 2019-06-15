@@ -16,7 +16,7 @@
 
 /**
  * Classes representing so-called hot backpressure-aware sources, aka <strong>processors</strong>,
- * that implement the {@link FlowableProcessor} class,
+ * that implement the {@link io.reactivex.processors.FlowableProcessor FlowableProcessor} class,
  * the Reactive Streams {@link org.reactivestreams.Processor Processor} interface
  * to allow forms of multicasting events to one or more subscribers as well as consuming another
  * Reactive Streams {@link org.reactivestreams.Publisher Publisher}.
@@ -33,7 +33,7 @@
  * </ul>
  * <p>
  * The non-backpressured variants of the {@code FlowableProcessor} class are called
- * {@link io.reactivex.Subject}s and reside in the {@code io.reactivex.subjects} package.
+ * {@link io.reactivex.subjects.Subject}s and reside in the {@code io.reactivex.subjects} package.
  * @see io.reactivex.subjects
  */
 package io.reactivex.processors;
