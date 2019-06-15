@@ -19,7 +19,6 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
