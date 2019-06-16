@@ -69,6 +69,24 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     }
 
     /**
+     * Apply a workaround for a race condition with the regular publish().refCount()
+     * so that racing subscribers and refCount won't hang.
+     * 
+     * @return the ConnectableFlowable to work with
+     * @since 2.2.10
+     */
+    private ConnectableFlowable<T> onRefCount() {
+        if (this instanceof FlowablePublishClassic) {
+            @SuppressWarnings("unchecked")
+            FlowablePublishClassic<T> fp = (FlowablePublishClassic<T>) this;
+            return RxJavaPlugins.onAssembly(
+                    new FlowablePublishAlt<T>(fp.publishSource(), fp.publishBufferSize())
+                    );
+        }
+        return this;
+    }
+
+    /**
      * Returns a {@code Flowable} that stays connected to this {@code ConnectableFlowable} as long as there
      * is at least one subscription to this {@code ConnectableFlowable}.
      * <dl>
@@ -89,7 +107,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public Flowable<T> refCount() {
-        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this));
+        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(onRefCount()));
     }
 
     /**
@@ -216,7 +234,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this, subscriberCount, timeout, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(onRefCount(), subscriberCount, timeout, unit, scheduler));
     }
 
     /**

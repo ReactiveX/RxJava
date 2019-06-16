@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -41,29 +41,7 @@ import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableRefCountTest {
-
-    // This will undo the workaround so that the plain ObservablePublish is still
-    // tested.
-    @Before
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void before() {
-        RxJavaPlugins.setOnConnectableFlowableAssembly(new Function<ConnectableFlowable, ConnectableFlowable>() {
-            @Override
-            public ConnectableFlowable apply(ConnectableFlowable co) throws Exception {
-                if (co instanceof FlowablePublishAlt) {
-                    FlowablePublishAlt fpa = (FlowablePublishAlt) co;
-                    return FlowablePublish.create(Flowable.fromPublisher(fpa.source()), fpa.publishBufferSize());
-                }
-                return co;
-            }
-        });
-    }
-
-    @After
-    public void after() {
-        RxJavaPlugins.setOnConnectableFlowableAssembly(null);
-    }
+public class FlowableRefCountAltTest {
 
     @Test
     public void testRefCountAsync() {
@@ -746,6 +724,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void publishNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -762,12 +741,14 @@ public class FlowableRefCountTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
         Thread.sleep(100);
+        System.gc();
+        Thread.sleep(200);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
         source = null;
+
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
     }
 
@@ -1348,6 +1329,7 @@ public class FlowableRefCountTest {
         rc.subscriberCount = 1;
         rc.connected = true;
         o.connection = rc;
+        rc.set(null);
         o.cancel(rc);
 
         o.connection = rc;
@@ -1430,5 +1412,32 @@ public class FlowableRefCountTest {
         processor.onNext(2);
 
         flowable.take(1).test().assertResult(2);
+    }
+
+    @Test
+    public void publishRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Flowable<Integer> flowable = Flowable.just(1).publish().refCount();
+
+            TestSubscriber<Integer> subscriber1 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestSubscriber<Integer> subscriber2 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            subscriber1
+            .withTag("subscriber1 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+
+            subscriber2
+            .withTag("subscriber2 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+        }
     }
 }

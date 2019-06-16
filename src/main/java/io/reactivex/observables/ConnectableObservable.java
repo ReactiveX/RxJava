@@ -67,6 +67,23 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     }
 
     /**
+     * Apply a workaround for a race condition with the regular publish().refCount()
+     * so that racing observers and refCount won't hang.
+     * 
+     * @return the ConnectableObservable to work with
+     * @since 2.2.10
+     */
+    @SuppressWarnings("unchecked")
+    private ConnectableObservable<T> onRefCount() {
+        if (this instanceof ObservablePublishClassic) {
+            return RxJavaPlugins.onAssembly(
+                    new ObservablePublishAlt<T>(((ObservablePublishClassic<T>)this).publishSource())
+                   );
+        }
+        return this;
+    }
+
+    /**
      * Returns an {@code Observable} that stays connected to this {@code ConnectableObservable} as long as there
      * is at least one subscription to this {@code ConnectableObservable}.
      * <dl>
@@ -83,7 +100,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public Observable<T> refCount() {
-        return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(this));
+        return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(onRefCount()));
     }
 
     /**
@@ -190,7 +207,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(this, subscriberCount, timeout, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(onRefCount(), subscriberCount, timeout, unit, scheduler));
     }
 
     /**

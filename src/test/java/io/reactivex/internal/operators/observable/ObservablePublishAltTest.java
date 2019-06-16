@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -35,28 +35,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
-public class ObservablePublishTest {
-
-    // This will undo the workaround so that the plain ObservablePublish is still
-    // tested.
-    @Before
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void before() {
-        RxJavaPlugins.setOnConnectableObservableAssembly(new Function<ConnectableObservable, ConnectableObservable>() {
-            @Override
-            public ConnectableObservable apply(ConnectableObservable co) throws Exception {
-                if (co instanceof ObservablePublishAlt) {
-                    return ObservablePublish.create(((ObservablePublishAlt)co).source());
-                }
-                return co;
-            }
-        });
-    }
-
-    @After
-    public void after() {
-        RxJavaPlugins.setOnConnectableObservableAssembly(null);
-    }
+public class ObservablePublishAltTest {
 
     @Test
     public void testPublish() throws InterruptedException {
@@ -778,5 +757,38 @@ public class ObservablePublishTest {
         to2.assertEmpty();
 
         ((ObservablePublish<Integer>)co).current.get().remove(null);
+    }
+
+    @Test
+    public void altConnectCrash() {
+        try {
+            new ObservablePublishAlt<Integer>(Observable.<Integer>empty())
+            .connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable t) throws Exception {
+                    throw new TestException();
+                }
+            });
+            fail("Should have thrown");
+        } catch (TestException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void altConnectRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final ConnectableObservable<Integer> co =
+                    new ObservablePublishAlt<Integer>(Observable.<Integer>never());
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    co.connect();
+                }
+            };
+
+            TestHelper.race(r, r);
+        }
     }
 }
