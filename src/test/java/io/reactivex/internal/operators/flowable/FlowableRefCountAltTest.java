@@ -653,6 +653,7 @@ public class FlowableRefCountAltTest {
 
     @Test
     public void replayNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -669,6 +670,7 @@ public class FlowableRefCountAltTest {
 
         source.subscribe();
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -680,6 +682,7 @@ public class FlowableRefCountAltTest {
 
     @Test
     public void replayNoLeak2() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -703,6 +706,7 @@ public class FlowableRefCountAltTest {
         d1 = null;
         d2 = null;
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
