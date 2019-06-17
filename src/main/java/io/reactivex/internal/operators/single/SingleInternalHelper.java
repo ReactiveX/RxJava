@@ -39,7 +39,7 @@ public final class SingleInternalHelper {
         public NoSuchElementException call() throws Exception {
             return new NoSuchElementException();
         }
-        
+
         @Override
         public NoSuchElementException get() throws Throwable {
             return new NoSuchElementException();

@@ -558,7 +558,7 @@ public class FlowableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception functional interfaces declare throws Exception
+     * @throws Throwable functional interfaces declare throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -618,7 +618,7 @@ public class FlowableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception functional interfaces declare throws Exception
+     * @throws Throwable functional interfaces declare throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test

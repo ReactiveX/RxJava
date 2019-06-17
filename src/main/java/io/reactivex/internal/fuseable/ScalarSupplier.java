@@ -20,7 +20,7 @@ import io.reactivex.functions.Supplier;
  * safely extracted during assembly time can be used for
  * optimization.
  * <p>
- * Implementors of {@link #call()} should not throw any exception.
+ * Implementors of {@link #get()} should not throw any exception.
  * <p>
  * Design note: the interface extends {@link Supplier} because if a scalar
  * is safe to extract during assembly time, it is also safe to extract at

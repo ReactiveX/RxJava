@@ -89,7 +89,7 @@ import io.reactivex.subscribers.*;
  * </code></pre>
  * <p>
  * The Reactive Streams specification is relatively strict when defining interactions between {@code Publisher}s and {@code Subscriber}s, so much so
- * that there is a significant performance penalty due certain timing requirements and the need to prepare for invalid 
+ * that there is a significant performance penalty due certain timing requirements and the need to prepare for invalid
  * request amounts via {@link Subscription#request(long)}.
  * Therefore, RxJava has introduced the {@link FlowableSubscriber} interface that indicates the consumer can be driven with relaxed rules.
  * All RxJava operators are implemented with these relaxed rules in mind.
@@ -112,7 +112,7 @@ import io.reactivex.subscribers.*;
  *
  *         // could be some blocking operation
  *         Thread.sleep(1000);
- *         
+ *
  *         // the consumer might have cancelled the flow
  *         if (emitter.isCancelled() {
  *             return;
@@ -138,7 +138,7 @@ import io.reactivex.subscribers.*;
  * RxJava reactive sources, such as {@code Flowable}, are generally synchronous and sequential in nature. In the ReactiveX design, the location (thread)
  * where operators run is <i>orthogonal</i> to when the operators can work with data. This means that asynchrony and parallelism
  * has to be explicitly expressed via operators such as {@link #subscribeOn(Scheduler)}, {@link #observeOn(Scheduler)} and {@link #parallel()}. In general,
- * operators featuring a {@link Scheduler} parameter are introducing this type of asynchrony into the flow. 
+ * operators featuring a {@link Scheduler} parameter are introducing this type of asynchrony into the flow.
  * <p>
  * For more information see the <a href="http://reactivex.io/documentation/Publisher.html">ReactiveX
  * documentation</a>.

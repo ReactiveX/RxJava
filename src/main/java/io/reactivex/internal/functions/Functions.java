@@ -187,7 +187,7 @@ public final class Functions {
         public U apply(T t) throws Exception {
             return value;
         }
-        
+
         @Override
         public U get() throws Throwable {
             return value;
@@ -749,7 +749,7 @@ public final class Functions {
         public Object call() {
             return null;
         }
-        
+
         @Override
         public Object get() throws Throwable {
             return null;
