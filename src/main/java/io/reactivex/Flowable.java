@@ -2295,7 +2295,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Flowable.
      * <p>
      * The {@link Publisher} must follow the
-     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive Streams specification</a>.
      * Violating the specification may result in undefined behavior.
      * <p>
      * If possible, use {@link #create(FlowableOnSubscribe, BackpressureStrategy)} to create a

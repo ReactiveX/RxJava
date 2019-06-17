@@ -51,7 +51,7 @@ import io.reactivex.schedulers.*;
  * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
  * <p>
  * The design of this class was derived from the
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive-Streams design and specification</a>
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive Streams design and specification</a>
  * by removing any backpressure-related infrastructure and implementation detail, replacing the
  * {@code org.reactivestreams.Subscription} with {@link Disposable} as the primary means to dispose of
  * a flow.
@@ -1985,12 +1985,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Converts an arbitrary Reactive-Streams Publisher into an Observable.
+     * Converts an arbitrary Reactive Streams Publisher into an Observable.
      * <p>
      * <img width="640" height="344" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromPublisher.o.png" alt="">
      * <p>
      * The {@link Publisher} must follow the
-     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive Streams specification</a>.
      * Violating the specification may result in undefined behavior.
      * <p>
      * If possible, use {@link #create(ObservableOnSubscribe)} to create a
@@ -3982,7 +3982,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Create an Observable by wrapping an ObservableSource <em>which has to be implemented according
-     * to the Reactive-Streams-based Observable specification by handling
+     * to the Reactive Streams based Observable specification by handling
      * disposal correctly; no safeguards are provided by the Observable itself</em>.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -11229,7 +11229,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Subscribes to the current Observable and wraps the given Observer into a SafeObserver
      * (if not already a SafeObserver) that
      * deals with exceptions thrown by a misbehaving Observer (that doesn't follow the
-     * Reactive-Streams specification).
+     * Reactive Streams specification).
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>

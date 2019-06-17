@@ -10,7 +10,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 
 #### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
 
-- single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
+- single dependency: [Reactive Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
 - continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
 - performance gains through design changes learned through the 1.x cycle and through [Reactive-Streams-Commons](https://github.com/reactor/reactive-streams-commons) research project.
 - Java 8 lambda-friendly API
@@ -72,7 +72,7 @@ Flowable.just("Hello world")
 
 RxJava 2 features several base classes you can discover operators on:
 
-  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive Streams and backpressure
   - [`io.reactivex.Observable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure,
   - [`io.reactivex.Single`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html): a flow of exactly 1 item or an error,
   - [`io.reactivex.Completable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Completable.html): a flow without items but only a completion or error signal,
