@@ -501,13 +501,14 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 buffer = null;
             }
 
-            queue.offer(b);
-            done = true;
-            if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, downstream, false, this, this);
+            if (b != null) {
+                queue.offer(b);
+                done = true;
+                if (enter()) {
+                    QueueDrainHelper.drainMaxLoop(queue, downstream, false, this, this);
+                }
+                w.dispose();
             }
-
-            w.dispose();
         }
 
         @Override
