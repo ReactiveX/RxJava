@@ -161,7 +161,7 @@ public class AppendOnlyLinkedArrayList<T> {
      * @throws Exception if the predicate throws
      */
     @SuppressWarnings("unchecked")
-    public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
+    public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Throwable {
         Object[] a = head;
         final int c = capacity;
         for (;;) {

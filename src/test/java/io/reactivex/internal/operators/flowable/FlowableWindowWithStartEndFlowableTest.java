@@ -112,10 +112,10 @@ public class FlowableWindowWithStartEndFlowableTest {
             }
         });
 
-        Callable<Flowable<Object>> closer = new Callable<Flowable<Object>>() {
+        Supplier<Flowable<Object>> closer = new Supplier<Flowable<Object>>() {
             int calls;
             @Override
-            public Flowable<Object> call() {
+            public Flowable<Object> get() {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> subscriber) {

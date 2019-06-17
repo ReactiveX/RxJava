@@ -178,7 +178,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
-        public R apply(T t) throws Exception {
+        public R apply(T t) throws Throwable {
             return ObjectHelper.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
         }
     }

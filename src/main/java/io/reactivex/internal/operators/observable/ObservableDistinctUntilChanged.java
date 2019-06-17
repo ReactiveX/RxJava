@@ -92,7 +92,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             for (;;) {
                 T v = qd.poll();
                 if (v == null) {

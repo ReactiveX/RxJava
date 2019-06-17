@@ -13,21 +13,20 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.Single;
+import io.reactivex.functions.Supplier;
 
 public class SingleDeferTest {
 
     @Test
     public void normal() {
 
-        Single<Integer> s = Single.defer(new Callable<Single<Integer>>() {
+        Single<Integer> s = Single.defer(new Supplier<Single<Integer>>() {
             int counter;
             @Override
-            public Single<Integer> call() throws Exception {
+            public Single<Integer> get() throws Exception {
                 return Single.just(++counter);
             }
         });

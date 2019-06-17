@@ -15,14 +15,14 @@ package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 
 /**
  * Signals a constant value.
  *
  * @param <T> the value type
  */
-public final class MaybeJust<T> extends Maybe<T> implements ScalarCallable<T> {
+public final class MaybeJust<T> extends Maybe<T> implements ScalarSupplier<T> {
 
     final T value;
 
@@ -37,7 +37,7 @@ public final class MaybeJust<T> extends Maybe<T> implements ScalarCallable<T> {
     }
 
     @Override
-    public T call() {
+    public T get() {
         return value;
     }
 }

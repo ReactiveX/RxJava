@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Iterator;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -46,11 +45,11 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
     @SuppressWarnings("unchecked")
     @Override
     public void subscribeActual(Subscriber<? super R> s) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             T v;
 
             try {
-                v = ((Callable<T>)source).call();
+                v = ((Supplier<T>)source).get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, s);
@@ -415,7 +414,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         @Nullable
         @Override
-        public R poll() throws Exception {
+        public R poll() throws Throwable {
             Iterator<? extends R> it = current;
             for (;;) {
                 if (it == null) {

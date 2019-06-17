@@ -13,18 +13,17 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class SingleError<T> extends Single<T> {
 
-    final Callable<? extends Throwable> errorSupplier;
+    final Supplier<? extends Throwable> errorSupplier;
 
-    public SingleError(Callable<? extends Throwable> errorSupplier) {
+    public SingleError(Supplier<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
 
@@ -33,7 +32,7 @@ public final class SingleError<T> extends Single<T> {
         Throwable error;
 
         try {
-            error = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
+            error = ObjectHelper.requireNonNull(errorSupplier.get(), "Supplier returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             error = e;

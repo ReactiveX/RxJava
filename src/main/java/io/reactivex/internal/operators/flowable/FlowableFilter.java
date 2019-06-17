@@ -83,7 +83,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             QueueSubscription<T> qs = this.qs;
             Predicate<? super T> f = filter;
 
@@ -146,7 +146,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             QueueSubscription<T> qs = this.qs;
             Predicate<? super T> f = filter;
 

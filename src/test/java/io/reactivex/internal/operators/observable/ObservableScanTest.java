@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,8 +26,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
@@ -178,10 +176,10 @@ public class ObservableScanTest {
     @Test
     public void testSeedFactory() {
         Observable<List<Integer>> o = Observable.range(1, 10)
-                .collect(new Callable<List<Integer>>() {
+                .collect(new Supplier<List<Integer>>() {
 
                     @Override
-                    public List<Integer> call() {
+                    public List<Integer> get() {
                         return new ArrayList<Integer>();
                     }
 

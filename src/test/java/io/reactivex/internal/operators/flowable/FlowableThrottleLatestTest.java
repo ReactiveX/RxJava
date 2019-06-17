@@ -182,7 +182,7 @@ public class FlowableThrottleLatestTest {
     }
 
     @Test
-    public void missingBackpressureExceptionFirst() throws Exception {
+    public void missingBackpressureExceptionFirst() throws Throwable {
         TestScheduler sch = new TestScheduler();
         Action onCancel = mock(Action.class);
 
@@ -196,7 +196,7 @@ public class FlowableThrottleLatestTest {
     }
 
     @Test
-    public void missingBackpressureExceptionLatest() throws Exception {
+    public void missingBackpressureExceptionLatest() throws Throwable {
         TestScheduler sch = new TestScheduler();
         Action onCancel = mock(Action.class);
 
@@ -214,7 +214,7 @@ public class FlowableThrottleLatestTest {
     }
 
     @Test
-    public void missingBackpressureExceptionLatestComplete() throws Exception {
+    public void missingBackpressureExceptionLatestComplete() throws Throwable {
         TestScheduler sch = new TestScheduler();
         Action onCancel = mock(Action.class);
 
@@ -238,7 +238,7 @@ public class FlowableThrottleLatestTest {
     }
 
     @Test
-    public void take() throws Exception {
+    public void take() throws Throwable {
         Action onCancel = mock(Action.class);
 
         Flowable.range(1, 5)

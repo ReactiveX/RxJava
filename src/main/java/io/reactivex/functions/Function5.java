@@ -33,8 +33,8 @@ public interface Function5<T1, T2, T3, T4, T5, R> {
      * @param t4 the fourth value
      * @param t5 the fifth value
      * @return the result value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
     @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2, @NonNull T3 t3, @NonNull T4 t4, @NonNull T5 t5) throws Exception;
+    R apply(@NonNull T1 t1, @NonNull T2 t2, @NonNull T3 t3, @NonNull T4 t4, @NonNull T5 t5) throws Throwable;
 }

@@ -21,15 +21,16 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.disposables.Disposable;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class MaybeFromCallableTest {
     @Test(expected = NullPointerException.class)
@@ -114,7 +115,7 @@ public class MaybeFromCallableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void callable() throws Exception {
+    public void callable() throws Throwable {
         final int[] counter = { 0 };
 
         Maybe<Integer> m = Maybe.fromCallable(new Callable<Integer>() {
@@ -125,9 +126,9 @@ public class MaybeFromCallableTest {
             }
         });
 
-        assertTrue(m.getClass().toString(), m instanceof Callable);
+        assertTrue(m.getClass().toString(), m instanceof Supplier);
 
-        assertEquals(0, ((Callable<Void>)m).call());
+        assertEquals(0, ((Supplier<Void>)m).get());
 
         assertEquals(1, counter[0]);
     }

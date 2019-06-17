@@ -350,7 +350,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable defer(final Callable<? extends CompletableSource> completableSupplier) {
+    public static Completable defer(final Supplier<? extends CompletableSource> completableSupplier) {
         ObjectHelper.requireNonNull(completableSupplier, "completableSupplier");
         return RxJavaPlugins.onAssembly(new CompletableDefer(completableSupplier));
     }
@@ -374,7 +374,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(final Callable<? extends Throwable> errorSupplier) {
+    public static Completable error(final Supplier<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(errorSupplier));
     }
@@ -971,7 +971,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <R> Completable using(Callable<R> resourceSupplier,
+    public static <R> Completable using(Supplier<R> resourceSupplier,
             Function<? super R, ? extends CompletableSource> completableFunction,
             Consumer<? super R> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
@@ -1003,7 +1003,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
-            final Callable<R> resourceSupplier,
+            final Supplier<R> resourceSupplier,
             final Function<? super R, ? extends CompletableSource> completableFunction,
             final Consumer<? super R> disposer,
             final boolean eager) {
@@ -2688,7 +2688,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <T> Single<T> toSingle(final Callable<? extends T> completionValueSupplier) {
+    public final <T> Single<T> toSingle(final Supplier<? extends T> completionValueSupplier) {
         ObjectHelper.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableToSingle<T>(this, completionValueSupplier, null));
     }

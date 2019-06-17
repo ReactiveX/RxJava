@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
@@ -22,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -33,10 +33,10 @@ import io.reactivex.subscribers.*;
 
 public final class FlowableBufferBoundarySupplier<T, U extends Collection<? super T>, B>
 extends AbstractFlowableWithUpstream<T, U> {
-    final Callable<? extends Publisher<B>> boundarySupplier;
-    final Callable<U> bufferSupplier;
+    final Supplier<? extends Publisher<B>> boundarySupplier;
+    final Supplier<U> bufferSupplier;
 
-    public FlowableBufferBoundarySupplier(Flowable<T> source, Callable<? extends Publisher<B>> boundarySupplier, Callable<U> bufferSupplier) {
+    public FlowableBufferBoundarySupplier(Flowable<T> source, Supplier<? extends Publisher<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         super(source);
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
@@ -50,8 +50,8 @@ extends AbstractFlowableWithUpstream<T, U> {
     static final class BufferBoundarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainSubscriber<T, U, U> implements FlowableSubscriber<T>, Subscription, Disposable {
 
-        final Callable<U> bufferSupplier;
-        final Callable<? extends Publisher<B>> boundarySupplier;
+        final Supplier<U> bufferSupplier;
+        final Supplier<? extends Publisher<B>> boundarySupplier;
 
         Subscription upstream;
 
@@ -59,8 +59,8 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         U buffer;
 
-        BufferBoundarySupplierSubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
-                                                Callable<? extends Publisher<B>> boundarySupplier) {
+        BufferBoundarySupplierSubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
+                Supplier<? extends Publisher<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -78,7 +78,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U b;
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancelled = true;
@@ -92,7 +92,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<B> boundary;
 
             try {
-                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.get(), "The boundary publisher supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;
@@ -174,7 +174,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -185,7 +185,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<B> boundary;
 
             try {
-                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.get(), "The boundary publisher supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;

@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.*;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -432,30 +433,30 @@ public final class Schedulers {
         SchedulerPoolFactory.start();
     }
 
-    static final class IOTask implements Callable<Scheduler> {
+    static final class IOTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler call() throws Exception {
+        public Scheduler get() throws Exception {
             return IoHolder.DEFAULT;
         }
     }
 
-    static final class NewThreadTask implements Callable<Scheduler> {
+    static final class NewThreadTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler call() throws Exception {
+        public Scheduler get() throws Exception {
             return NewThreadHolder.DEFAULT;
         }
     }
 
-    static final class SingleTask implements Callable<Scheduler> {
+    static final class SingleTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler call() throws Exception {
+        public Scheduler get() throws Exception {
             return SingleHolder.DEFAULT;
         }
     }
 
-    static final class ComputationTask implements Callable<Scheduler> {
+    static final class ComputationTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler call() throws Exception {
+        public Scheduler get() throws Exception {
             return ComputationHolder.DEFAULT;
         }
     }

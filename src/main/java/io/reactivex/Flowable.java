@@ -1935,7 +1935,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> defer(Callable<? extends Publisher<? extends T>> supplier) {
+    public static <T> Flowable<T> defer(Supplier<? extends Publisher<? extends T>> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableDefer<T>(supplier));
     }
@@ -1979,7 +1979,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param supplier
-     *            a Callable factory to return a Throwable for each individual Subscriber
+     *            a Supplier factory to return a Throwable for each individual Subscriber
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Publisher
      * @return a Flowable that invokes the {@link Subscriber}'s {@link Subscriber#onError onError} method when
@@ -1990,7 +1990,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> error(Callable<? extends Throwable> supplier) {
+    public static <T> Flowable<T> error(Supplier<? extends Throwable> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableError<T>(supplier));
     }
@@ -2021,7 +2021,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(final Throwable throwable) {
         ObjectHelper.requireNonNull(throwable, "throwable is null");
-        return error(Functions.justCallable(throwable));
+        return error(Functions.justSupplier(throwable));
     }
 
     /**
@@ -2086,7 +2086,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *         the type of the item emitted by the Publisher
      * @return a Flowable whose {@link Subscriber}s' subscriptions trigger an invocation of the given function
-     * @see #defer(Callable)
+     * @see #defer(Supplier)
      * @since 2.0
      */
     @CheckReturnValue
@@ -2379,7 +2379,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <S> the type of the per-Subscriber state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
+     * @param initialState the Supplier to generate the initial state for each Subscriber
      * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event. Signaling multiple {@code onNext}
@@ -2390,7 +2390,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
+    public static <T, S> Flowable<T> generate(Supplier<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator),
                 Functions.emptyConsumer());
@@ -2412,7 +2412,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <S> the type of the per-Subscriber state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
+     * @param initialState the Supplier to generate the initial state for each Subscriber
      * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event. Signaling multiple {@code onNext}
@@ -2425,7 +2425,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator,
+    public static <T, S> Flowable<T> generate(Supplier<S> initialState, final BiConsumer<S, Emitter<T>> generator,
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
@@ -2447,7 +2447,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <S> the type of the per-Subscriber state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
+     * @param initialState the Supplier to generate the initial state for each Subscriber
      * @param generator the Function called with the current state whenever a particular downstream Subscriber has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event and should return a (new) state for
@@ -2458,7 +2458,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
+    public static <T, S> Flowable<T> generate(Supplier<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
@@ -2478,7 +2478,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <S> the type of the per-Subscriber state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
+     * @param initialState the Supplier to generate the initial state for each Subscriber
      * @param generator the Function called with the current state whenever a particular downstream Subscriber has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event and should return a (new) state for
@@ -2492,7 +2492,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator, Consumer<? super S> disposeState) {
+    public static <T, S> Flowable<T> generate(Supplier<S> initialState, BiFunction<S, Emitter<T>, S> generator, Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator is null");
         ObjectHelper.requireNonNull(disposeState, "disposeState is null");
@@ -4531,7 +4531,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Flowable<T> using(Callable<? extends D> resourceSupplier,
+    public static <T, D> Flowable<T> using(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> resourceDisposer) {
         return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
     }
@@ -4571,7 +4571,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Flowable<T> using(Callable<? extends D> resourceSupplier,
+    public static <T, D> Flowable<T> using(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends Publisher<? extends T>> sourceSupplier,
                     Consumer<? super D> resourceDisposer, boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
@@ -6334,7 +6334,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> buffer(int count, int skip) {
-        return buffer(count, skip, ArrayListSupplier.<T>asCallable());
+        return buffer(count, skip, ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6372,7 +6372,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Flowable<U> buffer(int count, int skip, Callable<U> bufferSupplier) {
+    public final <U extends Collection<? super T>> Flowable<U> buffer(int count, int skip, Supplier<U> bufferSupplier) {
         ObjectHelper.verifyPositive(count, "count");
         ObjectHelper.verifyPositive(skip, "skip");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -6409,7 +6409,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Flowable<U> buffer(int count, Callable<U> bufferSupplier) {
+    public final <U extends Collection<? super T>> Flowable<U> buffer(int count, Supplier<U> bufferSupplier) {
         return buffer(count, count, bufferSupplier);
     }
 
@@ -6444,7 +6444,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit) {
-        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>asCallable());
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6481,7 +6481,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>asCallable());
+        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6523,7 +6523,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Flowable<U> buffer(long timespan, long timeskip, TimeUnit unit,
-            Scheduler scheduler, Callable<U> bufferSupplier) {
+            Scheduler scheduler, Supplier<U> bufferSupplier) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -6635,7 +6635,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler, int count) {
-        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.<T>asCallable(), false);
+        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.<T>asSupplier(), false);
     }
 
     /**
@@ -6682,7 +6682,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U extends Collection<? super T>> Flowable<U> buffer(
             long timespan, TimeUnit unit,
             Scheduler scheduler, int count,
-            Callable<U> bufferSupplier,
+            Supplier<U> bufferSupplier,
             boolean restartTimerOnMaxSize) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -6723,7 +6723,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.<T>asCallable(), false);
+        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.<T>asSupplier(), false);
     }
 
     /**
@@ -6759,7 +6759,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
             Flowable<? extends TOpening> openingIndicator,
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> closingIndicator) {
-        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asCallable());
+        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6799,7 +6799,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <TOpening, TClosing, U extends Collection<? super T>> Flowable<U> buffer(
             Flowable<? extends TOpening> openingIndicator,
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> closingIndicator,
-            Callable<U> bufferSupplier) {
+            Supplier<U> bufferSupplier) {
         ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
         ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
@@ -6837,7 +6837,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Publisher<B> boundaryIndicator) {
-        return buffer(boundaryIndicator, ArrayListSupplier.<T>asCallable());
+        return buffer(boundaryIndicator, ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6911,7 +6911,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundaryIndicator, Callable<U> bufferSupplier) {
+    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundaryIndicator, Supplier<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundaryIndicator, "boundaryIndicator is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return RxJavaPlugins.onAssembly(new FlowableBufferExactBoundary<T, U, B>(this, boundaryIndicator, bufferSupplier));
@@ -6936,7 +6936,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <B> the value type of the boundary-providing Publisher
      * @param boundaryIndicatorSupplier
-     *            a {@link Callable} that produces a Publisher that governs the boundary between buffers.
+     *            a {@link Supplier} that produces a Publisher that governs the boundary between buffers.
      *            Whenever the supplied {@code Publisher} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return a Flowable that emits a connected, non-overlapping buffer of items from the source Publisher
@@ -6946,8 +6946,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<List<T>> buffer(Callable<? extends Publisher<B>> boundaryIndicatorSupplier) {
-        return buffer(boundaryIndicatorSupplier, ArrayListSupplier.<T>asCallable());
+    public final <B> Flowable<List<T>> buffer(Supplier<? extends Publisher<B>> boundaryIndicatorSupplier) {
+        return buffer(boundaryIndicatorSupplier, ArrayListSupplier.<T>asSupplier());
     }
 
     /**
@@ -6983,8 +6983,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Callable<? extends Publisher<B>> boundaryIndicatorSupplier,
-            Callable<U> bufferSupplier) {
+    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Supplier<? extends Publisher<B>> boundaryIndicatorSupplier,
+            Supplier<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundaryIndicatorSupplier, "boundaryIndicatorSupplier is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return RxJavaPlugins.onAssembly(new FlowableBufferBoundarySupplier<T, U, B>(this, boundaryIndicatorSupplier, bufferSupplier));
@@ -7174,7 +7174,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collect(Supplier<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new FlowableCollectSingle<T, U>(this, initialItemSupplier, collector));
@@ -7215,7 +7215,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialItem, "initialItem is null");
-        return collect(Functions.justCallable(initialItem), collector);
+        return collect(Functions.justSupplier(initialItem), collector);
     }
 
     /**
@@ -7314,9 +7314,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        if (this instanceof ScalarCallable) {
+        if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
-            T v = ((ScalarCallable<T>)this).call();
+            T v = ((ScalarSupplier<T>)this).get();
             if (v == null) {
                 return empty();
             }
@@ -7551,9 +7551,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             int prefetch, boolean tillTheEnd) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        if (this instanceof ScalarCallable) {
+        if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
-            T v = ((ScalarCallable<T>)this).call();
+            T v = ((ScalarSupplier<T>)this).get();
             if (v == null) {
                 return empty();
             }
@@ -8836,7 +8836,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * to {@code OutOfMemoryError}.
      * <p>
      * Customizing the retention policy can happen only by providing a custom {@link java.util.Collection} implementation
-     * to the {@link #distinct(Function, Callable)} overload.
+     * to the {@link #distinct(Function, Supplier)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
@@ -8849,7 +8849,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         each other
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
      * @see #distinct(Function)
-     * @see #distinct(Function, Callable)
+     * @see #distinct(Function, Supplier)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
@@ -8878,7 +8878,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * to {@code OutOfMemoryError}.
      * <p>
      * Customizing the retention policy can happen only by providing a custom {@link java.util.Collection} implementation
-     * to the {@link #distinct(Function, Callable)} overload.
+     * to the {@link #distinct(Function, Supplier)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
@@ -8893,7 +8893,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            is distinct from another one or not
      * @return a Flowable that emits those items emitted by the source Publisher that have distinct keys
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
-     * @see #distinct(Function, Callable)
+     * @see #distinct(Function, Supplier)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -8933,7 +8933,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinct(Function<? super T, K> keySelector,
-            Callable<? extends Collection<? super K>> collectionSupplier) {
+            Supplier<? extends Collection<? super K>> collectionSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return RxJavaPlugins.onAssembly(new FlowableDistinct<T, K>(this, keySelector, collectionSupplier));
@@ -9856,9 +9856,9 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (this instanceof ScalarCallable) {
+        if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
-            T v = ((ScalarCallable<T>)this).call();
+            T v = ((ScalarSupplier<T>)this).get();
             if (v == null) {
                 return empty();
             }
@@ -9903,7 +9903,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> flatMap(
             Function<? super T, ? extends Publisher<? extends R>> onNextMapper,
             Function<? super Throwable, ? extends Publisher<? extends R>> onErrorMapper,
-            Callable<? extends Publisher<? extends R>> onCompleteSupplier) {
+            Supplier<? extends Publisher<? extends R>> onCompleteSupplier) {
         ObjectHelper.requireNonNull(onNextMapper, "onNextMapper is null");
         ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
         ObjectHelper.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
@@ -9950,7 +9950,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> flatMap(
             Function<? super T, ? extends Publisher<? extends R>> onNextMapper,
             Function<Throwable, ? extends Publisher<? extends R>> onErrorMapper,
-            Callable<? extends Publisher<? extends R>> onCompleteSupplier,
+            Supplier<? extends Publisher<? extends R>> onCompleteSupplier,
             int maxConcurrency) {
         ObjectHelper.requireNonNull(onNextMapper, "onNextMapper is null");
         ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
@@ -12594,7 +12594,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that the {@code seed} is shared among all subscribers to the resulting Publisher
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
-     * the application of this operator via {@link #defer(Callable)}:
+     * the application of this operator via {@link #defer(Supplier)}:
      * <pre><code>
      * Publisher&lt;T&gt; source = ...
      * Single.defer(() -&gt; source.reduce(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
@@ -12631,7 +12631,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         items emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     * @see #reduceWith(Callable, BiFunction)
+     * @see #reduceWith(Supplier, BiFunction)
      */
     @CheckReturnValue
     @NonNull
@@ -12669,7 +12669,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the accumulator and output value type
      * @param seedSupplier
-     *            the Callable that provides the initial (seed) accumulator value for each individual Subscriber
+     *            the Supplier that provides the initial (seed) accumulator value for each individual Subscriber
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, the
      *            result of which will be used in the next accumulator call
@@ -12682,7 +12682,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Single<R> reduceWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new FlowableReduceWithSingle<T, R>(this, seedSupplier, reducer));
@@ -12862,7 +12862,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector) {
         ObjectHelper.requireNonNull(selector, "selector is null");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this), selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this), selector);
     }
 
     /**
@@ -12902,7 +12902,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, bufferSize), selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize), selector);
     }
 
     /**
@@ -12996,7 +12996,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return FlowableReplay.multicastSelector(
-                FlowableInternalHelper.replayCallable(this, bufferSize, time, unit, scheduler), selector);
+                FlowableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler), selector);
     }
 
     /**
@@ -13039,7 +13039,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, bufferSize),
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize),
                 FlowableInternalHelper.replayFunction(selector, scheduler)
         );
     }
@@ -13119,7 +13119,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, time, unit, scheduler), selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, time, unit, scheduler), selector);
     }
 
     /**
@@ -13155,7 +13155,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this),
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this),
                 FlowableInternalHelper.replayFunction(selector, scheduler));
     }
 
@@ -13938,7 +13938,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that the {@code initialValue} is shared among all subscribers to the resulting Publisher
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
-     * the application of this operator via {@link #defer(Callable)}:
+     * the application of this operator via {@link #defer(Supplier)}:
      * <pre><code>
      * Publisher&lt;T&gt; source = ...
      * Flowable.defer(() -&gt; source.scan(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
@@ -13974,7 +13974,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(initialValue, "initialValue is null");
-        return scanWith(Functions.justCallable(initialValue), accumulator);
+        return scanWith(Functions.justSupplier(initialValue), accumulator);
     }
 
     /**
@@ -13999,7 +13999,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the initial, accumulator and result type
      * @param seedSupplier
-     *            a Callable that returns the initial (seed) accumulator item for each individual Subscriber
+     *            a Supplier that returns the initial (seed) accumulator item for each individual Subscriber
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source Publisher, whose
      *            result will be emitted to {@link Subscriber}s via {@link Subscriber#onNext onNext} and used in the
@@ -14012,7 +14012,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Flowable<R> scanWith(Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaPlugins.onAssembly(new FlowableScanSeed<T, R>(this, seedSupplier, accumulator));
@@ -15314,9 +15314,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     <R> Flowable<R> switchMap0(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize, boolean delayError) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (this instanceof ScalarCallable) {
+        if (this instanceof ScalarSupplier) {
             @SuppressWarnings("unchecked")
-            T v = ((ScalarCallable<T>)this).call();
+            T v = ((ScalarSupplier<T>)this).get();
             if (v == null) {
                 return empty();
             }
@@ -16990,7 +16990,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <U> the subclass of a collection of Ts
      * @param collectionSupplier
-     *               the Callable returning the collection (for each individual Subscriber) to be filled in
+     *               the Supplier returning the collection (for each individual Subscriber) to be filled in
      * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
@@ -16998,7 +16998,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Single<U> toList(Callable<U> collectionSupplier) {
+    public final <U extends Collection<? super T>> Single<U> toList(Supplier<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return RxJavaPlugins.onAssembly(new FlowableToListSingle<T, U>(this, collectionSupplier));
     }
@@ -17035,7 +17035,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
-        return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
+        return collect(HashMapSupplier.<K, T>asSupplier(), Functions.toMapKeySelector(keySelector));
     }
 
     /**
@@ -17075,7 +17075,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(HashMapSupplier.<K, V>asCallable(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
+        return collect(HashMapSupplier.<K, V>asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
     /**
@@ -17113,7 +17113,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
-            final Callable<? extends Map<K, V>> mapSupplier) {
+            final Supplier<? extends Map<K, V>> mapSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         return collect(mapSupplier, Functions.toMapKeyValueSelector(keySelector, valueSelector));
@@ -17147,7 +17147,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Single<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         Function<T, T> valueSelector = Functions.identity();
-        Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
+        Supplier<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asSupplier();
         Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
@@ -17184,7 +17184,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Single<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
-        Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
+        Supplier<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asSupplier();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
@@ -17228,7 +17228,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
-            final Callable<? extends Map<K, Collection<V>>> mapSupplier,
+            final Supplier<? extends Map<K, Collection<V>>> mapSupplier,
             final Function<? super K, ? extends Collection<? super V>> collectionFactory) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
@@ -17273,7 +17273,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
-            Callable<Map<K, Collection<V>>> mapSupplier
+            Supplier<Map<K, Collection<V>>> mapSupplier
             ) {
         return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.<V, K>asFunction());
     }
@@ -18119,7 +18119,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <B> the element type of the boundary Publisher
      * @param boundaryIndicatorSupplier
-     *            a {@link Callable} that returns a {@code Publisher} that governs the boundary between windows.
+     *            a {@link Supplier} that returns a {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @return a Flowable that emits connected, non-overlapping windows of items from the source Publisher
@@ -18129,7 +18129,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundaryIndicatorSupplier) {
+    public final <B> Flowable<Flowable<T>> window(Supplier<? extends Publisher<B>> boundaryIndicatorSupplier) {
         return window(boundaryIndicatorSupplier, bufferSize());
     }
 
@@ -18152,7 +18152,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <B> the element type of the boundary Publisher
      * @param boundaryIndicatorSupplier
-     *            a {@link Callable} that returns a {@code Publisher} that governs the boundary between windows.
+     *            a {@link Supplier} that returns a {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @param bufferSize
@@ -18165,7 +18165,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundaryIndicatorSupplier, int bufferSize) {
+    public final <B> Flowable<Flowable<T>> window(Supplier<? extends Publisher<B>> boundaryIndicatorSupplier, int bufferSize) {
         ObjectHelper.requireNonNull(boundaryIndicatorSupplier, "boundaryIndicatorSupplier is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySupplier<T, B>(this, boundaryIndicatorSupplier, bufferSize));

@@ -19,7 +19,7 @@ public interface LongConsumer {
     /**
      * Consume a primitive long input.
      * @param t the primitive long value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    void accept(long t) throws Exception;
+    void accept(long t) throws Throwable;
 }

@@ -21,7 +21,7 @@ public interface Cancellable {
 
     /**
      * Cancel the action or free a resource.
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    void cancel() throws Exception;
+    void cancel() throws Throwable;
 }

@@ -13,10 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.List;
-import java.util.concurrent.Callable;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -29,9 +29,9 @@ public class ObservableGenerateTest {
 
     @Test
     public void statefulBiconsumer() {
-        Observable.generate(new Callable<Object>() {
+        Observable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 10;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -52,9 +52,9 @@ public class ObservableGenerateTest {
 
     @Test
     public void stateSupplierThrows() {
-        Observable.generate(new Callable<Object>() {
+        Observable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 throw new TestException();
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -69,9 +69,9 @@ public class ObservableGenerateTest {
 
     @Test
     public void generatorThrows() {
-        Observable.generate(new Callable<Object>() {
+        Observable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -88,9 +88,9 @@ public class ObservableGenerateTest {
     public void disposerThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.generate(new Callable<Object>() {
+            Observable.generate(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
@@ -115,9 +115,9 @@ public class ObservableGenerateTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.generate(new Callable<Object>() {
+        TestHelper.checkDisposed(Observable.generate(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
@@ -131,7 +131,7 @@ public class ObservableGenerateTest {
     @Test
     public void nullError() {
         final int[] call = { 0 };
-        Observable.generate(Functions.justCallable(1),
+        Observable.generate(Functions.justSupplier(1),
         new BiConsumer<Integer, Emitter<Object>>() {
             @Override
             public void accept(Integer s, Emitter<Object> e) throws Exception {

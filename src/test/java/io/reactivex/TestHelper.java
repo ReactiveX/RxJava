@@ -2998,7 +2998,7 @@ public enum TestHelper {
             }
 
             @Override
-            public T poll() throws Exception {
+            public T poll() throws Throwable {
                 return qs.poll();
             }
 
@@ -3103,7 +3103,7 @@ public enum TestHelper {
             }
 
             @Override
-            public T poll() throws Exception {
+            public T poll() throws Throwable {
                 return qd.poll();
             }
 

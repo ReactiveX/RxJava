@@ -15,12 +15,12 @@ package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 
 /**
  * Signals an onComplete.
  */
-public final class MaybeEmpty extends Maybe<Object> implements ScalarCallable<Object> {
+public final class MaybeEmpty extends Maybe<Object> implements ScalarSupplier<Object> {
 
     public static final MaybeEmpty INSTANCE = new MaybeEmpty();
 
@@ -30,7 +30,7 @@ public final class MaybeEmpty extends Maybe<Object> implements ScalarCallable<Ob
     }
 
     @Override
-    public Object call() {
+    public Object get() {
         return null; // nulls of ScalarCallable are considered empty sources
     }
 }

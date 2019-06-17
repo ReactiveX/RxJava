@@ -13,16 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
 public class FlowableToMultimapTest {
     Subscriber<Object> objectSubscriber;
@@ -86,9 +86,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithMapFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new LinkedHashMap<Integer, Collection<String>>() {
 
                     private static final long serialVersionUID = -2084477070717362859L;
@@ -149,9 +149,9 @@ public class FlowableToMultimapTest {
                 return v;
             }
         };
-        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };
@@ -228,9 +228,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithMapThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -275,9 +275,9 @@ public class FlowableToMultimapTest {
                 return v;
             }
         };
-        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };
@@ -332,9 +332,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithMapFactory() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new LinkedHashMap<Integer, Collection<String>>() {
 
                     private static final long serialVersionUID = -2084477070717362859L;
@@ -394,9 +394,9 @@ public class FlowableToMultimapTest {
                 return v;
             }
         };
-        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };
@@ -470,9 +470,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithMapThrowingFactory() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
-        Callable<Map<Integer, Collection<String>>> mapFactory = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -516,9 +516,9 @@ public class FlowableToMultimapTest {
                 return v;
             }
         };
-        Callable<Map<Integer, Collection<String>>> mapSupplier = new Callable<Map<Integer, Collection<String>>>() {
+        Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
-            public Map<Integer, Collection<String>> call() {
+            public Map<Integer, Collection<String>> get() {
                 return new HashMap<Integer, Collection<String>>();
             }
         };

@@ -396,9 +396,9 @@ public class FlowableDelayTest {
     public void testDelayWithFlowableSubscriptionFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 throw new TestException();
             }
         };
@@ -430,9 +430,9 @@ public class FlowableDelayTest {
     public void testDelayWithFlowableSubscriptionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return delay;
             }
         };
@@ -490,9 +490,9 @@ public class FlowableDelayTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> sdelay = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return sdelay;
             }
         };
@@ -727,10 +727,10 @@ public class FlowableDelayTest {
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
-                .delay(Flowable.defer(new Callable<Flowable<Long>>() {
+                .delay(Flowable.defer(new Supplier<Flowable<Long>>() {
 
                     @Override
-                    public Flowable<Long> call() {
+                    public Flowable<Long> get() {
                         return Flowable.timer(500, TimeUnit.MILLISECONDS);
                     }
                 }), new Function<Integer, Flowable<Long>>() {
@@ -795,9 +795,9 @@ public class FlowableDelayTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return pp;
             }
         })).subscribe(ts);
@@ -821,9 +821,9 @@ public class FlowableDelayTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return pp;
             }
         })).subscribe(ts);
@@ -848,9 +848,9 @@ public class FlowableDelayTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return pp;
             }
         })).subscribe(ts);

@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -72,9 +71,9 @@ public class ObservableUsingTest {
         final Resource resource = mock(Resource.class);
         when(resource.getTextFromWeb()).thenReturn("Hello world!");
 
-        Callable<Resource> resourceFactory = new Callable<Resource>() {
+        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
             @Override
-            public Resource call() {
+            public Resource get() {
                 return resource;
             }
         };
@@ -114,9 +113,9 @@ public class ObservableUsingTest {
 
     private void performTestUsingWithSubscribingTwice(boolean disposeEagerly) {
         // When subscribe is called, a new resource should be created.
-        Callable<Resource> resourceFactory = new Callable<Resource>() {
+        Supplier<Resource> resourceFactory = new Supplier<Resource>() {
             @Override
-            public Resource call() {
+            public Resource get() {
                 return new Resource() {
 
                     boolean first = true;
@@ -176,9 +175,9 @@ public class ObservableUsingTest {
     }
 
     private void performTestUsingWithResourceFactoryError(boolean disposeEagerly) {
-        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
+        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
-            public Disposable call() {
+            public Disposable get() {
                 throw new TestException();
             }
         };
@@ -206,9 +205,9 @@ public class ObservableUsingTest {
 
     private void performTestUsingWithObservableFactoryError(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
+        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
-            public Disposable call() {
+            public Disposable get() {
                 return Disposables.fromRunnable(unsubscribe);
             }
         };
@@ -244,9 +243,9 @@ public class ObservableUsingTest {
 
     private void performTestUsingWithObservableFactoryErrorInOnSubscribe(boolean disposeEagerly) {
         final Runnable unsubscribe = mock(Runnable.class);
-        Callable<Disposable> resourceFactory = new Callable<Disposable>() {
+        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
-            public Disposable call() {
+            public Disposable get() {
                 return Disposables.fromRunnable(unsubscribe);
             }
         };
@@ -279,7 +278,7 @@ public class ObservableUsingTest {
     @Test
     public void testUsingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
-        Callable<Resource> resourceFactory = createResourceFactory(events);
+        Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
@@ -306,7 +305,7 @@ public class ObservableUsingTest {
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
-        Callable<Resource> resourceFactory = createResourceFactory(events);
+        Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
 
@@ -333,7 +332,7 @@ public class ObservableUsingTest {
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
-        Callable<Resource> resourceFactory = createResourceFactory(events);
+        Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
@@ -361,7 +360,7 @@ public class ObservableUsingTest {
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
-        final Callable<Resource> resourceFactory = createResourceFactory(events);
+        final Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
 
@@ -403,10 +402,10 @@ public class ObservableUsingTest {
         };
     }
 
-    private static Callable<Resource> createResourceFactory(final List<String> events) {
-        return new Callable<Resource>() {
+    private static Supplier<Resource> createResourceFactory(final List<String> events) {
+        return new Supplier<Resource>() {
             @Override
-            public Resource call() {
+            public Resource get() {
                 return new Resource() {
 
                     @Override
@@ -435,9 +434,9 @@ public class ObservableUsingTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.using(
-                new Callable<Object>() {
+                new Supplier<Object>() {
                     @Override
-                    public Object call() throws Exception {
+                    public Object get() throws Exception {
                         return 1;
                     }
                 },
@@ -453,9 +452,9 @@ public class ObservableUsingTest {
 
     @Test
     public void supplierDisposerCrash() {
-        TestObserver<Object> to = Observable.using(new Callable<Object>() {
+        TestObserver<Object> to = Observable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, ObservableSource<Object>>() {
@@ -480,9 +479,9 @@ public class ObservableUsingTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestObserver<Object> to = Observable.using(new Callable<Object>() {
+        TestObserver<Object> to = Observable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, ObservableSource<Object>>() {
@@ -507,9 +506,9 @@ public class ObservableUsingTest {
 
     @Test
     public void eagerOnCompleteDisposerCrash() {
-        Observable.using(new Callable<Object>() {
+        Observable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, ObservableSource<Object>>() {
@@ -531,9 +530,9 @@ public class ObservableUsingTest {
     public void nonEagerDisposerCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Observable.using(new Callable<Object>() {
+            Observable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, ObservableSource<Object>>() {
@@ -558,7 +557,7 @@ public class ObservableUsingTest {
 
     @Test
     public void sourceSupplierReturnsNull() {
-        Observable.using(Functions.justCallable(1),
+        Observable.using(Functions.justSupplier(1),
                 Functions.justFunction((Observable<Object>)null),
                 Functions.emptyConsumer())
         .test()
@@ -572,7 +571,7 @@ public class ObservableUsingTest {
             @Override
             public ObservableSource<Object> apply(Observable<Object> o)
                     throws Exception {
-                return Observable.using(Functions.justCallable(1), Functions.justFunction(o), Functions.emptyConsumer());
+                return Observable.using(Functions.justSupplier(1), Functions.justFunction(o), Functions.emptyConsumer());
             }
         });
     }
@@ -581,7 +580,7 @@ public class ObservableUsingTest {
     public void eagerDisposedOnComplete() {
         final TestObserver<Integer> to = new TestObserver<Integer>();
 
-        Observable.using(Functions.justCallable(1), Functions.justFunction(new Observable<Integer>() {
+        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());
@@ -596,7 +595,7 @@ public class ObservableUsingTest {
     public void eagerDisposedOnError() {
         final TestObserver<Integer> to = new TestObserver<Integer>();
 
-        Observable.using(Functions.justCallable(1), Functions.justFunction(new Observable<Integer>() {
+        Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());

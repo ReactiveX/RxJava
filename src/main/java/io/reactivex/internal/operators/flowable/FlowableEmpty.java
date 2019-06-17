@@ -16,13 +16,13 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 /**
  * A source Flowable that signals an onSubscribe() + onComplete() only.
  */
-public final class FlowableEmpty extends Flowable<Object> implements ScalarCallable<Object> {
+public final class FlowableEmpty extends Flowable<Object> implements ScalarSupplier<Object> {
 
     public static final Flowable<Object> INSTANCE = new FlowableEmpty();
 
@@ -35,7 +35,7 @@ public final class FlowableEmpty extends Flowable<Object> implements ScalarCalla
     }
 
     @Override
-    public Object call() {
+    public Object get() {
         return null; // null scalar is interpreted as being empty
     }
 }

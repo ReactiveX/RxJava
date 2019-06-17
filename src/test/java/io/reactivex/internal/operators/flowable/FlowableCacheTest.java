@@ -133,7 +133,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Exception {
+    public void testUnsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).cache();
         f.subscribe();

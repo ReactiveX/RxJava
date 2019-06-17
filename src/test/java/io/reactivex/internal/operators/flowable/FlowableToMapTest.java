@@ -13,16 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
 public class FlowableToMapTest {
     Subscriber<Object> objectSubscriber;
@@ -148,9 +148,9 @@ public class FlowableToMapTest {
     public void testToMapWithFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 return new LinkedHashMap<Integer, String>() {
 
                     private static final long serialVersionUID = -3296811238780863394L;
@@ -192,9 +192,9 @@ public class FlowableToMapTest {
     public void testToMapWithErrorThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -321,9 +321,9 @@ public class FlowableToMapTest {
     public void testToMapWithFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 return new LinkedHashMap<Integer, String>() {
 
                     private static final long serialVersionUID = -3296811238780863394L;
@@ -364,9 +364,9 @@ public class FlowableToMapTest {
     public void testToMapWithErrorThrowingFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 throw new RuntimeException("Forced failure");
             }
         };

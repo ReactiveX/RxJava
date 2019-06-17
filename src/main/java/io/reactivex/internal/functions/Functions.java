@@ -120,7 +120,7 @@ public final class Functions {
 
     static final Predicate<Object> ALWAYS_FALSE = new FalsePredicate();
 
-    static final Callable<Object> NULL_SUPPLIER = new NullCallable();
+    static final Supplier<Object> NULL_SUPPLIER = new NullProvider();
 
     static final Comparator<Object> NATURAL_COMPARATOR = new NaturalObjectComparator();
 
@@ -135,8 +135,8 @@ public final class Functions {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Callable<T> nullSupplier() {
-        return (Callable<T>)NULL_SUPPLIER;
+    public static <T> Supplier<T> nullSupplier() {
+        return (Supplier<T>)NULL_SUPPLIER;
     }
 
     /**
@@ -171,7 +171,7 @@ public final class Functions {
         return new FutureAction(future);
     }
 
-    static final class JustValue<T, U> implements Callable<U>, Function<T, U> {
+    static final class JustValue<T, U> implements Callable<U>, Supplier<U>, Function<T, U> {
         final U value;
 
         JustValue(U value) {
@@ -187,6 +187,11 @@ public final class Functions {
         public U apply(T t) throws Exception {
             return value;
         }
+        
+        @Override
+        public U get() throws Throwable {
+            return value;
+        }
     }
 
     /**
@@ -196,6 +201,16 @@ public final class Functions {
      * @return the new Callable instance
      */
     public static <T> Callable<T> justCallable(T value) {
+        return new JustValue<Object, T>(value);
+    }
+
+    /**
+     * Returns a Supplier that returns the given value.
+     * @param <T> the value type
+     * @param value the value to return
+     * @return the new Callable instance
+     */
+    public static <T> Supplier<T> justSupplier(T value) {
         return new JustValue<Object, T>(value);
     }
 
@@ -234,7 +249,7 @@ public final class Functions {
         return new CastToClass<T, U>(target);
     }
 
-    static final class ArrayListCapacityCallable<T> implements Callable<List<T>> {
+    static final class ArrayListCapacityCallable<T> implements Supplier<List<T>> {
         final int capacity;
 
         ArrayListCapacityCallable(int capacity) {
@@ -242,12 +257,12 @@ public final class Functions {
         }
 
         @Override
-        public List<T> call() throws Exception {
+        public List<T> get() throws Exception {
             return new ArrayList<T>(capacity);
         }
     }
 
-    public static <T> Callable<List<T>> createArrayList(int capacity) {
+    public static <T> Supplier<List<T>> createArrayList(int capacity) {
         return new ArrayListCapacityCallable<T>(capacity);
     }
 
@@ -268,17 +283,22 @@ public final class Functions {
         return new EqualsPredicate<T>(value);
     }
 
-    enum HashSetCallable implements Callable<Set<Object>> {
+    enum HashSetCallable implements Supplier<Set<Object>>, Callable<Set<Object>> {
         INSTANCE;
         @Override
         public Set<Object> call() throws Exception {
             return new HashSet<Object>();
         }
+
+        @Override
+        public Set<Object> get() throws Throwable {
+            return new HashSet<Object>();
+        }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Callable<Set<T>> createHashSet() {
-        return (Callable)HashSetCallable.INSTANCE;
+    public static <T> Supplier<Set<T>> createHashSet() {
+        return (Supplier)HashSetCallable.INSTANCE;
     }
 
     static final class NotificationOnNext<T> implements Consumer<T> {
@@ -289,7 +309,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(T v) throws Exception {
+        public void accept(T v) throws Throwable {
             onNotification.accept(Notification.createOnNext(v));
         }
     }
@@ -302,7 +322,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
+        public void accept(Throwable v) throws Throwable {
             onNotification.accept(Notification.<T>createOnError(v));
         }
     }
@@ -315,7 +335,7 @@ public final class Functions {
         }
 
         @Override
-        public void run() throws Exception {
+        public void run() throws Throwable {
             onNotification.accept(Notification.<T>createOnComplete());
         }
     }
@@ -340,7 +360,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(T t) throws Exception {
+        public void accept(T t) throws Throwable {
             action.run();
         }
     }
@@ -374,7 +394,7 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public boolean test(T t) throws Throwable {
             return !supplier.getAsBoolean();
         }
     }
@@ -411,7 +431,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Map<K, T> m, T t) throws Exception {
+        public void accept(Map<K, T> m, T t) throws Throwable {
             K key = keySelector.apply(t);
             m.put(key, t);
         }
@@ -432,7 +452,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Map<K, V> m, T t) throws Exception {
+        public void accept(Map<K, V> m, T t) throws Throwable {
             K key = keySelector.apply(t);
             V value = valueSelector.apply(t);
             m.put(key, value);
@@ -457,7 +477,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void accept(Map<K, Collection<V>> m, T t) throws Exception {
+        public void accept(Map<K, Collection<V>> m, T t) throws Throwable {
             K key = keySelector.apply(t);
 
             Collection<V> coll = m.get(key);
@@ -522,7 +542,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 2) {
                 throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
             }
@@ -539,7 +559,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 3) {
                 throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
             }
@@ -556,7 +576,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 4) {
                 throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
             }
@@ -573,7 +593,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 5) {
                 throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
             }
@@ -590,7 +610,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 6) {
                 throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
             }
@@ -607,7 +627,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 7) {
                 throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
             }
@@ -624,7 +644,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 8) {
                 throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
             }
@@ -641,7 +661,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public R apply(Object[] a) throws Exception {
+        public R apply(Object[] a) throws Throwable {
             if (a.length != 9) {
                 throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
             }
@@ -724,9 +744,14 @@ public final class Functions {
         }
     }
 
-    static final class NullCallable implements Callable<Object> {
+    static final class NullProvider implements Callable<Object>, Supplier<Object> {
         @Override
         public Object call() {
+            return null;
+        }
+        
+        @Override
+        public Object get() throws Throwable {
             return null;
         }
     }

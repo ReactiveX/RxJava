@@ -137,9 +137,9 @@ public class FlowableTests {
 
     @Test
     public void testCountErrorFlowable() {
-        Flowable<String> f = Flowable.error(new Callable<Throwable>() {
+        Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new RuntimeException();
             }
         });
@@ -172,9 +172,9 @@ public class FlowableTests {
 
     @Test
     public void testCountError() {
-        Flowable<String> f = Flowable.error(new Callable<Throwable>() {
+        Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new RuntimeException();
             }
         });
@@ -459,9 +459,9 @@ public class FlowableTests {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        Flowable.just("1", "2").concatWith(Flowable.<String>error(new Callable<Throwable>() {
+        Flowable.just("1", "2").concatWith(Flowable.<String>error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new NumberFormatException();
             }
         }))

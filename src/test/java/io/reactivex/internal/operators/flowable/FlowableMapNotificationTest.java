@@ -13,14 +13,12 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableMapNotification.MapNotificationSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -45,9 +43,9 @@ public class FlowableMapNotificationTest {
                         return Flowable.error(e);
                     }
                 },
-                new Callable<Flowable<Object>>() {
+                new Supplier<Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> call() {
+                    public Flowable<Object> get() {
                         return Flowable.never();
                     }
                 }
@@ -75,9 +73,9 @@ public class FlowableMapNotificationTest {
                         return 0;
                     }
                 },
-                new Callable<Integer>() {
+                new Supplier<Integer>() {
                     @Override
-                    public Integer call() {
+                    public Integer get() {
                         return 5;
                     }
                 }
@@ -119,9 +117,9 @@ public class FlowableMapNotificationTest {
                         return 0;
                     }
                 },
-                new Callable<Integer>() {
+                new Supplier<Integer>() {
                     @Override
-                    public Integer call() {
+                    public Integer get() {
                         return 5;
                     }
                 }
@@ -158,7 +156,7 @@ public class FlowableMapNotificationTest {
                         subscriber,
                         Functions.justFunction(Flowable.just(1)),
                         Functions.justFunction(Flowable.just(2)),
-                        Functions.justCallable(Flowable.just(3))
+                        Functions.justSupplier(Flowable.just(3))
                 );
                 mn.onSubscribe(new BooleanSubscription());
             }
@@ -173,7 +171,7 @@ public class FlowableMapNotificationTest {
                 return f.flatMap(
                         Functions.justFunction(Flowable.just(1)),
                         Functions.justFunction(Flowable.just(2)),
-                        Functions.justCallable(Flowable.just(3))
+                        Functions.justSupplier(Flowable.just(3))
                 );
             }
         });
@@ -189,7 +187,7 @@ public class FlowableMapNotificationTest {
                         throw new TestException("Inner");
                     }
                 },
-                Functions.justCallable(Flowable.just(3)))
+                Functions.justSupplier(Flowable.just(3)))
         .test()
         .assertFailure(CompositeException.class);
 

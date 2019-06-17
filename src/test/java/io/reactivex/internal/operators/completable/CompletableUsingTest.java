@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -34,9 +33,9 @@ public class CompletableUsingTest {
     @Test
     public void resourceSupplierThrows() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 throw new TestException();
             }
         }, new Function<Object, CompletableSource>() {
@@ -57,9 +56,9 @@ public class CompletableUsingTest {
     @Test
     public void errorEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -80,9 +79,9 @@ public class CompletableUsingTest {
     @Test
     public void emptyEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -103,9 +102,9 @@ public class CompletableUsingTest {
     @Test
     public void errorNonEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -126,9 +125,9 @@ public class CompletableUsingTest {
     @Test
     public void emptyNonEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -149,9 +148,9 @@ public class CompletableUsingTest {
     @Test
     public void supplierCrashEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -172,9 +171,9 @@ public class CompletableUsingTest {
     @Test
     public void supplierCrashNonEager() {
 
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -194,9 +193,9 @@ public class CompletableUsingTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserver<Void> to = Completable.using(new Callable<Object>() {
+        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -223,9 +222,9 @@ public class CompletableUsingTest {
     public void supplierAndDisposerCrashNonEager() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable.using(new Callable<Object>() {
+            Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {
@@ -252,9 +251,9 @@ public class CompletableUsingTest {
     public void dispose() {
         final int[] call = {0 };
 
-        TestObserver<Void> to = Completable.using(new Callable<Object>() {
+        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -279,9 +278,9 @@ public class CompletableUsingTest {
     public void disposeCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> to = Completable.using(new Callable<Object>() {
+            TestObserver<Void> to = Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {
@@ -307,9 +306,9 @@ public class CompletableUsingTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(Completable.using(new Callable<Object>() {
+        TestHelper.checkDisposed(Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {
@@ -327,9 +326,9 @@ public class CompletableUsingTest {
 
     @Test
     public void justDisposerCrashes() {
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -349,9 +348,9 @@ public class CompletableUsingTest {
 
     @Test
     public void emptyDisposerCrashes() {
-        Completable.using(new Callable<Object>() {
+        Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -371,9 +370,9 @@ public class CompletableUsingTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserver<Void> to = Completable.using(new Callable<Object>() {
+        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, CompletableSource>() {
@@ -400,9 +399,9 @@ public class CompletableUsingTest {
     public void doubleOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Completable.using(new Callable<Object>() {
+            Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {
@@ -443,9 +442,9 @@ public class CompletableUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Void> to = Completable.using(new Callable<Object>() {
+            final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {
@@ -488,9 +487,9 @@ public class CompletableUsingTest {
 
                 final PublishSubject<Integer> ps = PublishSubject.create();
 
-                final TestObserver<Void> to = Completable.using(new Callable<Object>() {
+                final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
                     @Override
-                    public Object call() throws Exception {
+                    public Object get() throws Exception {
                         return 1;
                     }
                 }, new Function<Object, CompletableSource>() {
@@ -534,9 +533,9 @@ public class CompletableUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Void> to = Completable.using(new Callable<Object>() {
+            final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, CompletableSource>() {

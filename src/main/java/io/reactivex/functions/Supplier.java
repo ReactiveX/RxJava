@@ -10,21 +10,24 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
-
 /**
- * A functional interface (callback) that takes a primitive value and return value of type T.
- * @param <T> the returned value type
+ * A functional interface (callback) that provides a single value or
+ * throws an exception.
+ * <p>
+ * Thins interface was added to allow throwing any subclass of {@link Throwable}s,
+ * which is not directly possible with the Java standard {@link java.util.Callable} interface. 
+ * @param <T> the value type returned
+ * @since 3.0.0
  */
-public interface IntFunction<T> {
+public interface Supplier<T> {
+
     /**
-     * Calculates a value based on a primitive integer input.
-     * @param i the input value
-     * @return the result Object
+     * Produces a value or throws an exception.
+     * @return the value produced
      * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    @NonNull
-    T apply(int i) throws Throwable;
+    T get() throws Throwable;
 }

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -30,11 +30,11 @@ import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
-    final Callable<? extends Publisher<B>> other;
+    final Supplier<? extends Publisher<B>> other;
     final int capacityHint;
 
     public FlowableWindowBoundarySupplier(Flowable<T> source,
-            Callable<? extends Publisher<B>> other, int capacityHint) {
+            Supplier<? extends Publisher<B>> other, int capacityHint) {
         super(source);
         this.other = other;
         this.capacityHint = capacityHint;
@@ -69,7 +69,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
 
         final AtomicBoolean stopWindows;
 
-        final Callable<? extends Publisher<B>> other;
+        final Supplier<? extends Publisher<B>> other;
 
         static final Object NEXT_WINDOW = new Object();
 
@@ -83,7 +83,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
 
         long emitted;
 
-        WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> downstream, int capacityHint, Callable<? extends Publisher<B>> other) {
+        WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> downstream, int capacityHint, Supplier<? extends Publisher<B>> other) {
             this.downstream = downstream;
             this.capacityHint = capacityHint;
             this.boundarySubscriber = new AtomicReference<WindowBoundaryInnerSubscriber<T, B>>();
@@ -263,7 +263,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                             Publisher<B> otherSource;
 
                             try {
-                                otherSource = ObjectHelper.requireNonNull(other.call(), "The other Callable returned a null Publisher");
+                                otherSource = ObjectHelper.requireNonNull(other.get(), "The other Supplier returned a null Publisher");
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
                                 errors.addThrowable(ex);

@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -28,12 +28,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObservableWithUpstream<T, Observable<T>> {
-    final Callable<? extends ObservableSource<B>> other;
+    final Supplier<? extends ObservableSource<B>> other;
     final int capacityHint;
 
     public ObservableWindowBoundarySupplier(
             ObservableSource<T> source,
-            Callable<? extends ObservableSource<B>> other, int capacityHint) {
+            Supplier<? extends ObservableSource<B>> other, int capacityHint) {
         super(source);
         this.other = other;
         this.capacityHint = capacityHint;
@@ -68,7 +68,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
         final AtomicBoolean stopWindows;
 
-        final Callable<? extends ObservableSource<B>> other;
+        final Supplier<? extends ObservableSource<B>> other;
 
         static final Object NEXT_WINDOW = new Object();
 
@@ -78,7 +78,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
         UnicastSubject<T> window;
 
-        WindowBoundaryMainObserver(Observer<? super Observable<T>> downstream, int capacityHint, Callable<? extends ObservableSource<B>> other) {
+        WindowBoundaryMainObserver(Observer<? super Observable<T>> downstream, int capacityHint, Supplier<? extends ObservableSource<B>> other) {
             this.downstream = downstream;
             this.capacityHint = capacityHint;
             this.boundaryObserver = new AtomicReference<WindowBoundaryInnerObserver<T, B>>();
@@ -254,7 +254,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                         ObservableSource<B> otherSource;
 
                         try {
-                            otherSource = ObjectHelper.requireNonNull(other.call(), "The other Callable returned a null ObservableSource");
+                            otherSource = ObjectHelper.requireNonNull(other.get(), "The other Supplier returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             errors.addThrowable(ex);

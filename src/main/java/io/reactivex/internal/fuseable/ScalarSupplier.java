@@ -12,7 +12,7 @@
  */
 package io.reactivex.internal.fuseable;
 
-import java.util.concurrent.Callable;
+import io.reactivex.functions.Supplier;
 
 /**
  * A marker interface indicating that a scalar, constant value
@@ -22,16 +22,16 @@ import java.util.concurrent.Callable;
  * <p>
  * Implementors of {@link #call()} should not throw any exception.
  * <p>
- * Design note: the interface extends {@link Callable} because if a scalar
+ * Design note: the interface extends {@link Supplier} because if a scalar
  * is safe to extract during assembly time, it is also safe to extract at
  * subscription time or later. This allows optimizations to deal with such
  * single-element sources uniformly.
  * <p>
  * @param <T> the scalar value type held by the implementing reactive type
  */
-public interface ScalarCallable<T> extends Callable<T> {
+public interface ScalarSupplier<T> extends Supplier<T> {
 
-    // overridden to remove the throws Exception
+    // overridden to remove the throws Throwable
     @Override
-    T call();
+    T get();
 }

@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.operators.parallel;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.internal.subscriptions.*;
@@ -35,11 +33,11 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<? extends T> source;
 
-    final Callable<R> initialSupplier;
+    final Supplier<R> initialSupplier;
 
     final BiFunction<R, ? super T, R> reducer;
 
-    public ParallelReduce(ParallelFlowable<? extends T> source, Callable<R> initialSupplier, BiFunction<R, ? super T, R> reducer) {
+    public ParallelReduce(ParallelFlowable<? extends T> source, Supplier<R> initialSupplier, BiFunction<R, ? super T, R> reducer) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.reducer = reducer;
@@ -60,7 +58,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
             R initialValue;
 
             try {
-                initialValue = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+                initialValue = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 reportError(subscribers, ex);

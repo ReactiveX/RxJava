@@ -13,19 +13,19 @@
 
 package io.reactivex.internal.util;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.*;
 
-public enum HashMapSupplier implements Callable<Map<Object, Object>> {
+import io.reactivex.functions.Supplier;
+
+public enum HashMapSupplier implements Supplier<Map<Object, Object>> {
     INSTANCE;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <K, V> Callable<Map<K, V>> asCallable() {
-        return (Callable)INSTANCE;
+    public static <K, V> Supplier<Map<K, V>> asSupplier() {
+        return (Supplier)INSTANCE;
     }
 
-    @Override public Map<Object, Object> call() throws Exception {
+    @Override public Map<Object, Object> get() {
         return new HashMap<Object, Object>();
     }
 }

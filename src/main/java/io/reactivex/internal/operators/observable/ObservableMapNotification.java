@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 
@@ -26,13 +24,13 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
     final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
     final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
-    final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
+    final Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
     public ObservableMapNotification(
             ObservableSource<T> source,
             Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
             Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
-                    Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
+            Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier) {
         super(source);
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -49,14 +47,14 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
         final Observer<? super ObservableSource<? extends R>> downstream;
         final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
         final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
-        final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
+        final Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
         Disposable upstream;
 
         MapNotificationObserver(Observer<? super ObservableSource<? extends R>> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
                 Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
-                        Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
+                Supplier<? extends ObservableSource<? extends R>> onCompleteSupplier) {
             this.downstream = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -117,7 +115,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete ObservableSource returned is null");
+                p = ObjectHelper.requireNonNull(onCompleteSupplier.get(), "The onComplete ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);

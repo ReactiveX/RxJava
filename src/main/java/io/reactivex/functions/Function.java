@@ -27,7 +27,7 @@ public interface Function<T, R> {
      * Apply some calculation to the input value and return some other value.
      * @param t the input value
      * @return the output value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    R apply(@NonNull T t) throws Exception;
+    R apply(@NonNull T t) throws Throwable;
 }

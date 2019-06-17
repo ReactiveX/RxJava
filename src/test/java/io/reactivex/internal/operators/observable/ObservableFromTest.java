@@ -57,7 +57,7 @@ public class ObservableFromTest {
 
     @Test
     public void fromArraySingle() {
-        assertTrue(Observable.fromArray(1) instanceof ScalarCallable);
+        assertTrue(Observable.fromArray(1) instanceof ScalarSupplier);
     }
 
     @Test

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
@@ -136,11 +135,11 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 onError(e);
                 return;
             }
-            if (p instanceof Callable) {
+            if (p instanceof Supplier) {
                 U u;
 
                 try {
-                    u  = ((Callable<U>)p).call();
+                    u  = ((Supplier<U>)p).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     errs.addThrowable(ex);

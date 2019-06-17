@@ -29,7 +29,7 @@ public class MaybeFlatMapNotificationTest {
     public void dispose() {
         TestHelper.checkDisposed(Maybe.just(1)
                 .flatMap(Functions.justFunction(Maybe.just(1)),
-                        Functions.justFunction(Maybe.just(1)), Functions.justCallable(Maybe.just(1))));
+                        Functions.justFunction(Maybe.just(1)), Functions.justSupplier(Maybe.just(1))));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class MaybeFlatMapNotificationTest {
             public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
                 return m
                         .flatMap(Functions.justFunction(Maybe.just(1)),
-                                Functions.justFunction(Maybe.just(1)), Functions.justCallable(Maybe.just(1)));
+                                Functions.justFunction(Maybe.just(1)), Functions.justSupplier(Maybe.just(1)));
             }
         });
     }
@@ -49,7 +49,7 @@ public class MaybeFlatMapNotificationTest {
         Maybe.just(1)
         .flatMap(Functions.justFunction((Maybe<Integer>)null),
                 Functions.justFunction(Maybe.just(1)),
-                Functions.justCallable(Maybe.just(1)))
+                Functions.justSupplier(Maybe.just(1)))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -59,7 +59,7 @@ public class MaybeFlatMapNotificationTest {
         TestObserver<Integer> to = Maybe.<Integer>error(new TestException())
         .flatMap(Functions.justFunction(Maybe.just(1)),
                 Functions.justFunction((Maybe<Integer>)null),
-                Functions.justCallable(Maybe.just(1)))
+                Functions.justSupplier(Maybe.just(1)))
         .test()
         .assertFailure(CompositeException.class);
 
@@ -74,7 +74,7 @@ public class MaybeFlatMapNotificationTest {
         Maybe.<Integer>empty()
         .flatMap(Functions.justFunction(Maybe.just(1)),
                 Functions.justFunction(Maybe.just(1)),
-                Functions.justCallable((Maybe<Integer>)null))
+                Functions.justSupplier((Maybe<Integer>)null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -84,7 +84,7 @@ public class MaybeFlatMapNotificationTest {
         Maybe.just(1)
         .flatMap(Functions.justFunction(Maybe.<Integer>empty()),
                 Functions.justFunction(Maybe.just(1)),
-                Functions.justCallable(Maybe.just(1)))
+                Functions.justSupplier(Maybe.just(1)))
         .test()
         .assertResult();
     }
@@ -94,7 +94,7 @@ public class MaybeFlatMapNotificationTest {
         Maybe.just(1)
         .flatMap(Functions.justFunction(Maybe.<Integer>error(new TestException())),
                 Functions.justFunction((Maybe<Integer>)null),
-                Functions.justCallable(Maybe.just(1)))
+                Functions.justSupplier(Maybe.just(1)))
         .test()
         .assertFailure(TestException.class);
     }

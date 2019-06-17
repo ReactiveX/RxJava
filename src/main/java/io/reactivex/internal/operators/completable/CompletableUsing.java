@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -26,12 +25,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableUsing<R> extends Completable {
 
-    final Callable<R> resourceSupplier;
+    final Supplier<R> resourceSupplier;
     final Function<? super R, ? extends CompletableSource> completableFunction;
     final Consumer<? super R> disposer;
     final boolean eager;
 
-    public CompletableUsing(Callable<R> resourceSupplier,
+    public CompletableUsing(Supplier<R> resourceSupplier,
                             Function<? super R, ? extends CompletableSource> completableFunction, Consumer<? super R> disposer,
                             boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -45,7 +44,7 @@ public final class CompletableUsing<R> extends Completable {
         R resource;
 
         try {
-            resource = resourceSupplier.call();
+            resource = resourceSupplier.get();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

@@ -12,23 +12,21 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
 
-    final Callable<? extends U> initialSupplier;
+    final Supplier<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
 
-    public FlowableCollect(Flowable<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollect(Flowable<T> source, Supplier<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -38,7 +36,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
     protected void subscribeActual(Subscriber<? super U> s) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initial value supplied is null");
+            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initial value supplied is null");
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

@@ -18,17 +18,17 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 
 public class MaybeJustTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void scalarCallable() {
+    public void scalarSupplier() {
         Maybe<Integer> m = Maybe.just(1);
 
-        assertTrue(m.getClass().toString(), m instanceof ScalarCallable);
+        assertTrue(m.getClass().toString(), m instanceof ScalarSupplier);
 
-        assertEquals(1, ((ScalarCallable<Integer>)m).call().intValue());
+        assertEquals(1, ((ScalarSupplier<Integer>)m).get().intValue());
     }
 }

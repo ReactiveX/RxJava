@@ -132,7 +132,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qs.poll();
             if (v == null && syncFused) {
                 runFinally();
@@ -242,7 +242,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qs.poll();
             if (v == null && syncFused) {
                 runFinally();

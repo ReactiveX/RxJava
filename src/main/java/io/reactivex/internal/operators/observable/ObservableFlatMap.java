@@ -14,14 +14,13 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
@@ -142,8 +141,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         @SuppressWarnings("unchecked")
         void subscribeInner(ObservableSource<? extends U> p) {
             for (;;) {
-                if (p instanceof Callable) {
-                    if (tryEmitScalar(((Callable<? extends U>)p)) && maxConcurrency != Integer.MAX_VALUE) {
+                if (p instanceof Supplier) {
+                    if (tryEmitScalar(((Supplier<? extends U>)p)) && maxConcurrency != Integer.MAX_VALUE) {
                         boolean empty = false;
                         synchronized (this) {
                             p = sources.poll();
@@ -217,10 +216,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        boolean tryEmitScalar(Callable<? extends U> value) {
+        boolean tryEmitScalar(Supplier<? extends U> value) {
             U u;
             try {
-                u = value.call();
+                u = value.get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 errors.addThrowable(ex);

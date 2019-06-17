@@ -254,9 +254,9 @@ public class ObservableBufferTest {
             }
         });
 
-        Callable<Observable<Object>> closer = new Callable<Observable<Object>>() {
+        Supplier<Observable<Object>> closer = new Supplier<Observable<Object>>() {
             @Override
-            public Observable<Object> call() {
+            public Observable<Object> get() {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> observer) {
@@ -833,9 +833,9 @@ public class ObservableBufferTest {
     @Test
     public void bufferIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, new Callable<Collection<Integer>>() {
+        .buffer(3, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return new HashSet<Integer>();
             }
         })
@@ -847,9 +847,9 @@ public class ObservableBufferTest {
     @Test
     public void bufferSkipIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
-        .buffer(3, 3, new Callable<Collection<Integer>>() {
+        .buffer(3, 3, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return new HashSet<Integer>();
             }
         })
@@ -861,9 +861,9 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         }, false)
@@ -875,9 +875,9 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows2() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         }, false)
@@ -889,9 +889,9 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows3() {
         Observable.just(1)
-        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -903,10 +903,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows4() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
@@ -923,10 +923,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows5() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
@@ -943,10 +943,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows6() {
         Observable.<Integer>never()
-        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
@@ -963,10 +963,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierReturnsNull() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 } else {
@@ -983,10 +983,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierReturnsNull2() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 } else {
@@ -1003,10 +1003,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierReturnsNull3() {
         Observable.<Integer>never()
-        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
             int count;
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 } else {
@@ -1023,9 +1023,9 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBufferSupplierThrows() {
         Observable.never()
-        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -1037,14 +1037,14 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBoundarySupplierThrows() {
         Observable.never()
-        .buffer(new Callable<ObservableSource<Object>>() {
+        .buffer(new Supplier<ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> call() throws Exception {
+            public ObservableSource<Object> get() throws Exception {
                 throw new TestException();
             }
-        }, new Callable<Collection<Object>>() {
+        }, new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1056,10 +1056,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBufferSupplierThrows2() {
         Observable.never()
-        .buffer(Functions.justCallable(Observable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
             int count;
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
@@ -1076,10 +1076,10 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBufferSupplierReturnsNull() {
         Observable.never()
-        .buffer(Functions.justCallable(Observable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
             int count;
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 } else {
@@ -1096,18 +1096,18 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBoundarySupplierThrows2() {
         Observable.never()
-        .buffer(new Callable<ObservableSource<Long>>() {
+        .buffer(new Supplier<ObservableSource<Long>>() {
             int count;
             @Override
-            public ObservableSource<Long> call() throws Exception {
+            public ObservableSource<Long> get() throws Exception {
                 if (count++ == 1) {
                     throw new TestException();
                 }
                 return Observable.timer(1, TimeUnit.MILLISECONDS);
             }
-        }, new Callable<Collection<Object>>() {
+        }, new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1121,9 +1121,9 @@ public class ObservableBufferTest {
         PublishSubject<Object> ps = PublishSubject.create();
 
         TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1140,18 +1140,18 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBoundarySupplierReturnsNull() {
         Observable.never()
-        .buffer(new Callable<ObservableSource<Long>>() {
+        .buffer(new Supplier<ObservableSource<Long>>() {
             int count;
             @Override
-            public ObservableSource<Long> call() throws Exception {
+            public ObservableSource<Long> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 }
                 return Observable.timer(1, TimeUnit.MILLISECONDS);
             }
-        }, new Callable<Collection<Object>>() {
+        }, new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1164,18 +1164,18 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void boundaryBoundarySupplierReturnsNull2() {
         Observable.never()
-        .buffer(new Callable<ObservableSource<Long>>() {
+        .buffer(new Supplier<ObservableSource<Long>>() {
             int count;
             @Override
-            public ObservableSource<Long> call() throws Exception {
+            public ObservableSource<Long> get() throws Exception {
                 if (count++ == 1) {
                     return null;
                 }
                 return Observable.empty();
             }
-        }, new Callable<Collection<Object>>() {
+        }, new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1190,9 +1190,9 @@ public class ObservableBufferTest {
         PublishSubject<Object> ps = PublishSubject.create();
 
         TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1209,9 +1209,9 @@ public class ObservableBufferTest {
         PublishSubject<Object> ps = PublishSubject.create();
 
         TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justCallable(Observable.error(new TestException())), new Callable<Collection<Object>>() {
+        .buffer(Functions.justSupplier(Observable.error(new TestException())), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return new ArrayList<Object>();
             }
         })
@@ -1241,7 +1241,7 @@ public class ObservableBufferTest {
 
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never()));
 
-        TestHelper.checkDisposed(PublishSubject.create().buffer(Functions.justCallable(Observable.never())));
+        TestHelper.checkDisposed(PublishSubject.create().buffer(Functions.justSupplier(Observable.never())));
 
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never(), Functions.justFunction(Observable.never())));
     }
@@ -1259,10 +1259,10 @@ public class ObservableBufferTest {
     @Test
     public void bufferSupplierCrash2() {
         Observable.range(1, 2)
-        .buffer(1, new Callable<List<Integer>>() {
+        .buffer(1, new Supplier<List<Integer>>() {
             int calls;
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -1277,10 +1277,10 @@ public class ObservableBufferTest {
     @Test
     public void bufferSkipSupplierCrash2() {
         Observable.range(1, 2)
-        .buffer(2, 1, new Callable<List<Integer>>() {
+        .buffer(2, 1, new Supplier<List<Integer>>() {
             int calls;
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -1377,10 +1377,10 @@ public class ObservableBufferTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<List<Integer>> to = ps
-        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Callable<List<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Supplier<List<Integer>>() {
             int calls;
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -1830,10 +1830,10 @@ public class ObservableBufferTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
-        TestObserver<List<Integer>> to = ps.buffer(b, new Callable<List<Integer>>() {
+        TestObserver<List<Integer>> to = ps.buffer(b, new Supplier<List<Integer>>() {
             int calls;
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -1880,7 +1880,7 @@ public class ObservableBufferTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             BehaviorSubject.createDefault(1)
-            .buffer(Functions.justCallable(new Observable<Integer>() {
+            .buffer(Functions.justSupplier(new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -1904,8 +1904,8 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
         BufferBoundarySupplierObserver<Integer, List<Integer>, Integer> sub =
                 new BufferBoundarySupplierObserver<Integer, List<Integer>, Integer>(
-                        to, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justCallable(Observable.<Integer>never())
+                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
+                        Functions.justSupplier(Observable.<Integer>never())
         );
 
         Disposable bs = Disposables.empty();
@@ -1933,8 +1933,8 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
         BufferBoundarySupplierObserver<Integer, List<Integer>, Integer> sub =
                 new BufferBoundarySupplierObserver<Integer, List<Integer>, Integer>(
-                        to, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justCallable(Observable.<Integer>never())
+                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
+                        Functions.justSupplier(Observable.<Integer>never())
         );
 
         Disposable bs = Disposables.empty();
@@ -1981,7 +1981,7 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
         BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<Integer, List<Integer>>(
-                to, Functions.justCallable((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(Disposables.empty());
 
@@ -2031,7 +2031,7 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
-                to, Functions.justCallable((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(Disposables.empty());
 
@@ -2050,10 +2050,10 @@ public class ObservableBufferTest {
         final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
-                to, new Callable<List<Integer>>() {
+                to, new Supplier<List<Integer>>() {
                     int calls;
                     @Override
-                    public List<Integer> call() throws Exception {
+                    public List<Integer> get() throws Exception {
                         if (++calls == 2) {
                             to.cancel();
                         }
@@ -2076,7 +2076,7 @@ public class ObservableBufferTest {
 
         BufferExactBoundedObserver<Integer, List<Integer>> sub =
                 new BufferExactBoundedObserver<Integer, List<Integer>>(
-                        to, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
+                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 
@@ -2118,7 +2118,7 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
         BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<Integer, List<Integer>>(
-                to, 1, Functions.justCallable((List<Integer>)new ArrayList<Integer>())
+                to, 1, Functions.justSupplier((List<Integer>)new ArrayList<Integer>())
         );
 
         sub.onComplete();
@@ -2140,9 +2140,9 @@ public class ObservableBufferTest {
     @Test
     public void bufferExactFailingSupplier() {
         Observable.empty()
-                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Callable<List<Object>>() {
+                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Supplier<List<Object>>() {
                     @Override
-                    public List<Object> call() throws Exception {
+                    public List<Object> get() throws Exception {
                         throw new TestException();
                     }
                 }, false)

@@ -512,7 +512,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_UnsubscribeSource() throws Exception {
+    public void testIssue2191_UnsubscribeSource() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -562,7 +562,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribe() throws Exception {
+    public void testIssue2191_SchedulerUnsubscribe() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -615,7 +615,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
+    public void testIssue2191_SchedulerUnsubscribeOnError() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -937,7 +937,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Exception {
+    public void testUnsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).replay().autoConnect();
         o.subscribe();
@@ -1555,7 +1555,7 @@ public class ObservableReplayTest {
 
     @Test
     public void replaySelectorConnectableReturnsNull() {
-        ObservableReplay.multicastSelector(Functions.justCallable((ConnectableObservable<Integer>)null), Functions.justFunction(Observable.just(1)))
+        ObservableReplay.multicastSelector(Functions.justSupplier((ConnectableObservable<Integer>)null), Functions.justFunction(Observable.just(1)))
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The connectableFactory returned a null ConnectableObservable");
     }

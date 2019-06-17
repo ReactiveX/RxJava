@@ -24,7 +24,7 @@ public interface BiConsumer<T1, T2> {
      * Performs an operation on the given values.
      * @param t1 the first value
      * @param t2 the second value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    void accept(T1 t1, T2 t2) throws Exception;
+    void accept(T1 t1, T2 t2) throws Throwable;
 }

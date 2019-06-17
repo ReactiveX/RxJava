@@ -14,19 +14,19 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableToList<T, U extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, U> {
-    final Callable<U> collectionSupplier;
+    final Supplier<U> collectionSupplier;
 
-    public FlowableToList(Flowable<T> source, Callable<U> collectionSupplier) {
+    public FlowableToList(Flowable<T> source, Supplier<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;
     }
@@ -35,7 +35,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
     protected void subscribeActual(Subscriber<? super U> s) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            coll = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);

@@ -160,11 +160,11 @@ public class FlowableFlatMapTest {
         };
     }
 
-    <R> Callable<R> just0(final R value) {
-        return new Callable<R>() {
+    <R> Supplier<R> just0(final R value) {
+        return new Supplier<R>() {
 
             @Override
-            public R call() {
+            public R get() {
                 return value;
             }
         };
@@ -217,10 +217,10 @@ public class FlowableFlatMapTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    <R> Callable<R> funcThrow0(R r) {
-        return new Callable<R>() {
+    <R> Supplier<R> funcThrow0(R r) {
+        return new Supplier<R>() {
             @Override
-            public R call() {
+            public R get() {
                 throw new TestException();
             }
         };
@@ -423,7 +423,7 @@ public class FlowableFlatMapTest {
 
         Function<Integer, Flowable<Integer>> just = just(onNext);
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
-        Callable<Flowable<Integer>> just0 = just0(onComplete);
+        Supplier<Flowable<Integer>> just0 = just0(onComplete);
         source.flatMap(just, just2, just0, m).subscribe(ts);
 
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);

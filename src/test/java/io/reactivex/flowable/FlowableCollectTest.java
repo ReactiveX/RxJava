@@ -32,9 +32,9 @@ public final class FlowableCollectTest {
     @Test
     public void testCollectToListFlowable() {
         Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() {
+            public List<Integer> get() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -64,9 +64,9 @@ public final class FlowableCollectTest {
     public void testCollectToStringFlowable() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                new Callable<StringBuilder>() {
+                new Supplier<StringBuilder>() {
                     @Override
-                    public StringBuilder call() {
+                    public StringBuilder get() {
                         return new StringBuilder();
                     }
                 },
@@ -86,10 +86,10 @@ public final class FlowableCollectTest {
     @Test
     public void testFactoryFailureResultsInErrorEmissionFlowable() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1).collect(new Callable<List<Integer>>() {
+        Flowable.just(1).collect(new Supplier<List<Integer>>() {
 
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 throw e;
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -114,7 +114,7 @@ public final class FlowableCollectTest {
             final RuntimeException e2 = new RuntimeException();
 
             Burst.items(1).error(e2) //
-                    .collect(callableListCreator(), biConsumerThrows(e1))
+                    .collect(supplierListCreator(), biConsumerThrows(e1))
                     .toFlowable()
                     .test() //
                     .assertError(e1) //
@@ -131,7 +131,7 @@ public final class FlowableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
-                .collect(callableListCreator(), biConsumerThrows(e)) //
+                .collect(supplierListCreator(), biConsumerThrows(e)) //
                 .toFlowable()
                 .test() //
                 .assertError(e) //
@@ -157,7 +157,7 @@ public final class FlowableCollectTest {
             }
         };
         Burst.items(1, 2).create() //
-                .collect(callableListCreator(), throwOnFirstOnly)//
+                .collect(supplierListCreator(), throwOnFirstOnly)//
                 .toFlowable()
                 .test() //
                 .assertError(e) //
@@ -184,9 +184,9 @@ public final class FlowableCollectTest {
     @Test
     public void testCollectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() {
+            public List<Integer> get() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -216,9 +216,9 @@ public final class FlowableCollectTest {
     public void testCollectToString() {
         String value = Flowable.just(1, 2, 3)
             .collect(
-                new Callable<StringBuilder>() {
+                new Supplier<StringBuilder>() {
                     @Override
-                    public StringBuilder call() {
+                    public StringBuilder get() {
                         return new StringBuilder();
                     }
                 },
@@ -238,10 +238,10 @@ public final class FlowableCollectTest {
     @Test
     public void testFactoryFailureResultsInErrorEmission() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1).collect(new Callable<List<Integer>>() {
+        Flowable.just(1).collect(new Supplier<List<Integer>>() {
 
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 throw e;
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -266,7 +266,7 @@ public final class FlowableCollectTest {
             final RuntimeException e2 = new RuntimeException();
 
             Burst.items(1).error(e2) //
-                    .collect(callableListCreator(), biConsumerThrows(e1)) //
+                    .collect(supplierListCreator(), biConsumerThrows(e1)) //
                     .test() //
                     .assertError(e1) //
                     .assertNotComplete();
@@ -282,7 +282,7 @@ public final class FlowableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissions() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
-                .collect(callableListCreator(), biConsumerThrows(e)) //
+                .collect(supplierListCreator(), biConsumerThrows(e)) //
                 .test() //
                 .assertError(e) //
                 .assertNotComplete();
@@ -307,7 +307,7 @@ public final class FlowableCollectTest {
             }
         };
         Burst.items(1, 2).create() //
-                .collect(callableListCreator(), throwOnFirstOnly)//
+                .collect(supplierListCreator(), throwOnFirstOnly)//
                 .test() //
                 .assertError(e) //
                 .assertNoValues() //
@@ -332,7 +332,7 @@ public final class FlowableCollectTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1, 2)
-            .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+            .collect(Functions.justSupplier(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                 @Override
                 public void accept(ArrayList<Integer> a, Integer b) throws Exception {
                     a.add(b);
@@ -340,7 +340,7 @@ public final class FlowableCollectTest {
             }));
 
         TestHelper.checkDisposed(Flowable.just(1, 2)
-                .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                .collect(Functions.justSupplier(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                     @Override
                     public void accept(ArrayList<Integer> a, Integer b) throws Exception {
                         a.add(b);
@@ -353,7 +353,7 @@ public final class FlowableCollectTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
             @Override
             public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justCallable(new ArrayList<Integer>()),
+                return f.collect(Functions.justSupplier(new ArrayList<Integer>()),
                         new BiConsumer<ArrayList<Integer>, Integer>() {
                             @Override
                             public void accept(ArrayList<Integer> a, Integer b) throws Exception {
@@ -365,7 +365,7 @@ public final class FlowableCollectTest {
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, Single<ArrayList<Integer>>>() {
             @Override
             public Single<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justCallable(new ArrayList<Integer>()),
+                return f.collect(Functions.justSupplier(new ArrayList<Integer>()),
                         new BiConsumer<ArrayList<Integer>, Integer>() {
                             @Override
                             public void accept(ArrayList<Integer> a, Integer b) throws Exception {

@@ -75,7 +75,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
 
         @Nullable
         @Override
-        public U poll() throws Exception {
+        public U poll() throws Throwable {
             T t = qs.poll();
             return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
@@ -135,7 +135,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
 
         @Nullable
         @Override
-        public U poll() throws Exception {
+        public U poll() throws Throwable {
             T t = qs.poll();
             return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }

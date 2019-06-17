@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -26,7 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -202,9 +201,9 @@ public class FlowableDistinctTest {
     @Test
     public void collectionSupplierThrows() {
         Flowable.just(1)
-        .distinct(Functions.identity(), new Callable<Collection<Object>>() {
+        .distinct(Functions.identity(), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -215,9 +214,9 @@ public class FlowableDistinctTest {
     @Test
     public void collectionSupplierIsNull() {
         Flowable.just(1)
-        .distinct(Functions.identity(), new Callable<Collection<Object>>() {
+        .distinct(Functions.identity(), new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() throws Exception {
+            public Collection<Object> get() throws Exception {
                 return null;
             }
         })

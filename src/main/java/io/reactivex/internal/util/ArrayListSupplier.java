@@ -14,16 +14,15 @@
 package io.reactivex.internal.util;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
-public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object, List<Object>> {
+public enum ArrayListSupplier implements Supplier<List<Object>>, Function<Object, List<Object>> {
     INSTANCE;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Callable<List<T>> asCallable() {
-        return (Callable)INSTANCE;
+    public static <T> Supplier<List<T>> asSupplier() {
+        return (Supplier)INSTANCE;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -32,11 +31,11 @@ public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object
     }
 
     @Override
-    public List<Object> call() throws Exception {
+    public List<Object> get() {
         return new ArrayList<Object>();
     }
 
-    @Override public List<Object> apply(Object o) throws Exception {
+    @Override public List<Object> apply(Object o) {
         return new ArrayList<Object>();
     }
 }

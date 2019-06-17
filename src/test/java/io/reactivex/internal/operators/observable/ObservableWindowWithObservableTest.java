@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
@@ -28,7 +28,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -270,9 +270,9 @@ public class ObservableWindowWithObservableTest {
                 super.onNext(t);
             }
         };
-        source.window(new Callable<Observable<Object>>() {
+        source.window(new Supplier<Observable<Object>>() {
             @Override
-            public Observable<Object> call() {
+            public Observable<Object> get() {
                 return Observable.never();
             }
         }).subscribe(to);
@@ -287,9 +287,9 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         Observable<Integer> source = Observable.range(1, 10);
-        Callable<Observable<String>> boundary = new Callable<Observable<String>>() {
+        Supplier<Observable<String>> boundary = new Supplier<Observable<String>>() {
             @Override
-            public Observable<String> call() {
+            public Observable<String> get() {
                 return Observable.empty();
             }
         };
@@ -306,9 +306,9 @@ public class ObservableWindowWithObservableTest {
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return boundary;
             }
         };
@@ -333,9 +333,9 @@ public class ObservableWindowWithObservableTest {
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return boundary;
             }
         };
@@ -360,9 +360,9 @@ public class ObservableWindowWithObservableTest {
     public void testChildUnsubscribed() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return boundary;
             }
         };
@@ -393,9 +393,9 @@ public class ObservableWindowWithObservableTest {
         final AtomicInteger calls = new AtomicInteger();
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
-        Callable<Observable<Integer>> boundaryFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 calls.getAndIncrement();
                 return boundary;
             }
@@ -434,7 +434,7 @@ public class ObservableWindowWithObservableTest {
 
     @Test
     public void boundaryDispose2() {
-        TestHelper.checkDisposed(Observable.never().window(Functions.justCallable(Observable.never())));
+        TestHelper.checkDisposed(Observable.never().window(Functions.justSupplier(Observable.never())));
     }
 
     @Test
@@ -453,7 +453,7 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void mainError() {
         Observable.error(new TestException())
-        .window(Functions.justCallable(Observable.never()))
+        .window(Functions.justSupplier(Observable.never()))
         .test()
         .assertError(TestException.class);
     }
@@ -475,7 +475,7 @@ public class ObservableWindowWithObservableTest {
         TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
             @Override
             public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.just(1).window(Functions.justCallable(o)).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                return Observable.just(1).window(Functions.justSupplier(o)).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
                     @Override
                     public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
                         return v;
@@ -531,10 +531,10 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        ps.window(new Callable<Observable<Integer>>() {
+        ps.window(new Supplier<Observable<Integer>>() {
             boolean once;
             @Override
-            public Observable<Integer> call() throws Exception {
+            public Observable<Integer> get() throws Exception {
                 if (!once) {
                     once = true;
                     return BehaviorSubject.createDefault(1);
@@ -577,7 +577,7 @@ public class ObservableWindowWithObservableTest {
         TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
             @Override
             public Object apply(Observable<Object> o) throws Exception {
-                return o.window(Functions.justCallable(Observable.never())).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
+                return o.window(Functions.justSupplier(Observable.never())).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
                     @Override
                     public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
                         return v;
@@ -590,7 +590,7 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void boundaryError() {
         BehaviorSubject.createDefault(1)
-        .window(Functions.justCallable(Observable.error(new TestException())))
+        .window(Functions.justSupplier(Observable.error(new TestException())))
         .test()
         .assertValueCount(1)
         .assertNotComplete()
@@ -600,10 +600,10 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void boundaryCallableCrashOnCall2() {
         BehaviorSubject.createDefault(1)
-        .window(new Callable<Observable<Integer>>() {
+        .window(new Supplier<Observable<Integer>>() {
             int calls;
             @Override
-            public Observable<Integer> call() throws Exception {
+            public Observable<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -620,7 +620,7 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Observable<Integer>> to = BehaviorSubject.createDefault(1)
-        .window(Functions.justCallable(ps))
+        .window(Functions.justSupplier(ps))
         .take(1)
         .test();
 
@@ -946,7 +946,7 @@ public class ObservableWindowWithObservableTest {
             @Override
             public Observable<Observable<Object>> apply(Observable<Object> f)
                     throws Exception {
-                return f.window(Functions.justCallable(Observable.never())).takeLast(1);
+                return f.window(Functions.justSupplier(Observable.never())).takeLast(1);
             }
         });
     }
@@ -956,7 +956,7 @@ public class ObservableWindowWithObservableTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
-        TestObserver<Integer> to = source.window(Functions.justCallable(boundary))
+        TestObserver<Integer> to = source.window(Functions.justSupplier(boundary))
         .take(1)
         .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
@@ -982,7 +982,7 @@ public class ObservableWindowWithObservableTest {
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
             TestObserver<Observable<Object>> to = Observable.error(new TestException("main"))
-            .window(Functions.justCallable(new Observable<Object>() {
+            .window(Functions.justSupplier(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -1022,7 +1022,7 @@ public class ObservableWindowWithObservableTest {
                         refMain.set(observer);
                     }
                 }
-                .window(Functions.justCallable(new Observable<Object>() {
+                .window(Functions.justSupplier(new Observable<Object>() {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
                         observer.onSubscribe(Disposables.empty());
@@ -1072,7 +1072,7 @@ public class ObservableWindowWithObservableTest {
                     refMain.set(observer);
                 }
             }
-            .window(Functions.justCallable(new Observable<Object>() {
+            .window(Functions.justSupplier(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -1115,7 +1115,7 @@ public class ObservableWindowWithObservableTest {
                 refMain.set(observer);
             }
         }
-        .window(Functions.justCallable(new Observable<Object>() {
+        .window(Functions.justSupplier(new Observable<Object>() {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposables.empty());
@@ -1147,7 +1147,7 @@ public class ObservableWindowWithObservableTest {
                      refMain.set(observer);
                  }
              }
-             .window(Functions.justCallable(new Observable<Object>() {
+             .window(Functions.justSupplier(new Observable<Object>() {
                  @Override
                  protected void subscribeActual(Observer<? super Object> observer) {
                      final AtomicInteger counter = new AtomicInteger();
@@ -1207,10 +1207,10 @@ public class ObservableWindowWithObservableTest {
                         refMain.set(observer);
                     }
                 }
-                .window(new Callable<ObservableSource<Object>>() {
+                .window(new Supplier<ObservableSource<Object>>() {
                     int count;
                     @Override
-                    public ObservableSource<Object> call() throws Exception {
+                    public ObservableSource<Object> get() throws Exception {
                         if (++count > 1) {
                             return Observable.never();
                         }

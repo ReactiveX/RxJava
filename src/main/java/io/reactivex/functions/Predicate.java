@@ -24,7 +24,7 @@ public interface Predicate<T> {
      * Test the given input value and return a boolean.
      * @param t the value
      * @return the boolean result
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    boolean test(@NonNull T t) throws Exception;
+    boolean test(@NonNull T t) throws Throwable;
 }

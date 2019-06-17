@@ -36,7 +36,7 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicScheduling() throws Exception {
+    public final void testPeriodicScheduling() throws Throwable {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -86,7 +86,7 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicSchedulingUnsubscription() throws Exception {
+    public final void testPeriodicSchedulingUnsubscription() throws Throwable {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();

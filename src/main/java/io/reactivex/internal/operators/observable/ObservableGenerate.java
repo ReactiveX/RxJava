@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -23,11 +21,11 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableGenerate<T, S> extends Observable<T> {
-    final Callable<S> stateSupplier;
+    final Supplier<S> stateSupplier;
     final BiFunction<S, Emitter<T>, S> generator;
     final Consumer<? super S> disposeState;
 
-    public ObservableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
+    public ObservableGenerate(Supplier<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
             Consumer<? super S> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -39,7 +37,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         S state;
 
         try {
-            state = stateSupplier.call();
+            state = stateSupplier.get();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);

@@ -23,6 +23,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -37,11 +38,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     final long timeskip;
     final TimeUnit unit;
     final Scheduler scheduler;
-    final Callable<U> bufferSupplier;
+    final Supplier<U> bufferSupplier;
     final int maxSize;
     final boolean restartTimerOnMaxSize;
 
-    public FlowableBufferTimed(Flowable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Callable<U> bufferSupplier, int maxSize,
+    public FlowableBufferTimed(Flowable<T> source, long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier, int maxSize,
             boolean restartTimerOnMaxSize) {
         super(source);
         this.timespan = timespan;
@@ -80,7 +81,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
     static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -92,7 +93,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
         BufferExactUnboundedSubscriber(
-                Subscriber<? super U> actual, Callable<U> bufferSupplier,
+                Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -109,7 +110,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -186,7 +187,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -226,7 +227,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
     static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable {
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
         final long timespan;
         final long timeskip;
         final TimeUnit unit;
@@ -236,7 +237,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         Subscription upstream;
 
         BufferSkipBoundedSubscriber(Subscriber<? super U> actual,
-                Callable<U> bufferSupplier, long timespan,
+                Supplier<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -257,7 +258,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
@@ -338,7 +339,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -382,7 +383,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
     static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
         final int maxSize;
@@ -401,7 +402,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         BufferExactBoundedSubscriber(
                 Subscriber<? super U> actual,
-                Callable<U> bufferSupplier,
+                Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -423,7 +424,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
@@ -467,7 +468,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             fastPathOrderedEmitMax(b, false, this);
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -549,7 +550,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
+                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();

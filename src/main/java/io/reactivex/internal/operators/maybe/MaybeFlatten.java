@@ -86,7 +86,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
             try {
                 source = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
                 return;

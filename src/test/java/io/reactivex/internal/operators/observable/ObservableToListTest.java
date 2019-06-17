@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
 public class ObservableToListTest {
 
@@ -216,9 +216,9 @@ public class ObservableToListTest {
     @Test
     public void collectionSupplierThrows() {
         Observable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -231,9 +231,9 @@ public class ObservableToListTest {
     @Test
     public void collectionSupplierReturnsNull() {
         Observable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return null;
             }
         })
@@ -247,9 +247,9 @@ public class ObservableToListTest {
     @Test
     public void singleCollectionSupplierThrows() {
         Observable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -261,9 +261,9 @@ public class ObservableToListTest {
     @Test
     public void singleCollectionSupplierReturnsNull() {
         Observable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return null;
             }
         })

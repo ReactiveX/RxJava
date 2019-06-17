@@ -1970,7 +1970,7 @@ public class FlowableGroupByTest {
                             public void onRemoval(RemovalNotification<Object, Object> notification) {
                                 try {
                                     action.accept(notification.getValue());
-                                } catch (Exception ex) {
+                                } catch (Throwable ex) {
                                     throw new RuntimeException(ex);
                                 }
                             }
@@ -2123,7 +2123,7 @@ public class FlowableGroupByTest {
             if (v != null) {
                 try {
                     evictedListener.accept(v);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -2178,7 +2178,7 @@ public class FlowableGroupByTest {
                             public void onRemoval(RemovalNotification<Integer, Object> notification) {
                                 try {
                                     notify.accept(notification.getValue());
-                                } catch (Exception e) {
+                                } catch (Throwable e) {
                                     throw new RuntimeException(e);
                                 }
                             }})
@@ -2199,7 +2199,7 @@ public class FlowableGroupByTest {
                                     public void accept(Object object) {
                                         try {
                                             notify.accept(object);
-                                        } catch (Exception e) {
+                                        } catch (Throwable e) {
                                             throw new RuntimeException(e);
                                         }
                                     }});

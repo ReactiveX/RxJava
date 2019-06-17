@@ -37,7 +37,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Throwable {
             consumer.accept(t2);
             return t1;
         }
@@ -55,7 +55,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Throwable {
             consumer.accept(t1, t2);
             return t1;
         }
@@ -73,7 +73,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<T> apply(final T v) throws Exception {
+        public ObservableSource<T> apply(final T v) throws Throwable {
             ObservableSource<U> o = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
             return new ObservableTake<U>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
@@ -144,7 +144,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public R apply(U w) throws Exception {
+        public R apply(U w) throws Throwable {
             return combiner.apply(t, w);
         }
     }
@@ -160,7 +160,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<R> apply(final T t) throws Exception {
+        public ObservableSource<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             ObservableSource<U> u = (ObservableSource<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
@@ -181,7 +181,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<U> apply(T t) throws Exception {
+        public ObservableSource<U> apply(T t) throws Throwable {
             return new ObservableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
@@ -198,19 +198,19 @@ public final class ObservableInternalHelper {
         }
     }
 
-    public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent) {
-        return new ReplayCallable<T>(parent);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent) {
+        return new ReplaySupplier<T>(parent);
     }
 
-    public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final int bufferSize) {
-        return new BufferedReplayCallable<T>(parent, bufferSize);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize) {
+        return new BufferedReplaySupplier<T>(parent, bufferSize);
     }
 
-    public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new BufferedTimedReplayCallable<T>(parent, bufferSize, time, unit, scheduler);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return new BufferedTimedReplaySupplier<T>(parent, bufferSize, time, unit, scheduler);
     }
 
-    public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new TimedReplayCallable<T>(parent, time, unit, scheduler);
     }
 
@@ -236,42 +236,42 @@ public final class ObservableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
-    static final class ReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class ReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
         private final Observable<T> parent;
 
-        ReplayCallable(Observable<T> parent) {
+        ReplaySupplier(Observable<T> parent) {
             this.parent = parent;
         }
 
         @Override
-        public ConnectableObservable<T> call() {
+        public ConnectableObservable<T> get() {
             return parent.replay();
         }
     }
 
-    static final class BufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class BufferedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final int bufferSize;
 
-        BufferedReplayCallable(Observable<T> parent, int bufferSize) {
+        BufferedReplaySupplier(Observable<T> parent, int bufferSize) {
             this.parent = parent;
             this.bufferSize = bufferSize;
         }
 
         @Override
-        public ConnectableObservable<T> call() {
+        public ConnectableObservable<T> get() {
             return parent.replay(bufferSize);
         }
     }
 
-    static final class BufferedTimedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class BufferedTimedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final int bufferSize;
         private final long time;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        BufferedTimedReplayCallable(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+        BufferedTimedReplaySupplier(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
             this.parent = parent;
             this.bufferSize = bufferSize;
             this.time = time;
@@ -280,12 +280,12 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ConnectableObservable<T> call() {
+        public ConnectableObservable<T> get() {
             return parent.replay(bufferSize, time, unit, scheduler);
         }
     }
 
-    static final class TimedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class TimedReplayCallable<T> implements Supplier<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final long time;
         private final TimeUnit unit;
@@ -299,7 +299,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ConnectableObservable<T> call() {
+        public ConnectableObservable<T> get() {
             return parent.replay(time, unit, scheduler);
         }
     }
@@ -314,7 +314,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<R> apply(Observable<T> t) throws Exception {
+        public ObservableSource<R> apply(Observable<T> t) throws Throwable {
             ObservableSource<R> apply = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null ObservableSource");
             return Observable.wrap(apply).observeOn(scheduler);
         }

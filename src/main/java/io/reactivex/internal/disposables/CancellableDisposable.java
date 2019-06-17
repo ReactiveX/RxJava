@@ -46,7 +46,7 @@ implements Disposable {
             if (c != null) {
                 try {
                     c.cancel();
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                 }

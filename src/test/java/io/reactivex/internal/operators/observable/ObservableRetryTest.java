@@ -349,7 +349,7 @@ public class ObservableRetryTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testRetrySubscribesAgainAfterError() throws Exception {
+    public void testRetrySubscribesAgainAfterError() throws Throwable {
 
         // record emitted values with this action
         Consumer<Integer> record = mock(Consumer.class);
@@ -945,9 +945,9 @@ public class ObservableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Callable<ObservableSource<Integer>>() {
+        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> call() throws Exception {
+            public ObservableSource<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Observable.error(new TestException());
                 }
@@ -974,9 +974,9 @@ public class ObservableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Callable<ObservableSource<Integer>>() {
+        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> call() throws Exception {
+            public ObservableSource<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Observable.error(new TestException());
                 }
@@ -1003,9 +1003,9 @@ public class ObservableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Callable<ObservableSource<Integer>>() {
+        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> call() throws Exception {
+            public ObservableSource<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Observable.error(new TestException());
                 }
@@ -1037,9 +1037,9 @@ public class ObservableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Callable<ObservableSource<Integer>>() {
+        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> call() throws Exception {
+            public ObservableSource<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Observable.error(new TestException());
                 }
@@ -1071,9 +1071,9 @@ public class ObservableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Observable<Integer> source = Observable.defer(new Callable<ObservableSource<Integer>>() {
+        Observable<Integer> source = Observable.defer(new Supplier<ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> call() throws Exception {
+            public ObservableSource<Integer> get() throws Exception {
                 if (times.get() < 4) {
                     return Observable.error(new TestException());
                 }

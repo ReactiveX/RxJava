@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 
@@ -35,12 +34,12 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
     final Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper;
 
-    final Callable<? extends MaybeSource<? extends R>> onCompleteSupplier;
+    final Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier;
 
     public MaybeFlatMapNotification(MaybeSource<T> source,
             Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
             Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
-            Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
+            Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier) {
         super(source);
         this.onSuccessMapper = onSuccessMapper;
         this.onErrorMapper = onErrorMapper;
@@ -64,14 +63,14 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         final Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper;
 
-        final Callable<? extends MaybeSource<? extends R>> onCompleteSupplier;
+        final Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier;
 
         Disposable upstream;
 
         FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
                 Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
-                Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
+                Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier) {
             this.downstream = actual;
             this.onSuccessMapper = onSuccessMapper;
             this.onErrorMapper = onErrorMapper;
@@ -104,7 +103,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
             try {
                 source = ObjectHelper.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null MaybeSource");
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
                 return;
@@ -119,7 +118,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
             try {
                 source = ObjectHelper.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null MaybeSource");
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(e, ex));
                 return;
@@ -133,8 +132,8 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             MaybeSource<? extends R> source;
 
             try {
-                source = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onCompleteSupplier returned a null MaybeSource");
-            } catch (Exception ex) {
+                source = ObjectHelper.requireNonNull(onCompleteSupplier.get(), "The onCompleteSupplier returned a null MaybeSource");
+            } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
                 return;

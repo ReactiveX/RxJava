@@ -14,14 +14,13 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscribers.BasicFuseableSubscriber;
@@ -32,9 +31,9 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
     final Function<? super T, K> keySelector;
 
-    final Callable<? extends Collection<? super K>> collectionSupplier;
+    final Supplier<? extends Collection<? super K>> collectionSupplier;
 
-    public FlowableDistinct(Flowable<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
+    public FlowableDistinct(Flowable<T> source, Function<? super T, K> keySelector, Supplier<? extends Collection<? super K>> collectionSupplier) {
         super(source);
         this.keySelector = keySelector;
         this.collectionSupplier = collectionSupplier;
@@ -45,7 +44,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         Collection<? super K> collection;
 
         try {
-            collection = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            collection = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, subscriber);
@@ -121,7 +120,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             for (;;) {
                 T v = qs.poll();
 

@@ -14,14 +14,13 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -30,12 +29,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractObservableWithUpstream<T, U> {
-    final Callable<U> bufferSupplier;
+    final Supplier<U> bufferSupplier;
     final ObservableSource<? extends Open> bufferOpen;
     final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
 
     public ObservableBufferBoundary(ObservableSource<T> source, ObservableSource<? extends Open> bufferOpen,
-                                    Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
+                                    Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Supplier<U> bufferSupplier) {
         super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -59,7 +58,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         final Observer<? super C> downstream;
 
-        final Callable<C> bufferSupplier;
+        final Supplier<C> bufferSupplier;
 
         final ObservableSource<? extends Open> bufferOpen;
 
@@ -84,7 +83,7 @@ extends AbstractObservableWithUpstream<T, U> {
         BufferBoundaryObserver(Observer<? super C> actual,
                 ObservableSource<? extends Open> bufferOpen,
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
-                Callable<C> bufferSupplier
+                Supplier<C> bufferSupplier
         ) {
             this.downstream = actual;
             this.bufferSupplier = bufferSupplier;
@@ -175,7 +174,7 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null Collection");
+                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
                 p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);

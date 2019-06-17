@@ -296,7 +296,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
-        public R apply(T t) throws Exception {
+        public R apply(T t) throws Throwable {
             return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
         }
     }

@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -269,9 +269,9 @@ public class FlowableWindowWithFlowableTest {
                 super.onNext(t);
             }
         };
-        source.window(new Callable<Flowable<Object>>() {
+        source.window(new Supplier<Flowable<Object>>() {
             @Override
-            public Flowable<Object> call() {
+            public Flowable<Object> get() {
                 return Flowable.never();
             }
         }).subscribe(ts);
@@ -286,9 +286,9 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void testWindowViaFlowableNoUnsubscribe() {
         Flowable<Integer> source = Flowable.range(1, 10);
-        Callable<Flowable<String>> boundary = new Callable<Flowable<String>>() {
+        Supplier<Flowable<String>> boundary = new Supplier<Flowable<String>>() {
             @Override
-            public Flowable<String> call() {
+            public Flowable<String> get() {
                 return Flowable.empty();
             }
         };
@@ -303,9 +303,9 @@ public class FlowableWindowWithFlowableTest {
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return boundary;
             }
         };
@@ -330,9 +330,9 @@ public class FlowableWindowWithFlowableTest {
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return boundary;
             }
         };
@@ -357,9 +357,9 @@ public class FlowableWindowWithFlowableTest {
     public void testChildUnsubscribed() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return boundary;
             }
         };
@@ -389,9 +389,9 @@ public class FlowableWindowWithFlowableTest {
     public void testInnerBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 10);
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return boundary;
             }
         };
@@ -427,9 +427,9 @@ public class FlowableWindowWithFlowableTest {
         final AtomicInteger calls = new AtomicInteger();
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
-        Callable<Flowable<Integer>> boundaryFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 calls.getAndIncrement();
                 return boundary;
             }
@@ -468,7 +468,7 @@ public class FlowableWindowWithFlowableTest {
 
     @Test
     public void boundaryDispose2() {
-        TestHelper.checkDisposed(Flowable.never().window(Functions.justCallable(Flowable.never())));
+        TestHelper.checkDisposed(Flowable.never().window(Functions.justSupplier(Flowable.never())));
     }
 
     @Test
@@ -487,7 +487,7 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void mainError() {
         Flowable.error(new TestException())
-        .window(Functions.justCallable(Flowable.never()))
+        .window(Functions.justSupplier(Flowable.never()))
         .test()
         .assertError(TestException.class);
     }
@@ -509,10 +509,10 @@ public class FlowableWindowWithFlowableTest {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
             public Object apply(final Flowable<Integer> f) throws Exception {
-                return Flowable.just(1).window(new Callable<Publisher<Integer>>() {
+                return Flowable.just(1).window(new Supplier<Publisher<Integer>>() {
                     int count;
                     @Override
-                    public Publisher<Integer> call() throws Exception {
+                    public Publisher<Integer> get() throws Exception {
                         if (++count > 1) {
                             return Flowable.never();
                         }
@@ -575,10 +575,10 @@ public class FlowableWindowWithFlowableTest {
             }
         };
 
-        ps.window(new Callable<Flowable<Integer>>() {
+        ps.window(new Supplier<Flowable<Integer>>() {
             boolean once;
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (!once) {
                     once = true;
                     return BehaviorProcessor.createDefault(1);
@@ -621,7 +621,7 @@ public class FlowableWindowWithFlowableTest {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
             @Override
             public Object apply(Flowable<Object> f) throws Exception {
-                return f.window(Functions.justCallable(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+                return f.window(Functions.justSupplier(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Flowable<Object> v) throws Exception {
                         return v;
@@ -634,7 +634,7 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void boundaryError() {
         BehaviorProcessor.createDefault(1)
-        .window(Functions.justCallable(Flowable.error(new TestException())))
+        .window(Functions.justSupplier(Flowable.error(new TestException())))
         .test()
         .assertValueCount(1)
         .assertNotComplete()
@@ -645,7 +645,7 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void boundaryMissingBackpressure() {
         BehaviorProcessor.createDefault(1)
-        .window(Functions.justCallable(Flowable.error(new TestException())))
+        .window(Functions.justSupplier(Flowable.error(new TestException())))
         .test(0)
         .assertFailure(MissingBackpressureException.class);
     }
@@ -653,10 +653,10 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void boundaryCallableCrashOnCall2() {
         BehaviorProcessor.createDefault(1)
-        .window(new Callable<Flowable<Integer>>() {
+        .window(new Supplier<Flowable<Integer>>() {
             int calls;
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (++calls == 2) {
                     throw new TestException();
                 }
@@ -671,7 +671,7 @@ public class FlowableWindowWithFlowableTest {
     @Test
     public void boundarySecondMissingBackpressure() {
         BehaviorProcessor.createDefault(1)
-        .window(Functions.justCallable(Flowable.just(1)))
+        .window(Functions.justSupplier(Flowable.just(1)))
         .test(1)
         .assertError(MissingBackpressureException.class)
         .assertNotComplete();
@@ -682,7 +682,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Flowable<Integer>> ts = BehaviorProcessor.createDefault(1)
-        .window(Functions.justCallable(pp))
+        .window(Functions.justSupplier(pp))
         .take(1)
         .test();
 
@@ -1047,7 +1047,7 @@ public class FlowableWindowWithFlowableTest {
             @Override
             public Flowable<Flowable<Object>> apply(Flowable<Object> f)
                     throws Exception {
-                return f.window(Functions.justCallable(Flowable.never())).takeLast(1);
+                return f.window(Functions.justSupplier(Flowable.never())).takeLast(1);
             }
         });
     }
@@ -1057,7 +1057,7 @@ public class FlowableWindowWithFlowableTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = source.window(Functions.justCallable(boundary))
+        TestSubscriber<Integer> ts = source.window(Functions.justSupplier(boundary))
         .take(1)
         .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
@@ -1083,7 +1083,7 @@ public class FlowableWindowWithFlowableTest {
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
             TestSubscriber<Flowable<Object>> ts = Flowable.error(new TestException("main"))
-            .window(Functions.justCallable(new Flowable<Object>() {
+            .window(Functions.justSupplier(new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -1123,7 +1123,7 @@ public class FlowableWindowWithFlowableTest {
                         refMain.set(subscriber);
                     }
                 }
-                .window(Functions.justCallable(new Flowable<Object>() {
+                .window(Functions.justSupplier(new Flowable<Object>() {
                     @Override
                     protected void subscribeActual(Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
@@ -1173,7 +1173,7 @@ public class FlowableWindowWithFlowableTest {
                     refMain.set(subscriber);
                 }
             }
-            .window(Functions.justCallable(new Flowable<Object>() {
+            .window(Functions.justSupplier(new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
@@ -1216,7 +1216,7 @@ public class FlowableWindowWithFlowableTest {
                 refMain.set(subscriber);
             }
         }
-        .window(Functions.justCallable(new Flowable<Object>() {
+        .window(Functions.justSupplier(new Flowable<Object>() {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -1248,7 +1248,7 @@ public class FlowableWindowWithFlowableTest {
                      refMain.set(subscriber);
                  }
              }
-             .window(Functions.justCallable(new Flowable<Object>() {
+             .window(Functions.justSupplier(new Flowable<Object>() {
                  @Override
                  protected void subscribeActual(Subscriber<? super Object> subscriber) {
                      final AtomicInteger counter = new AtomicInteger();
@@ -1307,10 +1307,10 @@ public class FlowableWindowWithFlowableTest {
                         refMain.set(subscriber);
                     }
                 }
-                .window(new Callable<Flowable<Object>>() {
+                .window(new Supplier<Flowable<Object>>() {
                     int count;
                     @Override
-                    public Flowable<Object> call() throws Exception {
+                    public Flowable<Object> get() throws Exception {
                         if (++count > 1) {
                             return Flowable.never();
                         }

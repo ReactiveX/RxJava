@@ -18,16 +18,16 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 
 public class MaybeEmptyTest {
 
     @Test
-    public void scalarCallable() {
+    public void scalarSupplier() {
         Maybe<Integer> m = Maybe.empty();
 
-        assertTrue(m.getClass().toString(), m instanceof ScalarCallable);
+        assertTrue(m.getClass().toString(), m instanceof ScalarSupplier);
 
-        assertNull(((ScalarCallable<?>)m).call());
+        assertNull(((ScalarSupplier<?>)m).get());
     }
 }

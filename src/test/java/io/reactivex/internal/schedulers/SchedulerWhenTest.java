@@ -17,7 +17,6 @@ import static io.reactivex.Flowable.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -26,7 +25,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.schedulers.SchedulerWhen.*;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.processors.PublishProcessor;
@@ -164,9 +163,9 @@ public class SchedulerWhenTest {
         return Flowable.range(1, 5).flatMap(new Function<Integer, Flowable<Long>>() {
             @Override
             public Flowable<Long> apply(Integer t) {
-                return Flowable.defer(new Callable<Flowable<Long>>() {
+                return Flowable.defer(new Supplier<Flowable<Long>>() {
                     @Override
-                    public Flowable<Long> call() {
+                    public Flowable<Long> get() {
                         return Flowable.just(0l);
                     }
                 }).subscribeOn(sched);

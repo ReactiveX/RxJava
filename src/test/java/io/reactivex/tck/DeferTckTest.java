@@ -13,12 +13,11 @@
 
 package io.reactivex.tck;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Supplier;
 
 @Test
 public class DeferTckTest extends BaseTck<Long> {
@@ -26,9 +25,9 @@ public class DeferTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-                Flowable.defer(new Callable<Publisher<Long>>() {
+                Flowable.defer(new Supplier<Publisher<Long>>() {
                     @Override
-                    public Publisher<Long> call() throws Exception {
+                    public Publisher<Long> get() throws Exception {
                         return Flowable.fromIterable(iterate(elements));
                     }
                 }

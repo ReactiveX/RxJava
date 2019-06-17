@@ -110,15 +110,15 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Integer.TYPE));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE, Callable.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE, Supplier.class, Boolean.TYPE));
 
         // negative time/skip is considered zero time/skip
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Callable.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Supplier.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Callable.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Supplier.class));
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
@@ -366,15 +366,15 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Integer.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE, Callable.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, TimeUnit.class, Scheduler.class, Integer.TYPE, Supplier.class, Boolean.TYPE));
 
         // negative time/skip is considered zero time/skip
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Callable.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Supplier.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Callable.class));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "buffer", Long.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, Supplier.class));
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
@@ -551,6 +551,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(LongConsumer.class, Functions.EMPTY_LONG_CONSUMER);
         defaultValues.put(Function.class, Functions.justFunction(1));
         defaultValues.put(Callable.class, Functions.justCallable(1));
+        defaultValues.put(Supplier.class, Functions.justSupplier(1));
         defaultValues.put(Iterable.class, Collections.emptyList());
         defaultValues.put(Object.class, 1);
         defaultValues.put(Class.class, Integer.class);

@@ -40,7 +40,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Throwable {
             consumer.accept(t2);
             return t1;
         }
@@ -58,7 +58,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Throwable {
             consumer.accept(t1, t2);
             return t1;
         }
@@ -76,7 +76,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public Publisher<T> apply(final T v) throws Exception {
+        public Publisher<T> apply(final T v) throws Throwable {
             Publisher<U> p = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
             return new FlowableTakePublisher<U>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
@@ -147,7 +147,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public R apply(U w) throws Exception {
+        public R apply(U w) throws Throwable {
             return combiner.apply(t, w);
         }
     }
@@ -163,7 +163,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public Publisher<R> apply(final T t) throws Exception {
+        public Publisher<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             Publisher<U> u = (Publisher<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
@@ -184,7 +184,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public Publisher<U> apply(T t) throws Exception {
+        public Publisher<U> apply(T t) throws Throwable {
             return new FlowableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
@@ -193,19 +193,19 @@ public final class FlowableInternalHelper {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
-    public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
-        return new ReplayCallable<T>(parent);
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent) {
+        return new ReplaySupplier<T>(parent);
     }
 
-    public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize) {
-        return new BufferedReplayCallable<T>(parent, bufferSize);
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize) {
+        return new BufferedReplaySupplier<T>(parent, bufferSize);
     }
 
-    public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler);
     }
 
-    public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new TimedReplay<T>(parent, time, unit, scheduler);
     }
 
@@ -239,35 +239,35 @@ public final class FlowableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
-    static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+    static final class ReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
         private final Flowable<T> parent;
 
-        ReplayCallable(Flowable<T> parent) {
+        ReplaySupplier(Flowable<T> parent) {
             this.parent = parent;
         }
 
         @Override
-        public ConnectableFlowable<T> call() {
+        public ConnectableFlowable<T> get() {
             return parent.replay();
         }
     }
 
-    static final class BufferedReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+    static final class BufferedReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
         private final Flowable<T> parent;
         private final int bufferSize;
 
-        BufferedReplayCallable(Flowable<T> parent, int bufferSize) {
+        BufferedReplaySupplier(Flowable<T> parent, int bufferSize) {
             this.parent = parent;
             this.bufferSize = bufferSize;
         }
 
         @Override
-        public ConnectableFlowable<T> call() {
+        public ConnectableFlowable<T> get() {
             return parent.replay(bufferSize);
         }
     }
 
-    static final class BufferedTimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+    static final class BufferedTimedReplay<T> implements Supplier<ConnectableFlowable<T>> {
         private final Flowable<T> parent;
         private final int bufferSize;
         private final long time;
@@ -283,12 +283,12 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public ConnectableFlowable<T> call() {
+        public ConnectableFlowable<T> get() {
             return parent.replay(bufferSize, time, unit, scheduler);
         }
     }
 
-    static final class TimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+    static final class TimedReplay<T> implements Supplier<ConnectableFlowable<T>> {
         private final Flowable<T> parent;
         private final long time;
         private final TimeUnit unit;
@@ -302,7 +302,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public ConnectableFlowable<T> call() {
+        public ConnectableFlowable<T> get() {
             return parent.replay(time, unit, scheduler);
         }
     }
@@ -317,7 +317,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public Publisher<R> apply(Flowable<T> t) throws Exception {
+        public Publisher<R> apply(Flowable<T> t) throws Throwable {
             Publisher<R> p = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null Publisher");
             return Flowable.fromPublisher(p).observeOn(scheduler);
         }

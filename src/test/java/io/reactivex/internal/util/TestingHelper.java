@@ -15,12 +15,9 @@
  */
 package io.reactivex.internal.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.*;
 
-import io.reactivex.functions.BiConsumer;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 
 public final class TestingHelper {
 
@@ -38,11 +35,11 @@ public final class TestingHelper {
         };
     }
 
-    public static <T> Callable<List<T>> callableListCreator() {
-        return new Callable<List<T>>() {
+    public static <T> Supplier<List<T>> supplierListCreator() {
+        return new Supplier<List<T>>() {
 
             @Override
-            public List<T> call() {
+            public List<T> get() {
                 return new ArrayList<T>();
             }
         };

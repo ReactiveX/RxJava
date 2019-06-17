@@ -13,21 +13,20 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 
 public final class CompletableToSingle<T> extends Single<T> {
     final CompletableSource source;
 
-    final Callable<? extends T> completionValueSupplier;
+    final Supplier<? extends T> completionValueSupplier;
 
     final T completionValue;
 
     public CompletableToSingle(CompletableSource source,
-            Callable<? extends T> completionValueSupplier, T completionValue) {
+            Supplier<? extends T> completionValueSupplier, T completionValue) {
         this.source = source;
         this.completionValue = completionValue;
         this.completionValueSupplier = completionValueSupplier;
@@ -52,7 +51,7 @@ public final class CompletableToSingle<T> extends Single<T> {
 
             if (completionValueSupplier != null) {
                 try {
-                    v = completionValueSupplier.call();
+                    v = completionValueSupplier.get();
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     observer.onError(e);

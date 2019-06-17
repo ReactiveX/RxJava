@@ -16,11 +16,11 @@ package io.reactivex.observable;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Supplier;
 import io.reactivex.observable.ObservableCovarianceTest.*;
 
 public class ObservableMergeTests {
@@ -75,9 +75,9 @@ public class ObservableMergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Observable<Movie> o1 = Observable.defer(new Callable<Observable<Movie>>() {
+        Observable<Movie> o1 = Observable.defer(new Supplier<Observable<Movie>>() {
             @Override
-            public Observable<Movie> call() {
+            public Observable<Movie> get() {
                 return Observable.just(
                         new HorrorMovie(),
                         new Movie()
