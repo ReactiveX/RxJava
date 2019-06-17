@@ -17,8 +17,8 @@ package io.reactivex.functions;
  * A functional interface (callback) that provides a single value or
  * throws an exception.
  * <p>
- * Thins interface was added to allow throwing any subclass of {@link Throwable}s,
- * which is not directly possible with the Java standard {@link java.util.Callable} interface. 
+ * This interface was added to allow throwing any subclass of {@link Throwable}s,
+ * which is not directly possible with the Java standard {@link java.util.concurrent.Callable} interface.
  * @param <T> the value type returned
  * @since 3.0.0
  */
