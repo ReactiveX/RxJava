@@ -70,10 +70,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example usage:
- * <pre><code>
- * MaybeSubject&lt;Integer&gt; subject1 = MaybeSubject.create();
+ * <pre>{@code
+ * MaybeSubject<Integer> subject1 = MaybeSubject.create();
  *
- * TestObserver&lt;Integer&gt; to1 = subject1.test();
+ * TestObserver<Integer> to1 = subject1.test();
  *
  * // MaybeSubjects are empty by default
  * to1.assertEmpty();
@@ -84,27 +84,27 @@ import io.reactivex.plugins.RxJavaPlugins;
  * // TestObserver converts onSuccess into onNext + onComplete
  * to1.assertResult(1);
  *
- * TestObserver&lt;Integer&gt; to2 = subject1.test();
+ * TestObserver<Integer> to2 = subject1.test();
  *
  * // late Observers receive the terminal signal (onSuccess) too
  * to2.assertResult(1);
  *
  * // -----------------------------------------------------
  *
- * MaybeSubject&lt;Integer&gt; subject2 = MaybeSubject.create();
+ * MaybeSubject<Integer> subject2 = MaybeSubject.create();
  *
- * TestObserver&lt;Integer&gt; to3 = subject2.test();
+ * TestObserver<Integer> to3 = subject2.test();
  *
  * subject2.onComplete();
  *
  * // a completed MaybeSubject completes its MaybeObservers
  * to3.assertResult();
  *
- * TestObserver&lt;Integer&gt; to4 = subject1.test();
+ * TestObserver<Integer> to4 = subject1.test();
  *
  * // late Observers receive the terminal signal (onComplete) too
  * to4.assertResult();
- * </code></pre>
+ * }</pre>
  * <p>History: 2.0.5 - experimental
  * @param <T> the value type received and emitted
  * @since 2.1

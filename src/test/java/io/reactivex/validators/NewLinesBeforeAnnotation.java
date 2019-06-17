@@ -23,18 +23,18 @@ import org.junit.Test;
  * and the next annotation &#64; indicator
  * are not separated by less than or more than one empty line.
  * <p>Thus this is detected:
- * <pre><code>
+ * <pre>{@code
  * }
  * &#64;Override
- * </code></pre>
+ * }</pre>
  * <p>
  * as well as
- * <pre><code>
+ * <pre>{@code
  * }
- * 
- * 
+ *
+ *
  * &#64;Override
- * </code></pre>
+ * }</pre>
  */
 public class NewLinesBeforeAnnotation {
 

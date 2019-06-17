@@ -53,20 +53,20 @@ import io.reactivex.plugins.RxJavaPlugins;
  * The {@code BehaviorSubject} does not support clearing its cached value (to appear empty again), however, the
  * effect can be achieved by using a special item and making sure {@code Observer}s subscribe through a
  * filter whose predicate filters out this special item:
- * <pre><code>
- * BehaviorSubject&lt;Integer&gt; subject = BehaviorSubject.create();
+ * <pre>{@code
+ * BehaviorSubject<Integer> subject = BehaviorSubject.create();
  *
  * final Integer EMPTY = Integer.MIN_VALUE;
  *
- * Observable&lt;Integer&gt; observable = subject.filter(v -&gt; v != EMPTY);
+ * Observable<Integer> observable = subject.filter(v -> v != EMPTY);
  *
- * TestObserver&lt;Integer&gt; to1 = observable.test();
+ * TestObserver<Integer> to1 = observable.test();
  *
  * observable.onNext(1);
  * // this will "clear" the cache
  * observable.onNext(EMPTY);
  *
- * TestObserver&lt;Integer&gt; to2 = observable.test();
+ * TestObserver<Integer> to2 = observable.test();
  *
  * subject.onNext(2);
  * subject.onComplete();
@@ -81,7 +81,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * // Observers coming after the subject was terminated receive
  * // no items and only the onComplete event in this case.
  * observable.test().assertResult();
- * </code></pre>
+ * }</pre>
  * <p>
  * Even though {@code BehaviorSubject} implements the {@code Observer} interface, calling
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)

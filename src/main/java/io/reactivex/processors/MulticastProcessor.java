@@ -101,15 +101,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example:
- * <pre><code>
-    MulticastProcessor&lt;Integer&gt; mp = Flowable.range(1, 10)
+ * <pre>{@code
+    MulticastProcessor<Integer> mp = Flowable.range(1, 10)
     .subscribeWith(MulticastProcessor.create());
 
     mp.test().assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
     // --------------------
 
-    MulticastProcessor&lt;Integer&gt; mp2 = MulticastProcessor.create(4);
+    MulticastProcessor<Integer> mp2 = MulticastProcessor.create(4);
     mp2.start();
 
     assertTrue(mp2.offer(1));
@@ -122,7 +122,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     mp2.onComplete();
 
     mp2.test().assertResult(1, 2, 3, 4);
- * </code></pre>
+ * }</pre>
  * <p>History: 2.1.14 - experimental
  * @param <T> the input and output value type
  * @since 2.2

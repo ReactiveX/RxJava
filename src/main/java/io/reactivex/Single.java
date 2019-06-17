@@ -47,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
  * <p>
  * The {@code Single} operates with the following sequential protocol:
  * <pre>
- *     <code>onSubscribe (onSuccess | onError)?</code>
+ *     {@code onSubscribe (onSuccess | onError)?}
  * </pre>
  * <p>
  * Note that {@code onSuccess} and {@code onError} are mutually exclusive events; unlike {@code Observable},
@@ -72,10 +72,10 @@ import io.reactivex.schedulers.Schedulers;
  * documentation</a>.
  * <p>
  * Example:
- * <pre><code>
+ * <pre>{@code
  * Disposable d = Single.just("Hello World")
  *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
- *    .subscribeWith(new DisposableSingleObserver&lt;String&gt;() {
+ *    .subscribeWith(new DisposableSingleObserver<String>() {
  *        &#64;Override
  *        public void onStart() {
  *            System.out.println("Started");
@@ -91,11 +91,11 @@ import io.reactivex.schedulers.Schedulers;
  *            error.printStackTrace();
  *        }
  *    });
- * 
+ *
  * Thread.sleep(5000);
- * 
+ *
  * d.dispose();
- * </code></pre>
+ * }</pre>
  * <p>
  * Note that by design, subscriptions via {@link #subscribe(SingleObserver)} can't be disposed
  * from the outside (hence the
@@ -258,7 +258,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -481,8 +481,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="454" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.png" alt="">
      * <p>
      * Example:
-     * <pre><code>
-     * Single.&lt;Event&gt;create(emitter -&gt; {
+     * <pre>{@code
+     * Single.<Event>create(emitter -> {
      *     Callback listener = new Callback() {
      *         &#64;Override
      *         public void onEvent(Event e) {
@@ -500,7 +500,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *     emitter.setCancellable(c::close);
      *
      * });
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2371,12 +2371,12 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * Single.just(Notification.createOnNext(1))
-     * .dematerialize(notification -&gt; notification)
+     * .dematerialize(notification -> notification)
      * .test()
      * .assertResult(1);
-     * </code></pre>
+     * }</pre>
      * @param <R> the result type
      * @param selector the function called with the success item and should
      * return a {@link Notification} instance.
@@ -2851,19 +2851,19 @@ public abstract class Single<T> implements SingleSource<T> {
      * additional actions depending on the same business logic requirements.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * // Step 1: Create the consumer type that will be returned by the SingleOperator.apply():
      *
-     * public final class CustomSingleObserver&lt;T&gt; implements SingleObserver&lt;T&gt;, Disposable {
+     * public final class CustomSingleObserver<T> implements SingleObserver<T>, Disposable {
      *
      *     // The downstream's SingleObserver that will receive the onXXX events
-     *     final SingleObserver&lt;? super String&gt; downstream;
+     *     final SingleObserver<? super String> downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
      *     Disposable upstream;
      *
      *     // The constructor takes the downstream subscriber and usually any other parameters
-     *     public CustomSingleObserver(SingleObserver&lt;? super String&gt; downstream) {
+     *     public CustomSingleObserver(SingleObserver<? super String> downstream) {
      *         this.downstream = downstream;
      *     }
      *
@@ -2887,7 +2887,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *     &#64;Override
      *     public void onSuccess(T item) {
      *         String str = item.toString();
-     *         if (str.length() &lt; 2) {
+     *         if (str.length() < 2) {
      *             downstream.onSuccess(str);
      *         } else {
      *             // Single is usually expected to produce one of the onXXX events
@@ -2926,10 +2926,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * //         Such class may define additional parameters to be submitted to
      * //         the custom consumer type.
      *
-     * final class CustomSingleOperator&lt;T&gt; implements SingleOperator&lt;String&gt; {
+     * final class CustomSingleOperator<T> implements SingleOperator<String> {
      *     &#64;Override
-     *     public SingleObserver&lt;? super String&gt; apply(SingleObserver&lt;? super T&gt; upstream) {
-     *         return new CustomSingleObserver&lt;T&gt;(upstream);
+     *     public SingleObserver<? super String> apply(SingleObserver<? super T> upstream) {
+     *         return new CustomSingleObserver<T>(upstream);
      *     }
      * }
      *
@@ -2937,15 +2937,15 @@ public abstract class Single<T> implements SingleSource<T> {
      * //         or reusing an existing one.
      *
      * Single.just(5)
-     * .lift(new CustomSingleOperator&lt;Integer&gt;())
+     * .lift(new CustomSingleOperator<Integer>())
      * .test()
      * .assertResult("5");
      *
      * Single.just(15)
-     * .lift(new CustomSingleOperator&lt;Integer&gt;())
+     * .lift(new CustomSingleOperator<Integer>())
      * .test()
      * .assertFailure(NoSuchElementException.class);
-     * </code></pre>
+     * }</pre>
      * <p>
      * Creating custom operators can be complicated and it is recommended one consults the
      * <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a> page about
@@ -3457,21 +3457,21 @@ public abstract class Single<T> implements SingleSource<T> {
      * active, the sequence is terminated with the same signal immediately.
      * <p>
      * The following example demonstrates how to retry an asynchronous source with a delay:
-     * <pre><code>
+     * <pre>{@code
      * Single.timer(1, TimeUnit.SECONDS)
-     *     .doOnSubscribe(s -&gt; System.out.println("subscribing"))
-     *     .map(v -&gt; { throw new RuntimeException(); })
-     *     .retryWhen(errors -&gt; {
+     *     .doOnSubscribe(s -> System.out.println("subscribing"))
+     *     .map(v -> { throw new RuntimeException(); })
+     *     .retryWhen(errors -> {
      *         AtomicInteger counter = new AtomicInteger();
      *         return errors
-     *                   .takeWhile(e -&gt; counter.getAndIncrement() != 3)
-     *                   .flatMap(e -&gt; {
+     *                   .takeWhile(e -> counter.getAndIncrement() != 3)
+     *                   .flatMap(e -> {
      *                       System.out.println("delay retry by " + counter.get() + " second(s)");
      *                       return Flowable.timer(counter.get(), TimeUnit.SECONDS);
      *                   });
      *     })
      *     .blockingGet();
-     * </code></pre>
+     * }</pre>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3624,16 +3624,16 @@ public abstract class Single<T> implements SingleSource<T> {
      * Subscribes a given SingleObserver (subclass) to this Single and returns the given
      * SingleObserver as is.
      * <p>Usage example:
-     * <pre><code>
-     * Single&lt;Integer&gt; source = Single.just(1);
+     * <pre>{@code
+     * Single<Integer> source = Single.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * DisposableSingleObserver&lt;Integer&gt; ds = new DisposableSingleObserver&lt;&gt;() {
+     * DisposableSingleObserver<Integer> ds = new DisposableSingleObserver<>() {
      *     // ...
      * };
      *
      * composite.add(source.subscribeWith(ds));
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribeWith} does not operate by default on a particular {@link Scheduler}.</dd>

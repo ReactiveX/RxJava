@@ -31,23 +31,23 @@ public interface ResettableConnectable {
      * is still representing a connection established by a previous {@code connect()} connection.
      * <p>
      * For example, an immediately previous connection should reset the connectable source:
-     * <pre><code>
+     * <pre>{@code
      * Disposable d = connectable.connect();
-     * 
+     *
      * ((ResettableConnectable)connectable).resetIf(d);
-     * </code></pre>
+     * }</pre>
      * However, if the connection indicator {@code Disposable} is from a much earlier connection,
      * it should not affect the current connection:
-     * <pre><code>
+     * <pre>{@code
      * Disposable d1 = connectable.connect();
      * d.dispose();
      *
      * Disposable d2 = connectable.connect();
      *
      * ((ResettableConnectable)connectable).resetIf(d);
-     * 
+     *
      * assertFalse(d2.isDisposed());
-     * </code></pre>
+     * }</pre>
      * @param connection the disposable received from a previous {@code connect()} call.
      */
     void resetIf(Disposable connection);

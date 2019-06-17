@@ -49,9 +49,9 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * instead of the standard {@code subscribe()} method.
  * @param <T> the value type
  *
- * <p>Example<pre><code>
+ * <p>Example<pre>{@code
  * Flowable.range(1, 5)
- *     .subscribe(new DefaultSubscriber&lt;Integer&gt;() {
+ *     .subscribe(new DefaultSubscriber<Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *             request(1);
@@ -70,7 +70,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *             System.out.println("Done!");
  *         }
  *     });
- * </code></pre>
+ * }</pre>
  */
 public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
 

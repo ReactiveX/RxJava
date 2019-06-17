@@ -33,10 +33,10 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
  * are not allowed to throw any unchecked exceptions.
  *
- * <p>Example<pre><code>
+ * <p>Example<pre>{@code
  * Disposable d =
  *     Single.just(1).delay(1, TimeUnit.SECONDS)
- *     .subscribeWith(new DisposableSingleObserver&lt;Integer&gt;() {
+ *     .subscribeWith(new DisposableSingleObserver<Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }
@@ -49,7 +49,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *     });
  * // ...
  * d.dispose();
- * </code></pre>
+ * }</pre>
  *
  * @param <T> the received value type
  */

@@ -43,9 +43,9 @@ import io.reactivex.schedulers.Schedulers;
  * The {@code Completable} class implements the {@link CompletableSource} base interface and the default consumer
  * type it interacts with is the {@link CompletableObserver} via the {@link #subscribe(CompletableObserver)} method.
  * The {@code Completable} operates with the following sequential protocol:
- * <pre><code>
+ * <pre>{@code
  *     onSubscribe (onError | onComplete)?
- * </code></pre>
+ * }</pre>
  * <p>
  * Note that as with the {@code Observable} protocol, {@code onError} and {@code onComplete} are mutually exclusive events.
  * <p>
@@ -65,7 +65,7 @@ import io.reactivex.schedulers.Schedulers;
  * implementation of the Reactive Pattern for a stream or vector of values.
  * <p>
  * Example:
- * <pre><code>
+ * <pre>{@code
  * Disposable d = Completable.complete()
  *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
  *    .subscribeWith(new DisposableCompletableObserver() {
@@ -84,11 +84,11 @@ import io.reactivex.schedulers.Schedulers;
  *            System.out.println("Done!");
  *        }
  *    });
- * 
+ *
  * Thread.sleep(5000);
- * 
+ *
  * d.dispose();
- * </code></pre>
+ * }</pre>
  * <p>
  * Note that by design, subscriptions via {@link #subscribe(CompletableObserver)} can't be disposed
  * from the outside (hence the
@@ -273,8 +273,8 @@ public abstract class Completable implements CompletableSource {
      * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.create.png" alt="">
      * <p>
      * Example:
-     * <pre><code>
-     * Completable.create(emitter -&gt; {
+     * <pre>{@code
+     * Completable.create(emitter -> {
      *     Callback listener = new Callback() {
      *         &#64;Override
      *         public void onEvent(Event e) {
@@ -292,7 +292,7 @@ public abstract class Completable implements CompletableSource {
      *     emitter.setCancellable(c::close);
      *
      * });
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1709,9 +1709,9 @@ public abstract class Completable implements CompletableSource {
      * additional actions depending on the same business logic requirements.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * // Step 1: Create the consumer type that will be returned by the CompletableOperator.apply():
-     * 
+     *
      * public final class CustomCompletableObserver implements CompletableObserver, Disposable {
      *
      *     // The downstream's CompletableObserver that will receive the onXXX events
@@ -1791,7 +1791,7 @@ public abstract class Completable implements CompletableSource {
      * .lift(new CustomCompletableOperator())
      * .test()
      * .assertResult();
-     * </code></pre>
+     * }</pre>
      * <p>
      * Creating custom operators can be complicated and it is recommended one consults the
      * <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a> page about
@@ -2160,21 +2160,21 @@ public abstract class Completable implements CompletableSource {
      * active, the sequence is terminated with the same signal immediately.
      * <p>
      * The following example demonstrates how to retry an asynchronous source with a delay:
-     * <pre><code>
+     * <pre>{@code
      * Completable.timer(1, TimeUnit.SECONDS)
-     *     .doOnSubscribe(s -&gt; System.out.println("subscribing"))
-     *     .doOnComplete(() -&gt; { throw new RuntimeException(); })
-     *     .retryWhen(errors -&gt; {
+     *     .doOnSubscribe(s -> System.out.println("subscribing"))
+     *     .doOnComplete(() -> { throw new RuntimeException(); })
+     *     .retryWhen(errors -> {
      *         AtomicInteger counter = new AtomicInteger();
      *         return errors
-     *                   .takeWhile(e -&gt; counter.getAndIncrement() != 3)
-     *                   .flatMap(e -&gt; {
+     *                   .takeWhile(e -> counter.getAndIncrement() != 3)
+     *                   .flatMap(e -> {
      *                       System.out.println("delay retry by " + counter.get() + " second(s)");
      *                       return Flowable.timer(counter.get(), TimeUnit.SECONDS);
      *                   });
      *     })
      *     .blockingAwait();
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2332,7 +2332,7 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * <img width="640" height="349" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribeWith.png" alt="">
      * <p>Usage example:
-     * <pre><code>
+     * <pre>{@code
      * Completable source = Completable.complete().delay(1, TimeUnit.SECONDS);
      * CompositeDisposable composite = new CompositeDisposable();
      *
@@ -2341,7 +2341,7 @@ public abstract class Completable implements CompletableSource {
      * };
      *
      * composite.add(source.subscribeWith(ds));
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribeWith} does not operate by default on a particular {@link Scheduler}.</dd>

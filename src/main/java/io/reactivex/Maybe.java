@@ -40,9 +40,9 @@ import io.reactivex.schedulers.Schedulers;
  * type it interacts with is the {@link MaybeObserver} via the {@link #subscribe(MaybeObserver)} method.
  * <p>
  * The {@code Maybe} operates with the following sequential protocol:
- * <pre><code>
+ * <pre>{@code
  *     onSubscribe (onSuccess | onError | onComplete)?
- * </code></pre>
+ * }</pre>
  * <p>
  * Note that {@code onSuccess}, {@code onError} and {@code onComplete} are mutually exclusive events; unlike {@code Observable},
  * {@code onSuccess} is never followed by {@code onError} or {@code onComplete}.
@@ -63,10 +63,10 @@ import io.reactivex.schedulers.Schedulers;
  * implementation of the Reactive Pattern for a stream or vector of values.
  * <p>
  * Example:
- * <pre><code>
+ * <pre>{@code
  * Disposable d = Maybe.just("Hello World")
  *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
- *    .subscribeWith(new DisposableMaybeObserver&lt;String&gt;() {
+ *    .subscribeWith(new DisposableMaybeObserver<String>() {
  *        &#64;Override
  *        public void onStart() {
  *            System.out.println("Started");
@@ -87,11 +87,11 @@ import io.reactivex.schedulers.Schedulers;
  *            System.out.println("Done!");
  *        }
  *    });
- * 
+ *
  * Thread.sleep(5000);
- * 
+ *
  * d.dispose();
- * </code></pre>
+ * }</pre>
  * <p>
  * Note that by design, subscriptions via {@link #subscribe(MaybeObserver)} can't be disposed
  * from the outside (hence the
@@ -530,8 +530,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Provides an API (via a cold Maybe) that bridges the reactive world with the callback-style world.
      * <p>
      * Example:
-     * <pre><code>
-     * Maybe.&lt;Event&gt;create(emitter -&gt; {
+     * <pre>{@code
+     * Maybe.<Event>create(emitter -> {
      *     Callback listener = new Callback() {
      *         &#64;Override
      *         public void onEvent(Event e) {
@@ -553,7 +553,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *     emitter.setCancellable(c::close);
      *
      * });
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3317,19 +3317,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * additional actions depending on the same business logic requirements.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * // Step 1: Create the consumer type that will be returned by the MaybeOperator.apply():
-     * 
-     * public final class CustomMaybeObserver&lt;T&gt; implements MaybeObserver&lt;T&gt;, Disposable {
+     *
+     * public final class CustomMaybeObserver<T> implements MaybeObserver<T>, Disposable {
      *
      *     // The downstream's MaybeObserver that will receive the onXXX events
-     *     final MaybeObserver&lt;? super String&gt; downstream;
+     *     final MaybeObserver<? super String> downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
      *     Disposable upstream;
      *
      *     // The constructor takes the downstream subscriber and usually any other parameters
-     *     public CustomMaybeObserver(MaybeObserver&lt;? super String&gt; downstream) {
+     *     public CustomMaybeObserver(MaybeObserver<? super String> downstream) {
      *         this.downstream = downstream;
      *     }
      *
@@ -3353,7 +3353,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *     &#64;Override
      *     public void onSuccess(T item) {
      *         String str = item.toString();
-     *         if (str.length() &lt; 2) {
+     *         if (str.length() < 2) {
      *             downstream.onSuccess(str);
      *         } else {
      *             // Maybe is usually expected to produce one of the onXXX events
@@ -3398,10 +3398,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * //         Such class may define additional parameters to be submitted to
      * //         the custom consumer type.
      *
-     * final class CustomMaybeOperator&lt;T&gt; implements MaybeOperator&lt;String&gt; {
+     * final class CustomMaybeOperator<T> implements MaybeOperator<String> {
      *     &#64;Override
-     *     public MaybeObserver&lt;? super String&gt; apply(MaybeObserver&lt;? super T&gt; upstream) {
-     *         return new CustomMaybeObserver&lt;T&gt;(upstream);
+     *     public MaybeObserver<? super String> apply(MaybeObserver<? super T> upstream) {
+     *         return new CustomMaybeObserver<T>(upstream);
      *     }
      * }
      *
@@ -3409,15 +3409,15 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * //         or reusing an existing one.
      *
      * Maybe.just(5)
-     * .lift(new CustomMaybeOperator&lt;Integer&gt;())
+     * .lift(new CustomMaybeOperator<Integer>())
      * .test()
      * .assertResult("5");
      *
      * Maybe.just(15)
-     * .lift(new CustomMaybeOperator&lt;Integer&gt;())
+     * .lift(new CustomMaybeOperator<Integer>())
      * .test()
      * .assertResult();
-     * </code></pre>
+     * }</pre>
      * <p>
      * Creating custom operators can be complicated and it is recommended one consults the
      * <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a> page about
@@ -4105,17 +4105,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
-     * <pre><code>
-     *  Maybe.create((MaybeEmitter&lt;? super String&gt; s) -&gt; {
+     * <pre>{@code
+     *  Maybe.create((MaybeEmitter<? super String> s) -> {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
-     *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -&gt; {
-     *      return attempts.zipWith(Publisher.range(1, 3), (n, i) -&gt; i).flatMap(i -&gt; {
+     *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -> {
+     *      return attempts.zipWith(Publisher.range(1, 3), (n, i) -> i).flatMap(i -> {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return Flowable.timer(i, TimeUnit.SECONDS);
      *      });
      *  }).blockingForEach(System.out::println);
-     * </code></pre>
+     * }</pre>
      *
      * Output is:
      *
@@ -4138,21 +4138,21 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * active, the sequence is terminated with the same signal immediately.
      * <p>
      * The following example demonstrates how to retry an asynchronous source with a delay:
-     * <pre><code>
+     * <pre>{@code
      * Maybe.timer(1, TimeUnit.SECONDS)
-     *     .doOnSubscribe(s -&gt; System.out.println("subscribing"))
-     *     .map(v -&gt; { throw new RuntimeException(); })
-     *     .retryWhen(errors -&gt; {
+     *     .doOnSubscribe(s -> System.out.println("subscribing"))
+     *     .map(v -> { throw new RuntimeException(); })
+     *     .retryWhen(errors -> {
      *         AtomicInteger counter = new AtomicInteger();
      *         return errors
-     *                   .takeWhile(e -&gt; counter.getAndIncrement() != 3)
-     *                   .flatMap(e -&gt; {
+     *                   .takeWhile(e -> counter.getAndIncrement() != 3)
+     *                   .flatMap(e -> {
      *                       System.out.println("delay retry by " + counter.get() + " second(s)");
      *                       return Flowable.timer(counter.get(), TimeUnit.SECONDS);
      *                   });
      *     })
      *     .blockingGet();
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4335,16 +4335,16 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Subscribes a given MaybeObserver (subclass) to this Maybe and returns the given
      * MaybeObserver as is.
      * <p>Usage example:
-     * <pre><code>
-     * Maybe&lt;Integer&gt; source = Maybe.just(1);
+     * <pre>{@code
+     * Maybe<Integer> source = Maybe.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * DisposableMaybeObserver&lt;Integer&gt; ds = new DisposableMaybeObserver&lt;&gt;() {
+     * DisposableMaybeObserver<Integer> ds = new DisposableMaybeObserver<>() {
      *     // ...
      * };
      *
      * composite.add(source.subscribeWith(ds));
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribeWith} does not operate by default on a particular {@link Scheduler}.</dd>

@@ -47,7 +47,7 @@ public final class CompositeException extends RuntimeException {
      * list of suppressed exceptions.
      * @param exceptions the Throwables to have as initially suppressed exceptions
      *
-     * @throws IllegalArgumentException if <code>exceptions</code> is empty.
+     * @throws IllegalArgumentException if {@code exceptions} is empty.
      */
     public CompositeException(@NonNull Throwable... exceptions) {
         this(exceptions == null ?
@@ -59,7 +59,7 @@ public final class CompositeException extends RuntimeException {
      * list of suppressed exceptions.
      * @param errors the Throwables to have as initially suppressed exceptions
      *
-     * @throws IllegalArgumentException if <code>errors</code> is empty.
+     * @throws IllegalArgumentException if {@code errors} is empty.
      */
     public CompositeException(@NonNull Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();

@@ -49,35 +49,35 @@ import io.reactivex.plugins.RxJavaPlugins;
  * The {@code BehaviorProcessor} does not support clearing its cached value (to appear empty again), however, the
  * effect can be achieved by using a special item and making sure {@code Subscriber}s subscribe through a
  * filter whose predicate filters out this special item:
- * <pre><code>
- * BehaviorProcessor&lt;Integer&gt; processor = BehaviorProcessor.create();
+ * <pre>{@code
+ * BehaviorProcessor<Integer> processor = BehaviorProcessor.create();
  *
  * final Integer EMPTY = Integer.MIN_VALUE;
  *
- * Flowable&lt;Integer&gt; flowable = processor.filter(v -&gt; v != EMPTY);
+ * Flowable<Integer> flowable = processor.filter(v -> v != EMPTY);
  *
- * TestSubscriber&lt;Integer&gt; ts1 = flowable.test();
+ * TestSubscriber<Integer> ts1 = flowable.test();
  *
  * processor.onNext(1);
  * // this will "clear" the cache
  * processor.onNext(EMPTY);
- * 
- * TestSubscriber&lt;Integer&gt; ts2 = flowable.test();
- * 
+ *
+ * TestSubscriber<Integer> ts2 = flowable.test();
+ *
  * processor.onNext(2);
  * processor.onComplete();
- * 
+ *
  * // ts1 received both non-empty items
  * ts1.assertResult(1, 2);
- * 
+ *
  * // ts2 received only 2 even though the current item was EMPTY
  * // when it got subscribed
  * ts2.assertResult(2);
- * 
+ *
  * // Subscribers coming after the processor was terminated receive
  * // no items and only the onComplete event in this case.
  * flowable.test().assertResult();
- * </code></pre>
+ * }</pre>
  * <p>
  * Even though {@code BehaviorProcessor} implements the {@code Subscriber} interface, calling
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)

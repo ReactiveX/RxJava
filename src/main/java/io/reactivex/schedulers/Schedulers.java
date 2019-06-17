@@ -318,19 +318,19 @@ public final class Schedulers {
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
      * executor's lifecycle must be managed externally:
-     * <pre><code>
+     * <pre>{@code
      * ExecutorService exec = Executors.newSingleThreadedExecutor();
      * try {
      *     Scheduler scheduler = Schedulers.from(exec);
      *     Flowable.just(1)
      *        .subscribeOn(scheduler)
-     *        .map(v -&gt; v + 1)
+     *        .map(v -> v + 1)
      *        .observeOn(scheduler)
      *        .blockingSubscribe(System.out::println);
      * } finally {
      *     exec.shutdown();
      * }
-     * </code></pre>
+     * }</pre>
      * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
@@ -374,19 +374,19 @@ public final class Schedulers {
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
      * executor's lifecycle must be managed externally:
-     * <pre><code>
+     * <pre>{@code
      * ExecutorService exec = Executors.newSingleThreadedExecutor();
      * try {
      *     Scheduler scheduler = Schedulers.from(exec, true);
      *     Flowable.just(1)
      *        .subscribeOn(scheduler)
-     *        .map(v -&gt; v + 1)
+     *        .map(v -> v + 1)
      *        .observeOn(scheduler)
      *        .blockingSubscribe(System.out::println);
      * } finally {
      *     exec.shutdown();
      * }
-     * </code></pre>
+     * }</pre>
      * <p>
      * This type of scheduler is less sensitive to leaking {@link io.reactivex.Scheduler.Worker Scheduler.Worker} instances, although
      * not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or

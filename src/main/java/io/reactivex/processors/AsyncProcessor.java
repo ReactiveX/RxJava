@@ -89,10 +89,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example usage:
- * <pre><code>
- * AsyncProcessor&lt;Object&gt; processor = AsyncProcessor.create();
- * 
- * TestSubscriber&lt;Object&gt; ts1 = processor.test();
+ * <pre>{@code
+ * AsyncProcessor<Object> processor = AsyncProcessor.create();
+ *
+ * TestSubscriber<Object> ts1 = processor.test();
  *
  * ts1.assertEmpty();
  *
@@ -107,11 +107,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * // onComplete triggers the emission of the last cached item and the onComplete event.
  * ts1.assertResult(2);
  *
- * TestSubscriber&lt;Object&gt; ts2 = processor.test();
+ * TestSubscriber<Object> ts2 = processor.test();
  *
  * // late Subscribers receive the last cached item too
  * ts2.assertResult(2);
- * </code></pre>
+ * }</pre>
  * @param <T> the value type
  */
 public final class AsyncProcessor<T> extends FlowableProcessor<T> {

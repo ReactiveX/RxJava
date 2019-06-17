@@ -108,15 +108,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example usage:
- * <pre><code>
- * UnicastProcessor&lt;Integer&gt; processor = UnicastProcessor.create();
+ * <pre>{@code
+ * UnicastProcessor<Integer> processor = UnicastProcessor.create();
  *
- * TestSubscriber&lt;Integer&gt; ts1 = processor.test();
+ * TestSubscriber<Integer> ts1 = processor.test();
  *
  * // fresh UnicastProcessors are empty
  * ts1.assertEmpty();
  *
- * TestSubscriber&lt;Integer&gt; ts2 = processor.test();
+ * TestSubscriber<Integer> ts2 = processor.test();
  *
  * // A UnicastProcessor only allows one Subscriber during its lifetime
  * ts2.assertFailure(IllegalStateException.class);
@@ -132,18 +132,18 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * // ----------------------------------------------------
  *
- * UnicastProcessor&lt;Integer&gt; processor2 = UnicastProcessor.create();
+ * UnicastProcessor<Integer> processor2 = UnicastProcessor.create();
  *
  * // a UnicastProcessor caches events until its single Subscriber subscribes
  * processor2.onNext(1);
  * processor2.onNext(2);
  * processor2.onComplete();
  *
- * TestSubscriber&lt;Integer&gt; ts3 = processor2.test();
+ * TestSubscriber<Integer> ts3 = processor2.test();
  *
  * // the cached events are emitted in order
  * ts3.assertResult(1, 2);
- * </code></pre>
+ * }</pre>
  *
  * @param <T> the value type received and emitted by this Processor subclass
  * @since 2.0

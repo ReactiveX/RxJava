@@ -52,9 +52,9 @@ import io.reactivex.subscribers.*;
  * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
  * <p>
  * The {@code Flowable} follows the protocol
- * <pre><code>
+ * <pre>{@code
  *      onSubscribe onNext* (onError | onComplete)?
- * </code></pre>
+ * }</pre>
  * where the stream can be disposed through the {@link Subscription} instance provided to consumers through
  * {@link Subscriber#onSubscribe(Subscription)}.
  * Unlike the {@code Observable.subscribe()} of version 1.x, {@link #subscribe(Subscriber)} does not allow external cancellation
@@ -63,10 +63,10 @@ import io.reactivex.subscribers.*;
  * Flowables support backpressure and require {@link Subscriber}s to signal demand via {@link Subscription#request(long)}.
  * <p>
  * Example:
- * <pre><code>
+ * <pre>{@code
  * Disposable d = Flowable.just("Hello world!")
  *     .delay(1, TimeUnit.SECONDS)
- *     .subscribeWith(new DisposableSubscriber&lt;String&gt;() {
+ *     .subscribeWith(new DisposableSubscriber<String>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *             request(1);
@@ -86,7 +86,7 @@ import io.reactivex.subscribers.*;
  * Thread.sleep(500);
  * // the sequence can now be cancelled via dispose()
  * d.dispose();
- * </code></pre>
+ * }</pre>
  * <p>
  * The Reactive Streams specification is relatively strict when defining interactions between {@code Publisher}s and {@code Subscriber}s, so much so
  * that there is a significant performance penalty due certain timing requirements and the need to prepare for invalid 
@@ -102,17 +102,17 @@ import io.reactivex.subscribers.*;
  * some guidance if such custom implementations are necessary.
  * <p>
  * The recommended way of creating custom {@code Flowable}s is by using the {@link #create(FlowableOnSubscribe, BackpressureStrategy)} factory method:
- * <pre><code>
- * Flowable&lt;String&gt; source = Flowable.create(new FlowableOnSubscribe&lt;String&gt;() {
+ * <pre>{@code
+ * Flowable<String> source = Flowable.create(new FlowableOnSubscribe<String>() {
  *     &#64;Override
- *     public void subscribe(FlowableEmitter&lt;String&gt; emitter) throws Exception {
+ *     public void subscribe(FlowableEmitter<String> emitter) throws Exception {
  *
  *         // signal an item
  *         emitter.onNext("Hello");
  *
  *         // could be some blocking operation
  *         Thread.sleep(1000);
- *         
+ *
  *         // the consumer might have cancelled the flow
  *         if (emitter.isCancelled() {
  *             return;
@@ -129,11 +129,11 @@ import io.reactivex.subscribers.*;
  * }, BackpressureStrategy.BUFFER);
  *
  * System.out.println("Subscribe!");
- * 
+ *
  * source.subscribe(System.out::println);
- * 
+ *
  * System.out.println("Done!");
- * </code></pre>
+ * }</pre>
  * <p>
  * RxJava reactive sources, such as {@code Flowable}, are generally synchronous and sequential in nature. In the ReactiveX design, the location (thread)
  * where operators run is <i>orthogonal</i> to when the operators can work with data. This means that asynchrony and parallelism
@@ -1853,8 +1853,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * generally non-backpressured world.
      * <p>
      * Example:
-     * <pre><code>
-     * Flowable.&lt;Event&gt;create(emitter -&gt; {
+     * <pre>{@code
+     * Flowable.<Event>create(emitter -> {
      *     Callback listener = new Callback() {
      *         &#64;Override
      *         public void onEvent(Event e) {
@@ -1875,7 +1875,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *     emitter.setCancellable(c::close);
      *
      * }, BackpressureStrategy.BUFFER);
-     * </code></pre>
+     * }</pre>
      * <p>
      * You should call the FlowableEmitter onNext, onError and onComplete methods in a serialized fashion. The
      * rest of its methods are thread-safe.
@@ -4598,7 +4598,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre>{@code zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -> a)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4652,7 +4652,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre>{@code zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -> a)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4710,7 +4710,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4771,7 +4771,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4833,7 +4833,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4897,7 +4897,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4963,7 +4963,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5034,7 +5034,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5108,7 +5108,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5186,7 +5186,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5269,7 +5269,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5356,7 +5356,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
+     * <pre>{@code zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5445,8 +5445,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(new Publisher[]{range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)}, (a) -&gt;
-     * a)</code></pre>
+     * <pre>{@code zip(new Publisher[]{range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)}, (a) ->
+     * a)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -5508,7 +5508,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre>{@code zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -> a)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -7008,27 +7008,27 @@ public abstract class Flowable<T> implements Publisher<T> {
      * of items that will use up memory.
      * A possible workaround is to apply `takeUntil` with a predicate or
      * another source before (and perhaps after) the application of cache().
-     * <pre><code>
+     * <pre>{@code
      * AtomicBoolean shouldStop = new AtomicBoolean();
      *
-     * source.takeUntil(v -&gt; shouldStop.get())
+     * source.takeUntil(v -> shouldStop.get())
      *       .cache()
-     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .takeUntil(v -> shouldStop.get())
      *       .subscribe(...);
-     * </code></pre>
+     * }</pre>
      * Since the operator doesn't allow clearing the cached values either, the possible workaround is
      * to forget all references to it via {@link #onTerminateDetach()} applied along with the previous
      * workaround:
-     * <pre><code>
+     * <pre>{@code
      * AtomicBoolean shouldStop = new AtomicBoolean();
      *
-     * source.takeUntil(v -&gt; shouldStop.get())
+     * source.takeUntil(v -> shouldStop.get())
      *       .onTerminateDetach()
      *       .cache()
-     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .takeUntil(v -> shouldStop.get())
      *       .onTerminateDetach()
      *       .subscribe(...);
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes this Publisher in an unbounded fashion but respects the backpressure
@@ -7066,27 +7066,27 @@ public abstract class Flowable<T> implements Publisher<T> {
      * of items that will use up memory.
      * A possible workaround is to apply `takeUntil` with a predicate or
      * another source before (and perhaps after) the application of cache().
-     * <pre><code>
+     * <pre>{@code
      * AtomicBoolean shouldStop = new AtomicBoolean();
      *
-     * source.takeUntil(v -&gt; shouldStop.get())
+     * source.takeUntil(v -> shouldStop.get())
      *       .cache()
-     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .takeUntil(v -> shouldStop.get())
      *       .subscribe(...);
-     * </code></pre>
+     * }</pre>
      * Since the operator doesn't allow clearing the cached values either, the possible workaround is
      * to forget all references to it via {@link #onTerminateDetach()} applied along with the previous
      * workaround:
-     * <pre><code>
+     * <pre>{@code
      * AtomicBoolean shouldStop = new AtomicBoolean();
      *
-     * source.takeUntil(v -&gt; shouldStop.get())
+     * source.takeUntil(v -> shouldStop.get())
      *       .onTerminateDetach()
      *       .cache()
-     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .takeUntil(v -> shouldStop.get())
      *       .onTerminateDetach()
      *       .subscribe(...);
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes this Publisher in an unbounded fashion but respects the backpressure
@@ -8718,21 +8718,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
      * {@link Notification#createOnComplete() onComplete} item, the
      * returned Flowable cancels the flow and terminates with that type of terminal event:
-     * <pre><code>
+     * <pre>{@code
      * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
-     * .doOnCancel(() -&gt; System.out.println("Cancelled!"));
+     * .doOnCancel(() -> System.out.println("Cancelled!"));
      * .dematerialize()
      * .test()
      * .assertResult(1);
-     * </code></pre>
+     * }</pre>
      * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
      * with the same event.
-     * <pre><code>
+     * <pre>{@code
      * Flowable.just(createOnNext(1), createOnNext(2))
      * .dematerialize()
      * .test()
      * .assertResult(1, 2);
-     * </code></pre>
+     * }</pre>
      * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(Publisher)}
      * with a {@link #never()} source.
      * <dl>
@@ -8775,21 +8775,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
      * {@link Notification#createOnComplete() onComplete} item, the
      * returned Flowable cancels of the flow and terminates with that type of terminal event:
-     * <pre><code>
+     * <pre>{@code
      * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
-     * .doOnCancel(() -&gt; System.out.println("Canceled!"));
-     * .dematerialize(notification -&gt; notification)
+     * .doOnCancel(() -> System.out.println("Canceled!"));
+     * .dematerialize(notification -> notification)
      * .test()
      * .assertResult(1);
-     * </code></pre>
+     * }</pre>
      * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
      * with the same event.
-     * <pre><code>
+     * <pre>{@code
      * Flowable.just(createOnNext(1), createOnNext(2))
-     * .dematerialize(notification -&gt; notification)
+     * .dematerialize(notification -> notification)
      * .test()
      * .assertResult(1, 2);
-     * </code></pre>
+     * }</pre>
      * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(Publisher)}
      * with a {@link #never()} source.
      * <dl>
@@ -10874,13 +10874,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * <p>An example of an {@code evictingMapFactory} using <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a> from the Guava library is below:
      * 
-     * <pre><code>
-     * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory =
-     *   notify -&gt;
+     * <pre>{@code
+     * Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =
+     *   notify ->
      *       CacheBuilder
      *         .newBuilder()
      *         .maximumSize(3)
-     *         .removalListener(entry -&gt; {
+     *         .removalListener(entry -> {
      *              try {
      *                  // emit the value not the key!
      *                  notify.accept(entry.getValue());
@@ -10888,7 +10888,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                  throw new RuntimeException(e);
      *              }
      *            })
-     *         .&lt;Integer, Object&gt; build()
+     *         .<Integer, Object> build()
      *         .asMap();
      *
      * // Emit 1000 items but ensure that the
@@ -10896,10 +10896,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Flowable
      *   .range(1, 1000)
      *   // note that number of keys is 10
-     *   .groupBy(x -&gt; x % 10, x -&gt; x, true, 16, evictingMapFactory)
-     *   .flatMap(g -&gt; g)
+     *   .groupBy(x -> x % 10, x -> x, true, 16, evictingMapFactory)
+     *   .flatMap(g -> g)
      *   .forEach(System.out::println);
-     * </code></pre>
+     * }</pre>
      * 
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
@@ -11231,19 +11231,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * additional actions depending on the same business logic requirements.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * // Step 1: Create the consumer type that will be returned by the FlowableOperator.apply():
-     * 
-     * public final class CustomSubscriber&lt;T&gt; implements FlowableSubscriber&lt;T&gt;, Subscription {
+     *
+     * public final class CustomSubscriber<T> implements FlowableSubscriber<T>, Subscription {
      *
      *     // The downstream's Subscriber that will receive the onXXX events
-     *     final Subscriber&lt;? super String&gt; downstream;
+     *     final Subscriber<? super String> downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
      *     Subscription upstream;
      *
      *     // The constructor takes the downstream subscriber and usually any other parameters
-     *     public CustomSubscriber(Subscriber&lt;? super String&gt; downstream) {
+     *     public CustomSubscriber(Subscriber<? super String> downstream) {
      *         this.downstream = downstream;
      *     }
      *
@@ -11267,7 +11267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *     &#64;Override
      *     public void onNext(T item) {
      *         String str = item.toString();
-     *         if (str.length() &lt; 2) {
+     *         if (str.length() < 2) {
      *             downstream.onNext(str);
      *         } else {
      *             upstream.request(1);
@@ -11312,10 +11312,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * //         Such class may define additional parameters to be submitted to
      * //         the custom consumer type.
      *
-     * final class CustomOperator&lt;T&gt; implements FlowableOperator&lt;String&gt; {
+     * final class CustomOperator<T> implements FlowableOperator<String> {
      *     &#64;Override
-     *     public Subscriber&lt;? super String&gt; apply(Subscriber&lt;? super T&gt; upstream) {
-     *         return new CustomSubscriber&lt;T&gt;(upstream);
+     *     public Subscriber<? super String> apply(Subscriber<? super T> upstream) {
+     *         return new CustomSubscriber<T>(upstream);
      *     }
      * }
      *
@@ -11323,10 +11323,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * //         or reusing an existing one.
      *
      * Flowable.range(5, 10)
-     * .lift(new CustomOperator&lt;Integer&gt;())
+     * .lift(new CustomOperator<Integer>())
      * .test()
      * .assertResult("5", "6", "7", "8", "9");
-     * </code></pre>
+     * }</pre>
      * <p>
      * Creating custom operators can be complicated and it is recommended one consults the
      * <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a> page about
@@ -12595,20 +12595,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that the {@code seed} is shared among all subscribers to the resulting Publisher
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
      * the application of this operator via {@link #defer(Callable)}:
-     * <pre><code>
-     * Publisher&lt;T&gt; source = ...
-     * Single.defer(() -&gt; source.reduce(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
+     * <pre>{@code
+     * Publisher<T> source = ...
+     * Single.defer(() -> source.reduce(new ArrayList<>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
-     * source.compose(o -&gt;
-     *     Flowable.defer(() -&gt; o.reduce(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)).toFlowable())
+     * source.compose(o ->
+     *     Flowable.defer(() -> o.reduce(new ArrayList<>(), (list, item) -> list.add(item)).toFlowable())
      * ).firstOrError();
      *
      * // or, by using reduceWith instead of reduce
      *
-     * source.reduceWith(() -&gt; new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
-     * </code></pre>
+     * source.reduceWith(() -> new ArrayList<>(), (list, item) -> list.add(item)));
+     * }</pre>
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
@@ -13583,17 +13583,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
-     * <pre><code>
-     *  Flowable.create((FlowableEmitter&lt;? super String&gt; s) -&gt; {
+     * <pre>{@code
+     *  Flowable.create((FlowableEmitter<? super String> s) -> {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
-     *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -&gt; {
-     *      return attempts.zipWith(Flowable.range(1, 3), (n, i) -&gt; i).flatMap(i -&gt; {
+     *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -> {
+     *      return attempts.zipWith(Flowable.range(1, 3), (n, i) -> i).flatMap(i -> {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return Flowable.timer(i, TimeUnit.SECONDS);
      *      });
      *  }).blockingForEach(System.out::println);
-     * </code></pre>
+     * }</pre>
      *
      * Output is:
      *
@@ -13616,21 +13616,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * active, the sequence is terminated with the same signal immediately.
      * <p>
      * The following example demonstrates how to retry an asynchronous source with a delay:
-     * <pre><code>
+     * <pre>{@code
      * Flowable.timer(1, TimeUnit.SECONDS)
-     *     .doOnSubscribe(s -&gt; System.out.println("subscribing"))
-     *     .map(v -&gt; { throw new RuntimeException(); })
-     *     .retryWhen(errors -&gt; {
+     *     .doOnSubscribe(s -> System.out.println("subscribing"))
+     *     .map(v -> { throw new RuntimeException(); })
+     *     .retryWhen(errors -> {
      *         AtomicInteger counter = new AtomicInteger();
      *         return errors
-     *                   .takeWhile(e -&gt; counter.getAndIncrement() != 3)
-     *                   .flatMap(e -&gt; {
+     *                   .takeWhile(e -> counter.getAndIncrement() != 3)
+     *                   .flatMap(e -> {
      *                       System.out.println("delay retry by " + counter.get() + " second(s)");
      *                       return Flowable.timer(counter.get(), TimeUnit.SECONDS);
      *                   });
      *     })
      *     .blockingSubscribe(System.out::println, System.out::println);
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects both the source
@@ -13939,16 +13939,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that the {@code initialValue} is shared among all subscribers to the resulting Publisher
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
      * the application of this operator via {@link #defer(Callable)}:
-     * <pre><code>
-     * Publisher&lt;T&gt; source = ...
-     * Flowable.defer(() -&gt; source.scan(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
+     * <pre>{@code
+     * Publisher<T> source = ...
+     * Flowable.defer(() -> source.scan(new ArrayList<>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
-     * source.compose(o -&gt;
-     *     Flowable.defer(() -&gt; o.scan(new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)))
+     * source.compose(o ->
+     *     Flowable.defer(() -> o.scan(new ArrayList<>(), (list, item) -> list.add(item)))
      * );
-     * </code></pre>
+     * }</pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
@@ -14944,16 +14944,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes a given Subscriber (subclass) to this Flowable and returns the given
      * Subscriber as is.
      * <p>Usage example:
-     * <pre><code>
-     * Flowable&lt;Integer&gt; source = Flowable.range(1, 10);
+     * <pre>{@code
+     * Flowable<Integer> source = Flowable.range(1, 10);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * ResourceSubscriber&lt;Integer&gt; rs = new ResourceSubscriber&lt;&gt;() {
+     * ResourceSubscriber<Integer> rs = new ResourceSubscriber<>() {
      *     // ...
      * };
      *
      * composite.add(source.subscribeWith(rs));
-     * </code></pre>
+     * }</pre>
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -18454,7 +18454,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -18502,7 +18502,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -18552,7 +18552,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre>{@code range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -> a + b)}</pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion

@@ -83,10 +83,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example usage:
- * <pre><code>
- * AsyncSubject&lt;Object&gt; subject = AsyncSubject.create();
- * 
- * TestObserver&lt;Object&gt; to1 = subject.test();
+ * <pre>{@code
+ * AsyncSubject<Object> subject = AsyncSubject.create();
+ *
+ * TestObserver<Object> to1 = subject.test();
  *
  * to1.assertEmpty();
  *
@@ -101,11 +101,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * // onComplete triggers the emission of the last cached item and the onComplete event.
  * to1.assertResult(2);
  *
- * TestObserver&lt;Object&gt; to2 = subject.test();
+ * TestObserver<Object> to2 = subject.test();
  *
  * // late Observers receive the last cached item too
  * to2.assertResult(2);
- * </code></pre>
+ * }</pre>
  * @param <T> the value type
  */
 public final class AsyncSubject<T> extends Subject<T> {

@@ -50,13 +50,13 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Implementation of {@link #onStart()}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  *
- * <p>Example<pre><code>
+ * <p>Example<pre>{@code
  * Disposable d =
  *     Completable.complete().delay(1, TimeUnit.SECONDS)
  *     .subscribeWith(new ResourceCompletableObserver() {
  *         &#64;Override public void onStart() {
  *             add(Schedulers.single()
- *                 .scheduleDirect(() -&gt; System.out.println("Time!"),
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
  *                     2, TimeUnit.SECONDS));
  *         }
  *         &#64;Override public void onError(Throwable t) {
@@ -70,7 +70,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *     });
  * // ...
  * d.dispose();
- * </code></pre>
+ * }</pre>
  */
 public abstract class ResourceCompletableObserver implements CompletableObserver, Disposable {
     /** The active subscription. */

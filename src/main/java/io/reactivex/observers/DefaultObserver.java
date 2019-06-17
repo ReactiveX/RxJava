@@ -38,9 +38,9 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * If for some reason this can't be avoided, use {@link io.reactivex.Observable#safeSubscribe(io.reactivex.Observer)}
  * instead of the standard {@code subscribe()} method.
  *
- * <p>Example<pre><code>
+ * <p>Example<pre>{@code
  * Observable.range(1, 5)
- *     .subscribe(new DefaultObserver&lt;Integer&gt;() {
+ *     .subscribe(new DefaultObserver<Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }
@@ -57,7 +57,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *             System.out.println("Done!");
  *         }
  *     });
- * </code></pre>
+ * }</pre>
  *
  * @param <T> the value type
  */

@@ -65,10 +65,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * </dl>
  * <p>
  * Example usage:
- * <pre><code>
+ * <pre>{@code
  * CompletableSubject subject = CompletableSubject.create();
  *
- * TestObserver&lt;Void&gt; to1 = subject.test();
+ * TestObserver<Void> to1 = subject.test();
  *
  * // a fresh CompletableSubject is empty
  * to1.assertEmpty();
@@ -78,11 +78,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * // a CompletableSubject is always void of items
  * to1.assertResult();
  *
- * TestObserver&lt;Void&gt; to2 = subject.test()
+ * TestObserver<Void> to2 = subject.test()
  *
  * // late CompletableObservers receive the terminal event
  * to2.assertResult();
- * </code></pre>
+ * }</pre>
  * <p>History: 2.0.5 - experimental
  * @since 2.1
  */
