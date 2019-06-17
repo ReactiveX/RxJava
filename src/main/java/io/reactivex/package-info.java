@@ -25,7 +25,7 @@
  * Completable/CompletableObserver interfaces and associated operators (in
  * the {@code io.reactivex.internal.operators} package) are inspired by the
  * Reactive Rx library in Microsoft .NET but designed and implemented on
- * the more advanced Reactive-Streams ( http://www.reactivestreams.org ) principles.</p>
+ * the more advanced Reactive Streams ( http://www.reactivestreams.org ) principles.</p>
  * <p>
  * More information can be found at <a
  * href="http://msdn.microsoft.com/en-us/data/gg577609">http://msdn.microsoft.com/en-us/data/gg577609</a>.

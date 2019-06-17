@@ -1,6 +1,6 @@
-RxJava 2.0 has been completely rewritten from scratch on top of the Reactive-Streams specification. The specification itself has evolved out of RxJava 1.x and provides a common baseline for reactive systems and libraries.
+RxJava 2.0 has been completely rewritten from scratch on top of the Reactive Streams specification. The specification itself has evolved out of RxJava 1.x and provides a common baseline for reactive systems and libraries.
 
-Because Reactive-Streams has a different architecture, it mandates changes to some well known RxJava types. This wiki page attempts to summarize what has changed and describes how to rewrite 1.x code into 2.x code.
+Because Reactive Streams has a different architecture, it mandates changes to some well known RxJava types. This wiki page attempts to summarize what has changed and describes how to rewrite 1.x code into 2.x code.
 
 For technical details on how to write operators for 2.x, please visit the [Writing Operators](https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0) wiki page.
 
@@ -20,7 +20,7 @@ For technical details on how to write operators for 2.x, please visit the [Writi
   - [Subscriber](#subscriber)
   - [Subscription](#subscription)
   - [Backpressure](#backpressure)
-  - [Reactive-Streams compliance](#reactive-streams-compliance)
+  - [Reactive Streams compliance](#reactive-streams-compliance)
   - [Runtime hooks](#runtime-hooks)
   - [Error handling](#error-handling)
   - [Scheduler](#schedulers)
@@ -105,7 +105,7 @@ When architecting dataflows (as an end-consumer of RxJava) or deciding upon what
 
 # Single
 
-The 2.x `Single` reactive base type, which can emit a single `onSuccess` or `onError` has been redesigned from scratch. Its architecture now derives from the Reactive-Streams design. Its consumer type (`rx.Single.SingleSubscriber<T>`) has been changed from being a class that accepts `rx.Subscription` resources to be an interface `io.reactivex.SingleObserver<T>` that has only 3 methods:
+The 2.x `Single` reactive base type, which can emit a single `onSuccess` or `onError` has been redesigned from scratch. Its architecture now derives from the Reactive Streams design. Its consumer type (`rx.Single.SingleSubscriber<T>`) has been changed from being a class that accepts `rx.Subscription` resources to be an interface `io.reactivex.SingleObserver<T>` that has only 3 methods:
 
 ```java
 interface SingleObserver<T> {
@@ -119,7 +119,7 @@ and follows the protocol `onSubscribe (onSuccess | onError)?`.
 
 # Completable
 
-The `Completable` type remains largely the same. It was already designed along the Reactive-Streams style for 1.x so no user-level changes there.
+The `Completable` type remains largely the same. It was already designed along the Reactive Streams style for 1.x so no user-level changes there.
 
 Similar to the naming changes, `rx.Completable.CompletableSubscriber` has become `io.reactivex.CompletableObserver` with `onSubscribe(Disposable)`:
 
@@ -154,7 +154,7 @@ Maybe.just(1)
 
 # Base reactive interfaces
 
-Following the style of extending the Reactive-Streams `Publisher<T>` in `Flowable`, the other base reactive classes now extend similar base interfaces (in package `io.reactivex`):
+Following the style of extending the Reactive Streams `Publisher<T>` in `Flowable`, the other base reactive classes now extend similar base interfaces (in package `io.reactivex`):
 
 ```java
 interface ObservableSource<T> {
@@ -182,7 +182,7 @@ Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper
 Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper);
 ```
 
-By having `Publisher` as input this way, you can compose with other Reactive-Streams compliant libraries without the need to wrap them or convert them into `Flowable` first.
+By having `Publisher` as input this way, you can compose with other Reactive Streams compliant libraries without the need to wrap them or convert them into `Flowable` first.
 
 If an operator has to offer a reactive base type, however, the user will receive the full reactive class (as giving out an `XSource` is practically useless as it doesn't have operators on it):
 
@@ -197,7 +197,7 @@ source.compose((Flowable<T> flowable) ->
 
 # Subjects and Processors
 
-In the Reactive-Streams specification, the `Subject`-like behavior, namely being a consumer and supplier of events at the same time, is done by the `org.reactivestreams.Processor` interface. As with the `Observable`/`Flowable` split, the backpressure-aware, Reactive-Streams compliant implementations are based on the `FlowableProcessor<T>` class (which extends `Flowable` to give a rich set of instance operators). An important change regarding `Subject`s (and by extension, `FlowableProcessor`) that they no longer support `T -> R` like conversion (that is, input is of type `T` and the output is of type `R`). (We never had a use for it in 1.x and the original `Subject<T, R>` came from .NET where there is a `Subject<T>` overload because .NET allows the same class name with a different number of type arguments.)
+In the Reactive Streams specification, the `Subject`-like behavior, namely being a consumer and supplier of events at the same time, is done by the `org.reactivestreams.Processor` interface. As with the `Observable`/`Flowable` split, the backpressure-aware, Reactive Streams compliant implementations are based on the `FlowableProcessor<T>` class (which extends `Flowable` to give a rich set of instance operators). An important change regarding `Subject`s (and by extension, `FlowableProcessor`) that they no longer support `T -> R` like conversion (that is, input is of type `T` and the output is of type `R`). (We never had a use for it in 1.x and the original `Subject<T, R>` came from .NET where there is a `Subject<T>` overload because .NET allows the same class name with a different number of type arguments.)
 
 The `io.reactivex.subjects.AsyncSubject`, `io.reactivex.subjects.BehaviorSubject`, `io.reactivex.subjects.PublishSubject`, `io.reactivex.subjects.ReplaySubject` and `io.reactivex.subjects.UnicastSubject` in 2.x don't support backpressure (as part of the 2.x `Observable` family).
 
@@ -296,7 +296,7 @@ In addition, operators requiring a predicate no longer use `Func1<T, Boolean>` b
 
 # Subscriber
 
-The Reactive-Streams specification has its own Subscriber as an interface. This interface is lightweight and combines request management with cancellation into a single interface `org.reactivestreams.Subscription` instead of having `rx.Producer` and `rx.Subscription` separately. This allows creating stream consumers with less internal state than the quite heavy `rx.Subscriber` of 1.x.
+The Reactive Streams specification has its own Subscriber as an interface. This interface is lightweight and combines request management with cancellation into a single interface `org.reactivestreams.Subscription` instead of having `rx.Producer` and `rx.Subscription` separately. This allows creating stream consumers with less internal state than the quite heavy `rx.Subscriber` of 1.x.
 
 ```java
 Flowable.range(1, 10).subscribe(new Subscriber<Integer>() {
@@ -354,7 +354,7 @@ Flowable.range(1, 10).delay(1, TimeUnit.SECONDS).subscribe(subscriber);
 subscriber.dispose();
 ```
 
-Note also that due to Reactive-Streams compatibility, the method `onCompleted` has been renamed to `onComplete` without the trailing `d`.
+Note also that due to Reactive Streams compatibility, the method `onCompleted` has been renamed to `onComplete` without the trailing `d`.
 
 Since 1.x `Observable.subscribe(Subscriber)` returned `Subscription`, users often added the `Subscription` to a `CompositeSubscription` for example:
 
@@ -364,7 +364,7 @@ CompositeSubscription composite = new CompositeSubscription();
 composite.add(Observable.range(1, 5).subscribe(new TestSubscriber<Integer>()));
 ```
 
-Due to the Reactive-Streams specification, `Publisher.subscribe` returns void and the pattern by itself no longer works in 2.0. To remedy this, the method `E subscribeWith(E subscriber)` has been added to each base reactive class which returns its input subscriber/observer as is. With the two examples before, the 2.x code can now look like this since `ResourceSubscriber` implements `Disposable` directly:
+Due to the Reactive Streams specification, `Publisher.subscribe` returns void and the pattern by itself no longer works in 2.0. To remedy this, the method `E subscribeWith(E subscriber)` has been added to each base reactive class which returns its input subscriber/observer as is. With the two examples before, the 2.x code can now look like this since `ResourceSubscriber` implements `Disposable` directly:
 
 ```java
 CompositeDisposable composite2 = new CompositeDisposable();
@@ -420,11 +420,11 @@ This behavior differs from 1.x where a `request` call went through a deferred lo
 
 # Subscription
 
-In RxJava 1.x, the interface `rx.Subscription` was responsible for stream and resource lifecycle management, namely unsubscribing a sequence and releasing general resources such as scheduled tasks. The Reactive-Streams specification took this name for specifying an interaction point between a source and a consumer: `org.reactivestreams.Subscription` allows requesting a positive amount from the upstream and allows cancelling the sequence.
+In RxJava 1.x, the interface `rx.Subscription` was responsible for stream and resource lifecycle management, namely unsubscribing a sequence and releasing general resources such as scheduled tasks. The Reactive Streams specification took this name for specifying an interaction point between a source and a consumer: `org.reactivestreams.Subscription` allows requesting a positive amount from the upstream and allows cancelling the sequence.
 
 To avoid the name clash, the 1.x `rx.Subscription` has been renamed into `io.reactivex.Disposable` (somewhat resembling .NET's own IDisposable).
 
-Because Reactive-Streams base interface, `org.reactivestreams.Publisher` defines the `subscribe()` method as `void`, `Flowable.subscribe(Subscriber)` no longer returns any `Subscription` (or `Disposable`). The other base reactive types also follow this signature with their respective subscriber types.
+Because Reactive Streams base interface, `org.reactivestreams.Publisher` defines the `subscribe()` method as `void`, `Flowable.subscribe(Subscriber)` no longer returns any `Subscription` (or `Disposable`). The other base reactive types also follow this signature with their respective subscriber types.
 
 The other overloads of `subscribe` now return `Disposable` in 2.x.
 
@@ -436,19 +436,19 @@ The original `Subscription` container types have been renamed and updated
 
 # Backpressure
 
-The Reactive-Streams specification mandates operators supporting backpressure, specifically via the guarantee that they don't overflow their consumers when those don't request. Operators of the new `Flowable` base reactive type now consider downstream request amounts properly, however, this doesn't mean `MissingBackpressureException` is gone. The exception is still there but this time, the operator that can't signal more `onNext` will signal this exception instead (allowing better identification of who is not properly backpressured).
+The Reactive Streams specification mandates operators supporting backpressure, specifically via the guarantee that they don't overflow their consumers when those don't request. Operators of the new `Flowable` base reactive type now consider downstream request amounts properly, however, this doesn't mean `MissingBackpressureException` is gone. The exception is still there but this time, the operator that can't signal more `onNext` will signal this exception instead (allowing better identification of who is not properly backpressured).
 
 As an alternative, the 2.x `Observable` doesn't do backpressure at all and is available as a choice to switch over.
 
-# Reactive-Streams compliance
+# Reactive Streams compliance
 
 **updated in 2.0.7**
 
-**The `Flowable`-based sources and operators are, as of 2.0.7, fully Reactive-Streams version 1.0.0 specification compliant.**
+**The `Flowable`-based sources and operators are, as of 2.0.7, fully Reactive Streams version 1.0.0 specification compliant.**
 
 Before 2.0.7, the operator `strict()` had to be applied in order to achieve the same level of compliance. In 2.0.7, the operator `strict()` returns `this`, is deprecated and will be removed completely in 2.1.0.
 
-As one of the primary goals of RxJava 2, the design focuses on performance and in order enable it, RxJava 2.0.7 adds a custom `io.reactivex.FlowableSubscriber` interface (extends `org.reactivestreams.Subscriber`) but adds no new methods to it. The new interface is **constrained to RxJava 2** and represents a consumer to `Flowable` that is able to work in a mode that relaxes the Reactive-Streams version 1.0.0 specification in rules §1.3, §2.3, §2.12 and §3.9:
+As one of the primary goals of RxJava 2, the design focuses on performance and in order enable it, RxJava 2.0.7 adds a custom `io.reactivex.FlowableSubscriber` interface (extends `org.reactivestreams.Subscriber`) but adds no new methods to it. The new interface is **constrained to RxJava 2** and represents a consumer to `Flowable` that is able to work in a mode that relaxes the Reactive Streams version 1.0.0 specification in rules §1.3, §2.3, §2.12 and §3.9:
 
   - §1.3 relaxation: `onSubscribe` may run concurrently with `onNext` in case the `FlowableSubscriber` calls `request()` from inside `onSubscribe` and it is the resposibility of `FlowableSubscriber` to ensure thread-safety between the remaining instructions in `onSubscribe` and `onNext`.
   - §2.3 relaxation: calling `Subscription.cancel` and `Subscription.request` from `FlowableSubscriber.onComplete()` or `FlowableSubscriber.onError()` is considered a no-operation.
@@ -603,7 +603,7 @@ Integer i = Flowable.range(100, 100).blockingLast();
 
 (The reason for this is twofold: performance and ease of use of the library as a synchronous Java 8 Streams-like processor.)
 
-Another significant difference between `rx.Subscriber` (and co) and `org.reactivestreams.Subscriber` (and co) is that in 2.x, your `Subscriber`s and `Observer`s are not allowed to throw anything but fatal exceptions (see `Exceptions.throwIfFatal()`). (The Reactive-Streams specification allows throwing `NullPointerException` if the `onSubscribe`, `onNext` or `onError` receives a `null` value, but RxJava doesn't let `null`s in any way.) This means the following code is no longer legal:
+Another significant difference between `rx.Subscriber` (and co) and `org.reactivestreams.Subscriber` (and co) is that in 2.x, your `Subscriber`s and `Observer`s are not allowed to throw anything but fatal exceptions (see `Exceptions.throwIfFatal()`). (The Reactive Streams specification allows throwing `NullPointerException` if the `onSubscribe`, `onNext` or `onError` receives a `null` value, but RxJava doesn't let `null`s in any way.) This means the following code is no longer legal:
 
 ```java
 Subscriber<Integer> subscriber = new Subscriber<Integer>() {
@@ -933,7 +933,7 @@ To make sure the final API of 2.0 is clean as possible, we remove methods and ot
 
 ## doOnCancel/doOnDispose/unsubscribeOn
 
-In 1.x, the `doOnUnsubscribe` was always executed on a terminal event because 1.x' `SafeSubscriber` called `unsubscribe` on itself. This was practically unnecessary and the Reactive-Streams specification states that when a terminal event arrives at a `Subscriber`, the upstream `Subscription` should be considered cancelled and thus calling `cancel()` is a no-op.
+In 1.x, the `doOnUnsubscribe` was always executed on a terminal event because 1.x' `SafeSubscriber` called `unsubscribe` on itself. This was practically unnecessary and the Reactive Streams specification states that when a terminal event arrives at a `Subscriber`, the upstream `Subscription` should be considered cancelled and thus calling `cancel()` is a no-op.
 
 For the same reason, `unsubscribeOn` is not called on the regular termination path but only when there is an actual `cancel` (or `dispose`) call on the chain.
 

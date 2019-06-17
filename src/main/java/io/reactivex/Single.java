@@ -755,7 +755,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * the source has more than one element, an IndexOutOfBoundsException is signalled.
      * <p>
      * The {@link Publisher} must follow the
-     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive Streams specification</a>.
      * Violating the specification may result in undefined behavior.
      * <p>
      * If possible, use {@link #create(SingleOnSubscribe)} to create a

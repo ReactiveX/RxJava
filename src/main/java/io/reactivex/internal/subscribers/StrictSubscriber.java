@@ -23,7 +23,7 @@ import io.reactivex.internal.util.*;
 
 /**
  * Ensures that the event flow between the upstream and downstream follow
- * the Reactive-Streams 1.0 specification by honoring the 3 additional rules
+ * the Reactive Streams 1.0 specification by honoring the 3 additional rules
  * (which are omitted in standard operators due to performance reasons).
  * <ul>
  * <li>§1.3: onNext should not be called concurrently until onSubscribe returns</li>
