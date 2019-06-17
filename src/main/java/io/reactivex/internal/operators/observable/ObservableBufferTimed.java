@@ -504,10 +504,12 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffer = null;
             }
 
-            queue.offer(b);
-            done = true;
-            if (enter()) {
-                QueueDrainHelper.drainLoop(queue, downstream, false, this, this);
+            if (b != null) {
+                queue.offer(b);
+                done = true;
+                if (enter()) {
+                    QueueDrainHelper.drainLoop(queue, downstream, false, this, this);
+                }
             }
         }
 

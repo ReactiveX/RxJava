@@ -2769,4 +2769,19 @@ public class FlowableBufferTest {
 
         sub.run();
     }
+
+    @Test
+    public void bufferExactFailingSupplier() {
+        Flowable.empty()
+                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Callable<List<Object>>() {
+                    @Override
+                    public List<Object> call() throws Exception {
+                        throw new TestException();
+                    }
+                }, false)
+                .test()
+                .awaitDone(1, TimeUnit.SECONDS)
+                .assertFailure(TestException.class)
+        ;
+    }
 }

@@ -2136,4 +2136,19 @@ public class ObservableBufferTest {
             }
         });
     }
+
+    @Test
+    public void bufferExactFailingSupplier() {
+        Observable.empty()
+                .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Callable<List<Object>>() {
+                    @Override
+                    public List<Object> call() throws Exception {
+                        throw new TestException();
+                    }
+                }, false)
+                .test()
+                .awaitDone(1, TimeUnit.SECONDS)
+                .assertFailure(TestException.class)
+        ;
+    }
 }
