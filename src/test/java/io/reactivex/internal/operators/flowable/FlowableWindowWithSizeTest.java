@@ -78,7 +78,7 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void testOverlappingWindows() {
-        Flowable<String> subject = Flowable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
+        Flowable<String> subject = Flowable.fromArray("zero", "one", "two", "three", "four", "five");
         Flowable<Flowable<String>> windowed = subject.window(3, 1);
 
         List<List<String>> windows = toLists(windowed);

@@ -95,12 +95,12 @@ public class FlowableFromArrayTest {
 
     @Test
     public void empty() {
-        Assert.assertSame(Flowable.empty(), Flowable.fromArray(new Object[0]));
+        Assert.assertSame(Flowable.empty(), Flowable.fromArray());
     }
 
     @Test
     public void just() {
-        Flowable<Integer> source = Flowable.fromArray(new Integer[] { 1 });
+        Flowable<Integer> source = Flowable.fromArray(1);
         Assert.assertTrue(source.getClass().toString(), source instanceof ScalarCallable);
     }
 
@@ -143,7 +143,7 @@ public class FlowableFromArrayTest {
 
     @Test
     public void conditionalFiltered() {
-        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
+        Flowable.fromArray(1, 2, 3, 4, 5)
         .filter(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -173,7 +173,7 @@ public class FlowableFromArrayTest {
 
     @Test
     public void conditionalSlowPathSkipCancel() {
-        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
+        Flowable.fromArray(1, 2, 3, 4, 5)
         .filter(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {

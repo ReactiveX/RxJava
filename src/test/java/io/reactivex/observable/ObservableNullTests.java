@@ -53,7 +53,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void ambIterableNull() {
-        Observable.amb((Iterable<Observable<Object>>)null);
+        Observable.amb(null);
     }
 
     @Test
@@ -583,7 +583,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
-        Observable.merge((Iterable<Observable<Object>>)null, 128, 128);
+        Observable.merge(null, 128, 128);
     }
 
     @Test(expected = NullPointerException.class)
@@ -615,7 +615,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableNull() {
-        Observable.mergeDelayError((Iterable<Observable<Object>>)null, 128, 128);
+        Observable.mergeDelayError(null, 128, 128);
     }
 
     @Test(expected = NullPointerException.class)
@@ -803,7 +803,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Observable.zipIterable((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
+        Observable.zipIterable(null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
@@ -994,7 +994,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect(null, new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer a, Integer b) { }
         });
@@ -1163,12 +1163,12 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionOtherNull() {
-        just1.delaySubscription((Observable<Object>)null);
+        just1.delaySubscription(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionFunctionNull() {
-        just1.delaySubscription((Observable<Object>)null);
+        just1.delaySubscription(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2370,7 +2370,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Observable<Integer>)null, new Function<Integer, Observable<Integer>>() {
+        just1.timeout(null, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return just1;

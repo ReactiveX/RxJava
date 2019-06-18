@@ -118,7 +118,7 @@ public class BlockingFlowableToFutureTest {
     @Ignore("null value is not allowed")
     @Test
     public void testGetWithASingleNullItem() throws Exception {
-        Flowable<String> obs = Flowable.just((String)null);
+        Flowable<String> obs = Flowable.just(null);
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());
     }

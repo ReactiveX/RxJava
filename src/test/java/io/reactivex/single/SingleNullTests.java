@@ -361,7 +361,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterableNull() {
-        Single.zip((Iterable<Single<Integer>>)null, new Function<Object[], Object>() {
+        Single.zip(null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
@@ -691,7 +691,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorReturnSupplierNull() {
-        just1.onErrorReturn((Function<Throwable, Integer>)null);
+        just1.onErrorReturn(null);
     }
 
     @Test(expected = NullPointerException.class)

@@ -2219,7 +2219,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture((Future<T>)future, timeout, unit).subscribeOn(scheduler);
+        return fromFuture(future, timeout, unit).subscribeOn(scheduler);
     }
 
     /**
@@ -2258,7 +2258,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture((Future<T>)future).subscribeOn(scheduler);
+        return fromFuture(future).subscribeOn(scheduler);
     }
 
     /**

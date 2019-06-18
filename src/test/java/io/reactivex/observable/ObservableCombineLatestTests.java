@@ -67,7 +67,7 @@ public class ObservableCombineLatestTests {
     @Test
     public void testNullEmitting() throws Exception {
         // FIXME this is no longer allowed
-        Observable<Boolean> nullObservable = BehaviorSubject.createDefault((Boolean) null);
+        Observable<Boolean> nullObservable = BehaviorSubject.createDefault(null);
         Observable<Boolean> nonNullObservable = BehaviorSubject.createDefault(true);
         Observable<Boolean> combined =
                 combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {

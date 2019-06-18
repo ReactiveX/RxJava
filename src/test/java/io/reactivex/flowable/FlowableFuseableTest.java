@@ -36,7 +36,7 @@ public class FlowableFuseableTest {
     @Test
     public void syncArray() {
 
-        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
+        Flowable.fromArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -69,7 +69,7 @@ public class FlowableFuseableTest {
 
     @Test
     public void syncArrayHidden() {
-        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
+        Flowable.fromArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .hide()
         .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertOf(SubscriberFusion.<Integer>assertNotFuseable())

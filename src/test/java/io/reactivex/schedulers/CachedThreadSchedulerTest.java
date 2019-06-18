@@ -89,11 +89,11 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public void workerDisposed() {
         Worker w = Schedulers.io().createWorker();
 
-        assertFalse(((Disposable)w).isDisposed());
+        assertFalse(w.isDisposed());
 
         w.dispose();
 
-        assertTrue(((Disposable)w).isDisposed());
+        assertTrue(w.isDisposed());
     }
 
     @Test

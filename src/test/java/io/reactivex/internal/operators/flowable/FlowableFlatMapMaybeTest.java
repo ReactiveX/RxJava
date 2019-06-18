@@ -261,7 +261,7 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void middleError() {
-        Flowable.fromArray(new String[]{"1", "a", "2"})
+        Flowable.fromArray("1", "a", "2")
         .flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(final String s) throws NumberFormatException {

@@ -68,7 +68,7 @@ public class FlowableCombineLatestTests {
     @Test
     public void testNullEmitting() throws Exception {
         // FIXME this is no longer allowed
-        Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault((Boolean) null);
+        Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault(null);
         Flowable<Boolean> nonNullObservable = BehaviorProcessor.createDefault(true);
         Flowable<Boolean> combined =
                 combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {

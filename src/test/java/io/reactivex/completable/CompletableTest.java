@@ -236,7 +236,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = NullPointerException.class)
     public void concatIterableWithNull() {
-        Completable c = Completable.concat(Arrays.asList(normal.completable, (Completable)null));
+        Completable c = Completable.concat(Arrays.asList(normal.completable, null));
 
         c.blockingAwait();
     }
@@ -746,7 +746,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeIterableWithNull() {
-        Completable c = Completable.merge(Arrays.asList(normal.completable, (Completable)null));
+        Completable c = Completable.merge(Arrays.asList(normal.completable, null));
 
         c.blockingAwait();
     }
@@ -962,7 +962,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = NullPointerException.class)
     public void mergeDelayErrorIterableWithNull() {
-        Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, (Completable)null));
+        Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, null));
 
         c.blockingAwait();
     }
@@ -3149,7 +3149,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void ambIterableNull() {
-        Completable.amb((Iterable<Completable>)null);
+        Completable.amb(null);
     }
 
     @Test(timeout = 5000)

@@ -872,7 +872,7 @@ public class FlowableCombineLatestTest {
     public void testCombineManyNulls() {
         int n = Flowable.bufferSize() * 3;
 
-        Flowable<Integer> source = Flowable.just((Integer)null);
+        Flowable<Integer> source = Flowable.just(null);
 
         List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
 

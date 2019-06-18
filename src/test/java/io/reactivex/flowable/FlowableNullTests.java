@@ -53,7 +53,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void ambIterableNull() {
-        Flowable.amb((Iterable<Publisher<Object>>)null);
+        Flowable.amb(null);
     }
 
     @Test
@@ -503,7 +503,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
-        Flowable.merge((Iterable<Publisher<Object>>)null, 128, 128);
+        Flowable.merge(null, 128, 128);
     }
 
     @Test(expected = NullPointerException.class)
@@ -535,7 +535,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableNull() {
-        Flowable.mergeDelayError((Iterable<Publisher<Object>>)null, 128, 128);
+        Flowable.mergeDelayError(null, 128, 128);
     }
 
     @Test(expected = NullPointerException.class)
@@ -714,7 +714,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Flowable.zipIterable((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zipIterable(null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
@@ -905,7 +905,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect(null, new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer a, Integer b) { }
         });
@@ -1074,12 +1074,12 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionSupplierNull() {
-        just1.delaySubscription((Publisher<Object>)null);
+        just1.delaySubscription(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionFunctionNull() {
-        just1.delaySubscription((Publisher<Object>)null);
+        just1.delaySubscription(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2321,7 +2321,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Publisher<Integer>)null, new Function<Integer, Publisher<Integer>>() {
+        just1.timeout(null, new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
                 return just1;
@@ -2968,7 +2968,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionOtherNull() {
-        just1.delaySubscription((Flowable<Object>)null);
+        just1.delaySubscription(null);
     }
 
     @Test(expected = NullPointerException.class)

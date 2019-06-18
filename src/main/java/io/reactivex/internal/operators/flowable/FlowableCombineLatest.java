@@ -132,7 +132,7 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new SingletonArrayFunc()));
+            a[0].subscribe(new MapSubscriber<T, R>(s, new SingletonArrayFunc()));
             return;
         }
 

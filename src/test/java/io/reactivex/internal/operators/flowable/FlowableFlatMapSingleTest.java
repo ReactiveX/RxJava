@@ -248,7 +248,7 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void middleError() {
-        Flowable.fromArray(new String[]{"1", "a", "2"})
+        Flowable.fromArray("1", "a", "2")
         .flatMapSingle(new Function<String, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(final String s) throws NumberFormatException {

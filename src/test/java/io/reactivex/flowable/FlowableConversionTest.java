@@ -166,7 +166,7 @@ public class FlowableConversionTest {
             }
         });
 
-        List<Object> crewOfBattlestarGalactica = Arrays.asList(new Object[] {"William Adama", "Laura Roslin", "Lee Adama", new Cylon()});
+        List<Object> crewOfBattlestarGalactica = Arrays.asList("William Adama", "Laura Roslin", "Lee Adama", new Cylon());
 
         Flowable.fromIterable(crewOfBattlestarGalactica)
             .doOnNext(new Consumer<Object>() {

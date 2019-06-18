@@ -1081,7 +1081,7 @@ public class ParallelFlowableTest {
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void fromPublishers() {
-        ParallelFlowable.fromArray(new Publisher[0]);
+        ParallelFlowable.fromArray();
     }
 
     @Test
@@ -1378,6 +1378,6 @@ public class ParallelFlowableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void fromArraySubscriberCount() {
-        ParallelFlowableTest.checkSubscriberCount(ParallelFlowable.fromArray(new Publisher[] { Flowable.just(1) }));
+        ParallelFlowableTest.checkSubscriberCount(ParallelFlowable.fromArray(Flowable.just(1)));
     }
 }

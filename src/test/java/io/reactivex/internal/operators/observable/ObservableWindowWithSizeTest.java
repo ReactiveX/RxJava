@@ -77,7 +77,7 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void testOverlappingWindows() {
-        Observable<String> subject = Observable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
+        Observable<String> subject = Observable.fromArray("zero", "one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3, 1);
 
         List<List<String>> windows = toLists(windowed);

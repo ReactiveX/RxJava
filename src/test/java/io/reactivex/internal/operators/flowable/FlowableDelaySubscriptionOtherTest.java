@@ -309,7 +309,7 @@ public class FlowableDelaySubscriptionOtherTest {
 
     @Test(expected = NullPointerException.class)
     public void otherNull() {
-        Flowable.just(1).delaySubscription((Flowable<Integer>)null);
+        Flowable.just(1).delaySubscription(null);
     }
 
     @Test

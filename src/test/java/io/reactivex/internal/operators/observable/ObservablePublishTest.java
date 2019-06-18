@@ -342,7 +342,7 @@ public class ObservablePublishTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((ObservablePublish.PublishObserver<Object>)d).isDisposed();
+        return d.isDisposed();
     }
 
     @Test

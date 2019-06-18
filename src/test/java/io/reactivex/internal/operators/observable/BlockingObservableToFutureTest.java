@@ -119,7 +119,7 @@ public class BlockingObservableToFutureTest {
     @Ignore("null value is not allowed")
     @Test
     public void testGetWithASingleNullItem() throws Exception {
-        Observable<String> obs = Observable.just((String)null);
+        Observable<String> obs = Observable.just(null);
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());
     }

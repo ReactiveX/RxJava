@@ -344,7 +344,7 @@ public class FlowablePublishTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((FlowablePublish.PublishSubscriber<Object>)d).isDisposed();
+        return d.isDisposed();
     }
 
     @Test
