@@ -131,9 +131,9 @@ public class FlowableConversionTest {
         }
     }
 
-    public static class ConvertToCylonDetector<T> implements Function<Publisher<T>, CylonDetectorObservable<T>> {
+    public static class ConvertToCylonDetector<T> implements FlowableConverter<T, CylonDetectorObservable<T>> {
         @Override
-        public CylonDetectorObservable<T> apply(final Publisher<T> onSubscribe) {
+        public CylonDetectorObservable<T> apply(final Flowable<T> onSubscribe) {
             return CylonDetectorObservable.create(onSubscribe);
         }
     }
@@ -225,7 +225,7 @@ public class FlowableConversionTest {
                                 });
                     }
                 })
-                    .to(new Function<Flowable<Integer>, ConcurrentLinkedQueue<Integer>>() {
+                    .to(new FlowableConverter<Integer, ConcurrentLinkedQueue<Integer>>() {
                         @Override
                         public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();

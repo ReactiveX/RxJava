@@ -25,7 +25,7 @@ public final class ConverterTest {
     @Test
     public void flowableConverterThrows() {
         try {
-            Flowable.just(1).as(new FlowableConverter<Integer, Integer>() {
+            Flowable.just(1).to(new FlowableConverter<Integer, Integer>() {
                 @Override
                 public Integer apply(Flowable<Integer> v) {
                     throw new TestException("Forced failure");
@@ -40,7 +40,7 @@ public final class ConverterTest {
     @Test
     public void observableConverterThrows() {
         try {
-            Observable.just(1).as(new ObservableConverter<Integer, Integer>() {
+            Observable.just(1).to(new ObservableConverter<Integer, Integer>() {
                 @Override
                 public Integer apply(Observable<Integer> v) {
                     throw new TestException("Forced failure");
@@ -55,7 +55,7 @@ public final class ConverterTest {
     @Test
     public void singleConverterThrows() {
         try {
-            Single.just(1).as(new SingleConverter<Integer, Integer>() {
+            Single.just(1).to(new SingleConverter<Integer, Integer>() {
                 @Override
                 public Integer apply(Single<Integer> v) {
                     throw new TestException("Forced failure");
@@ -70,7 +70,7 @@ public final class ConverterTest {
     @Test
     public void maybeConverterThrows() {
         try {
-            Maybe.just(1).as(new MaybeConverter<Integer, Integer>() {
+            Maybe.just(1).to(new MaybeConverter<Integer, Integer>() {
                 @Override
                 public Integer apply(Maybe<Integer> v) {
                     throw new TestException("Forced failure");
@@ -85,7 +85,7 @@ public final class ConverterTest {
     @Test
     public void completableConverterThrows() {
         try {
-            Completable.complete().as(new CompletableConverter<Completable>() {
+            Completable.complete().to(new CompletableConverter<Completable>() {
                 @Override
                 public Completable apply(Completable v) {
                     throw new TestException("Forced failure");
@@ -104,7 +104,7 @@ public final class ConverterTest {
     public void observableGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Observable.just(a).as((ObservableConverter)ConverterTest.testObservableConverterCreator());
+        Observable.just(a).to((ObservableConverter)ConverterTest.testObservableConverterCreator());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -112,7 +112,7 @@ public final class ConverterTest {
     public void singleGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Single.just(a).as((SingleConverter)ConverterTest.<String>testSingleConverterCreator());
+        Single.just(a).to((SingleConverter)ConverterTest.<String>testSingleConverterCreator());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -120,7 +120,7 @@ public final class ConverterTest {
     public void maybeGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Maybe.just(a).as((MaybeConverter)ConverterTest.<String>testMaybeConverterCreator());
+        Maybe.just(a).to((MaybeConverter)ConverterTest.<String>testMaybeConverterCreator());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -128,7 +128,7 @@ public final class ConverterTest {
     public void flowableGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Flowable.just(a).as((FlowableConverter)ConverterTest.<String>testFlowableConverterCreator());
+        Flowable.just(a).to((FlowableConverter)ConverterTest.<String>testFlowableConverterCreator());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -136,7 +136,7 @@ public final class ConverterTest {
     public void parallelFlowableGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Flowable.just(a).parallel().as((ParallelFlowableConverter)ConverterTest.<String>testParallelFlowableConverterCreator());
+        Flowable.just(a).parallel().to((ParallelFlowableConverter)ConverterTest.<String>testParallelFlowableConverterCreator());
     }
 
     @Test
@@ -144,33 +144,33 @@ public final class ConverterTest {
         CompositeConverter converter = new CompositeConverter();
 
         Flowable.just(1)
-                .as(converter)
+                .to(converter)
                 .test()
                 .assertValue(1);
 
         Observable.just(1)
-                .as(converter)
+                .to(converter)
                 .test()
                 .assertValue(1);
 
         Maybe.just(1)
-                .as(converter)
+                .to(converter)
                 .test()
                 .assertValue(1);
 
         Single.just(1)
-                .as(converter)
+                .to(converter)
                 .test()
                 .assertValue(1);
 
         Completable.complete()
-                .as(converter)
+                .to(converter)
                 .test()
                 .assertComplete();
 
         Flowable.just(1)
         .parallel()
-        .as(converter)
+        .to(converter)
         .test()
         .assertValue(1);
     }

@@ -370,9 +370,9 @@ public class MaybeTest {
 
     @Test
     public void to() {
-        Maybe.just(1).to(new Function<Maybe<Integer>, Flowable<Integer>>() {
+        Maybe.just(1).to(new MaybeConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Maybe<Integer> v) throws Exception {
+            public Flowable<Integer> apply(Maybe<Integer> v) {
                 return v.toFlowable();
             }
         })
@@ -382,7 +382,7 @@ public class MaybeTest {
 
     @Test
     public void as() {
-        Maybe.just(1).as(new MaybeConverter<Integer, Flowable<Integer>>() {
+        Maybe.just(1).to(new MaybeConverter<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Maybe<Integer> v) {
                 return v.toFlowable();
@@ -399,7 +399,7 @@ public class MaybeTest {
 
     @Test(expected = NullPointerException.class)
     public void asNull() {
-        Maybe.just(1).as(null);
+        Maybe.just(1).to(null);
     }
 
     @Test

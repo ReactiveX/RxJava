@@ -535,17 +535,7 @@ public class SingleTest {
 
     @Test
     public void to() {
-        assertEquals(1, Single.just(1).to(new Function<Single<Integer>, Integer>() {
-            @Override
-            public Integer apply(Single<Integer> v) throws Exception {
-                return 1;
-            }
-        }).intValue());
-    }
-
-    @Test
-    public void as() {
-        Single.just(1).as(new SingleConverter<Integer, Flowable<Integer>>() {
+        Single.just(1).to(new SingleConverter<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Single<Integer> v) {
                 return v.toFlowable();

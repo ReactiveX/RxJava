@@ -845,11 +845,6 @@ public class SingleNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void asNull() {
-        just1.as(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void zipWithNull() {
         just1.zipWith(null, new BiFunction<Integer, Object, Object>() {
             @Override

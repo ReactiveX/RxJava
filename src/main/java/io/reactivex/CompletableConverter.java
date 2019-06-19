@@ -16,7 +16,7 @@ package io.reactivex;
 import io.reactivex.annotations.*;
 
 /**
- * Convenience interface and callback used by the {@link Completable#as} operator to turn a Completable into another
+ * Convenience interface and callback used by the {@link Completable#to} operator to turn a Completable into another
  * value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <R> the output type

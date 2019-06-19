@@ -16,7 +16,7 @@ package io.reactivex;
 import io.reactivex.annotations.*;
 
 /**
- * Convenience interface and callback used by the {@link Observable#as} operator to turn an Observable into another
+ * Convenience interface and callback used by the {@link Observable#to} operator to turn an Observable into another
  * value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type

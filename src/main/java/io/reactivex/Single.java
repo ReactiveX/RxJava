@@ -1997,29 +1997,6 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls the specified converter function during assembly time and returns its resulting value.
-     * <p>
-     * <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.as.png" alt="">
-     * <p>
-     * This allows fluent conversion to any other type.
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.7 - experimental
-     * @param <R> the resulting object type
-     * @param converter the function that receives the current Single instance and returns a value
-     * @return the converted value
-     * @throws NullPointerException if converter is null
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(@NonNull SingleConverter<T, ? extends R> converter) {
-        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-    }
-
-    /**
      * Hides the identity of the current Single, including the Disposable that is sent
      * to the downstream via {@code onSubscribe()}.
      * <p>
@@ -3851,29 +3828,26 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls the specified converter function with the current Single instance
-     * during assembly time and returns its result.
+     * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.to.png" alt="">
+     * <p>
+     * This allows fluent conversion to any other type.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param <R> the result type
-     * @param convert the function that is called with the current Single instance during
-     *                assembly time that should return some value to be the result
-     *
-     * @return the value returned by the convert function
+     * <p>History: 2.1.7 - experimental
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Single instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if converter is null
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R to(Function<? super Single<T>, R> convert) {
-        try {
-            return ObjectHelper.requireNonNull(convert, "convert is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+    public final <R> R to(@NonNull SingleConverter<T, ? extends R> converter) {
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

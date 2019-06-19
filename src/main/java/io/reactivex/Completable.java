@@ -27,7 +27,6 @@ import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.mixed.*;
 import io.reactivex.internal.operators.single.*;
-import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -1180,29 +1179,6 @@ public abstract class Completable implements CompletableSource {
     public final Completable andThen(CompletableSource next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return RxJavaPlugins.onAssembly(new CompletableAndThenCompletable(this, next));
-    }
-
-    /**
-     * Calls the specified converter function during assembly time and returns its resulting value.
-     * <p>
-     * <img width="640" height="751" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.as.png" alt="">
-     * <p>
-     * This allows fluent conversion to any other type.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.7 - experimental
-     * @param <R> the resulting object type
-     * @param converter the function that receives the current Completable instance and returns a value
-     * @return the converted value
-     * @throws NullPointerException if converter is null
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(@NonNull CompletableConverter<? extends R> converter) {
-        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**
@@ -2578,27 +2554,26 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Allows fluent conversion to another type via a function callback.
+     * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * <img width="640" height="751" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.to.png" alt="">
+     * <p>
+     * This allows fluent conversion to any other type.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param <U> the output type
-     * @param converter the function called with this which should return some other value.
+     * <p>History: 2.1.7 - experimental
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Completable instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> U to(Function<? super Completable, U> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+    public final <R> R to(@NonNull CompletableConverter<? extends R> converter) {
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**
