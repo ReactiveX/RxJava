@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -24,7 +24,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.ResettableConnectable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscribers.SubscriberResourceWrapper;
@@ -33,7 +32,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
-public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T>, ResettableConnectable {
+public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T> {
     /** The source observable. */
     final Flowable<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -162,10 +161,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         onSubscribe.subscribe(s);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void resetIf(Disposable connectionObject) {
-        current.compareAndSet((ReplaySubscriber)connectionObject, null);
+    public void reset() {
+        ReplaySubscriber<T> conn = current.get();
+        if (conn != null && conn.isDisposed()) {
+            current.compareAndSet(conn, null);
+        }
     }
 
     @Override
@@ -1154,6 +1155,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             cf.connect(connection);
+        }
+
+        @Override
+        public void reset() {
+            cf.reset();
         }
 
         @Override

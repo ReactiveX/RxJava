@@ -12488,7 +12488,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> publish(int bufferSize) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowablePublish.create(this, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowablePublish<T>(this, bufferSize));
     }
 
     /**

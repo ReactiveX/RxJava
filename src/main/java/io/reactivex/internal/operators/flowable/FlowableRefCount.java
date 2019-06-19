@@ -122,11 +122,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
                 }
             }
             if (--rc.subscriberCount == 0) {
-                if (source instanceof Disposable) {
-                    ((Disposable)source).dispose();
-                } else if (source instanceof ResettableConnectable) {
-                    ((ResettableConnectable)source).resetIf(rc.get());
-                }
+                source.reset();
             }
         }
     }
@@ -137,14 +133,10 @@ public final class FlowableRefCount<T> extends Flowable<T> {
                 connection = null;
                 Disposable connectionObject = rc.get();
                 DisposableHelper.dispose(rc);
-                if (source instanceof Disposable) {
-                    ((Disposable)source).dispose();
-                } else if (source instanceof ResettableConnectable) {
-                    if (connectionObject == null) {
-                        rc.disconnectedEarly = true;
-                    } else {
-                        ((ResettableConnectable)source).resetIf(connectionObject);
-                    }
+                if (connectionObject == null) {
+                    rc.disconnectedEarly = true;
+                } else {
+                    source.reset();
                 }
             }
         }
@@ -179,7 +171,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
             DisposableHelper.replace(this, t);
             synchronized (parent) {
                 if (disconnectedEarly) {
-                    ((ResettableConnectable)parent.source).resetIf(t);
+                    parent.source.reset();
                 }
             }
         }

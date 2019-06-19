@@ -34,11 +34,24 @@ import io.reactivex.schedulers.Schedulers;
  * before the {@code Flowable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
- *
+ * <p>
+ * When the upstream terminates, the {@code ConnectableFlowable} remains in this terminated state and,
+ * depending on the actual underlying implementation, relays cached events to late {@link Subscriber}s.
+ * In order to reuse and restart this {@code ConnectableFlowable}, the {@link #reset()} method has to be called.
+ * When called, this {@code ConnectableFlowable} will appear as fresh, unconnected source to new {@link Subscriber}s.
+ * Disposing the connection will reset the {@code ConnectableFlowable} to its fresh state and there is no need to call
+ * {@code reset()} in this case.
+ * <p>
+ * Note that although {@link #connect()} and {@link #reset()} are safe to call from multiple threads, it is recommended
+ * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableFlowable} so that
+ * there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Subscriber}s are
+ * still being subscribed to to this {@code ConnectableFlowable} to receive signals from the get go.
+ * <p>
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
  *      Connectable Observable Operators</a>
  * @param <T>
  *          the type of items emitted by the {@code ConnectableFlowable}
+ * @since 2.0.0
  */
 public abstract class ConnectableFlowable<T> extends Flowable<T> {
 
@@ -52,6 +65,14 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+
+    /**
+     * Resets this ConnectableFlowable into its fresh state if it has terminated.
+     * <p>
+     * Calling this method on a fresh or active {@code ConnectableFlowable} has no effect.
+     * @since 3.0.0
+     */
+    public abstract void reset();
 
     /**
      * Instructs the {@code ConnectableFlowable} to begin emitting the items from its underlying

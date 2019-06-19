@@ -616,6 +616,11 @@ public class ObservableRefCountTest {
             }
 
             @Override
+            public void reset() {
+                // nothing to do in this test
+            }
+
+            @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.disposed());
             }
@@ -790,21 +795,21 @@ public class ObservableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Observer<? super Object> observer) {
             throw new TestException("subscribeActual");
         }
     }
 
-    static final class BadObservableDispose extends ConnectableObservable<Object> implements Disposable {
+    static final class BadObservableDispose extends ConnectableObservable<Object> {
 
         @Override
-        public void dispose() {
+        public void reset() {
             throw new TestException("dispose");
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return false;
         }
 
         @Override
@@ -827,6 +832,11 @@ public class ObservableRefCountTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             throw new TestException("connect");
+        }
+
+        @Override
+        public void reset() {
+            // nothing to do in this test
         }
 
         @Override
@@ -888,6 +898,11 @@ public class ObservableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Observer<? super Object> observer) {
             if (++count == 1) {
                 observer.onSubscribe(Disposables.empty());
@@ -911,8 +926,7 @@ public class ObservableRefCountTest {
         }
     }
 
-    static final class BadObservableConnect2 extends ConnectableObservable<Object>
-    implements Disposable {
+    static final class BadObservableConnect2 extends ConnectableObservable<Object> {
 
         @Override
         public void connect(Consumer<? super Disposable> connection) {
@@ -924,19 +938,14 @@ public class ObservableRefCountTest {
         }
 
         @Override
-        protected void subscribeActual(Observer<? super Object> observer) {
-            observer.onSubscribe(Disposables.empty());
-            observer.onComplete();
-        }
-
-        @Override
-        public void dispose() {
+        public void reset() {
             throw new TestException("dispose");
         }
 
         @Override
-        public boolean isDisposed() {
-            return false;
+        protected void subscribeActual(Observer<? super Object> observer) {
+            observer.onSubscribe(Disposables.empty());
+            observer.onComplete();
         }
     }
 
@@ -1004,9 +1013,12 @@ public class ObservableRefCountTest {
         for (int i = 0; i < 3; i++) {
             TestObserver<Integer> to1 = source.test();
 
+            to1.withTag("to1 " + i);
             to1.assertEmpty();
 
             TestObserver<Integer> to2 = source.test();
+
+            to2.withTag("to2 " + i);
 
             to1.assertResult(1, 2, 3, 4, 5);
             to2.assertResult(1, 2, 3, 4, 5);
@@ -1167,6 +1179,11 @@ public class ObservableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Observer<? super Object> observer) {
             observer.onSubscribe(Disposables.empty());
             observer.onSubscribe(Disposables.empty());
@@ -1277,6 +1294,7 @@ public class ObservableRefCountTest {
         rc.subscriberCount = 1;
         rc.connected = true;
         o.connection = rc;
+        rc.lazySet(null);
         o.cancel(rc);
 
         o.connection = rc;
@@ -1308,19 +1326,13 @@ public class ObservableRefCountTest {
         }
     }
 
-    static final class TestConnectableObservable<T> extends ConnectableObservable<T>
-    implements Disposable {
+    static final class TestConnectableObservable<T> extends ConnectableObservable<T> {
 
-        volatile boolean disposed;
-
-        @Override
-        public void dispose() {
-            disposed = true;
-        }
+        volatile boolean reset;
 
         @Override
-        public boolean isDisposed() {
-            return disposed;
+        public void reset() {
+            reset = true;
         }
 
         @Override
@@ -1335,15 +1347,17 @@ public class ObservableRefCountTest {
     }
 
     @Test
-    public void timeoutDisposesSource() {
-        ObservableRefCount<Object> o = (ObservableRefCount<Object>)new TestConnectableObservable<Object>().refCount();
+    public void timeoutResetsSource() {
+        TestConnectableObservable<Object> tco = new TestConnectableObservable<Object>();
+        ObservableRefCount<Object> o = (ObservableRefCount<Object>)tco.refCount();
 
         RefConnection rc = new RefConnection(o);
+        rc.set(Disposables.empty());
         o.connection = rc;
 
         o.timeout(rc);
 
-        assertTrue(((Disposable)o.source).isDisposed());
+        assertTrue(tco.reset);
     }
 
     @Test
@@ -1359,5 +1373,32 @@ public class ObservableRefCountTest {
         subject.onNext(2);
 
         observable.take(1).test().assertResult(2);
+    }
+
+    @Test
+    public void publishRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Observable<Integer> observable = Observable.just(1).publish().refCount();
+
+            TestObserver<Integer> observer1 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestObserver<Integer> observer2 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            observer1
+            .withTag("observer1 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+
+            observer2
+            .withTag("observer2 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+        }
     }
 }

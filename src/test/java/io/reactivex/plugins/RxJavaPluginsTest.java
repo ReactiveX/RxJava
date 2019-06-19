@@ -1771,6 +1771,11 @@ public class RxJavaPluginsTest {
 
                         }
 
+                        @Override
+                        public void reset() {
+                            // nothing to do in this test
+                        }
+
                         @SuppressWarnings("unchecked")
                         @Override
                         protected void subscribeActual(Observer observer) {
@@ -1813,6 +1818,11 @@ public class RxJavaPluginsTest {
                         @Override
                         public void connect(Consumer connection) {
 
+                        }
+
+                        @Override
+                        public void reset() {
+                            // nothing to do in this test
                         }
 
                         @SuppressWarnings("unchecked")
