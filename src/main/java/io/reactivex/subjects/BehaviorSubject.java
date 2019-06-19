@@ -13,14 +13,11 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.Nullable;
-import io.reactivex.annotations.NonNull;
-import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
@@ -97,8 +94,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * This {@code BehaviorSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
  * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the latest observed value
- * in a non-blocking and thread-safe manner via {@link #hasValue()}, {@link #getValue()},
- * {@link #getValues()} or {@link #getValues(Object[])}.
+ * in a non-blocking and thread-safe manner via {@link #hasValue()} or {@link #getValue()}.
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code BehaviorSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
@@ -152,9 +148,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  *          the type of item expected to be observed by the Subject
  */
 public final class BehaviorSubject<T> extends Subject<T> {
-
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY_ARRAY = new Object[0];
 
     final AtomicReference<Object> value;
 
@@ -324,56 +317,6 @@ public final class BehaviorSubject<T> extends Subject<T> {
             return null;
         }
         return NotificationLite.getValue(o);
-    }
-
-    /**
-     * Returns an Object array containing snapshot all values of the Subject.
-     * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
-     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
-     */
-    @Deprecated
-    public Object[] getValues() {
-        @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY_ARRAY;
-        T[] b = getValues(a);
-        if (b == EMPTY_ARRAY) {
-            return new Object[0];
-        }
-        return b;
-
-    }
-
-    /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
-     * <p>The method follows the conventions of Collection.toArray by setting the array element
-     * after the last value to null (if the capacity permits).
-     * <p>The method is thread-safe.
-     * @param array the target array to copy values into if it fits
-     * @return the given array if the values fit into it or a new array containing all values
-     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public T[] getValues(T[] array) {
-        Object o = value.get();
-        if (o == null || NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-            if (array.length != 0) {
-                array[0] = null;
-            }
-            return array;
-        }
-        T v = NotificationLite.getValue(o);
-        if (array.length != 0) {
-            array[0] = v;
-            if (array.length != 1) {
-                array[1] = null;
-            }
-        } else {
-            array = (T[])Array.newInstance(array.getClass().getComponentType(), 1);
-            array[0] = v;
-        }
-        return array;
     }
 
     @Override

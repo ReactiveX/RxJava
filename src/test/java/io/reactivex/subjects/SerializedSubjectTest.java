@@ -39,7 +39,6 @@ public class SerializedSubjectTest {
         to.assertValue("hello");
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueRelay() {
         AsyncSubject<Integer> async = AsyncSubject.create();
@@ -53,13 +52,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertEquals((Integer)1, async.getValue());
         assertTrue(async.hasValue());
-        assertArrayEquals(new Object[] { 1 }, async.getValues());
-        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueEmpty() {
         AsyncSubject<Integer> async = AsyncSubject.create();
@@ -72,13 +66,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testAsyncSubjectValueError() {
         AsyncSubject<Integer> async = AsyncSubject.create();
@@ -92,10 +81,6 @@ public class SerializedSubjectTest {
         assertSame(te, serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
     @Test
@@ -136,7 +121,6 @@ public class SerializedSubjectTest {
         assertSame(te, serial.getThrowable());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectValueRelay() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
@@ -150,13 +134,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectValueRelayIncomplete() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
@@ -169,13 +148,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertEquals((Integer)1, async.getValue());
         assertTrue(async.hasValue());
-        assertArrayEquals(new Object[] { 1 }, async.getValues());
-        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
@@ -187,13 +161,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
@@ -206,13 +175,8 @@ public class SerializedSubjectTest {
         assertNull(serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testBehaviorSubjectError() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
@@ -226,10 +190,6 @@ public class SerializedSubjectTest {
         assertSame(te, serial.getThrowable());
         assertNull(async.getValue());
         assertFalse(async.hasValue());
-        assertArrayEquals(new Object[] { }, async.getValues());
-        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
 
     @Test

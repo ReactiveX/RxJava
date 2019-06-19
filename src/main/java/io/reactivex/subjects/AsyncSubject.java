@@ -13,13 +13,10 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.Nullable;
-import io.reactivex.annotations.NonNull;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
-import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
@@ -64,7 +61,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * This {@code AsyncSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
  * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the very last observed value -
  * after this {@code AsyncSubject} has been completed - in a non-blocking and thread-safe
- * manner via {@link #hasValue()}, {@link #getValue()}, {@link #getValues()} or {@link #getValues(Object[])}.
+ * manner via {@link #hasValue()} or {@link #getValue()}.
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code AsyncSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
@@ -319,46 +316,6 @@ public final class AsyncSubject<T> extends Subject<T> {
     @Nullable
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
-    }
-
-    /**
-     * Returns an Object array containing snapshot all values of the Subject.
-     * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
-     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
-     */
-    @Deprecated
-    public Object[] getValues() {
-        T v = getValue();
-        return v != null ? new Object[] { v } : new Object[0];
-    }
-
-    /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
-     * <p>The method follows the conventions of Collection.toArray by setting the array element
-     * after the last value to null (if the capacity permits).
-     * <p>The method is thread-safe.
-     * @param array the target array to copy values into if it fits
-     * @return the given array if the values fit into it or a new array containing all values
-     * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
-     */
-    @Deprecated
-    public T[] getValues(T[] array) {
-        T v = getValue();
-        if (v == null) {
-            if (array.length != 0) {
-                array[0] = null;
-            }
-            return array;
-        }
-        if (array.length == 0) {
-            array = Arrays.copyOf(array, 1);
-        }
-        array[0] = v;
-        if (array.length != 1) {
-            array[1] = null;
-        }
-        return array;
     }
 
     static final class AsyncDisposable<T> extends DeferredScalarDisposable<T> {
