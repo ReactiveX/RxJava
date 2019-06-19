@@ -72,7 +72,7 @@ public class FunctionsTest {
     }
 
     @Test
-    public void booleanSupplierPredicateReverse() throws Exception {
+    public void booleanSupplierPredicateReverse() throws Throwable {
         BooleanSupplier s = new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() throws Exception {
@@ -93,7 +93,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction2() throws Exception {
+    public void toFunction2() throws Throwable {
         Functions.toFunction(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) throws Exception {
@@ -103,7 +103,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction3() throws Exception {
+    public void toFunction3() throws Throwable {
         Functions.toFunction(new Function3<Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
@@ -113,7 +113,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction4() throws Exception {
+    public void toFunction4() throws Throwable {
         Functions.toFunction(new Function4<Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4) throws Exception {
@@ -123,7 +123,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction5() throws Exception {
+    public void toFunction5() throws Throwable {
         Functions.toFunction(new Function5<Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) throws Exception {
@@ -133,7 +133,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction6() throws Exception {
+    public void toFunction6() throws Throwable {
         Functions.toFunction(new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) throws Exception {
@@ -143,7 +143,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction7() throws Exception {
+    public void toFunction7() throws Throwable {
         Functions.toFunction(new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) throws Exception {
@@ -153,7 +153,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction8() throws Exception {
+    public void toFunction8() throws Throwable {
         Functions.toFunction(new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) throws Exception {
@@ -163,7 +163,7 @@ public class FunctionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toFunction9() throws Exception {
+    public void toFunction9() throws Throwable {
         Functions.toFunction(new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) throws Exception {
@@ -249,7 +249,7 @@ public class FunctionsTest {
     }
 
     @Test
-    public void errorConsumerEmpty() throws Exception {
+    public void errorConsumerEmpty() throws Throwable {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Functions.ERROR_CONSUMER.accept(new TestException());

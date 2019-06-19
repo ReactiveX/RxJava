@@ -26,7 +26,7 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).reduceWith(Functions.justCallable(0),
+                Flowable.range(1, 1000).reduceWith(Functions.justSupplier(0),
                 new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {

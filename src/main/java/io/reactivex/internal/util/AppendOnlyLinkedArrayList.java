@@ -158,10 +158,10 @@ public class AppendOnlyLinkedArrayList<T> {
      * @param <S> the extra state type
      * @param state the extra state passed into the consumer
      * @param consumer the consumer of values that returns true if the forEach should terminate
-     * @throws Exception if the predicate throws
+     * @throws Throwable if the predicate throws
      */
     @SuppressWarnings("unchecked")
-    public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
+    public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Throwable {
         Object[] a = head;
         final int c = capacity;
         for (;;) {

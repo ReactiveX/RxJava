@@ -14,26 +14,26 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.*;
 
 public final class ObservableToList<T, U extends Collection<? super T>>
 extends AbstractObservableWithUpstream<T, U> {
 
-    final Callable<U> collectionSupplier;
+    final Supplier<U> collectionSupplier;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ObservableToList(ObservableSource<T> source, final int defaultCapacityHint) {
         super(source);
-        this.collectionSupplier = (Callable)Functions.createArrayList(defaultCapacityHint);
+        this.collectionSupplier = (Supplier)Functions.createArrayList(defaultCapacityHint);
     }
 
-    public ObservableToList(ObservableSource<T> source, Callable<U> collectionSupplier) {
+    public ObservableToList(ObservableSource<T> source, Supplier<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;
     }
@@ -42,7 +42,7 @@ extends AbstractObservableWithUpstream<T, U> {
     public void subscribeActual(Observer<? super U> t) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            coll = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);

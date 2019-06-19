@@ -32,9 +32,9 @@ public final class ObservableCollectTest {
     @Test
     public void testCollectToListObservable() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() {
+            public List<Integer> get() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -62,9 +62,9 @@ public final class ObservableCollectTest {
 
     @Test
     public void testCollectToStringObservable() {
-        String value = Observable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
+        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
             @Override
-            public StringBuilder call() {
+            public StringBuilder get() {
                 return new StringBuilder();
             }
         },
@@ -90,7 +90,7 @@ public final class ObservableCollectTest {
             final RuntimeException e2 = new RuntimeException();
 
             Burst.items(1).error(e2) //
-                    .collect(callableListCreator(), biConsumerThrows(e1)) //
+                    .collect(supplierListCreator(), biConsumerThrows(e1)) //
                     .toObservable()
                     .test() //
                     .assertError(e1) //
@@ -107,7 +107,7 @@ public final class ObservableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissionsObservable() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
-                .collect(callableListCreator(), biConsumerThrows(e)) //
+                .collect(supplierListCreator(), biConsumerThrows(e)) //
                 .toObservable()
                 .test() //
                 .assertError(e) //
@@ -133,7 +133,7 @@ public final class ObservableCollectTest {
             }
         };
         Burst.items(1, 2).create() //
-                .collect(callableListCreator(), throwOnFirstOnly)//
+                .collect(supplierListCreator(), throwOnFirstOnly)//
                 .test() //
                 .assertError(e) //
                 .assertNoValues() //
@@ -158,9 +158,9 @@ public final class ObservableCollectTest {
     @Test
     public void testCollectToList() {
         Single<List<Integer>> o = Observable.just(1, 2, 3)
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() {
+            public List<Integer> get() {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -188,9 +188,9 @@ public final class ObservableCollectTest {
 
     @Test
     public void testCollectToString() {
-        String value = Observable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
+        String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
             @Override
-            public StringBuilder call() {
+            public StringBuilder get() {
                 return new StringBuilder();
             }
         },
@@ -216,7 +216,7 @@ public final class ObservableCollectTest {
             final RuntimeException e2 = new RuntimeException();
 
             Burst.items(1).error(e2) //
-                    .collect(callableListCreator(), biConsumerThrows(e1)) //
+                    .collect(supplierListCreator(), biConsumerThrows(e1)) //
                     .test() //
                     .assertError(e1) //
                     .assertNotComplete();
@@ -232,7 +232,7 @@ public final class ObservableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissions() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
-                .collect(callableListCreator(), biConsumerThrows(e)) //
+                .collect(supplierListCreator(), biConsumerThrows(e)) //
                 .test() //
                 .assertError(e) //
                 .assertNotComplete();
@@ -257,7 +257,7 @@ public final class ObservableCollectTest {
             }
         };
         Burst.items(1, 2).create() //
-                .collect(callableListCreator(), throwOnFirstOnly)//
+                .collect(supplierListCreator(), throwOnFirstOnly)//
                 .test() //
                 .assertError(e) //
                 .assertNoValues() //
@@ -281,9 +281,9 @@ public final class ObservableCollectTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Callable<List<Integer>>() {
+        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -293,9 +293,9 @@ public final class ObservableCollectTest {
             }
         }));
 
-        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Callable<List<Integer>>() {
+        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -311,9 +311,9 @@ public final class ObservableCollectTest {
         TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
             @Override
             public SingleSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Callable<List<Integer>>() {
+                return o.collect(new Supplier<List<Integer>>() {
                     @Override
-                    public List<Integer> call() throws Exception {
+                    public List<Integer> get() throws Exception {
                         return new ArrayList<Integer>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -328,9 +328,9 @@ public final class ObservableCollectTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<List<Integer>>>() {
             @Override
             public ObservableSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Callable<List<Integer>>() {
+                return o.collect(new Supplier<List<Integer>>() {
                     @Override
-                    public List<Integer> call() throws Exception {
+                    public List<Integer> get() throws Exception {
                         return new ArrayList<Integer>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -348,9 +348,9 @@ public final class ObservableCollectTest {
         TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
             @Override
             public Object apply(Observable<Integer> o) throws Exception {
-                return o.collect(new Callable<List<Integer>>() {
+                return o.collect(new Supplier<List<Integer>>() {
                     @Override
-                    public List<Integer> call() throws Exception {
+                    public List<Integer> get() throws Exception {
                         return new ArrayList<Integer>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {

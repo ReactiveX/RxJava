@@ -466,7 +466,7 @@ extends Flowable<R> {
         @Nullable
         @SuppressWarnings("unchecked")
         @Override
-        public R poll() throws Exception {
+        public R poll() throws Throwable {
             Object e = queue.poll();
             if (e == null) {
                 return null;
@@ -550,7 +550,7 @@ extends Flowable<R> {
 
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
-        public R apply(T t) throws Exception {
+        public R apply(T t) throws Throwable {
             return combiner.apply(new Object[] { t });
         }
     }

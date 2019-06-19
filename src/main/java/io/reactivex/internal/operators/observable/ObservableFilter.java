@@ -63,7 +63,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             for (;;) {
                 T v = qd.poll();
                 if (v == null || filter.test(v)) {

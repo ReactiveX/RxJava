@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -33,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class MaybeUsing<T, D> extends Maybe<T> {
 
-    final Callable<? extends D> resourceSupplier;
+    final Supplier<? extends D> resourceSupplier;
 
     final Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier;
 
@@ -41,7 +40,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
     final boolean eager;
 
-    public MaybeUsing(Callable<? extends D> resourceSupplier,
+    public MaybeUsing(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
             Consumer<? super D> resourceDisposer,
             boolean eager) {
@@ -56,7 +55,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
         D resource;
 
         try {
-            resource = resourceSupplier.call();
+            resource = resourceSupplier.get();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

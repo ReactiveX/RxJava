@@ -28,8 +28,8 @@ public interface BiFunction<T1, T2, R> {
      * @param t1 the first value
      * @param t2 the second value
      * @return the result value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
     @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2) throws Exception;
+    R apply(@NonNull T1 t1, @NonNull T2 t2) throws Throwable;
 }

@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.operators.parallel;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.internal.subscriptions.*;
@@ -35,12 +33,12 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     final ParallelFlowable<? extends T> source;
 
-    final Callable<? extends C> initialCollection;
+    final Supplier<? extends C> initialCollection;
 
     final BiConsumer<? super C, ? super T> collector;
 
     public ParallelCollect(ParallelFlowable<? extends T> source,
-            Callable<? extends C> initialCollection, BiConsumer<? super C, ? super T> collector) {
+            Supplier<? extends C> initialCollection, BiConsumer<? super C, ? super T> collector) {
         this.source = source;
         this.initialCollection = initialCollection;
         this.collector = collector;
@@ -61,7 +59,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
             C initialValue;
 
             try {
-                initialValue = ObjectHelper.requireNonNull(initialCollection.call(), "The initialSupplier returned a null value");
+                initialValue = ObjectHelper.requireNonNull(initialCollection.get(), "The initialSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 reportError(subscribers, ex);

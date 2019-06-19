@@ -13,10 +13,9 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 
@@ -27,9 +26,9 @@ import io.reactivex.internal.functions.ObjectHelper;
  */
 public final class MaybeDefer<T> extends Maybe<T> {
 
-    final Callable<? extends MaybeSource<? extends T>> maybeSupplier;
+    final Supplier<? extends MaybeSource<? extends T>> maybeSupplier;
 
-    public MaybeDefer(Callable<? extends MaybeSource<? extends T>> maybeSupplier) {
+    public MaybeDefer(Supplier<? extends MaybeSource<? extends T>> maybeSupplier) {
         this.maybeSupplier = maybeSupplier;
     }
 
@@ -38,7 +37,7 @@ public final class MaybeDefer<T> extends Maybe<T> {
         MaybeSource<? extends T> source;
 
         try {
-            source = ObjectHelper.requireNonNull(maybeSupplier.call(), "The maybeSupplier returned a null MaybeSource");
+            source = ObjectHelper.requireNonNull(maybeSupplier.get(), "The maybeSupplier returned a null MaybeSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

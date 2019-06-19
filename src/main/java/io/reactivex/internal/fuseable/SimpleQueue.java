@@ -48,11 +48,11 @@ public interface SimpleQueue<T> {
      * item, the second poll() is guaranteed to return a non-null item
      * as well.
      * @return the item or null to indicate an empty queue
-     * @throws Exception if some pre-processing of the dequeued
+     * @throws Throwable if some pre-processing of the dequeued
      * item (usually through fused functions) throws.
      */
     @Nullable
-    T poll() throws Exception;
+    T poll() throws Throwable;
 
     /**
      * Returns true if the queue is empty.

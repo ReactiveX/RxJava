@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -58,7 +58,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @return the new Observable instance
      */
     public static <U, R> Observable<R> multicastSelector(
-            final Callable<? extends ConnectableObservable<U>> connectableFactory,
+            final Supplier<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
         return RxJavaPlugins.onAssembly(new MulticastReplay<R, U>(connectableFactory, selector));
     }
@@ -1026,10 +1026,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     static final class MulticastReplay<R, U> extends Observable<R> {
-        private final Callable<? extends ConnectableObservable<U>> connectableFactory;
+        private final Supplier<? extends ConnectableObservable<U>> connectableFactory;
         private final Function<? super Observable<U>, ? extends ObservableSource<R>> selector;
 
-        MulticastReplay(Callable<? extends ConnectableObservable<U>> connectableFactory, Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
+        MulticastReplay(Supplier<? extends ConnectableObservable<U>> connectableFactory, Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
             this.connectableFactory = connectableFactory;
             this.selector = selector;
         }
@@ -1039,7 +1039,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             ConnectableObservable<U> co;
             ObservableSource<R> observable;
             try {
-                co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned a null ConnectableObservable");
+                co = ObjectHelper.requireNonNull(connectableFactory.get(), "The connectableFactory returned a null ConnectableObservable");
                 observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null ObservableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);

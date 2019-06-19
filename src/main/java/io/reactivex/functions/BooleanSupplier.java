@@ -20,7 +20,7 @@ public interface BooleanSupplier {
     /**
      * Returns a boolean value.
      * @return a boolean value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    boolean getAsBoolean() throws Exception; // NOPMD
+    boolean getAsBoolean() throws Throwable; // NOPMD
 }

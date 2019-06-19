@@ -13,14 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.ObservableMapNotification.MapNotificationObserver;
 import io.reactivex.observers.TestObserver;
@@ -43,9 +41,9 @@ public class ObservableMapNotificationTest {
                         return Observable.error(e);
                     }
                 },
-                new Callable<Observable<Object>>() {
+                new Supplier<Observable<Object>>() {
                     @Override
-                    public Observable<Object> call() {
+                    public Observable<Object> get() {
                         return Observable.never();
                     }
                 }
@@ -66,7 +64,7 @@ public class ObservableMapNotificationTest {
                         observer,
                         Functions.justFunction(Observable.just(1)),
                         Functions.justFunction(Observable.just(2)),
-                        Functions.justCallable(Observable.just(3))
+                        Functions.justSupplier(Observable.just(3))
                 );
                 mn.onSubscribe(Disposables.empty());
             }
@@ -81,7 +79,7 @@ public class ObservableMapNotificationTest {
                 return o.flatMap(
                         Functions.justFunction(Observable.just(1)),
                         Functions.justFunction(Observable.just(2)),
-                        Functions.justCallable(Observable.just(3))
+                        Functions.justSupplier(Observable.just(3))
                 );
             }
         });
@@ -97,7 +95,7 @@ public class ObservableMapNotificationTest {
                         throw new TestException("Inner");
                     }
                 },
-                Functions.justCallable(Observable.just(3)))
+                Functions.justSupplier(Observable.just(3)))
         .test()
         .assertFailure(CompositeException.class);
 

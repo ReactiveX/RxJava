@@ -512,7 +512,7 @@ public class FlowableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_UnsubscribeSource() throws Exception {
+    public void testIssue2191_UnsubscribeSource() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -558,11 +558,11 @@ public class FlowableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception functional interfaces declare throws Exception
+     * @throws Throwable functional interfaces declare throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribe() throws Exception {
+    public void testIssue2191_SchedulerUnsubscribe() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -618,11 +618,11 @@ public class FlowableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception functional interfaces declare throws Exception
+     * @throws Throwable functional interfaces declare throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
+    public void testIssue2191_SchedulerUnsubscribeOnError() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -950,7 +950,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Exception {
+    public void testUnsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).replay().autoConnect();
         f.subscribe();
@@ -1756,9 +1756,9 @@ public class FlowableReplayTest {
 
     @Test
     public void multicastSelectorCallableConnectableCrash() {
-        FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<Object>>() {
+        FlowableReplay.multicastSelector(new Supplier<ConnectableFlowable<Object>>() {
             @Override
-            public ConnectableFlowable<Object> call() throws Exception {
+            public ConnectableFlowable<Object> get() throws Exception {
                 throw new TestException();
             }
         }, Functions.<Flowable<Object>>identity())
@@ -1944,9 +1944,9 @@ public class FlowableReplayTest {
 
     @Test(expected = TestException.class)
     public void createBufferFactoryCrash() {
-        FlowableReplay.create(Flowable.just(1), new Callable<ReplayBuffer<Integer>>() {
+        FlowableReplay.create(Flowable.just(1), new Supplier<ReplayBuffer<Integer>>() {
             @Override
-            public ReplayBuffer<Integer> call() throws Exception {
+            public ReplayBuffer<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -1955,9 +1955,9 @@ public class FlowableReplayTest {
 
     @Test
     public void createBufferFactoryCrashOnSubscribe() {
-        FlowableReplay.create(Flowable.just(1), new Callable<ReplayBuffer<Integer>>() {
+        FlowableReplay.create(Flowable.just(1), new Supplier<ReplayBuffer<Integer>>() {
             @Override
-            public ReplayBuffer<Integer> call() throws Exception {
+            public ReplayBuffer<Integer> get() throws Exception {
                 throw new TestException();
             }
         })

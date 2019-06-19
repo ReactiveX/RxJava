@@ -527,9 +527,9 @@ public class ObservableRefCountTest {
                         .flatMap(new Function<Long, Observable<String>>() {
                             @Override
                             public Observable<String> apply(Long t1) {
-                                    return Observable.defer(new Callable<Observable<String>>() {
+                                    return Observable.defer(new Supplier<Observable<String>>() {
                                         @Override
-                                        public Observable<String> call() {
+                                        public Observable<String> get() {
                                                 return Observable.<String>error(new Exception("Some exception"));
                                         }
                                     });

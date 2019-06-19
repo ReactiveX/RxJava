@@ -15,13 +15,11 @@ package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observers.TestObserver;
@@ -33,31 +31,31 @@ public class ObservableScalarXMapTest {
         TestHelper.checkUtilityClass(ObservableScalarXMap.class);
     }
 
-    static final class CallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
+    static final class CallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Observer<? super Integer> observer) {
             EmptyDisposable.error(new TestException(), observer);
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             throw new TestException();
         }
     }
 
-    static final class EmptyCallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
+    static final class EmptyCallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Observer<? super Integer> observer) {
             EmptyDisposable.complete(observer);
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             return null;
         }
     }
 
-    static final class OneCallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
+    static final class OneCallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Observer<? super Integer> observer) {
             ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(observer, 1);
@@ -66,7 +64,7 @@ public class ObservableScalarXMapTest {
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             return 1;
         }
     }

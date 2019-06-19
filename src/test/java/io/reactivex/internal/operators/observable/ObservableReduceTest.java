@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 
@@ -243,9 +242,9 @@ public class ObservableReduceTest {
     @Test
     public void reduceWithSingle() {
         Observable.range(1, 5)
-        .reduceWith(new Callable<Integer>() {
+        .reduceWith(new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 return 0;
             }
         }, new BiFunction<Integer, Integer, Integer>() {

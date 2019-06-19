@@ -109,7 +109,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             for (;;) {
                 T v = qs.poll();
                 if (v == null) {
@@ -199,7 +199,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             for (;;) {
                 T v = qs.poll();
                 if (v == null) {

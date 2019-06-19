@@ -20,7 +20,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
 /**
  * Helper utility class to support Single with inner classes.
@@ -32,16 +32,21 @@ public final class SingleInternalHelper {
         throw new IllegalStateException("No instances!");
     }
 
-    enum NoSuchElementCallable implements Callable<NoSuchElementException> {
+    enum NoSuchElementCallable implements Supplier<NoSuchElementException>, Callable<NoSuchElementException> {
         INSTANCE;
 
         @Override
         public NoSuchElementException call() throws Exception {
             return new NoSuchElementException();
         }
+
+        @Override
+        public NoSuchElementException get() throws Throwable {
+            return new NoSuchElementException();
+        }
     }
 
-    public static <T> Callable<NoSuchElementException> emptyThrower() {
+    public static <T> Supplier<NoSuchElementException> emptyThrower() {
         return NoSuchElementCallable.INSTANCE;
     }
 

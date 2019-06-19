@@ -274,9 +274,9 @@ public class ParallelFlowableTest {
 
     @Test
     public void collect() {
-        Callable<List<Integer>> as = new Callable<List<Integer>>() {
+        Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         };
@@ -367,9 +367,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -414,9 +414,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -461,9 +461,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -509,9 +509,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -557,9 +557,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -605,9 +605,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };
@@ -654,9 +654,9 @@ public class ParallelFlowableTest {
         Scheduler s = Schedulers.from(exec);
 
         try {
-            Callable<List<Integer>> as = new Callable<List<Integer>>() {
+            Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
-                public List<Integer> call() throws Exception {
+                public List<Integer> get() throws Exception {
                     return new ArrayList<Integer>();
                 }
             };

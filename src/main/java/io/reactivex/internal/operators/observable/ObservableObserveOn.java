@@ -304,7 +304,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             return queue.poll();
         }
 

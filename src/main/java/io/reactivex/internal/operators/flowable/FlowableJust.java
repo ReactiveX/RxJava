@@ -16,14 +16,14 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 
 /**
  * Represents a constant scalar value.
  * @param <T> the value type
  */
-public final class FlowableJust<T> extends Flowable<T> implements ScalarCallable<T> {
+public final class FlowableJust<T> extends Flowable<T> implements ScalarSupplier<T> {
     private final T value;
     public FlowableJust(final T value) {
         this.value = value;
@@ -35,7 +35,7 @@ public final class FlowableJust<T> extends Flowable<T> implements ScalarCallable
     }
 
     @Override
-    public T call() {
+    public T get() {
         return value;
     }
 }

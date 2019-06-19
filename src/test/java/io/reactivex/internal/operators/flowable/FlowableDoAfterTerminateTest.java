@@ -84,7 +84,7 @@ public class FlowableDoAfterTerminateTest {
     }
 
     @Test
-    public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Exception {
+    public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Throwable {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Action finallyAction = Mockito.mock(Action.class);

@@ -16,7 +16,6 @@ package io.reactivex.parallel;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -32,9 +31,9 @@ public class ParallelCollectTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -50,9 +49,9 @@ public class ParallelCollectTest {
     public void initialCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 throw new TestException();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -71,9 +70,9 @@ public class ParallelCollectTest {
     public void reducerCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -96,9 +95,9 @@ public class ParallelCollectTest {
 
         TestSubscriber<List<Integer>> ts = pp
         .parallel()
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -122,9 +121,9 @@ public class ParallelCollectTest {
     public void error() {
         Flowable.<Integer>error(new TestException())
         .parallel()
-        .collect(new Callable<List<Integer>>() {
+        .collect(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
@@ -144,9 +143,9 @@ public class ParallelCollectTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .collect(new Callable<List<Object>>() {
+            .collect(new Supplier<List<Object>>() {
                 @Override
-                public List<Object> call() throws Exception {
+                public List<Object> get() throws Exception {
                     return new ArrayList<Object>();
                 }
             }, new BiConsumer<List<Object>, Object>() {

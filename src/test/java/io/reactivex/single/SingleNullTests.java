@@ -142,7 +142,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void errorSupplierNull() {
-        Single.error((Callable<Throwable>)null);
+        Single.error((Supplier<Throwable>)null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -321,9 +321,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingSingleSupplierNull() {
-        Single.using(new Callable<Object>() {
+        Single.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, null, Functions.emptyConsumer());
@@ -331,9 +331,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingSingleSupplierReturnsNull() {
-        Single.using(new Callable<Object>() {
+        Single.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new Function<Object, Single<Object>>() {
@@ -346,9 +346,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingDisposeNull() {
-        Single.using(new Callable<Object>() {
+        Single.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new Function<Object, Single<Integer>>() {

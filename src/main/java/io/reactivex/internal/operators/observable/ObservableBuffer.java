@@ -13,23 +13,23 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
     final int count;
     final int skip;
-    final Callable<U> bufferSupplier;
+    final Supplier<U> bufferSupplier;
 
-    public ObservableBuffer(ObservableSource<T> source, int count, int skip, Callable<U> bufferSupplier) {
+    public ObservableBuffer(ObservableSource<T> source, int count, int skip, Supplier<U> bufferSupplier) {
         super(source);
         this.count = count;
         this.skip = skip;
@@ -51,14 +51,14 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     static final class BufferExactObserver<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
         final Observer<? super U> downstream;
         final int count;
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
         U buffer;
 
         int size;
 
         Disposable upstream;
 
-        BufferExactObserver(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
+        BufferExactObserver(Observer<? super U> actual, int count, Supplier<U> bufferSupplier) {
             this.downstream = actual;
             this.count = count;
             this.bufferSupplier = bufferSupplier;
@@ -67,7 +67,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         boolean createBuffer() {
             U b;
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "Empty buffer supplied");
+                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "Empty buffer supplied");
             } catch (Throwable t) {
                 Exceptions.throwIfFatal(t);
                 buffer = null;
@@ -144,7 +144,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         final Observer<? super U> downstream;
         final int count;
         final int skip;
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
 
         Disposable upstream;
 
@@ -152,7 +152,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
         long index;
 
-        BufferSkipObserver(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
+        BufferSkipObserver(Observer<? super U> actual, int count, int skip, Supplier<U> bufferSupplier) {
             this.downstream = actual;
             this.count = count;
             this.skip = skip;
@@ -184,7 +184,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
                 } catch (Throwable e) {
                     buffers.clear();
                     upstream.dispose();

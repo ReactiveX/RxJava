@@ -67,7 +67,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 Consumer<Object> evictionAction = (Consumer) new EvictionAction<K, V>(evictedGroups);
                 groups = (Map) mapFactory.apply(evictionAction);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             s.onSubscribe(EmptyComponent.INSTANCE);
             s.onError(e);

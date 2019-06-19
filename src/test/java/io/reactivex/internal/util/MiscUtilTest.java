@@ -87,7 +87,7 @@ public class MiscUtilTest {
     }
 
     @Test
-    public void appendOnlyLinkedArrayListForEachWhileBi() throws Exception {
+    public void appendOnlyLinkedArrayListForEachWhileBi() throws Throwable {
         AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(2);
 
         list.add(1);
@@ -98,7 +98,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public boolean test(Integer t1, Integer t2) throws Throwable {
                 out.add(t2);
                 return t1.equals(t2);
             }
@@ -192,7 +192,7 @@ public class MiscUtilTest {
     }
 
     @Test
-    public void appendOnlyLinkedArrayListForEachWhileBiPreGrow() throws Exception {
+    public void appendOnlyLinkedArrayListForEachWhileBiPreGrow() throws Throwable {
         AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(12);
 
         list.add(1);
@@ -203,7 +203,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public boolean test(Integer t1, Integer t2) throws Throwable {
                 out.add(t2);
                 return t1.equals(t2);
             }
@@ -213,7 +213,7 @@ public class MiscUtilTest {
     }
 
     @Test
-    public void appendOnlyLinkedArrayListForEachWhileBiExact() throws Exception {
+    public void appendOnlyLinkedArrayListForEachWhileBiExact() throws Throwable {
         AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(3);
 
         list.add(1);
@@ -234,7 +234,7 @@ public class MiscUtilTest {
     }
 
     @Test
-    public void appendOnlyLinkedArrayListForEachWhileBiAll() throws Exception {
+    public void appendOnlyLinkedArrayListForEachWhileBiAll() throws Throwable {
         AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(2);
 
         list.add(1);

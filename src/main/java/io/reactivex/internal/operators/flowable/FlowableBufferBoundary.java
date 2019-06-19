@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -31,12 +30,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractFlowableWithUpstream<T, U> {
-    final Callable<U> bufferSupplier;
+    final Supplier<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
     final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
 
     public FlowableBufferBoundary(Flowable<T> source, Publisher<? extends Open> bufferOpen,
-            Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
+            Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Supplier<U> bufferSupplier) {
         super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -60,7 +59,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         final Subscriber<? super C> downstream;
 
-        final Callable<C> bufferSupplier;
+        final Supplier<C> bufferSupplier;
 
         final Publisher<? extends Open> bufferOpen;
 
@@ -89,7 +88,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         BufferBoundarySubscriber(Subscriber<? super C> actual,
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
-                Callable<C> bufferSupplier
+                Supplier<C> bufferSupplier
         ) {
             this.downstream = actual;
             this.bufferSupplier = bufferSupplier;
@@ -184,7 +183,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null Collection");
+                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
                 p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);

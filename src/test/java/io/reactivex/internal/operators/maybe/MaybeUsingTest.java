@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.maybe;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -33,9 +32,9 @@ public class MaybeUsingTest {
     @Test
     public void resourceSupplierThrows() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 throw new TestException();
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -56,9 +55,9 @@ public class MaybeUsingTest {
     @Test
     public void errorEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -79,9 +78,9 @@ public class MaybeUsingTest {
     @Test
     public void emptyEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -102,9 +101,9 @@ public class MaybeUsingTest {
     @Test
     public void errorNonEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -125,9 +124,9 @@ public class MaybeUsingTest {
     @Test
     public void emptyNonEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -148,9 +147,9 @@ public class MaybeUsingTest {
     @Test
     public void supplierCrashEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -171,9 +170,9 @@ public class MaybeUsingTest {
     @Test
     public void supplierCrashNonEager() {
 
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -193,9 +192,9 @@ public class MaybeUsingTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -222,9 +221,9 @@ public class MaybeUsingTest {
     public void supplierAndDisposerCrashNonEager() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Maybe.using(new Callable<Object>() {
+            Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -251,9 +250,9 @@ public class MaybeUsingTest {
     public void dispose() {
         final int[] call = {0 };
 
-        TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -278,9 +277,9 @@ public class MaybeUsingTest {
     public void disposeCrashes() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+            TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -306,9 +305,9 @@ public class MaybeUsingTest {
 
     @Test
     public void isDisposed() {
-        TestHelper.checkDisposed(Maybe.using(new Callable<Object>() {
+        TestHelper.checkDisposed(Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -326,9 +325,9 @@ public class MaybeUsingTest {
 
     @Test
     public void justDisposerCrashes() {
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -348,9 +347,9 @@ public class MaybeUsingTest {
 
     @Test
     public void emptyDisposerCrashes() {
-        Maybe.using(new Callable<Object>() {
+        Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -370,9 +369,9 @@ public class MaybeUsingTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new Function<Object, MaybeSource<Integer>>() {
@@ -399,9 +398,9 @@ public class MaybeUsingTest {
     public void doubleOnSubscribe() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Maybe.using(new Callable<Object>() {
+            Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -442,9 +441,9 @@ public class MaybeUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -485,9 +484,9 @@ public class MaybeUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {
@@ -528,9 +527,9 @@ public class MaybeUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Integer> to = Maybe.using(new Callable<Object>() {
+            final TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new Function<Object, MaybeSource<Integer>>() {

@@ -24,7 +24,7 @@ public class FlowableReduceWithSingleTest {
     @Test
     public void normal() {
         Flowable.range(1, 5)
-        .reduceWith(Functions.justCallable(1), new BiFunction<Integer, Integer, Integer>() {
+        .reduceWith(Functions.justSupplier(1), new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer a, Integer b) throws Exception {
                 return a + b;
@@ -37,7 +37,7 @@ public class FlowableReduceWithSingleTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.range(1, 5)
-        .reduceWith(Functions.justCallable(1), new BiFunction<Integer, Integer, Integer>() {
+        .reduceWith(Functions.justSupplier(1), new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer a, Integer b) throws Exception {
                 return a + b;

@@ -25,7 +25,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -342,9 +342,9 @@ public class FlowableToListTest {
     @Test
     public void collectionSupplierThrows() {
         Flowable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -357,9 +357,9 @@ public class FlowableToListTest {
     @Test
     public void collectionSupplierReturnsNull() {
         Flowable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return null;
             }
         })
@@ -373,9 +373,9 @@ public class FlowableToListTest {
     @Test
     public void singleCollectionSupplierThrows() {
         Flowable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -387,9 +387,9 @@ public class FlowableToListTest {
     @Test
     public void singleCollectionSupplierReturnsNull() {
         Flowable.just(1)
-        .toList(new Callable<Collection<Integer>>() {
+        .toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() throws Exception {
+            public Collection<Integer> get() throws Exception {
                 return null;
             }
         })

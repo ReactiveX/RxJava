@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -26,12 +25,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleUsing<T, U> extends Single<T> {
 
-    final Callable<U> resourceSupplier;
+    final Supplier<U> resourceSupplier;
     final Function<? super U, ? extends SingleSource<? extends T>> singleFunction;
     final Consumer<? super U> disposer;
     final boolean eager;
 
-    public SingleUsing(Callable<U> resourceSupplier,
+    public SingleUsing(Supplier<U> resourceSupplier,
                        Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
                        Consumer<? super U> disposer,
                        boolean eager) {
@@ -47,7 +46,7 @@ public final class SingleUsing<T, U> extends Single<T> {
         final U resource; // NOPMD
 
         try {
-            resource = resourceSupplier.call();
+            resource = resourceSupplier.get();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

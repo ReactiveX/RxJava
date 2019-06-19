@@ -134,9 +134,9 @@ public class ObservableTest {
 
     @Test
     public void testCountErrorObservable() {
-        Observable<String> o = Observable.error(new Callable<Throwable>() {
+        Observable<String> o = Observable.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new RuntimeException();
             }
         });
@@ -171,9 +171,9 @@ public class ObservableTest {
 
     @Test
     public void testCountError() {
-        Observable<String> o = Observable.error(new Callable<Throwable>() {
+        Observable<String> o = Observable.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new RuntimeException();
             }
         });
@@ -476,9 +476,9 @@ public class ObservableTest {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
-        Observable.just("1", "2").concatWith(Observable.<String>error(new Callable<Throwable>() {
+        Observable.just("1", "2").concatWith(Observable.<String>error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return new NumberFormatException();
             }
         }))

@@ -149,7 +149,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v;
 
             try {
@@ -304,7 +304,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v;
 
             try {

@@ -39,16 +39,16 @@ public final class RxJavaPlugins {
     static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitComputationHandler;
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitComputationHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitSingleHandler;
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitSingleHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitIoHandler;
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitIoHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
+    static volatile Function<? super Supplier<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
 
     @Nullable
     static volatile Function<? super Scheduler, ? extends Scheduler> onComputationHandler;
@@ -191,7 +191,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitComputationSchedulerHandler() {
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitComputationSchedulerHandler() {
         return onInitComputationHandler;
     }
 
@@ -200,7 +200,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
         return onInitIoHandler;
     }
 
@@ -209,7 +209,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitNewThreadSchedulerHandler() {
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitNewThreadSchedulerHandler() {
         return onInitNewThreadHandler;
     }
 
@@ -218,7 +218,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitSingleSchedulerHandler() {
+    public static Function<? super Supplier<Scheduler>, ? extends Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
 
@@ -260,14 +260,14 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @param defaultScheduler a {@link Supplier} which returns the hook's input value
      * @return the value returned by the hook, not null
-     * @throws NullPointerException if the callable parameter or its result are null
+     * @throws NullPointerException if the supplier parameter or its result are null
      */
     @NonNull
-    public static Scheduler initComputationScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
+    public static Scheduler initComputationScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -276,14 +276,14 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @param defaultScheduler a {@link Supplier} which returns the hook's input value
      * @return the value returned by the hook, not null
-     * @throws NullPointerException if the callable parameter or its result are null
+     * @throws NullPointerException if the supplier parameter or its result are null
      */
     @NonNull
-    public static Scheduler initIoScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
+    public static Scheduler initIoScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -292,14 +292,14 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @param defaultScheduler a {@link Supplier} which returns the hook's input value
      * @return the value returned by the hook, not null
-     * @throws NullPointerException if the callable parameter or its result are null
+     * @throws NullPointerException if the supplier parameter or its result are null
      */
     @NonNull
-    public static Scheduler initNewThreadScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
+    public static Scheduler initNewThreadScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -308,14 +308,14 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @param defaultScheduler a {@link Supplier} which returns the hook's input value
      * @return the value returned by the hook, not null
-     * @throws NullPointerException if the callable parameter or its result are null
+     * @throws NullPointerException if the supplier parameter or its result are null
      */
     @NonNull
-    public static Scheduler initSingleScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
+    public static Scheduler initSingleScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -556,7 +556,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitComputationSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitComputationSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -567,7 +567,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitIoSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitIoSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -578,7 +578,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitNewThreadSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitNewThreadSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -589,7 +589,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitSingleSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitSingleSchedulerHandler(@Nullable Function<? super Supplier<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -1292,16 +1292,16 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Wraps the call to the Scheduler creation callable in try-catch and propagates thrown
+     * Wraps the call to the Scheduler creation supplier in try-catch and propagates thrown
      * checked exceptions as RuntimeException and enforces that result is not null.
-     * @param s the {@link Callable} which returns a {@link Scheduler}, not null (not verified). Cannot return null
-     * @return the result of the callable call, not null
-     * @throws NullPointerException if the callable parameter returns null
+     * @param s the {@link Supplier} which returns a {@link Scheduler}, not null (not verified). Cannot return null
+     * @return the result of the supplier call, not null
+     * @throws NullPointerException if the supplier parameter returns null
      */
     @NonNull
-    static Scheduler callRequireNonNull(@NonNull Callable<Scheduler> s) {
+    static Scheduler callRequireNonNull(@NonNull Supplier<Scheduler> s) {
         try {
-            return ObjectHelper.requireNonNull(s.call(), "Scheduler Callable result can't be null");
+            return ObjectHelper.requireNonNull(s.get(), "Scheduler Supplier result can't be null");
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -1316,8 +1316,8 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the function parameter returns null
      */
     @NonNull
-    static Scheduler applyRequireNonNull(@NonNull Function<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
-        return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
+    static Scheduler applyRequireNonNull(@NonNull Function<? super Supplier<Scheduler>, ? extends Scheduler> f, Supplier<Scheduler> s) {
+        return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Supplier result can't be null");
     }
 
     /** Helper class, no instances. */

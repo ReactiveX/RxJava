@@ -13,11 +13,12 @@
 
 package io.reactivex.flowable;
 
+import static org.junit.Assert.*;
+
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static org.junit.Assert.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -215,9 +216,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void deferFunctionReturnsNull() {
-        Flowable.defer(new Callable<Publisher<Object>>() {
+        Flowable.defer(new Supplier<Publisher<Object>>() {
             @Override
-            public Publisher<Object> call() {
+            public Publisher<Object> get() {
                 return null;
             }
         }).blockingLast();
@@ -225,14 +226,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void errorFunctionNull() {
-        Flowable.error((Callable<Throwable>)null);
+        Flowable.error((Supplier<Throwable>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void errorFunctionReturnsNull() {
-        Flowable.error(new Callable<Throwable>() {
+        Flowable.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() {
+            public Throwable get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -375,9 +376,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerNull() {
-        Flowable.generate(new Callable<Integer>() {
+        Flowable.generate(new Supplier<Integer>() {
             @Override
-            public Integer call() {
+            public Integer get() {
                 return 1;
             }
         }, (BiConsumer<Integer, Emitter<Object>>)null);
@@ -391,9 +392,9 @@ public class FlowableNullTests {
                 o.onComplete();
             }
         };
-        Flowable.generate(new Callable<Integer>() {
+        Flowable.generate(new Supplier<Integer>() {
             @Override
-            public Integer call() {
+            public Integer get() {
                 return null;
             }
         }, generator).blockingSubscribe();
@@ -401,9 +402,9 @@ public class FlowableNullTests {
 
     @Test
     public void generateFunctionStateNullAllowed() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return null;
             }
         }, new BiFunction<Object, Emitter<Object>, Object>() {
@@ -422,9 +423,9 @@ public class FlowableNullTests {
                 o.onNext(1);
             }
         };
-        Flowable.generate(new Callable<Integer>() {
+        Flowable.generate(new Supplier<Integer>() {
             @Override
-            public Integer call() {
+            public Integer get() {
                 return 1;
             }
         }, generator, null);
@@ -432,9 +433,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateFunctionDisposeNull() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new BiFunction<Object, Emitter<Object>, Object>() {
@@ -607,9 +608,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingFlowableSupplierNull() {
-        Flowable.using(new Callable<Object>() {
+        Flowable.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, null, Functions.emptyConsumer());
@@ -617,9 +618,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingFlowableSupplierReturnsNull() {
-        Flowable.using(new Callable<Object>() {
+        Flowable.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new Function<Object, Publisher<Object>>() {
@@ -632,9 +633,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingDisposeNull() {
-        Flowable.using(new Callable<Object>() {
+        Flowable.using(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new Function<Object, Publisher<Integer>>() {
@@ -775,14 +776,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferSupplierNull() {
-        just1.buffer(1, 1, (Callable<List<Integer>>)null);
+        just1.buffer(1, 1, (Supplier<List<Integer>>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void bufferSupplierReturnsNull() {
-        just1.buffer(1, 1, new Callable<Collection<Integer>>() {
+        just1.buffer(1, 1, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -805,9 +806,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferTimedSupplierReturnsNull() {
-        just1.buffer(1L, 1L, TimeUnit.SECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+        just1.buffer(1L, 1L, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -845,14 +846,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplierNull() {
-        just1.buffer(just1, (Callable<List<Integer>>)null);
+        just1.buffer(just1, (Supplier<List<Integer>>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplierReturnsNull() {
-        just1.buffer(just1, new Callable<Collection<Integer>>() {
+        just1.buffer(just1, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -860,14 +861,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2Null() {
-        just1.buffer((Callable<Publisher<Integer>>)null);
+        just1.buffer((Supplier<Publisher<Integer>>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2ReturnsNull() {
-        just1.buffer(new Callable<Publisher<Object>>() {
+        just1.buffer(new Supplier<Publisher<Object>>() {
             @Override
-            public Publisher<Object> call() {
+            public Publisher<Object> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -875,9 +876,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2SupplierNull() {
-        just1.buffer(new Callable<Flowable<Integer>>() {
+        just1.buffer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return just1;
             }
         }, null);
@@ -885,14 +886,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferBoundarySupplier2SupplierReturnsNull() {
-        just1.buffer(new Callable<Flowable<Integer>>() {
+        just1.buffer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 return just1;
             }
-        }, new Callable<Collection<Integer>>() {
+        }, new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -905,7 +906,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect((Supplier<Integer>)null, new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer a, Integer b) { }
         });
@@ -913,9 +914,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierReturnsNull() {
-        just1.collect(new Callable<Object>() {
+        just1.collect(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return null;
             }
         }, new BiConsumer<Object, Integer>() {
@@ -926,9 +927,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialCollectorNull() {
-        just1.collect(new Callable<Object>() {
+        just1.collect(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, null);
@@ -1139,9 +1140,9 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Callable<Collection<Object>>() {
+        }, new Supplier<Collection<Object>>() {
             @Override
-            public Collection<Object> call() {
+            public Collection<Object> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -1297,9 +1298,9 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Callable<Publisher<Integer>>() {
+        }, new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return just1;
             }
         });
@@ -1317,9 +1318,9 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Callable<Publisher<Integer>>() {
+        }, new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return just1;
             }
         }).blockingSubscribe();
@@ -1332,9 +1333,9 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Integer v) {
                 return just1;
             }
-        }, null, new Callable<Publisher<Integer>>() {
+        }, null, new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return just1;
             }
         });
@@ -1353,9 +1354,9 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Throwable e) {
                 return null;
             }
-        }, new Callable<Publisher<Integer>>() {
+        }, new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return just1;
             }
         }).blockingSubscribe();
@@ -1388,9 +1389,9 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Throwable e) {
                 return just1;
             }
-        }, new Callable<Publisher<Integer>>() {
+        }, new Supplier<Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> call() {
+            public Publisher<Integer> get() {
                 return null;
             }
         }).blockingSubscribe();
@@ -1771,9 +1772,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void reduceWithSeedReturnsNull() {
-        just1.reduceWith(new Callable<Object>() {
+        just1.reduceWith(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return null;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2026,9 +2027,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierReturnsNull() {
-        just1.scanWith(new Callable<Object>() {
+        just1.scanWith(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return null;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2041,9 +2042,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierFunctionNull() {
-        just1.scanWith(new Callable<Object>() {
+        just1.scanWith(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, null);
@@ -2051,9 +2052,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierFunctionReturnsNull() {
-        just1.scanWith(new Callable<Object>() {
+        just1.scanWith(new Supplier<Object>() {
             @Override
-            public Object call() {
+            public Object get() {
                 return 1;
             }
         }, new BiFunction<Object, Integer, Object>() {
@@ -2371,9 +2372,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toListSupplierReturnsNull() {
-        just1.toList(new Callable<Collection<Integer>>() {
+        just1.toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).toFlowable().blockingSubscribe();
@@ -2381,9 +2382,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toListSupplierReturnsNullSingle() {
-        just1.toList(new Callable<Collection<Integer>>() {
+        just1.toList(new Supplier<Collection<Integer>>() {
             @Override
-            public Collection<Integer> call() {
+            public Collection<Integer> get() {
                 return null;
             }
         }).blockingGet();
@@ -2451,9 +2452,9 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Callable<Map<Object, Object>>() {
+        }, new Supplier<Map<Object, Object>>() {
             @Override
-            public Map<Object, Object> call() {
+            public Map<Object, Object> get() {
                 return null;
             }
         }).blockingGet();
@@ -2516,9 +2517,9 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, new Callable<Map<Object, Collection<Object>>>() {
+        }, new Supplier<Map<Object, Collection<Object>>>() {
             @Override
-            public Map<Object, Collection<Object>> call() {
+            public Map<Object, Collection<Object>> get() {
                 return null;
             }
         }).blockingGet();
@@ -2536,9 +2537,9 @@ public class FlowableNullTests {
             public Integer apply(Integer v) {
                 return v;
             }
-        }, new Callable<Map<Integer, Collection<Integer>>>() {
+        }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
-            public Map<Integer, Collection<Integer>> call() {
+            public Map<Integer, Collection<Integer>> get() {
                 return new HashMap<Integer, Collection<Integer>>();
             }
         }, null);
@@ -2556,9 +2557,9 @@ public class FlowableNullTests {
             public Integer apply(Integer v) {
                 return v;
             }
-        }, new Callable<Map<Integer, Collection<Integer>>>() {
+        }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
-            public Map<Integer, Collection<Integer>> call() {
+            public Map<Integer, Collection<Integer>> get() {
                 return new HashMap<Integer, Collection<Integer>>();
             }
         }, new Function<Integer, Collection<Integer>>() {
@@ -2626,14 +2627,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void windowBoundarySupplierNull() {
-        just1.window((Callable<Publisher<Integer>>)null);
+        just1.window((Supplier<Publisher<Integer>>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void windowBoundarySupplierReturnsNull() {
-        just1.window(new Callable<Publisher<Object>>() {
+        just1.window(new Supplier<Publisher<Object>>() {
             @Override
-            public Publisher<Object> call() {
+            public Publisher<Object> get() {
                 return null;
             }
         }).blockingSubscribe();

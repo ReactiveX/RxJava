@@ -548,10 +548,10 @@ public class FlowableRefCountTest {
                             .flatMap(new Function<Long, Publisher<String>>() {
                                 @Override
                                 public Publisher<String> apply(Long t1) {
-                                        return Flowable.defer(new Callable<Publisher<String>>() {
+                                        return Flowable.defer(new Supplier<Publisher<String>>() {
                                             @Override
-                                            public Publisher<String> call() {
-                                                    return Flowable.<String>error(new TestException("Some exception"));
+                                            public Publisher<String> get() {
+                                                return Flowable.<String>error(new TestException("Some exception"));
                                             }
                                         });
                                 }

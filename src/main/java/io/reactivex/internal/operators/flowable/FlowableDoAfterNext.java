@@ -77,7 +77,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qs.poll();
             if (v != null) {
                 onAfterNext.accept(v);
@@ -126,7 +126,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qs.poll();
             if (v != null) {
                 onAfterNext.accept(v);

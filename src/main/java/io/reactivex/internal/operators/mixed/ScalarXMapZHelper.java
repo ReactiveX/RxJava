@@ -13,11 +13,9 @@
 
 package io.reactivex.internal.operators.mixed;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.operators.maybe.MaybeToObservable;
@@ -38,10 +36,10 @@ final class ScalarXMapZHelper {
 
     /**
      * Try subscribing to a {@link CompletableSource} mapped from
-     * a scalar source (which implements {@link Callable}).
+     * a scalar source (which implements {@link Supplier}).
      * @param <T> the upstream value type
      * @param source the source reactive type ({@code Flowable} or {@code Observable})
-     *               possibly implementing {@link Callable}.
+     *               possibly implementing {@link Supplier}.
      * @param mapper the function that turns the scalar upstream value into a
      *              {@link CompletableSource}
      * @param observer the consumer to subscribe to the mapped {@link CompletableSource}
@@ -50,12 +48,12 @@ final class ScalarXMapZHelper {
     static <T> boolean tryAsCompletable(Object source,
             Function<? super T, ? extends CompletableSource> mapper,
             CompletableObserver observer) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             @SuppressWarnings("unchecked")
-            Callable<T> call = (Callable<T>) source;
+            Supplier<T> supplier = (Supplier<T>) source;
             CompletableSource cs = null;
             try {
-                T item = call.call();
+                T item = supplier.get();
                 if (item != null) {
                     cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null CompletableSource");
                 }
@@ -77,10 +75,10 @@ final class ScalarXMapZHelper {
 
     /**
      * Try subscribing to a {@link MaybeSource} mapped from
-     * a scalar source (which implements {@link Callable}).
+     * a scalar source (which implements {@link Supplier}).
      * @param <T> the upstream value type
      * @param source the source reactive type ({@code Flowable} or {@code Observable})
-     *               possibly implementing {@link Callable}.
+     *               possibly implementing {@link Supplier}.
      * @param mapper the function that turns the scalar upstream value into a
      *              {@link MaybeSource}
      * @param observer the consumer to subscribe to the mapped {@link MaybeSource}
@@ -89,12 +87,12 @@ final class ScalarXMapZHelper {
     static <T, R> boolean tryAsMaybe(Object source,
             Function<? super T, ? extends MaybeSource<? extends R>> mapper,
             Observer<? super R> observer) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             @SuppressWarnings("unchecked")
-            Callable<T> call = (Callable<T>) source;
+            Supplier<T> supplier = (Supplier<T>) source;
             MaybeSource<? extends R> cs = null;
             try {
-                T item = call.call();
+                T item = supplier.get();
                 if (item != null) {
                     cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null MaybeSource");
                 }
@@ -116,10 +114,10 @@ final class ScalarXMapZHelper {
 
     /**
      * Try subscribing to a {@link SingleSource} mapped from
-     * a scalar source (which implements {@link Callable}).
+     * a scalar source (which implements {@link Supplier}).
      * @param <T> the upstream value type
      * @param source the source reactive type ({@code Flowable} or {@code Observable})
-     *               possibly implementing {@link Callable}.
+     *               possibly implementing {@link Supplier}.
      * @param mapper the function that turns the scalar upstream value into a
      *              {@link SingleSource}
      * @param observer the consumer to subscribe to the mapped {@link SingleSource}
@@ -128,12 +126,12 @@ final class ScalarXMapZHelper {
     static <T, R> boolean tryAsSingle(Object source,
             Function<? super T, ? extends SingleSource<? extends R>> mapper,
             Observer<? super R> observer) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             @SuppressWarnings("unchecked")
-            Callable<T> call = (Callable<T>) source;
+            Supplier<T> supplier = (Supplier<T>) source;
             SingleSource<? extends R> cs = null;
             try {
-                T item = call.call();
+                T item = supplier.get();
                 if (item != null) {
                     cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null SingleSource");
                 }

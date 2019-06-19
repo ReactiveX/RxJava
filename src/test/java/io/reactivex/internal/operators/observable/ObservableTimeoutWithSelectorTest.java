@@ -111,9 +111,9 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> firstTimeoutFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 throw new TestException();
             }
         };

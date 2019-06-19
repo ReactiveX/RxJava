@@ -14,14 +14,14 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 
 /**
  * Represents a constant scalar value.
  * @param <T> the value type
  */
-public final class ObservableJust<T> extends Observable<T> implements ScalarCallable<T> {
+public final class ObservableJust<T> extends Observable<T> implements ScalarSupplier<T> {
 
     private final T value;
     public ObservableJust(final T value) {
@@ -36,7 +36,7 @@ public final class ObservableJust<T> extends Observable<T> implements ScalarCall
     }
 
     @Override
-    public T call() {
+    public T get() {
         return value;
     }
 }

@@ -14,8 +14,8 @@
 package io.reactivex.parallel;
 
 import static org.junit.Assert.*;
+
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -31,9 +31,9 @@ public class ParallelReduceTest {
     @Test
     public void subscriberCount() {
         ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .reduce(new Callable<List<Integer>>() {
+        .reduce(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
@@ -50,9 +50,9 @@ public class ParallelReduceTest {
     public void initialCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .reduce(new Callable<List<Integer>>() {
+        .reduce(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 throw new TestException();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
@@ -72,9 +72,9 @@ public class ParallelReduceTest {
     public void reducerCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .reduce(new Callable<List<Integer>>() {
+        .reduce(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
@@ -98,9 +98,9 @@ public class ParallelReduceTest {
 
         TestSubscriber<List<Integer>> ts = pp
         .parallel()
-        .reduce(new Callable<List<Integer>>() {
+        .reduce(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
@@ -125,9 +125,9 @@ public class ParallelReduceTest {
     public void error() {
         Flowable.<Integer>error(new TestException())
         .parallel()
-        .reduce(new Callable<List<Integer>>() {
+        .reduce(new Supplier<List<Integer>>() {
             @Override
-            public List<Integer> call() throws Exception {
+            public List<Integer> get() throws Exception {
                 return new ArrayList<Integer>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
@@ -148,9 +148,9 @@ public class ParallelReduceTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .reduce(new Callable<List<Object>>() {
+            .reduce(new Supplier<List<Object>>() {
                 @Override
-                public List<Object> call() throws Exception {
+                public List<Object> get() throws Exception {
                     return new ArrayList<Object>();
                 }
             }, new BiFunction<List<Object>, Object, List<Object>>() {

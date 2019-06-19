@@ -368,9 +368,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionNormal() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return delay;
             }
         };
@@ -403,9 +403,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 throw new TestException();
             }
         };
@@ -437,9 +437,9 @@ public class ObservableDelayTest {
     public void testDelayWithObservableSubscriptionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return delay;
             }
         };
@@ -497,9 +497,9 @@ public class ObservableDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> sdelay = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
-        Callable<Observable<Integer>> subFunc = new Callable<Observable<Integer>>() {
+        Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
             @Override
-            public Observable<Integer> call() {
+            public Observable<Integer> get() {
                 return sdelay;
             }
         };

@@ -468,7 +468,7 @@ final Scheduler scheduler;
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = queue.poll();
             if (v != null && sourceMode != SYNC) {
                 long p = produced + 1;
@@ -712,7 +712,7 @@ final Scheduler scheduler;
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = queue.poll();
             if (v != null && sourceMode != SYNC) {
                 long p = consumed + 1;

@@ -580,7 +580,7 @@ public class FlowableFromIterableTest {
 
                 try {
                     assertEquals(1, qs.poll().intValue());
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     throw new AssertionError(ex);
                 }
 

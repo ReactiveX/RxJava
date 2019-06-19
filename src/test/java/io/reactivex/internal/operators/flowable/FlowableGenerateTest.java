@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -31,9 +30,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void statefulBiconsumer() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 10;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -54,9 +53,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void stateSupplierThrows() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 throw new TestException();
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -71,9 +70,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void generatorThrows() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -90,9 +89,9 @@ public class FlowableGenerateTest {
     public void disposerThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            Flowable.generate(new Callable<Object>() {
+            Flowable.generate(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
@@ -117,9 +116,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.generate(new Callable<Object>() {
+        TestHelper.checkDisposed(Flowable.generate(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
@@ -133,7 +132,7 @@ public class FlowableGenerateTest {
     @Test
     public void nullError() {
         final int[] call = { 0 };
-        Flowable.generate(Functions.justCallable(1),
+        Flowable.generate(Functions.justSupplier(1),
         new BiConsumer<Integer, Emitter<Object>>() {
             @Override
             public void accept(Integer s, Emitter<Object> e) throws Exception {
@@ -152,9 +151,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.generate(new Callable<Object>() {
+        TestHelper.assertBadRequestReported(Flowable.generate(new Supplier<Object>() {
                 @Override
-                public Object call() throws Exception {
+                public Object get() throws Exception {
                     return 1;
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
@@ -167,9 +166,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void rebatchAndTake() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -186,9 +185,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void backpressure() {
-        Flowable.generate(new Callable<Object>() {
+        Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
@@ -207,9 +206,9 @@ public class FlowableGenerateTest {
 
     @Test
     public void requestRace() {
-        Flowable<Object> source = Flowable.generate(new Callable<Object>() {
+        Flowable<Object> source = Flowable.generate(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         }, new BiConsumer<Object, Emitter<Object>>() {

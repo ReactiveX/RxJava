@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.single;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
@@ -61,9 +60,9 @@ public class SingleUsingTest {
 
     @Test
     public void resourceSupplierThrows() {
-        Single.using(new Callable<Integer>() {
+        Single.using(new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 throw new TestException();
             }
         }, Functions.justFunction(Single.just(1)), Functions.emptyConsumer())
@@ -73,35 +72,35 @@ public class SingleUsingTest {
 
     @Test
     public void normalEager() {
-        Single.using(Functions.justCallable(1), Functions.justFunction(Single.just(1)), Functions.emptyConsumer())
+        Single.using(Functions.justSupplier(1), Functions.justFunction(Single.just(1)), Functions.emptyConsumer())
         .test()
         .assertResult(1);
     }
 
     @Test
     public void normalNonEager() {
-        Single.using(Functions.justCallable(1), Functions.justFunction(Single.just(1)), Functions.emptyConsumer(), false)
+        Single.using(Functions.justSupplier(1), Functions.justFunction(Single.just(1)), Functions.emptyConsumer(), false)
         .test()
         .assertResult(1);
     }
 
     @Test
     public void errorEager() {
-        Single.using(Functions.justCallable(1), Functions.justFunction(Single.error(new TestException())), Functions.emptyConsumer())
+        Single.using(Functions.justSupplier(1), Functions.justFunction(Single.error(new TestException())), Functions.emptyConsumer())
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void errorNonEager() {
-        Single.using(Functions.justCallable(1), Functions.justFunction(Single.error(new TestException())), Functions.emptyConsumer(), false)
+        Single.using(Functions.justSupplier(1), Functions.justFunction(Single.error(new TestException())), Functions.emptyConsumer(), false)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void eagerMapperThrowsDisposerThrows() {
-        TestObserver<Integer> to = Single.using(Functions.justCallable(Disposables.empty()), mapperThrows, disposerThrows)
+        TestObserver<Integer> to = Single.using(Functions.justSupplier(Disposables.empty()), mapperThrows, disposerThrows)
         .test()
         .assertFailure(CompositeException.class);
 
@@ -116,7 +115,7 @@ public class SingleUsingTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justCallable(Disposables.empty()), mapperThrows, disposerThrows, false)
+            Single.using(Functions.justSupplier(Disposables.empty()), mapperThrows, disposerThrows, false)
             .test()
             .assertFailureAndMessage(TestException.class, "Mapper");
 
@@ -130,7 +129,7 @@ public class SingleUsingTest {
     public void resourceDisposedIfMapperCrashes() {
         Disposable d = Disposables.empty();
 
-        Single.using(Functions.justCallable(d), mapperThrows, disposer)
+        Single.using(Functions.justSupplier(d), mapperThrows, disposer)
         .test()
         .assertFailure(TestException.class);
 
@@ -141,7 +140,7 @@ public class SingleUsingTest {
     public void resourceDisposedIfMapperCrashesNonEager() {
         Disposable d = Disposables.empty();
 
-        Single.using(Functions.justCallable(d), mapperThrows, disposer, false)
+        Single.using(Functions.justSupplier(d), mapperThrows, disposer, false)
         .test()
         .assertFailure(TestException.class);
 
@@ -152,7 +151,7 @@ public class SingleUsingTest {
     public void dispose() {
         Disposable d = Disposables.empty();
 
-        Single.using(Functions.justCallable(d), mapper, disposer, false)
+        Single.using(Functions.justSupplier(d), mapper, disposer, false)
         .test(true);
 
         assertTrue(d.isDisposed());
@@ -160,7 +159,7 @@ public class SingleUsingTest {
 
     @Test
     public void disposerThrowsEager() {
-        Single.using(Functions.justCallable(Disposables.empty()), mapper, disposerThrows)
+        Single.using(Functions.justSupplier(Disposables.empty()), mapper, disposerThrows)
         .test()
         .assertFailure(TestException.class);
     }
@@ -171,7 +170,7 @@ public class SingleUsingTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justCallable(Disposables.empty()), mapper, disposerThrows, false)
+            Single.using(Functions.justSupplier(Disposables.empty()), mapper, disposerThrows, false)
             .test()
             .assertResult(1);
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -182,7 +181,7 @@ public class SingleUsingTest {
 
     @Test
     public void errorAndDisposerThrowsEager() {
-        TestObserver<Integer> to = Single.using(Functions.justCallable(Disposables.empty()),
+        TestObserver<Integer> to = Single.using(Functions.justSupplier(Disposables.empty()),
         new Function<Disposable, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Disposable v) throws Exception {
@@ -202,7 +201,7 @@ public class SingleUsingTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justCallable(Disposables.empty()),
+            Single.using(Functions.justSupplier(Disposables.empty()),
             new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
@@ -224,7 +223,7 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestObserver<Integer> to = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
                     return pp.single(-99);
@@ -258,7 +257,7 @@ public class SingleUsingTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justCallable(1), new Function<Integer, SingleSource<Integer>>() {
+            Single.using(Functions.justSupplier(1), new Function<Integer, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Integer v) throws Exception {
                     return new Single<Integer>() {
@@ -299,7 +298,7 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestObserver<Integer> to = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
                     return pp.single(-99);

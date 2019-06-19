@@ -199,8 +199,8 @@ public class MaybeTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void errorCallableNull() {
-        Maybe.error((Callable<Throwable>)null);
+    public void errorSupplierNull() {
+        Maybe.error((Supplier<Throwable>)null);
     }
 
     @Test
@@ -212,14 +212,14 @@ public class MaybeTest {
 
     @Test
     public void errorCallable() {
-        Maybe.error(Functions.justCallable(new TestException()))
+        Maybe.error(Functions.justSupplier(new TestException()))
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void errorCallableReturnsNull() {
-        Maybe.error(Functions.justCallable((Throwable)null))
+        Maybe.error(Functions.justSupplier((Throwable)null))
         .test()
         .assertFailure(NullPointerException.class);
     }
@@ -293,9 +293,9 @@ public class MaybeTest {
 
     @Test
     public void deferThrows() {
-        Maybe.defer(new Callable<Maybe<Integer>>() {
+        Maybe.defer(new Supplier<Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> call() throws Exception {
+            public Maybe<Integer> get() throws Exception {
                 throw new TestException();
             }
         })
@@ -305,9 +305,9 @@ public class MaybeTest {
 
     @Test
     public void deferReturnsNull() {
-        Maybe.defer(new Callable<Maybe<Integer>>() {
+        Maybe.defer(new Supplier<Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> call() throws Exception {
+            public Maybe<Integer> get() throws Exception {
                 return null;
             }
         })
@@ -317,10 +317,10 @@ public class MaybeTest {
 
     @Test
     public void defer() {
-        Maybe<Integer> source = Maybe.defer(new Callable<Maybe<Integer>>() {
+        Maybe<Integer> source = Maybe.defer(new Supplier<Maybe<Integer>>() {
             int count;
             @Override
-            public Maybe<Integer> call() throws Exception {
+            public Maybe<Integer> get() throws Exception {
                 return Maybe.just(count++);
             }
         });
@@ -1087,9 +1087,9 @@ public class MaybeTest {
             }
         },
 
-        new Callable<MaybeSource<Integer>>() {
+        new Supplier<MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> call() throws Exception {
+            public MaybeSource<Integer> get() throws Exception {
                 return Maybe.just(200);
             }
         })
@@ -1113,9 +1113,9 @@ public class MaybeTest {
             }
         },
 
-        new Callable<MaybeSource<Integer>>() {
+        new Supplier<MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> call() throws Exception {
+            public MaybeSource<Integer> get() throws Exception {
                 return Maybe.just(200);
             }
         })
@@ -1139,9 +1139,9 @@ public class MaybeTest {
             }
         },
 
-        new Callable<MaybeSource<Integer>>() {
+        new Supplier<MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> call() throws Exception {
+            public MaybeSource<Integer> get() throws Exception {
                 return Maybe.just(200);
             }
         })
@@ -2825,7 +2825,7 @@ public class MaybeTest {
     public void using() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.using(Functions.justSupplier(1), new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
@@ -2850,7 +2850,7 @@ public class MaybeTest {
     public void usingNonEager() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.using(Functions.justSupplier(1), new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
@@ -3188,9 +3188,9 @@ public class MaybeTest {
 
         final AtomicInteger calls = new AtomicInteger();
         try {
-            Maybe.error(new Callable<Throwable>() {
+            Maybe.error(new Supplier<Throwable>() {
                 @Override
-                public Throwable call() {
+                public Throwable get() {
                     calls.incrementAndGet();
                     return new TestException();
                 }

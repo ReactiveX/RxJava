@@ -13,20 +13,19 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
 import io.reactivex.Single;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Supplier;
 
 public class SingleErrorTest {
 
     @Test
-    public void errorCallableThrows() {
-        Single.error(new Callable<Throwable>() {
+    public void errorSupplierThrows() {
+        Single.error(new Supplier<Throwable>() {
             @Override
-            public Throwable call() throws Exception {
+            public Throwable get() throws Exception {
                 throw new TestException();
             }
         })

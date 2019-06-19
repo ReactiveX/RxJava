@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
@@ -26,12 +25,12 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableUsing<T, D> extends Flowable<T> {
-    final Callable<? extends D> resourceSupplier;
+    final Supplier<? extends D> resourceSupplier;
     final Function<? super D, ? extends Publisher<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
     final boolean eager;
 
-    public FlowableUsing(Callable<? extends D> resourceSupplier,
+    public FlowableUsing(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends Publisher<? extends T>> sourceSupplier,
             Consumer<? super D> disposer,
             boolean eager) {
@@ -46,7 +45,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         D resource;
 
         try {
-            resource = resourceSupplier.call();
+            resource = resourceSupplier.get();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);

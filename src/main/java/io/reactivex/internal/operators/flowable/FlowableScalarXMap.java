@@ -13,13 +13,11 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -35,7 +33,7 @@ public final class FlowableScalarXMap {
     }
 
     /**
-     * Tries to subscribe to a possibly Callable source's mapped Publisher.
+     * Tries to subscribe to a possibly Supplier source's mapped Publisher.
      * @param <T> the input value type
      * @param <R> the output value type
      * @param source the source Publisher
@@ -47,11 +45,11 @@ public final class FlowableScalarXMap {
     public static <T, R> boolean tryScalarXMapSubscribe(Publisher<T> source,
             Subscriber<? super R> subscriber,
             Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             T t;
 
             try {
-                t = ((Callable<T>)source).call();
+                t = ((Supplier<T>)source).get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, subscriber);
@@ -73,11 +71,11 @@ public final class FlowableScalarXMap {
                 return true;
             }
 
-            if (r instanceof Callable) {
+            if (r instanceof Supplier) {
                 R u;
 
                 try {
-                    u = ((Callable<R>)r).call();
+                    u = ((Supplier<R>)r).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     EmptySubscription.error(ex, subscriber);
@@ -140,11 +138,11 @@ public final class FlowableScalarXMap {
                 EmptySubscription.error(e, s);
                 return;
             }
-            if (other instanceof Callable) {
+            if (other instanceof Supplier) {
                 R u;
 
                 try {
-                    u = ((Callable<R>)other).call();
+                    u = ((Supplier<R>)other).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     EmptySubscription.error(ex, s);

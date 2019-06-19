@@ -113,10 +113,10 @@ public class ObservableWindowWithStartEndObservableTest {
             }
         });
 
-        Callable<Observable<Object>> closer = new Callable<Observable<Object>>() {
+        Supplier<Observable<Object>> closer = new Supplier<Observable<Object>>() {
             int calls;
             @Override
-            public Observable<Object> call() {
+            public Observable<Object> get() {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> innerObserver) {

@@ -13,12 +13,10 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Action;
+import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -26,7 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class MaybeFromAction<T> extends Maybe<T> implements Callable<T> {
+public final class MaybeFromAction<T> extends Maybe<T> implements Supplier<T> {
 
     final Action action;
 
@@ -60,7 +58,7 @@ public final class MaybeFromAction<T> extends Maybe<T> implements Callable<T> {
     }
 
     @Override
-    public T call() throws Exception {
+    public T get() throws Throwable {
         action.run();
         return null; // considered as onComplete()
     }

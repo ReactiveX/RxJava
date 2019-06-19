@@ -39,12 +39,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<ReplaySubscriber<T>> current;
     /** A factory that creates the appropriate buffer for the ReplaySubscriber. */
-    final Callable<? extends ReplayBuffer<T>> bufferFactory;
+    final Supplier<? extends ReplayBuffer<T>> bufferFactory;
 
     final Publisher<T> onSubscribe;
 
     @SuppressWarnings("rawtypes")
-    static final Callable DEFAULT_UNBOUNDED_FACTORY = new DefaultUnboundedFactory();
+    static final Supplier DEFAULT_UNBOUNDED_FACTORY = new DefaultUnboundedFactory();
 
     /**
      * Given a connectable observable factory, it multicasts over the generated
@@ -56,7 +56,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @return the new Observable instance
      */
     public static <U, R> Flowable<R> multicastSelector(
-            final Callable<? extends ConnectableFlowable<U>> connectableFactory,
+            final Supplier<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
         return new MulticastFlowable<R, U>(connectableFactory, selector);
     }
@@ -136,7 +136,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @return the connectable observable
      */
     static <T> ConnectableFlowable<T> create(Flowable<T> source,
-            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
+            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
         Publisher<T> onSubscribe = new ReplayPublisher<T>(curr, bufferFactory);
@@ -145,7 +145,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
     private FlowableReplay(Publisher<T> onSubscribe, Flowable<T> source,
             final AtomicReference<ReplaySubscriber<T>> current,
-            final Callable<? extends ReplayBuffer<T>> bufferFactory) {
+            final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
@@ -182,7 +182,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 ReplayBuffer<T> buf;
 
                 try {
-                    buf = bufferFactory.call();
+                    buf = bufferFactory.get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     throw ExceptionHelper.wrapOrThrow(ex);
@@ -1093,10 +1093,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     static final class MulticastFlowable<R, U> extends Flowable<R> {
-        private final Callable<? extends ConnectableFlowable<U>> connectableFactory;
+        private final Supplier<? extends ConnectableFlowable<U>> connectableFactory;
         private final Function<? super Flowable<U>, ? extends Publisher<R>> selector;
 
-        MulticastFlowable(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
+        MulticastFlowable(Supplier<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
             this.connectableFactory = connectableFactory;
             this.selector = selector;
         }
@@ -1105,7 +1105,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         protected void subscribeActual(Subscriber<? super R> child) {
             ConnectableFlowable<U> cf;
             try {
-                cf = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
+                cf = ObjectHelper.requireNonNull(connectableFactory.get(), "The connectableFactory returned null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);
@@ -1162,7 +1162,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class ReplayBufferTask<T> implements Callable<ReplayBuffer<T>> {
+    static final class ReplayBufferTask<T> implements Supplier<ReplayBuffer<T>> {
         private final int bufferSize;
 
         ReplayBufferTask(int bufferSize) {
@@ -1170,12 +1170,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        public ReplayBuffer<T> call() {
+        public ReplayBuffer<T> get() {
             return new SizeBoundReplayBuffer<T>(bufferSize);
         }
     }
 
-    static final class ScheduledReplayBufferTask<T> implements Callable<ReplayBuffer<T>> {
+    static final class ScheduledReplayBufferTask<T> implements Supplier<ReplayBuffer<T>> {
         private final int bufferSize;
         private final long maxAge;
         private final TimeUnit unit;
@@ -1189,16 +1189,16 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        public ReplayBuffer<T> call() {
+        public ReplayBuffer<T> get() {
             return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
         }
     }
 
     static final class ReplayPublisher<T> implements Publisher<T> {
         private final AtomicReference<ReplaySubscriber<T>> curr;
-        private final Callable<? extends ReplayBuffer<T>> bufferFactory;
+        private final Supplier<? extends ReplayBuffer<T>> bufferFactory;
 
-        ReplayPublisher(AtomicReference<ReplaySubscriber<T>> curr, Callable<? extends ReplayBuffer<T>> bufferFactory) {
+        ReplayPublisher(AtomicReference<ReplaySubscriber<T>> curr, Supplier<? extends ReplayBuffer<T>> bufferFactory) {
             this.curr = curr;
             this.bufferFactory = bufferFactory;
         }
@@ -1215,7 +1215,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     ReplayBuffer<T> buf;
 
                     try {
-                        buf = bufferFactory.call();
+                        buf = bufferFactory.get();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         EmptySubscription.error(ex, child);
@@ -1260,9 +1260,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class DefaultUnboundedFactory implements Callable<Object> {
+    static final class DefaultUnboundedFactory implements Supplier<Object> {
         @Override
-        public Object call() {
+        public Object get() {
             return new UnboundedReplayBuffer<Object>(16);
         }
     }

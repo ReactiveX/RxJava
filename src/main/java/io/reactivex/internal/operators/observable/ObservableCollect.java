@@ -12,21 +12,19 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
-    final Callable<? extends U> initialSupplier;
+    final Supplier<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
 
     public ObservableCollect(ObservableSource<T> source,
-            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+            Supplier<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -36,7 +34,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     protected void subscribeActual(Observer<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

@@ -111,9 +111,9 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
+        Supplier<Flowable<Integer>> firstTimeoutFunc = new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() {
+            public Flowable<Integer> get() {
                 throw new TestException();
             }
         };

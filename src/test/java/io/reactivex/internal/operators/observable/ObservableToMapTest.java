@@ -13,17 +13,17 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;
@@ -149,9 +149,9 @@ public class ObservableToMapTest {
     public void testToMapWithFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 return new LinkedHashMap<Integer, String>() {
 
                     private static final long serialVersionUID = -3296811238780863394L;
@@ -193,9 +193,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorThrowingFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -322,9 +322,9 @@ public class ObservableToMapTest {
     public void testToMapWithFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 return new LinkedHashMap<Integer, String>() {
 
                     private static final long serialVersionUID = -3296811238780863394L;
@@ -365,9 +365,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorThrowingFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+        Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
             @Override
-            public Map<Integer, String> call() {
+            public Map<Integer, String> get() {
                 throw new RuntimeException("Forced failure");
             }
         };

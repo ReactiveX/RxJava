@@ -326,7 +326,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
                     found = true;
                     break;
                 }
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
@@ -421,7 +421,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
                 if (valuePredicate.test(v)) {
                     throw fail("Value at position " + i + " matches predicate " + valuePredicate.toString() + ", which was not expected.");
                 }
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
@@ -481,7 +481,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             if (valuePredicate.test(values.get(index))) {
                 found = true;
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
 

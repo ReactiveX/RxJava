@@ -258,10 +258,10 @@ public class FlowableScanTest {
     @Test
     public void testSeedFactory() {
         Single<List<Integer>> o = Flowable.range(1, 10)
-                .collect(new Callable<List<Integer>>() {
+                .collect(new Supplier<List<Integer>>() {
 
                     @Override
-                    public List<Integer> call() {
+                    public List<Integer> get() {
                         return new ArrayList<Integer>();
                     }
 
@@ -284,10 +284,10 @@ public class FlowableScanTest {
     @Test
     public void testSeedFactoryFlowable() {
         Flowable<List<Integer>> f = Flowable.range(1, 10)
-                .collect(new Callable<List<Integer>>() {
+                .collect(new Supplier<List<Integer>>() {
 
                     @Override
-                    public List<Integer> call() {
+                    public List<Integer> get() {
                         return new ArrayList<Integer>();
                     }
 
@@ -562,7 +562,7 @@ public class FlowableScanTest {
     @Test
     public void testScanWithSeedWhenScanSeedProviderThrows() {
         final RuntimeException e = new RuntimeException();
-        Flowable.just(1, 2, 3).scanWith(throwingCallable(e),
+        Flowable.just(1, 2, 3).scanWith(throwingSupplier(e),
             SUM)
           .test()
           .assertError(e)
@@ -648,10 +648,10 @@ public class FlowableScanTest {
         }
     };
 
-    private static Callable<Integer> throwingCallable(final RuntimeException e) {
-        return new Callable<Integer>() {
+    private static Supplier<Integer> throwingSupplier(final RuntimeException e) {
+        return new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 throw e;
             }
         };

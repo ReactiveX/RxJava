@@ -15,14 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -33,38 +31,38 @@ public class FlowableScalarXMapTest {
         TestHelper.checkUtilityClass(FlowableScalarXMap.class);
     }
 
-    static final class CallablePublisher implements Publisher<Integer>, Callable<Integer> {
+    static final class CallablePublisher implements Publisher<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Subscriber<? super Integer> s) {
             EmptySubscription.error(new TestException(), s);
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             throw new TestException();
         }
     }
 
-    static final class EmptyCallablePublisher implements Publisher<Integer>, Callable<Integer> {
+    static final class EmptyCallablePublisher implements Publisher<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Subscriber<? super Integer> s) {
             EmptySubscription.complete(s);
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             return null;
         }
     }
 
-    static final class OneCallablePublisher implements Publisher<Integer>, Callable<Integer> {
+    static final class OneCallablePublisher implements Publisher<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Subscriber<? super Integer> s) {
             s.onSubscribe(new ScalarSubscription<Integer>(s, 1));
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer get() throws Exception {
             return 1;
         }
     }

@@ -67,7 +67,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qd.poll();
             if (v != null) {
                 onAfterNext.accept(v);

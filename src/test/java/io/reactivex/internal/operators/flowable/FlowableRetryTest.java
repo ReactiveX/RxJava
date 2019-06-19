@@ -347,7 +347,7 @@ public class FlowableRetryTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testRetrySubscribesAgainAfterError() throws Exception {
+    public void testRetrySubscribesAgainAfterError() throws Throwable {
 
         // record emitted values with this action
         Consumer<Integer> record = mock(Consumer.class);
@@ -1034,9 +1034,9 @@ public class FlowableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Flowable.error(new TestException());
                 }
@@ -1063,9 +1063,9 @@ public class FlowableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Flowable.error(new TestException());
                 }
@@ -1092,9 +1092,9 @@ public class FlowableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Flowable.error(new TestException());
                 }
@@ -1126,9 +1126,9 @@ public class FlowableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (times.getAndIncrement() < 4) {
                     return Flowable.error(new TestException());
                 }
@@ -1160,9 +1160,9 @@ public class FlowableRetryTest {
 
         final AtomicInteger times = new AtomicInteger();
 
-        Flowable<Integer> source = Flowable.defer(new Callable<Flowable<Integer>>() {
+        Flowable<Integer> source = Flowable.defer(new Supplier<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> call() throws Exception {
+            public Flowable<Integer> get() throws Exception {
                 if (times.get() < 4) {
                     return Flowable.error(new TestException());
                 }

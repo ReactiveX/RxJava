@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.processors.PublishProcessor;
 
 public class MaybeHideTest {
@@ -51,9 +51,9 @@ public class MaybeHideTest {
 
     @Test
     public void hidden() {
-        assertTrue(Maybe.just(1) instanceof ScalarCallable);
+        assertTrue(Maybe.just(1) instanceof ScalarSupplier);
 
-        assertFalse(Maybe.just(1).hide() instanceof ScalarCallable);
+        assertFalse(Maybe.just(1).hide() instanceof ScalarSupplier);
     }
 
     @Test

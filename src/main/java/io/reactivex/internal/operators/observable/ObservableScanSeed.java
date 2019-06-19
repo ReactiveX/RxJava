@@ -12,21 +12,19 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
-    final Callable<R> seedSupplier;
+    final Supplier<R> seedSupplier;
 
-    public ObservableScanSeed(ObservableSource<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public ObservableScanSeed(ObservableSource<T> source, Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -37,7 +35,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         R r;
 
         try {
-            r = ObjectHelper.requireNonNull(seedSupplier.call(), "The seed supplied is null");
+            r = ObjectHelper.requireNonNull(seedSupplier.get(), "The seed supplied is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);

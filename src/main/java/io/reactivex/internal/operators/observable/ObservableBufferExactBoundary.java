@@ -13,14 +13,14 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.QueueDrainHelper;
@@ -29,9 +29,9 @@ import io.reactivex.observers.*;
 public final class ObservableBufferExactBoundary<T, U extends Collection<? super T>, B>
 extends AbstractObservableWithUpstream<T, U> {
     final ObservableSource<B> boundary;
-    final Callable<U> bufferSupplier;
+    final Supplier<U> bufferSupplier;
 
-    public ObservableBufferExactBoundary(ObservableSource<T> source, ObservableSource<B> boundary, Callable<U> bufferSupplier) {
+    public ObservableBufferExactBoundary(ObservableSource<T> source, ObservableSource<B> boundary, Supplier<U> bufferSupplier) {
         super(source);
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
@@ -45,7 +45,7 @@ extends AbstractObservableWithUpstream<T, U> {
     static final class BufferExactBoundaryObserver<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
 
-        final Callable<U> bufferSupplier;
+        final Supplier<U> bufferSupplier;
         final ObservableSource<B> boundary;
 
         Disposable upstream;
@@ -54,7 +54,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        BufferExactBoundaryObserver(Observer<? super U> actual, Callable<U> bufferSupplier,
+        BufferExactBoundaryObserver(Observer<? super U> actual, Supplier<U> bufferSupplier,
                                              ObservableSource<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -69,7 +69,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
@@ -148,7 +148,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

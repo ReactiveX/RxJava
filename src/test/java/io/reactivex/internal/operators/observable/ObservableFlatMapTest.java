@@ -162,11 +162,11 @@ public class ObservableFlatMapTest {
         };
     }
 
-    <R> Callable<R> just0(final R value) {
-        return new Callable<R>() {
+    <R> Supplier<R> just0(final R value) {
+        return new Supplier<R>() {
 
             @Override
-            public R call() {
+            public R get() {
                 return value;
             }
         };
@@ -219,10 +219,10 @@ public class ObservableFlatMapTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    <R> Callable<R> funcThrow0(R r) {
-        return new Callable<R>() {
+    <R> Supplier<R> funcThrow0(R r) {
+        return new Supplier<R>() {
             @Override
-            public R call() {
+            public R get() {
                 throw new TestException();
             }
         };

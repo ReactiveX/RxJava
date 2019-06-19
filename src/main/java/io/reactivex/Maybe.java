@@ -573,21 +573,21 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Calls a Callable for each individual MaybeObserver to return the actual MaybeSource source to
+     * Calls a Supplier for each individual MaybeObserver to return the actual MaybeSource source to
      * be subscribed to.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param maybeSupplier the Callable that is called for each individual MaybeObserver and
+     * @param maybeSupplier the Supplier that is called for each individual MaybeObserver and
      * returns a MaybeSource instance to subscribe to
      * @return the new Maybe instance
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> defer(final Callable<? extends MaybeSource<? extends T>> maybeSupplier) {
+    public static <T> Maybe<T> defer(final Supplier<? extends MaybeSource<? extends T>> maybeSupplier) {
         ObjectHelper.requireNonNull(maybeSupplier, "maybeSupplier is null");
         return RxJavaPlugins.onAssembly(new MaybeDefer<T>(maybeSupplier));
     }
@@ -648,7 +648,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param supplier
-     *            a Callable factory to return a Throwable for each individual MaybeObserver
+     *            a Supplier factory to return a Throwable for each individual MaybeObserver
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Maybe
      * @return a Maybe that invokes the {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when
@@ -658,7 +658,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> error(Callable<? extends Throwable> supplier) {
+    public static <T> Maybe<T> error(Supplier<? extends Throwable> supplier) {
         ObjectHelper.requireNonNull(supplier, "errorSupplier is null");
         return RxJavaPlugins.onAssembly(new MaybeErrorCallable<T>(supplier));
     }
@@ -1689,7 +1689,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Maybe<T> using(Callable<? extends D> resourceSupplier,
+    public static <T, D> Maybe<T> using(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
                     Consumer<? super D> resourceDisposer) {
         return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
@@ -1725,7 +1725,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, D> Maybe<T> using(Callable<? extends D> resourceSupplier,
+    public static <T, D> Maybe<T> using(Supplier<? extends D> resourceSupplier,
             Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
                     Consumer<? super D> resourceDisposer, boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
@@ -3022,7 +3022,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final <R> Maybe<R> flatMap(
             Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
             Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
-            Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
+            Supplier<? extends MaybeSource<? extends R>> onCompleteSupplier) {
         ObjectHelper.requireNonNull(onSuccessMapper, "onSuccessMapper is null");
         ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
         ObjectHelper.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");

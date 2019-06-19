@@ -520,7 +520,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls a {@link Callable} for each individual {@link SingleObserver} to return the actual {@link SingleSource} to
+     * Calls a {@link Supplier} for each individual {@link SingleObserver} to return the actual {@link SingleSource} to
      * be subscribed to.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.defer.png" alt="">
@@ -529,14 +529,14 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param singleSupplier the {@code Callable} that is called for each individual {@code SingleObserver} and
+     * @param singleSupplier the {@code Supplier} that is called for each individual {@code SingleObserver} and
      * returns a SingleSource instance to subscribe to
      * @return the new Single instance
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> defer(final Callable<? extends SingleSource<? extends T>> singleSupplier) {
+    public static <T> Single<T> defer(final Supplier<? extends SingleSource<? extends T>> singleSupplier) {
         ObjectHelper.requireNonNull(singleSupplier, "singleSupplier is null");
         return RxJavaPlugins.onAssembly(new SingleDefer<T>(singleSupplier));
     }
@@ -550,14 +550,14 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param errorSupplier the callable that is called for each individual SingleObserver and
+     * @param errorSupplier the Supplier that is called for each individual SingleObserver and
      * returns a Throwable instance to be emitted.
      * @return the new Single instance
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> error(final Callable<? extends Throwable> errorSupplier) {
+    public static <T> Single<T> error(final Supplier<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
         return RxJavaPlugins.onAssembly(new SingleError<T>(errorSupplier));
     }
@@ -585,7 +585,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> error(final Throwable exception) {
         ObjectHelper.requireNonNull(exception, "exception is null");
-        return error(Functions.justCallable(exception));
+        return error(Functions.justSupplier(exception));
     }
 
     /**
@@ -1402,7 +1402,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type of the SingleSource generated
      * @param <U> the resource type
-     * @param resourceSupplier the Callable called for each SingleObserver to generate a resource Object
+     * @param resourceSupplier the Supplier called for each SingleObserver to generate a resource Object
      * @param singleFunction the function called with the returned resource
      *                  Object from {@code resourceSupplier} and should return a SingleSource instance
      *                  to be run by the operator
@@ -1414,7 +1414,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, U> Single<T> using(Callable<U> resourceSupplier,
+    public static <T, U> Single<T> using(Supplier<U> resourceSupplier,
                                          Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
                                          Consumer<? super U> disposer) {
         return using(resourceSupplier, singleFunction, disposer, true);
@@ -1429,7 +1429,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param <T> the value type of the SingleSource generated
      * @param <U> the resource type
-     * @param resourceSupplier the Callable called for each SingleObserver to generate a resource Object
+     * @param resourceSupplier the Supplier called for each SingleObserver to generate a resource Object
      * @param singleFunction the function called with the returned resource
      *                  Object from {@code resourceSupplier} and should return a SingleSource instance
      *                  to be run by the operator
@@ -1446,7 +1446,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, U> Single<T> using(
-            final Callable<U> resourceSupplier,
+            final Supplier<U> resourceSupplier,
             final Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
             final Consumer<? super U> disposer,
             final boolean eager) {

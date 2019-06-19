@@ -21,7 +21,7 @@ public interface Consumer<T> {
     /**
      * Consume the given value.
      * @param t the value
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    void accept(T t) throws Exception;
+    void accept(T t) throws Throwable;
 }

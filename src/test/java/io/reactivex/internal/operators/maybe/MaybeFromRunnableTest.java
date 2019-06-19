@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.functions.Supplier;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -106,7 +107,7 @@ public class MaybeFromRunnableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void callable() throws Exception {
+    public void callable() throws Throwable {
         final int[] counter = { 0 };
 
         Maybe<Void> m = Maybe.fromRunnable(new Runnable() {
@@ -116,9 +117,9 @@ public class MaybeFromRunnableTest {
             }
         });
 
-        assertTrue(m.getClass().toString(), m instanceof Callable);
+        assertTrue(m.getClass().toString(), m instanceof Supplier);
 
-        assertNull(((Callable<Void>)m).call());
+        assertNull(((Supplier<Void>)m).get());
 
         assertEquals(1, counter[0]);
     }

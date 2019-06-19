@@ -14,13 +14,13 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToFlowable;
@@ -32,14 +32,14 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
 
     final Flowable<T> source;
 
-    final Callable<U> collectionSupplier;
+    final Supplier<U> collectionSupplier;
 
     @SuppressWarnings("unchecked")
     public FlowableToListSingle(Flowable<T> source) {
-        this(source, (Callable<U>)ArrayListSupplier.asCallable());
+        this(source, (Supplier<U>)ArrayListSupplier.asSupplier());
     }
 
-    public FlowableToListSingle(Flowable<T> source, Callable<U> collectionSupplier) {
+    public FlowableToListSingle(Flowable<T> source, Supplier<U> collectionSupplier) {
         this.source = source;
         this.collectionSupplier = collectionSupplier;
     }
@@ -48,7 +48,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     protected void subscribeActual(SingleObserver<? super U> observer) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            coll = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);

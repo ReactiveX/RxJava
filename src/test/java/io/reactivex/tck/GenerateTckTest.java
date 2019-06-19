@@ -26,7 +26,7 @@ public class GenerateTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-            Flowable.generate(Functions.justCallable(0L),
+            Flowable.generate(Functions.justSupplier(0L),
             new BiFunction<Long, Emitter<Long>, Long>() {
                 @Override
                 public Long apply(Long s, Emitter<Long> e) throws Exception {

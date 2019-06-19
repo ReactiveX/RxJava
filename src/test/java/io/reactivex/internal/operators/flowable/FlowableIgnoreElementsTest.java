@@ -273,7 +273,7 @@ public class FlowableIgnoreElementsTest {
 
                 try {
                     assertNull(qs.poll());
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     throw new AssertionError(ex);
                 }
 
@@ -285,7 +285,7 @@ public class FlowableIgnoreElementsTest {
 
                 try {
                     assertNull(qs.poll());
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     throw new AssertionError(ex);
                 }
 

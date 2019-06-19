@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
@@ -36,7 +35,7 @@ public final class ObservableScalarXMap {
     }
 
     /**
-     * Tries to subscribe to a possibly Callable source's mapped ObservableSource.
+     * Tries to subscribe to a possibly Supplier source's mapped ObservableSource.
      * @param <T> the input value type
      * @param <R> the output value type
      * @param source the source ObservableSource
@@ -48,11 +47,11 @@ public final class ObservableScalarXMap {
     public static <T, R> boolean tryScalarXMapSubscribe(ObservableSource<T> source,
             Observer<? super R> observer,
             Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        if (source instanceof Callable) {
+        if (source instanceof Supplier) {
             T t;
 
             try {
-                t = ((Callable<T>)source).call();
+                t = ((Supplier<T>)source).get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -74,11 +73,11 @@ public final class ObservableScalarXMap {
                 return true;
             }
 
-            if (r instanceof Callable) {
+            if (r instanceof Supplier) {
                 R u;
 
                 try {
-                    u = ((Callable<R>)r).call();
+                    u = ((Supplier<R>)r).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     EmptyDisposable.error(ex, observer);
@@ -144,11 +143,11 @@ public final class ObservableScalarXMap {
                 EmptyDisposable.error(e, observer);
                 return;
             }
-            if (other instanceof Callable) {
+            if (other instanceof Supplier) {
                 R u;
 
                 try {
-                    u = ((Callable<R>)other).call();
+                    u = ((Supplier<R>)other).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     EmptyDisposable.error(ex, observer);

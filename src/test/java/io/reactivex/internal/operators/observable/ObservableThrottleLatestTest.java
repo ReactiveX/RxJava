@@ -181,7 +181,7 @@ public class ObservableThrottleLatestTest {
     }
 
     @Test
-    public void take() throws Exception {
+    public void take() throws Throwable {
         Action onCancel = mock(Action.class);
 
         Observable.range(1, 5)

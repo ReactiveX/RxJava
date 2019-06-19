@@ -13,15 +13,15 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.QueueDrainHelper;
@@ -30,10 +30,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B>
 extends AbstractObservableWithUpstream<T, U> {
-    final Callable<? extends ObservableSource<B>> boundarySupplier;
-    final Callable<U> bufferSupplier;
+    final Supplier<? extends ObservableSource<B>> boundarySupplier;
+    final Supplier<U> bufferSupplier;
 
-    public ObservableBufferBoundarySupplier(ObservableSource<T> source, Callable<? extends ObservableSource<B>> boundarySupplier, Callable<U> bufferSupplier) {
+    public ObservableBufferBoundarySupplier(ObservableSource<T> source, Supplier<? extends ObservableSource<B>> boundarySupplier, Supplier<U> bufferSupplier) {
         super(source);
         this.boundarySupplier = boundarySupplier;
         this.bufferSupplier = bufferSupplier;
@@ -47,8 +47,8 @@ extends AbstractObservableWithUpstream<T, U> {
     static final class BufferBoundarySupplierObserver<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
 
-        final Callable<U> bufferSupplier;
-        final Callable<? extends ObservableSource<B>> boundarySupplier;
+        final Supplier<U> bufferSupplier;
+        final Supplier<? extends ObservableSource<B>> boundarySupplier;
 
         Disposable upstream;
 
@@ -56,8 +56,8 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        BufferBoundarySupplierObserver(Observer<? super U> actual, Callable<U> bufferSupplier,
-                                                Callable<? extends ObservableSource<B>> boundarySupplier) {
+        BufferBoundarySupplierObserver(Observer<? super U> actual, Supplier<U> bufferSupplier,
+                Supplier<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -73,7 +73,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
@@ -87,7 +87,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 ObservableSource<B> boundary;
 
                 try {
-                    boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary ObservableSource supplied is null");
+                    boundary = ObjectHelper.requireNonNull(boundarySupplier.get(), "The boundary ObservableSource supplied is null");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancelled = true;
@@ -168,7 +168,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
+                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -179,7 +179,7 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<B> boundary;
 
             try {
-                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary ObservableSource supplied is null");
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.get(), "The boundary ObservableSource supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;

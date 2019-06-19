@@ -13,23 +13,22 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
- * Signals a Throwable returned by a Callable.
+ * Signals a Throwable returned by a Supplier.
  *
  * @param <T> the value type
  */
 public final class MaybeErrorCallable<T> extends Maybe<T> {
 
-    final Callable<? extends Throwable> errorSupplier;
+    final Supplier<? extends Throwable> errorSupplier;
 
-    public MaybeErrorCallable(Callable<? extends Throwable> errorSupplier) {
+    public MaybeErrorCallable(Supplier<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
 
@@ -39,7 +38,7 @@ public final class MaybeErrorCallable<T> extends Maybe<T> {
         Throwable ex;
 
         try {
-            ex = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
+            ex = ObjectHelper.requireNonNull(errorSupplier.get(), "Supplier returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable ex1) {
             Exceptions.throwIfFatal(ex1);
             ex = ex1;

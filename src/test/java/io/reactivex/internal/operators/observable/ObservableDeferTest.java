@@ -13,14 +13,14 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Supplier;
 
 @SuppressWarnings("unchecked")
 public class ObservableDeferTest {
@@ -28,11 +28,11 @@ public class ObservableDeferTest {
     @Test
     public void testDefer() throws Throwable {
 
-        Callable<Observable<String>> factory = mock(Callable.class);
+        Supplier<Observable<String>> factory = mock(Supplier.class);
 
         Observable<String> firstObservable = Observable.just("one", "two");
         Observable<String> secondObservable = Observable.just("three", "four");
-        when(factory.call()).thenReturn(firstObservable, secondObservable);
+        when(factory.get()).thenReturn(firstObservable, secondObservable);
 
         Observable<String> deferred = Observable.defer(factory);
 
@@ -41,7 +41,7 @@ public class ObservableDeferTest {
         Observer<String> firstObserver = TestHelper.mockObserver();
         deferred.subscribe(firstObserver);
 
-        verify(factory, times(1)).call();
+        verify(factory, times(1)).get();
         verify(firstObserver, times(1)).onNext("one");
         verify(firstObserver, times(1)).onNext("two");
         verify(firstObserver, times(0)).onNext("three");
@@ -51,7 +51,7 @@ public class ObservableDeferTest {
         Observer<String> secondObserver = TestHelper.mockObserver();
         deferred.subscribe(secondObserver);
 
-        verify(factory, times(2)).call();
+        verify(factory, times(2)).get();
         verify(secondObserver, times(0)).onNext("one");
         verify(secondObserver, times(0)).onNext("two");
         verify(secondObserver, times(1)).onNext("three");
@@ -61,10 +61,10 @@ public class ObservableDeferTest {
     }
 
     @Test
-    public void testDeferFunctionThrows() throws Exception {
-        Callable<Observable<String>> factory = mock(Callable.class);
+    public void testDeferFunctionThrows() throws Throwable {
+        Supplier<Observable<String>> factory = mock(Supplier.class);
 
-        when(factory.call()).thenThrow(new TestException());
+        when(factory.get()).thenThrow(new TestException());
 
         Observable<String> result = Observable.defer(factory);
 

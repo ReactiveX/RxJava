@@ -12,14 +12,13 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -29,9 +28,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
-    final Callable<R> seedSupplier;
+    final Supplier<R> seedSupplier;
 
-    public FlowableScanSeed(Flowable<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public FlowableScanSeed(Flowable<T> source, Supplier<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -42,7 +41,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         R r;
 
         try {
-            r = ObjectHelper.requireNonNull(seedSupplier.call(), "The seed supplied is null");
+            r = ObjectHelper.requireNonNull(seedSupplier.get(), "The seed supplied is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);

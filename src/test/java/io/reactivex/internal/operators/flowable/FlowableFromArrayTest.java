@@ -21,7 +21,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableFromArrayTest {
@@ -101,7 +101,7 @@ public class FlowableFromArrayTest {
     @Test
     public void just() {
         Flowable<Integer> source = Flowable.fromArray(new Integer[] { 1 });
-        Assert.assertTrue(source.getClass().toString(), source instanceof ScalarCallable);
+        Assert.assertTrue(source.getClass().toString(), source instanceof ScalarSupplier);
     }
 
     @Test

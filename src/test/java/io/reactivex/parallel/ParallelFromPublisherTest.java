@@ -101,7 +101,7 @@ public class ParallelFromPublisherTest {
             }
 
             @Override
-            public T poll() throws Exception {
+            public T poll() throws Throwable {
                 return qs.poll();
             }
         }

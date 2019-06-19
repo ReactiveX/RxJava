@@ -1057,7 +1057,7 @@ public class FlowableFlattenIterableTest {
     }
 
     @Test
-    public void fusedCurrentIteratorEmpty() throws Exception {
+    public void fusedCurrentIteratorEmpty() throws Throwable {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
         FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
                 Functions.justFunction(Arrays.<Integer>asList(1, 2)), 128);

@@ -27,7 +27,7 @@ public interface BiPredicate<T1, T2> {
      * @param t1 the first value
      * @param t2 the second value
      * @return the boolean result
-     * @throws Exception on error
+     * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    boolean test(@NonNull T1 t1, @NonNull T2 t2) throws Exception;
+    boolean test(@NonNull T1 t1, @NonNull T2 t2) throws Throwable;
 }

@@ -128,7 +128,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() throws Throwable {
             T v = qd.poll();
             if (v == null && syncFused) {
                 runFinally();

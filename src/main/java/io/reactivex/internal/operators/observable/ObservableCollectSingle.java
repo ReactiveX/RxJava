@@ -12,11 +12,9 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToObservable;
@@ -26,11 +24,11 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
 
     final ObservableSource<T> source;
 
-    final Callable<? extends U> initialSupplier;
+    final Supplier<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
 
     public ObservableCollectSingle(ObservableSource<T> source,
-            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+            Supplier<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -40,7 +38,7 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
     protected void subscribeActual(SingleObserver<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

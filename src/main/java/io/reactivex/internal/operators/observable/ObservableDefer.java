@@ -13,16 +13,15 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Supplier;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class ObservableDefer<T> extends Observable<T> {
-    final Callable<? extends ObservableSource<? extends T>> supplier;
-    public ObservableDefer(Callable<? extends ObservableSource<? extends T>> supplier) {
+    final Supplier<? extends ObservableSource<? extends T>> supplier;
+    public ObservableDefer(Supplier<? extends ObservableSource<? extends T>> supplier) {
         this.supplier = supplier;
     }
 
@@ -30,7 +29,7 @@ public final class ObservableDefer<T> extends Observable<T> {
     public void subscribeActual(Observer<? super T> observer) {
         ObservableSource<? extends T> pub;
         try {
-            pub = ObjectHelper.requireNonNull(supplier.call(), "null ObservableSource supplied");
+            pub = ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null ObservableSource");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptyDisposable.error(t, observer);
