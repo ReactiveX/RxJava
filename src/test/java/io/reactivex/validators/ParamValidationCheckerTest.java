@@ -273,9 +273,6 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Completable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, Predicate.class));
 
         // negative time is considered as zero time
-        addOverride(new ParamOverride(Completable.class, 0, ParamMode.ANY, "blockingGet", Long.TYPE, TimeUnit.class));
-
-        // negative time is considered as zero time
         addOverride(new ParamOverride(Completable.class, 0, ParamMode.ANY, "blockingAwait", Long.TYPE, TimeUnit.class));
 
         // ***********************************************************************************************************************

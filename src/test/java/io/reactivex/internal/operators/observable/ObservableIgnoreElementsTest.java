@@ -97,19 +97,19 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testWithEmpty() {
-        assertNull(Observable.empty().ignoreElements().blockingGet());
+        Observable.empty().ignoreElements().blockingAwait();
     }
 
     @Test
     public void testWithNonEmpty() {
-        assertNull(Observable.just(1, 2, 3).ignoreElements().blockingGet());
+        Observable.just(1, 2, 3).ignoreElements().blockingAwait();
     }
 
     @Test
     public void testUpstreamIsProcessedButIgnored() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
-        Object count = Observable.range(1, num)
+        Observable.range(1, num)
                 .doOnNext(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer t) {
@@ -117,9 +117,8 @@ public class ObservableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .blockingGet();
+                .blockingAwait();
         assertEquals(num, upstreamCount.get());
-        assertNull(count);
     }
 
     @Test

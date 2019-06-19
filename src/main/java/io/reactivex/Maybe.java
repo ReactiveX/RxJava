@@ -2489,12 +2489,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits the item emitted by the source Maybe or a specified default item
+     * Returns a Single that emits the item emitted by the source Maybe or a specified default item
      * if the source Maybe is empty.
-     * <p>
-     * Note that the result Maybe is semantically equivalent to a {@code Single}, since it's guaranteed
-     * to emit exactly one item or an error. See {@link #toSingle(Object)} for a method with equivalent
-     * behavior which returns a {@code Single}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
      * <dl>
@@ -2504,16 +2500,16 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param defaultItem
      *            the item to emit if the source Maybe emits no items
-     * @return a Maybe that emits either the specified default item if the source Maybe emits no
-     *         items, or the items emitted by the source Maybe
+     * @return a Single that emits either the specified default item if the source Maybe emits no
+     *         item, or the item emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> defaultIfEmpty(T defaultItem) {
+    public final Single<T> defaultIfEmpty(T defaultItem) {
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return switchIfEmpty(just(defaultItem));
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, defaultItem));
     }
 
     /**
@@ -3617,25 +3613,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
             return ((FuseToObservable<T>)this).fuseToObservable();
         }
         return RxJavaPlugins.onAssembly(new MaybeToObservable<T>(this));
-    }
-
-    /**
-     * Converts this Maybe into a Single instance composing disposal
-     * through and turning an empty Maybe into a Single that emits the given
-     * value through onSuccess.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param defaultValue the default item to signal in Single if this Maybe is empty
-     * @return the new Single instance
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> toSingle(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, defaultValue));
     }
 
     /**

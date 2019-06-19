@@ -2203,17 +2203,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void subscribeOnSubscribeNull() {
-        just1.subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer e) { }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { }
-        }, Functions.EMPTY_ACTION, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void subscribeNull() {
         just1.subscribe((Observer<Integer>)null);
     }

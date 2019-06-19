@@ -14686,8 +14686,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), Functions.ON_ERROR_MISSING,
-                Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
+        return subscribe(Functions.emptyConsumer(), Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -14716,8 +14715,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, Functions.ON_ERROR_MISSING,
-                Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
+        return subscribe(onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -14747,7 +14745,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
+        return subscribe(onNext, onError, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -14782,51 +14780,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Action onComplete) {
-        return subscribe(onNext, onError, onComplete, FlowableInternalHelper.RequestMax.INSTANCE);
-    }
-
-    /**
-     * Subscribes to a Publisher and provides callbacks to handle the items it emits and any error or
-     * completion notification it issues.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
-     *  backpressure is applied to it).</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param onNext
-     *             the {@code Consumer<T>} you have designed to accept emissions from the Publisher
-     * @param onError
-     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
-     *             Publisher
-     * @param onComplete
-     *             the {@code Action} you have designed to accept a completion notification from the
-     *             Publisher
-     * @param onSubscribe
-     *             the {@code Consumer} that receives the upstream's Subscription
-     * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the Publisher has finished sending them
-     * @throws NullPointerException
-     *             if {@code onNext} is null, or
-     *             if {@code onError} is null, or
-     *             if {@code onComplete} is null, or
-     *             if {@code onSubscribe} is null
-     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete, Consumer<? super Subscription> onSubscribe) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
 
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(onNext, onError, onComplete, onSubscribe);
+        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(onNext, onError, onComplete, FlowableInternalHelper.RequestMax.INSTANCE);
 
         subscribe(ls);
 

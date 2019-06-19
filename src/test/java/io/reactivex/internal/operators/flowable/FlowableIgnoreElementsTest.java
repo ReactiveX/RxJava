@@ -144,21 +144,21 @@ public class FlowableIgnoreElementsTest {
         assertEquals(0, count.get());
     }
 
-    @Test
+    @Test(timeout = 5000)
     public void testWithEmpty() {
-        assertNull(Flowable.empty().ignoreElements().blockingGet());
+        Flowable.empty().ignoreElements().blockingAwait();
     }
 
-    @Test
+    @Test(timeout = 5000)
     public void testWithNonEmpty() {
-        assertNull(Flowable.just(1, 2, 3).ignoreElements().blockingGet());
+        Flowable.just(1, 2, 3).ignoreElements().blockingAwait();
     }
 
     @Test
     public void testUpstreamIsProcessedButIgnored() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
-        Object count = Flowable.range(1, num)
+        Flowable.range(1, num)
                 .doOnNext(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer t) {
@@ -166,9 +166,8 @@ public class FlowableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .blockingGet();
+                .blockingAwait();
         assertEquals(num, upstreamCount.get());
-        assertNull(count);
     }
 
     @Test

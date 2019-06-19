@@ -19,8 +19,6 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.*;
 
-import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
-
 /**
  * A combined Observer that awaits the success or error signal via a CountDownLatch.
  * @param <T> the value type
@@ -117,47 +115,6 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         }
         T v = value;
         return v != null ? v : defaultValue;
-    }
-
-    /**
-     * Block until the latch is counted down and return the error received or null if no
-     * error happened.
-     * @return the error received or null
-     */
-    public Throwable blockingGetError() {
-        if (getCount() != 0) {
-            try {
-                BlockingHelper.verifyNonBlocking();
-                await();
-            } catch (InterruptedException ex) {
-                dispose();
-                return ex;
-            }
-        }
-        return error;
-    }
-
-    /**
-     * Block until the latch is counted down and return the error received or
-     * when the wait is interrupted or times out, null otherwise.
-     * @param timeout the timeout value
-     * @param unit the time unit
-     * @return the error received or null
-     */
-    public Throwable blockingGetError(long timeout, TimeUnit unit) {
-        if (getCount() != 0) {
-            try {
-                BlockingHelper.verifyNonBlocking();
-                if (!await(timeout, unit)) {
-                    dispose();
-                    throw ExceptionHelper.wrapOrThrow(new TimeoutException(timeoutMessage(timeout, unit)));
-                }
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-        return error;
     }
 
     /**

@@ -2156,11 +2156,6 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void subscribeOnSubscribeNull() {
-        just1.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void subscribeNull() {
         just1.subscribe((Subscriber<Integer>)null);
     }

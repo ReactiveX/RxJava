@@ -334,7 +334,7 @@ public class LambdaObserverTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        ps.subscribe(new LambdaObserver<Integer>(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
             }
@@ -352,7 +352,7 @@ public class LambdaObserverTest {
             public void accept(Disposable d) throws Exception {
                 throw new TestException();
             }
-        });
+        }));
 
         assertFalse("Has observers?!", ps.hasObservers());
         assertFalse("No errors?!", errors.isEmpty());

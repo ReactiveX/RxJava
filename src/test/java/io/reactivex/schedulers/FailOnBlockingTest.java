@@ -581,7 +581,7 @@ public class FailOnBlockingTest {
             .doOnComplete(new Action() {
                 @Override
                 public void run() throws Exception {
-                    Completable.complete().delay(10, TimeUnit.SECONDS).blockingGet();
+                    Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
                 }
             })
             .test()
