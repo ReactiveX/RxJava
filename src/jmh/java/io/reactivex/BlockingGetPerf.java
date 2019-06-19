@@ -78,7 +78,7 @@ public class BlockingGetPerf {
     }
 
     @Benchmark
-    public Object completable() {
-        return completable.blockingGet();
+    public void completable() {
+        completable.blockingAwait();
     }
 }

@@ -324,7 +324,7 @@ public class LambdaSubscriberTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        pp.subscribe(new Consumer<Integer>() {
+        pp.subscribe(new LambdaSubscriber<Integer>(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
             }
@@ -342,7 +342,7 @@ public class LambdaSubscriberTest {
             public void accept(Subscription s) throws Exception {
                 throw new TestException();
             }
-        });
+        }));
 
         assertFalse("Has observers?!", pp.hasSubscribers());
         assertFalse("No errors?!", errors.isEmpty());

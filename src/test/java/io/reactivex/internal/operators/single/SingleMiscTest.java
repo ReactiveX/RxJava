@@ -260,20 +260,6 @@ public class SingleMiscTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void toCompletable() {
-        Single.just(1)
-        .toCompletable()
-        .test()
-        .assertResult();
-
-        Single.error(new TestException())
-        .toCompletable()
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
     public void ignoreElement() {
         Single.just(1)
         .ignoreElement()

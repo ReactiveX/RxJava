@@ -2762,15 +2762,6 @@ public class MaybeTest {
     }
 
     @Test
-    public void toSingleDefault() {
-        Maybe.just(1).toSingle(100)
-        .test().assertResult(1);
-
-        Maybe.empty().toSingle(100)
-        .test().assertResult(100);
-    }
-
-    @Test
     public void flatMapContinuation() {
         Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
             @Override

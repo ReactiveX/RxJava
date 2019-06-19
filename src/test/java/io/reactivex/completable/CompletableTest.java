@@ -1959,32 +1959,6 @@ public class CompletableTest {
         Assert.assertEquals(1, calls.get());
     }
 
-    @Test(timeout = 5000)
-    public void getNormal() {
-        Assert.assertNull(normal.completable.blockingGet());
-    }
-
-    @Test(timeout = 5000)
-    public void getError() {
-        Assert.assertTrue(error.completable.blockingGet() instanceof TestException);
-    }
-
-    @Test(timeout = 5000)
-    public void getTimeout() {
-        try {
-            Completable.never().blockingGet(100, TimeUnit.MILLISECONDS);
-        } catch (RuntimeException ex) {
-            if (!(ex.getCause() instanceof TimeoutException)) {
-                Assert.fail("Wrong exception cause: " + ex.getCause());
-            }
-        }
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void getNullUnit() {
-        normal.completable.blockingGet(1, null);
-    }
-
     @Test(expected = NullPointerException.class)
     public void liftNull() {
         normal.completable.lift(null);
@@ -2760,13 +2734,6 @@ public class CompletableTest {
         }
 
         Assert.assertTrue(name.get().startsWith("RxComputation"));
-    }
-
-    @Test(timeout = 5000)
-    public void timeoutEmitError() {
-        Throwable e = Completable.never().timeout(100, TimeUnit.MILLISECONDS).blockingGet();
-
-        Assert.assertTrue(e instanceof TimeoutException);
     }
 
     @Test(timeout = 5000)

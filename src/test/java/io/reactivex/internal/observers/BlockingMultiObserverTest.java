@@ -13,16 +13,13 @@
 
 package io.reactivex.internal.observers;
 
-import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.Schedulers;
 
 public class BlockingMultiObserverTest {
@@ -77,74 +74,6 @@ public class BlockingMultiObserverTest {
             assertTrue(ex.getCause() instanceof InterruptedException);
         } finally {
             Thread.interrupted();
-        }
-    }
-
-    @Test
-    public void blockingGetErrorInterrupt() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
-
-        Thread.currentThread().interrupt();
-        try {
-            assertTrue(bmo.blockingGetError() instanceof InterruptedException);
-        } finally {
-            Thread.interrupted();
-        }
-    }
-
-    @Test
-    public void blockingGetErrorTimeoutInterrupt() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
-
-        Thread.currentThread().interrupt();
-        try {
-            bmo.blockingGetError(1, TimeUnit.MINUTES);
-            fail("Should have thrown");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.getCause() instanceof InterruptedException);
-        } finally {
-            Thread.interrupted();
-        }
-    }
-
-    @Test
-    public void blockingGetErrorDelayed() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
-
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                bmo.onError(new TestException());
-            }
-        }, 100, TimeUnit.MILLISECONDS);
-
-        assertTrue(bmo.blockingGetError() instanceof TestException);
-    }
-
-    @Test
-    public void blockingGetErrorTimeoutDelayed() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
-
-        Schedulers.single().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                bmo.onError(new TestException());
-            }
-        }, 100, TimeUnit.MILLISECONDS);
-
-        assertTrue(bmo.blockingGetError(1, TimeUnit.MINUTES) instanceof TestException);
-    }
-
-    @Test
-    public void blockingGetErrorTimedOut() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
-
-        try {
-            assertNull(bmo.blockingGetError(1, TimeUnit.NANOSECONDS));
-            fail("Should have thrown");
-        } catch (RuntimeException expected) {
-            assertEquals(TimeoutException.class, expected.getCause().getClass());
-            assertEquals(timeoutMessage(1, TimeUnit.NANOSECONDS), expected.getCause().getMessage());
         }
     }
 }

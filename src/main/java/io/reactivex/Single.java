@@ -3851,29 +3851,6 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@link Completable} that discards result of the {@link Single}
-     * and calls {@code onComplete} when this source {@link Single} calls
-     * {@code onSuccess}. Error terminal event is propagated.
-     * <p>
-     * <img width="640" height="436" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toCompletable.png" alt="">
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a {@link Completable} that calls {@code onComplete} on it's subscriber when the source {@link Single}
-     *         calls {@code onSuccess}.
-     * @since 2.0
-     * @deprecated see {@link #ignoreElement()} instead, will be removed in 3.0
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @Deprecated
-    public final Completable toCompletable() {
-        return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(this));
-    }
-
-    /**
      * Returns a {@link Completable} that ignores the success value of this {@link Single}
      * and calls {@code onComplete} instead on the returned {@code Completable}.
      * <p>

@@ -1233,52 +1233,6 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Subscribes to this Completable instance and blocks until it terminates, then returns null or
-     * the emitted exception if any.
-     * <p>
-     * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingGet.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @return the throwable if this terminated with an error, null otherwise
-     * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted
-     */
-    @Nullable
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Throwable blockingGet() {
-        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
-        subscribe(observer);
-        return observer.blockingGetError();
-    }
-
-    /**
-     * Subscribes to this Completable instance and blocks until it terminates or the specified timeout
-     * elapses, then returns null for normal termination or the emitted exception if any.
-     * <p>
-     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingGet.t.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param timeout the timeout value
-     * @param unit the time unit
-     * @return the throwable if this terminated with an error, null otherwise
-     * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted or
-     * TimeoutException if the specified timeout elapsed before it
-     */
-    @Nullable
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Throwable blockingGet(long timeout, TimeUnit unit) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
-        subscribe(observer);
-        return observer.blockingGetError(timeout, unit);
-    }
-
-    /**
      * Subscribes to this Completable only once, when the first CompletableObserver
      * subscribes to the result Completable, caches its terminal event
      * and relays/replays it to observers.
