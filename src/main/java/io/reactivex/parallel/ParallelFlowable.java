@@ -743,7 +743,6 @@ public abstract class ParallelFlowable<T> {
         return RxJavaPlugins.onAssembly(new ParallelFromArray<T>(publishers));
     }
 
-
     /**
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>

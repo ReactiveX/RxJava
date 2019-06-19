@@ -2561,7 +2561,7 @@ public abstract class Completable implements CompletableSource {
      * This allows fluent conversion to any other type.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type

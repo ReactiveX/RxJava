@@ -16852,7 +16852,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The backpressure behavior depends on what happens in the {@code converter} function.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
