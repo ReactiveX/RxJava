@@ -1155,7 +1155,7 @@ public class ObservableTest {
     public void testExtend() {
         final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
-        Object returned = Observable.just(value).to(new Function<Observable<Object>, Object>() {
+        Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
             @Override
             public Object apply(Observable<Object> onSubscribe) {
                     onSubscribe.subscribe(to);
@@ -1172,7 +1172,7 @@ public class ObservableTest {
     public void testAsExtend() {
         final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
-        Object returned = Observable.just(value).as(new ObservableConverter<Object, Object>() {
+        Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
             @Override
             public Object apply(Observable<Object> onSubscribe) {
                 onSubscribe.subscribe(to);
@@ -1187,7 +1187,7 @@ public class ObservableTest {
 
     @Test
     public void as() {
-        Observable.just(1).as(new ObservableConverter<Integer, Flowable<Integer>>() {
+        Observable.just(1).to(new ObservableConverter<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Observable<Integer> v) {
                 return v.toFlowable(BackpressureStrategy.MISSING);

@@ -15,16 +15,16 @@ package io.reactivex.parallel;
 
 import java.util.*;
 
+import org.reactivestreams.*;
+
 import io.reactivex.*;
 import io.reactivex.annotations.*;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.parallel.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.reactivestreams.*;
 
 /**
  * Abstract base class for Parallel publishers that take an array of Subscribers.
@@ -118,23 +118,6 @@ public abstract class ParallelFlowable<T> {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
 
         return RxJavaPlugins.onAssembly(new ParallelFromPublisher<T>(source, parallelism, prefetch));
-    }
-
-    /**
-     * Calls the specified converter function during assembly time and returns its resulting value.
-     * <p>
-     * This allows fluent conversion to any other type.
-     * <p>History: 2.1.7 - experimental
-     * @param <R> the resulting object type
-     * @param converter the function that receives the current ParallelFlowable instance and returns a value
-     * @return the converted value
-     * @throws NullPointerException if converter is null
-     * @since 2.2
-     */
-    @CheckReturnValue
-    @NonNull
-    public final <R> R as(@NonNull ParallelFlowableConverter<T, R> converter) {
-        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**
@@ -761,22 +744,20 @@ public abstract class ParallelFlowable<T> {
     }
 
     /**
-     * Perform a fluent transformation to a value via a converter function which
-     * receives this ParallelFlowable.
-     *
-     * @param <U> the output value type
-     * @param converter the converter function from ParallelFlowable to some type
-     * @return the value returned by the converter function
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * <p>History: 2.1.7 - experimental
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current ParallelFlowable instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if converter is null
+     * @since 2.2
      */
     @CheckReturnValue
     @NonNull
-    public final <U> U to(@NonNull Function<? super ParallelFlowable<T>, U> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+    public final <R> R to(@NonNull ParallelFlowableConverter<T, R> converter) {
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

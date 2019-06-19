@@ -2813,7 +2813,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void toNormal() {
         normal.completable
-                .to(new Function<Completable, Flowable<Object>>() {
+                .to(new CompletableConverter<Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Completable c) {
                         return c.toFlowable();
@@ -2827,7 +2827,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void asNormal() {
         normal.completable
-                .as(new CompletableConverter<Flowable<Object>>() {
+                .to(new CompletableConverter<Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Completable c) {
                         return c.toFlowable();
@@ -2840,7 +2840,7 @@ public class CompletableTest {
 
     @Test
     public void as() {
-        Completable.complete().as(new CompletableConverter<Flowable<Integer>>() {
+        Completable.complete().to(new CompletableConverter<Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Completable v) {
                 return v.toFlowable();
@@ -2853,11 +2853,6 @@ public class CompletableTest {
     @Test(expected = NullPointerException.class)
     public void toNull() {
         normal.completable.to(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void asNull() {
-        normal.completable.as(null);
     }
 
     @Test(timeout = 5000)

@@ -13,7 +13,7 @@
 
 package io.reactivex.observers;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.*;
 
@@ -40,7 +40,7 @@ public enum ObserverFusion {
      * @param cancelled should the TestObserver cancelled before the subscription even happens?
      * @return the new Function instance
      */
-    public static <T> Function<Observable<T>, TestObserver<T>> test(
+    public static <T> ObservableConverter<T, TestObserver<T>> test(
             final int mode, final boolean cancelled) {
         return new TestFunctionCallback<T>(mode, cancelled);
     }
@@ -76,7 +76,7 @@ public enum ObserverFusion {
         }
     }
 
-    static final class TestFunctionCallback<T> implements Function<Observable<T>, TestObserver<T>> {
+    static final class TestFunctionCallback<T> implements ObservableConverter<T, TestObserver<T>> {
         private final int mode;
         private final boolean cancelled;
 
@@ -86,7 +86,7 @@ public enum ObserverFusion {
         }
 
         @Override
-        public TestObserver<T> apply(Observable<T> t) throws Exception {
+        public TestObserver<T> apply(Observable<T> t) {
             TestObserver<T> to = new TestObserver<T>();
             to.setInitialFusionMode(mode);
             if (cancelled) {

@@ -16,7 +16,7 @@ package io.reactivex.parallel;
 import io.reactivex.annotations.*;
 
 /**
- * Convenience interface and callback used by the {@link ParallelFlowable#as} operator to turn a ParallelFlowable into
+ * Convenience interface and callback used by the {@link ParallelFlowable#to} operator to turn a ParallelFlowable into
  * another value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type

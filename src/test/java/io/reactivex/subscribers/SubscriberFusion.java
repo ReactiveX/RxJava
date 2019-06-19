@@ -13,9 +13,9 @@
 
 package io.reactivex.subscribers;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.*;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.QueueFuseable;
 
 /**
  * Utility methods that return functional interfaces to support assertions regarding fusion
@@ -41,9 +41,9 @@ public enum SubscriberFusion {
      * @param cancelled should the TestSubscriber cancelled before the subscription even happens?
      * @return the new Function instance
      */
-    public static <T> Function<Flowable<T>, TestSubscriber<T>> test(
+    public static <T> FlowableConverter<T, TestSubscriber<T>> test(
             final long initialRequest, final int mode, final boolean cancelled) {
-        return new TestFusionCheckFunction<T>(mode, cancelled, initialRequest);
+        return new TestFusionCheckConverter<T>(mode, cancelled, initialRequest);
     }
     /**
      * Returns a Consumer that asserts on its TestSubscriber parameter that
@@ -76,19 +76,19 @@ public enum SubscriberFusion {
         }
     }
 
-    static final class TestFusionCheckFunction<T> implements Function<Flowable<T>, TestSubscriber<T>> {
+    static final class TestFusionCheckConverter<T> implements FlowableConverter<T, TestSubscriber<T>> {
         private final int mode;
         private final boolean cancelled;
         private final long initialRequest;
 
-        TestFusionCheckFunction(int mode, boolean cancelled, long initialRequest) {
+        TestFusionCheckConverter(int mode, boolean cancelled, long initialRequest) {
             this.mode = mode;
             this.cancelled = cancelled;
             this.initialRequest = initialRequest;
         }
 
         @Override
-        public TestSubscriber<T> apply(Flowable<T> t) throws Exception {
+        public TestSubscriber<T> apply(Flowable<T> t) {
             TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
             ts.setInitialFusionMode(mode);
             if (cancelled) {

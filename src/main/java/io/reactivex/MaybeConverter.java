@@ -16,7 +16,7 @@ package io.reactivex;
 import io.reactivex.annotations.*;
 
 /**
- * Convenience interface and callback used by the {@link Maybe#as} operator to turn a Maybe into another
+ * Convenience interface and callback used by the {@link Maybe#to} operator to turn a Maybe into another
  * value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type
