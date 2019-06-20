@@ -27,7 +27,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableDeferTest {
 
     @Test
-    public void testDefer() throws Throwable {
+    public void defer() throws Throwable {
 
         Supplier<Observable<String>> factory = mock(Supplier.class);
 
@@ -62,7 +62,7 @@ public class ObservableDeferTest {
     }
 
     @Test
-    public void testDeferFunctionThrows() throws Throwable {
+    public void deferFunctionThrows() throws Throwable {
         Supplier<Observable<String>> factory = mock(Supplier.class);
 
         when(factory.get()).thenThrow(new TestException());

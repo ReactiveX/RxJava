@@ -48,7 +48,7 @@ public class FlowableTimeIntervalTest {
     }
 
     @Test
-    public void testTimeInterval() {
+    public void timeInterval() {
         InOrder inOrder = inOrder(subscriber);
         flowable.subscribe(subscriber);
 

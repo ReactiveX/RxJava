@@ -26,7 +26,7 @@ import io.reactivex.testsupport.TestHelper;
 public class NotificationLiteTest {
 
     @Test
-    public void testComplete() {
+    public void complete() {
         Object n = NotificationLite.next("Hello");
         Object c = NotificationLite.complete();
 
@@ -37,7 +37,7 @@ public class NotificationLiteTest {
     }
 
     @Test
-    public void testValueKind() {
+    public void valueKind() {
         assertSame(1, NotificationLite.next(1));
     }
 

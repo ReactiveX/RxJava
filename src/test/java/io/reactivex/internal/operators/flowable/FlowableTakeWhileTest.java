@@ -35,7 +35,7 @@ import io.reactivex.testsupport.*;
 public class FlowableTakeWhileTest {
 
     @Test
-    public void testTakeWhile1() {
+    public void takeWhile1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Flowable<Integer> take = w.takeWhile(new Predicate<Integer>() {
             @Override
@@ -55,7 +55,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileOnSubject1() {
+    public void takeWhileOnSubject1() {
         FlowableProcessor<Integer> s = PublishProcessor.create();
         Flowable<Integer> take = s.takeWhile(new Predicate<Integer>() {
             @Override
@@ -84,7 +84,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhile2() {
+    public void takeWhile2() {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> take = w.takeWhile(new Predicate<String>() {
             int index;
@@ -106,7 +106,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileDoesntLeakErrors() {
+    public void takeWhileDoesntLeakErrors() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
@@ -132,7 +132,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileProtectsPredicateCall() {
+    public void takeWhileProtectsPredicateCall() {
         TestFlowable source = new TestFlowable(mock(Subscription.class), "one");
         final RuntimeException testException = new RuntimeException("test exception");
 
@@ -159,7 +159,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testUnsubscribeAfterTake() {
+    public void unsubscribeAfterTake() {
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one", "two", "three");
 
@@ -229,7 +229,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -250,7 +250,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testNoUnsubscribeDownstream() {
+    public void noUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -268,7 +268,7 @@ public class FlowableTakeWhileTest {
     }
 
     @Test
-    public void testErrorCauseIncludesLastValue() {
+    public void errorCauseIncludesLastValue() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just("abc").takeWhile(new Predicate<String>() {
             @Override

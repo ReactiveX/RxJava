@@ -51,7 +51,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWhenOuterCompleteBeforeInner() {
+    public void switchWhenOuterCompleteBeforeInner() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -80,7 +80,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWhenInnerCompleteBeforeOuter() {
+    public void switchWhenInnerCompleteBeforeOuter() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -126,7 +126,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithComplete() {
+    public void switchWithComplete() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -185,7 +185,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithError() {
+    public void switchWithError() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -244,7 +244,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithSubsequenceComplete() {
+    public void switchWithSubsequenceComplete() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -298,7 +298,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithSubsequenceError() {
+    public void switchWithSubsequenceError() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
@@ -380,7 +380,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testSwitchIssue737() {
+    public void switchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
@@ -427,7 +427,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
 
         PublishProcessor<String> o1 = PublishProcessor.create();
         PublishProcessor<String> o2 = PublishProcessor.create();
@@ -489,7 +489,7 @@ public class FlowableSwitchTest {
     }
 
     @Test
-    public void testUnsubscribe() {
+    public void unsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Flowable.switchOnNext(
                 Flowable.unsafeCreate(new Publisher<Flowable<Integer>>() {
@@ -506,7 +506,7 @@ public class FlowableSwitchTest {
     }
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
-    public void testIssue2654() {
+    public void issue2654() {
         Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.<String>never());
 
         Flowable<String> src = oneItem.switchMap(new Function<String, Flowable<String>>() {
@@ -548,7 +548,7 @@ public class FlowableSwitchTest {
     }
 
     @Test(timeout = 10000)
-    public void testInitialRequestsAreAdditive() {
+    public void initialRequestsAreAdditive() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
@@ -567,7 +567,7 @@ public class FlowableSwitchTest {
     }
 
     @Test(timeout = 10000)
-    public void testInitialRequestsDontOverflow() {
+    public void initialRequestsDontOverflow() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
@@ -584,7 +584,7 @@ public class FlowableSwitchTest {
     }
 
     @Test(timeout = 10000)
-    public void testSecondaryRequestsDontOverflow() throws InterruptedException {
+    public void secondaryRequestsDontOverflow() throws InterruptedException {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
@@ -605,7 +605,7 @@ public class FlowableSwitchTest {
 
     @Test(timeout = 10000)
     @Ignore("Request pattern changed and I can't decide if this is okay or not")
-    public void testSecondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
+    public void secondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
             throws InterruptedException {
         final List<Long> requests = new CopyOnWriteArrayList<Long>();
 

@@ -50,7 +50,7 @@ public class FlowableToMultimapTest {
     };
 
     @Test
-    public void testToMultimapFlowable() {
+    public void toMultimapFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc).toFlowable();
@@ -67,7 +67,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithValueSelectorFlowable() {
+    public void toMultimapWithValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate).toFlowable();
@@ -84,7 +84,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithMapFactoryFlowable() {
+    public void toMultimapWithMapFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
@@ -130,7 +130,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithCollectionFactoryFlowable() {
+    public void toMultimapWithCollectionFactoryFlowable() {
         Flowable<String> source = Flowable.just("cc", "dd", "eee", "eee");
 
         Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
@@ -172,7 +172,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithErrorFlowable() {
+    public void toMultimapWithErrorFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -199,7 +199,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithErrorInValueSelectorFlowable() {
+    public void toMultimapWithErrorInValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -226,7 +226,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithMapThrowingFactoryFlowable() {
+    public void toMultimapWithMapThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
@@ -256,7 +256,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithThrowingCollectionFactoryFlowable() {
+    public void toMultimapWithThrowingCollectionFactoryFlowable() {
         Flowable<String> source = Flowable.just("cc", "cc", "eee", "eee");
 
         Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
@@ -298,7 +298,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimap() {
+    public void toMultimap() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
@@ -314,7 +314,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithValueSelector() {
+    public void toMultimapWithValueSelector() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
@@ -330,7 +330,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithMapFactory() {
+    public void toMultimapWithMapFactory() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
@@ -375,7 +375,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithCollectionFactory() {
+    public void toMultimapWithCollectionFactory() {
         Flowable<String> source = Flowable.just("cc", "dd", "eee", "eee");
 
         Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
@@ -416,7 +416,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithError() {
+    public void toMultimapWithError() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -442,7 +442,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithErrorInValueSelector() {
+    public void toMultimapWithErrorInValueSelector() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -468,7 +468,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithMapThrowingFactory() {
+    public void toMultimapWithMapThrowingFactory() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Supplier<Map<Integer, Collection<String>>> mapFactory = new Supplier<Map<Integer, Collection<String>>>() {
@@ -497,7 +497,7 @@ public class FlowableToMultimapTest {
     }
 
     @Test
-    public void testToMultimapWithThrowingCollectionFactory() {
+    public void toMultimapWithThrowingCollectionFactory() {
         Flowable<String> source = Flowable.just("cc", "cc", "eee", "eee");
 
         Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {

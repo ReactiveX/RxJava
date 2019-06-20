@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 public class ObservableWindowWithObservableTest {
 
     @Test
-    public void testWindowViaObservableNormal1() {
+    public void windowViaObservableNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
@@ -95,7 +95,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableBoundaryCompletes() {
+    public void windowViaObservableBoundaryCompletes() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
@@ -151,7 +151,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableBoundaryThrows() {
+    public void windowViaObservableBoundaryThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
@@ -201,7 +201,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableSourceThrows() {
+    public void windowViaObservableSourceThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> boundary = PublishSubject.create();
 
@@ -251,7 +251,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowNoDuplication() {
+    public void windowNoDuplication() {
         final PublishSubject<Integer> source = PublishSubject.create();
         final TestObserver<Integer> tow = new TestObserver<Integer>() {
             boolean once;
@@ -286,7 +286,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableNoUnsubscribe() {
+    public void windowViaObservableNoUnsubscribe() {
         Observable<Integer> source = Observable.range(1, 10);
         Supplier<Observable<String>> boundary = new Supplier<Observable<String>>() {
             @Override
@@ -304,7 +304,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testBoundaryUnsubscribedOnMainCompletion() {
+    public void boundaryUnsubscribedOnMainCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
         Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
@@ -331,7 +331,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testMainUnsubscribedOnBoundaryCompletion() {
+    public void mainUnsubscribedOnBoundaryCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
         Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {
@@ -358,7 +358,7 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
-    public void testChildUnsubscribed() {
+    public void childUnsubscribed() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> boundary = PublishSubject.create();
         Supplier<Observable<Integer>> boundaryFunc = new Supplier<Observable<Integer>>() {

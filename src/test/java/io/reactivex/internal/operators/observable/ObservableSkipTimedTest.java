@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableSkipTimedTest {
 
     @Test
-    public void testSkipTimed() {
+    public void skipTimed() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -66,7 +66,7 @@ public class ObservableSkipTimedTest {
     }
 
     @Test
-    public void testSkipTimedFinishBeforeTime() {
+    public void skipTimedFinishBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -93,7 +93,7 @@ public class ObservableSkipTimedTest {
     }
 
     @Test
-    public void testSkipTimedErrorBeforeTime() {
+    public void skipTimedErrorBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -120,7 +120,7 @@ public class ObservableSkipTimedTest {
     }
 
     @Test
-    public void testSkipTimedErrorAfterTime() {
+    public void skipTimedErrorAfterTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();

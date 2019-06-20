@@ -29,17 +29,17 @@ import io.reactivex.testsupport.*;
 public class ObservableIgnoreElementsTest {
 
     @Test
-    public void testWithEmptyObservable() {
+    public void withEmptyObservable() {
         assertTrue(Observable.empty().ignoreElements().toObservable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testWithNonEmptyObservable() {
+    public void withNonEmptyObservable() {
         assertTrue(Observable.just(1, 2, 3).ignoreElements().toObservable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnoredObservable() {
+    public void upstreamIsProcessedButIgnoredObservable() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Observable.range(1, num)
@@ -57,7 +57,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testCompletedOkObservable() {
+    public void completedOkObservable() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.range(1, 10).ignoreElements().toObservable().subscribe(to);
         to.assertNoErrors();
@@ -68,7 +68,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testErrorReceivedObservable() {
+    public void errorReceivedObservable() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().toObservable().subscribe(to);
@@ -81,7 +81,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstreamObservable() {
+    public void unsubscribesFromUpstreamObservable() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {
@@ -97,17 +97,17 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testWithEmpty() {
+    public void withEmpty() {
         Observable.empty().ignoreElements().blockingAwait();
     }
 
     @Test
-    public void testWithNonEmpty() {
+    public void withNonEmpty() {
         Observable.just(1, 2, 3).ignoreElements().blockingAwait();
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnored() {
+    public void upstreamIsProcessedButIgnored() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         Observable.range(1, num)
@@ -123,7 +123,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testCompletedOk() {
+    public void completedOk() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
@@ -134,7 +134,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testErrorReceived() {
+    public void errorReceived() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().subscribe(to);
@@ -147,7 +147,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstream() {
+    public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {

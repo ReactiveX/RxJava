@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 
 public class ObservableFlatMapTest {
     @Test
-    public void testNormal() {
+    public void normal() {
         Observer<Object> o = TestHelper.mockObserver();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
@@ -71,7 +71,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testCollectionFunctionThrows() {
+    public void collectionFunctionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
@@ -98,7 +98,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testResultFunctionThrows() {
+    public void resultFunctionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
@@ -127,7 +127,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testMergeError() {
+    public void mergeError() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
@@ -174,7 +174,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsNormal() {
+    public void flatMapTransformsNormal() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -196,7 +196,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsException() {
+    public void flatMapTransformsException() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -239,7 +239,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnNextFuncThrows() {
+    public void flatMapTransformsOnNextFuncThrows() {
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
@@ -255,7 +255,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnErrorFuncThrows() {
+    public void flatMapTransformsOnErrorFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -272,7 +272,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnCompletedFuncThrows() {
+    public void flatMapTransformsOnCompletedFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -289,7 +289,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsMergeException() {
+    public void flatMapTransformsMergeException() {
         Observable<Integer> onNext = Observable.error(new TestException());
         Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -326,7 +326,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapMaxConcurrent() {
+    public void flatMapMaxConcurrent() {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
@@ -352,7 +352,7 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapSelectorMaxConcurrent() {
+    public void flatMapSelectorMaxConcurrent() {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
@@ -385,17 +385,17 @@ public class ObservableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsMaxConcurrentNormalLoop() {
+    public void flatMapTransformsMaxConcurrentNormalLoop() {
         for (int i = 0; i < 1000; i++) {
             if (i % 100 == 0) {
                 System.out.println("testFlatMapTransformsMaxConcurrentNormalLoop => " + i);
             }
-            testFlatMapTransformsMaxConcurrentNormal();
+            flatMapTransformsMaxConcurrentNormal();
         }
     }
 
     @Test
-    public void testFlatMapTransformsMaxConcurrentNormal() {
+    public void flatMapTransformsMaxConcurrentNormal() {
         final int m = 2;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> onNext =

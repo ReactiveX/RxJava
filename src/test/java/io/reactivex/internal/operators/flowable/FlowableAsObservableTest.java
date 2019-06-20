@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class FlowableAsObservableTest {
     @Test
-    public void testHiding() {
+    public void hiding() {
         PublishProcessor<Integer> src = PublishProcessor.create();
 
         Flowable<Integer> dst = src.hide();
@@ -48,7 +48,7 @@ public class FlowableAsObservableTest {
     }
 
     @Test
-    public void testHidingError() {
+    public void hidingError() {
         PublishProcessor<Integer> src = PublishProcessor.create();
 
         Flowable<Integer> dst = src.hide();

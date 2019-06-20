@@ -52,12 +52,12 @@ public class FlowableDoAfterTerminateTest {
     }
 
     @Test
-    public void testDoAfterTerminateCalledOnComplete() {
+    public void doAfterTerminateCalledOnComplete() {
         checkActionCalled(Flowable.fromArray("1", "2", "3"));
     }
 
     @Test
-    public void testDoAfterTerminateCalledOnError() {
+    public void doAfterTerminateCalledOnError() {
         checkActionCalled(Flowable.<String> error(new RuntimeException("expected")));
     }
 

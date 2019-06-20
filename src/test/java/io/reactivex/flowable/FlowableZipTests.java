@@ -29,7 +29,7 @@ import io.reactivex.functions.*;
 public class FlowableZipTests {
 
     @Test
-    public void testZipObservableOfObservables() {
+    public void zipObservableOfObservables() {
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
                 .groupBy(new Function<Event, String>() {
                     @Override
@@ -70,7 +70,7 @@ public class FlowableZipTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfZip() {
+    public void covarianceOfZip() {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<CoolRating> ratings = Flowable.just(new CoolRating());
 

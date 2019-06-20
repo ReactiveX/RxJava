@@ -44,7 +44,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> o1 = TestHelper.mockObserver();
@@ -68,7 +68,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         ReplaySubject<Integer> channel = ReplaySubject.create();
         Observer<Object> observerA = TestHelper.mockObserver();
         Observer<Object> observerB = TestHelper.mockObserver();
@@ -137,7 +137,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedAfterError() {
+    public void completedAfterError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -167,7 +167,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -198,7 +198,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeMidSequence() {
+    public void subscribeMidSequence() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -221,7 +221,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testUnsubscribeFirstSubscriber() {
+    public void unsubscribeFirstSubscriber() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -254,7 +254,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test(timeout = 2000)
-    public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
+    public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
         Observer<String> observer1 = new DefaultObserver<String>() {
@@ -352,7 +352,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscriptionLeak() {
+    public void subscriptionLeak() {
         ReplaySubject<Object> subject = ReplaySubject.create();
 
         Disposable d = subject.subscribe();
@@ -365,7 +365,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         ReplaySubject<String> src = ReplaySubject.create();
 
         for (int i = 0; i < 10; i++) {
@@ -407,7 +407,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testTerminateOnce() {
+    public void terminateOnce() {
         ReplaySubject<Integer> source = ReplaySubject.create();
         source.onNext(1);
         source.onNext(2);
@@ -440,7 +440,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testReplay1AfterTermination() {
+    public void replay1AfterTermination() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
 
         source.onNext(1);
@@ -460,7 +460,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testReplay1Directly() {
+    public void replay1Directly() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
 
         Observer<Integer> o = TestHelper.mockObserver();
@@ -481,7 +481,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testReplayTimestampedAfterTermination() {
+    public void replayTimestampedAfterTermination() {
         TestScheduler scheduler = new TestScheduler();
         ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
 
@@ -510,7 +510,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testReplayTimestampedDirectly() {
+    public void replayTimestampedDirectly() {
         TestScheduler scheduler = new TestScheduler();
         ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
 
@@ -588,7 +588,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         ReplaySubject<Object> as = ReplaySubject.create();
 
         assertFalse(as.hasThrowable());
@@ -609,7 +609,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         ReplaySubject<Object> as = ReplaySubject.create();
 
         assertFalse(as.hasThrowable());
@@ -624,7 +624,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         ReplaySubject<Object> as = ReplaySubject.create();
 
         assertFalse(as.hasThrowable());
@@ -639,7 +639,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnbounded() {
+    public void sizeAndHasAnyValueUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.create();
 
         assertEquals(0, rs.size());
@@ -662,7 +662,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnbounded() {
+    public void sizeAndHasAnyValueEffectivelyUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
 
         assertEquals(0, rs.size());
@@ -685,7 +685,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedError() {
+    public void sizeAndHasAnyValueUnboundedError() {
         ReplaySubject<Object> rs = ReplaySubject.create();
 
         assertEquals(0, rs.size());
@@ -708,7 +708,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedError() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedError() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
 
         assertEquals(0, rs.size());
@@ -731,7 +731,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedEmptyError() {
+    public void sizeAndHasAnyValueUnboundedEmptyError() {
         ReplaySubject<Object> rs = ReplaySubject.create();
 
         rs.onError(new TestException());
@@ -741,7 +741,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
 
         rs.onError(new TestException());
@@ -751,7 +751,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedEmptyCompleted() {
+    public void sizeAndHasAnyValueUnboundedEmptyCompleted() {
         ReplaySubject<Object> rs = ReplaySubject.create();
 
         rs.onComplete();
@@ -761,7 +761,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
 
         rs.onComplete();
@@ -771,7 +771,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueSizeBounded() {
+    public void sizeAndHasAnyValueSizeBounded() {
         ReplaySubject<Object> rs = ReplaySubject.createWithSize(1);
 
         assertEquals(0, rs.size());
@@ -791,7 +791,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueTimeBounded() {
+    public void sizeAndHasAnyValueTimeBounded() {
         TestScheduler to = new TestScheduler();
         ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, to);
 
@@ -814,7 +814,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testGetValues() {
+    public void getValues() {
         ReplaySubject<Object> rs = ReplaySubject.create();
         Object[] expected = new Object[10];
         for (int i = 0; i < expected.length; i++) {
@@ -829,7 +829,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testGetValuesUnbounded() {
+    public void getValuesUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
         Object[] expected = new Object[10];
         for (int i = 0; i < expected.length; i++) {

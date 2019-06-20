@@ -26,7 +26,7 @@ import io.reactivex.functions.Consumer;
 public class FlowableDoAfterNextTest {
 
     @Test
-    public void testIfFunctionThrowsThatNoMoreEventsAreProcessed() {
+    public void ifFunctionThrowsThatNoMoreEventsAreProcessed() {
         final AtomicInteger count = new AtomicInteger();
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()

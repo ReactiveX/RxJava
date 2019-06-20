@@ -35,7 +35,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class SchedulerWhenTest {
     @Test
-    public void testAsyncMaxConcurrent() {
+    public void asyncMaxConcurrent() {
         TestScheduler tSched = new TestScheduler();
         SchedulerWhen sched = maxConcurrentScheduler(tSched);
         TestSubscriber<Long> tSub = TestSubscriber.create();
@@ -61,7 +61,7 @@ public class SchedulerWhenTest {
     }
 
     @Test
-    public void testAsyncDelaySubscription() {
+    public void asyncDelaySubscription() {
         final TestScheduler tSched = new TestScheduler();
         SchedulerWhen sched = throttleScheduler(tSched);
         TestSubscriber<Long> tSub = TestSubscriber.create();
@@ -105,7 +105,7 @@ public class SchedulerWhenTest {
     }
 
     @Test
-    public void testSyncMaxConcurrent() {
+    public void syncMaxConcurrent() {
         TestScheduler tSched = new TestScheduler();
         SchedulerWhen sched = maxConcurrentScheduler(tSched);
         TestSubscriber<Long> tSub = TestSubscriber.create();
@@ -123,7 +123,7 @@ public class SchedulerWhenTest {
     }
 
     @Test
-    public void testSyncDelaySubscription() {
+    public void syncDelaySubscription() {
         final TestScheduler tSched = new TestScheduler();
         SchedulerWhen sched = throttleScheduler(tSched);
         TestSubscriber<Long> tSub = TestSubscriber.create();
@@ -212,7 +212,7 @@ public class SchedulerWhenTest {
     }
 
     @Test(timeout = 1000)
-    public void testRaceConditions() {
+    public void raceConditions() {
         Scheduler comp = Schedulers.computation();
         Scheduler limited = comp.when(new Function<Flowable<Flowable<Completable>>, Completable>() {
             @Override

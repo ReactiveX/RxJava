@@ -70,7 +70,7 @@ public class SchedulerWorkerTest {
     }
 
     @Test
-    public void testCurrentTimeDriftBackwards() throws Exception {
+    public void currentTimeDriftBackwards() throws Exception {
         CustomDriftScheduler s = new CustomDriftScheduler();
 
         Scheduler.Worker w = s.createWorker();
@@ -112,7 +112,7 @@ public class SchedulerWorkerTest {
     }
 
     @Test
-    public void testCurrentTimeDriftForwards() throws Exception {
+    public void currentTimeDriftForwards() throws Exception {
         CustomDriftScheduler s = new CustomDriftScheduler();
 
         Scheduler.Worker w = s.createWorker();

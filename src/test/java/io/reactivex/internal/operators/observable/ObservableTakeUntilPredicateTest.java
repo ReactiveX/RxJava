@@ -140,7 +140,7 @@ public class ObservableTakeUntilPredicateTest {
     }
 
     @Test
-    public void testErrorIncludesLastValueAsCause() {
+    public void errorIncludesLastValueAsCause() {
         TestObserverEx<String> to = new TestObserverEx<String>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = (new Predicate<String>() {

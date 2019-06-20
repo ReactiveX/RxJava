@@ -48,7 +48,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfNoneFlowable() {
+    public void firstOrElseOfNoneFlowable() {
         Flowable<String> src = Flowable.empty();
         src.first("default").toFlowable().subscribe(w);
 
@@ -59,7 +59,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfSomeFlowable() {
+    public void firstOrElseOfSomeFlowable() {
         Flowable<String> src = Flowable.just("a", "b", "c");
         src.first("default").toFlowable().subscribe(w);
 
@@ -70,7 +70,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfNoneMatchingThePredicateFlowable() {
+    public void firstOrElseWithPredicateOfNoneMatchingThePredicateFlowable() {
         Flowable<String> src = Flowable.just("a", "b", "c");
         src.filter(IS_D).first("default").toFlowable().subscribe(w);
 
@@ -81,7 +81,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfSomeFlowable() {
+    public void firstOrElseWithPredicateOfSomeFlowable() {
         Flowable<String> src = Flowable.just("a", "b", "c", "d", "e", "f");
         src.filter(IS_D).first("default").toFlowable().subscribe(w);
 
@@ -92,7 +92,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstFlowable() {
+    public void firstFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3).firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -105,7 +105,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithOneElementFlowable() {
+    public void firstWithOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1).firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -118,7 +118,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithEmptyFlowable() {
+    public void firstWithEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.<Integer> empty().firstElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -131,7 +131,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateFlowable() {
+    public void firstWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -151,7 +151,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndOneElementFlowable() {
+    public void firstWithPredicateAndOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -171,7 +171,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndEmptyFlowable() {
+    public void firstWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -191,7 +191,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultFlowable() {
+    public void firstOrDefaultFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3)
                 .first(4).toFlowable();
 
@@ -205,7 +205,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithOneElementFlowable() {
+    public void firstOrDefaultWithOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1).first(2).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -218,7 +218,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithEmptyFlowable() {
+    public void firstOrDefaultWithEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.<Integer> empty()
                 .first(1).toFlowable();
 
@@ -232,7 +232,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateFlowable() {
+    public void firstOrDefaultWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -252,7 +252,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndOneElementFlowable() {
+    public void firstOrDefaultWithPredicateAndOneElementFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -272,7 +272,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndEmptyFlowable() {
+    public void firstOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -292,7 +292,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfNone() {
+    public void firstOrElseOfNone() {
         Flowable<String> src = Flowable.empty();
         src.first("default").subscribe(wo);
 
@@ -302,7 +302,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfSome() {
+    public void firstOrElseOfSome() {
         Flowable<String> src = Flowable.just("a", "b", "c");
         src.first("default").subscribe(wo);
 
@@ -312,7 +312,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfNoneMatchingThePredicate() {
+    public void firstOrElseWithPredicateOfNoneMatchingThePredicate() {
         Flowable<String> src = Flowable.just("a", "b", "c");
         src.filter(IS_D).first("default").subscribe(wo);
 
@@ -322,7 +322,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfSome() {
+    public void firstOrElseWithPredicateOfSome() {
         Flowable<String> src = Flowable.just("a", "b", "c", "d", "e", "f");
         src.filter(IS_D).first("default").subscribe(wo);
 
@@ -332,7 +332,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirst() {
+    public void first() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3).firstElement();
 
         maybe.subscribe(wm);
@@ -343,7 +343,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithOneElement() {
+    public void firstWithOneElement() {
         Maybe<Integer> maybe = Flowable.just(1).firstElement();
 
         maybe.subscribe(wm);
@@ -354,7 +354,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithEmpty() {
+    public void firstWithEmpty() {
         Maybe<Integer> maybe = Flowable.<Integer> empty().firstElement();
 
         maybe.subscribe(wm);
@@ -366,7 +366,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicate() {
+    public void firstWithPredicate() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -384,7 +384,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndOneElement() {
+    public void firstWithPredicateAndOneElement() {
         Maybe<Integer> maybe = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -402,7 +402,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndEmpty() {
+    public void firstWithPredicateAndEmpty() {
         Maybe<Integer> maybe = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -421,7 +421,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefault() {
+    public void firstOrDefault() {
         Single<Integer> single = Flowable.just(1, 2, 3)
                 .first(4);
 
@@ -433,7 +433,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithOneElement() {
+    public void firstOrDefaultWithOneElement() {
         Single<Integer> single = Flowable.just(1).first(2);
 
         single.subscribe(wo);
@@ -444,7 +444,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithEmpty() {
+    public void firstOrDefaultWithEmpty() {
         Single<Integer> single = Flowable.<Integer> empty()
                 .first(1);
 
@@ -456,7 +456,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicate() {
+    public void firstOrDefaultWithPredicate() {
         Single<Integer> single = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -474,7 +474,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndOneElement() {
+    public void firstOrDefaultWithPredicateAndOneElement() {
         Single<Integer> single = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -492,7 +492,7 @@ public class FlowableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndEmpty() {
+    public void firstOrDefaultWithPredicateAndEmpty() {
         Single<Integer> single = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override

@@ -34,7 +34,7 @@ import io.reactivex.testsupport.*;
 public class FlowableToSortedListTest {
 
     @Test
-    public void testSortedListFlowable() {
+    public void sortedListFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Flowable<List<Integer>> flowable = w.toSortedList().toFlowable();
 
@@ -47,7 +47,7 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunctionFlowable() {
+    public void sortedListWithCustomFunctionFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Flowable<List<Integer>> flowable = w.toSortedList(new Comparator<Integer>() {
 
@@ -67,13 +67,13 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirstFlowable() {
+    public void withFollowingFirstFlowable() {
         Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().toFlowable().blockingFirst());
     }
 
     @Test
-    public void testBackpressureHonoredFlowable() {
+    public void backpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList().toFlowable();
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
 
@@ -98,7 +98,7 @@ public class FlowableToSortedListTest {
 
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void testAsyncRequestedFlowable() {
+    public void asyncRequestedFlowable() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {
             for (int i = 0; i < 1000; i++) {
@@ -172,7 +172,7 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testSortedList() {
+    public void sortedList() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Single<List<Integer>> single = w.toSortedList();
 
@@ -183,7 +183,7 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunction() {
+    public void sortedListWithCustomFunction() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Single<List<Integer>> single = w.toSortedList(new Comparator<Integer>() {
 
@@ -201,14 +201,14 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void withFollowingFirst() {
         Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().blockingGet());
     }
 
     @Test
     @Ignore("Single doesn't do backpressure")
-    public void testBackpressureHonored() {
+    public void backpressureHonored() {
         Single<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
@@ -233,7 +233,7 @@ public class FlowableToSortedListTest {
 
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void testAsyncRequested() {
+    public void asyncRequested() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {
             for (int i = 0; i < 1000; i++) {

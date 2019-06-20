@@ -37,7 +37,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableSequenceEqualTest {
 
     @Test
-    public void test1Flowable() {
+    public void flowable1() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.just("one", "two", "three")).toFlowable();
@@ -45,7 +45,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void test2Flowable() {
+    public void flowable2() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.just("one", "two", "three", "four")).toFlowable();
@@ -53,7 +53,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void test3Flowable() {
+    public void flowable3() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three", "four"),
                 Flowable.just("one", "two", "three")).toFlowable();
@@ -61,7 +61,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError1Flowable() {
+    public void withError1Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.concat(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
@@ -70,7 +70,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError2Flowable() {
+    public void withError2Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.concat(Flowable.just("one"),
@@ -79,7 +79,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError3Flowable() {
+    public void withError3Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.concat(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
@@ -89,7 +89,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty1Flowable() {
+    public void withEmpty1Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.<String> empty(),
                 Flowable.just("one", "two", "three")).toFlowable();
@@ -97,7 +97,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty2Flowable() {
+    public void withEmpty2Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.<String> empty()).toFlowable();
@@ -105,7 +105,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty3Flowable() {
+    public void withEmpty3Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.<String> empty(), Flowable.<String> empty()).toFlowable();
         verifyResult(flowable, true);
@@ -113,7 +113,7 @@ public class FlowableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull1Flowable() {
+    public void withNull1Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just((String) null), Flowable.just("one")).toFlowable();
         verifyResult(flowable, false);
@@ -121,14 +121,14 @@ public class FlowableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull2Flowable() {
+    public void withNull2Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just((String) null), Flowable.just((String) null)).toFlowable();
         verifyResult(flowable, true);
     }
 
     @Test
-    public void testWithEqualityErrorFlowable() {
+    public void withEqualityErrorFlowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
                 new BiPredicate<String, String>() {
@@ -141,7 +141,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void test1() {
+    public void one() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.just("one", "two", "three"));
@@ -149,7 +149,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void test2() {
+    public void two() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.just("one", "two", "three", "four"));
@@ -157,7 +157,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void test3() {
+    public void three() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three", "four"),
                 Flowable.just("one", "two", "three"));
@@ -165,7 +165,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError1() {
+    public void withError1() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.concat(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
@@ -174,7 +174,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError2() {
+    public void withError2() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.concat(Flowable.just("one"),
@@ -183,7 +183,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError3() {
+    public void withError3() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.concat(Flowable.just("one"),
                         Flowable.<String> error(new TestException())),
@@ -193,7 +193,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty1() {
+    public void withEmpty1() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.<String> empty(),
                 Flowable.just("one", "two", "three"));
@@ -201,7 +201,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty2() {
+    public void withEmpty2() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one", "two", "three"),
                 Flowable.<String> empty());
@@ -209,7 +209,7 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty3() {
+    public void withEmpty3() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.<String> empty(), Flowable.<String> empty());
         verifyResult(single, true);
@@ -217,7 +217,7 @@ public class FlowableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull1() {
+    public void withNull1() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just((String) null), Flowable.just("one"));
         verifyResult(single, false);
@@ -225,14 +225,14 @@ public class FlowableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull2() {
+    public void withNull2() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just((String) null), Flowable.just((String) null));
         verifyResult(single, true);
     }
 
     @Test
-    public void testWithEqualityError() {
+    public void withEqualityError() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
                 new BiPredicate<String, String>() {

@@ -55,7 +55,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testComplete() {
+    public void complete() {
         Flowable<String> source = Flowable.empty();
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
@@ -67,7 +67,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountOverlappingBuffers() {
+    public void skipAndCountOverlappingBuffers() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -93,7 +93,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountGaplessBuffers() {
+    public void skipAndCountGaplessBuffers() {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
@@ -108,7 +108,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountBuffersWithGaps() {
+    public void skipAndCountBuffersWithGaps() {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(2, 3);
@@ -123,7 +123,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testTimedAndCount() {
+    public void timedAndCount() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -155,7 +155,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testTimed() {
+    public void timed() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -189,7 +189,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testFlowableBasedOpenerAndCloser() {
+    public void flowableBasedOpenerAndCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -240,7 +240,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testFlowableBasedCloser() {
+    public void flowableBasedCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -284,7 +284,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testLongTimeAction() throws InterruptedException {
+    public void longTimeAction() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         LongTimeAction action = new LongTimeAction(latch);
         Flowable.just(1).buffer(10, TimeUnit.MILLISECONDS, 10)
@@ -344,7 +344,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testBufferStopsWhenUnsubscribed1() {
+    public void bufferStopsWhenUnsubscribed1() {
         Flowable<Integer> source = Flowable.never();
 
         Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
@@ -775,7 +775,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestThroughBufferWithSize1() {
+    public void producerRequestThroughBufferWithSize1() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
 
         final AtomicLong requested = new AtomicLong();
@@ -806,7 +806,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestThroughBufferWithSize2() {
+    public void producerRequestThroughBufferWithSize2() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
 
@@ -834,7 +834,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestThroughBufferWithSize3() {
+    public void producerRequestThroughBufferWithSize3() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -863,7 +863,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestThroughBufferWithSize4() {
+    public void producerRequestThroughBufferWithSize4() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -890,7 +890,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestOverflowThroughBufferWithSize1() {
+    public void producerRequestOverflowThroughBufferWithSize1() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
@@ -919,7 +919,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestOverflowThroughBufferWithSize2() {
+    public void producerRequestOverflowThroughBufferWithSize2() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
@@ -948,7 +948,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testProducerRequestOverflowThroughBufferWithSize3() {
+    public void producerRequestOverflowThroughBufferWithSize3() {
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -1000,7 +1000,7 @@ public class FlowableBufferTest {
     }
 
     @Test(timeout = 3000)
-    public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
+    public void bufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final CountDownLatch cdl = new CountDownLatch(1);
@@ -1036,7 +1036,7 @@ public class FlowableBufferTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testPostCompleteBackpressure() {
+    public void postCompleteBackpressure() {
         Flowable<List<Integer>> source = Flowable.range(1, 10).buffer(3, 1);
 
         TestSubscriber<List<Integer>> ts = TestSubscriber.create(0L);

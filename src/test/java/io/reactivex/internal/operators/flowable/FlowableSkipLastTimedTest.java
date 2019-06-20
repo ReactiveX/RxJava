@@ -33,7 +33,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableSkipLastTimedTest {
 
     @Test
-    public void testSkipLastTimed() {
+    public void skipLastTimed() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -72,7 +72,7 @@ public class FlowableSkipLastTimedTest {
     }
 
     @Test
-    public void testSkipLastTimedErrorBeforeTime() {
+    public void skipLastTimedErrorBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -97,7 +97,7 @@ public class FlowableSkipLastTimedTest {
     }
 
     @Test
-    public void testSkipLastTimedCompleteBeforeTime() {
+    public void skipLastTimedCompleteBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -125,7 +125,7 @@ public class FlowableSkipLastTimedTest {
     }
 
     @Test
-    public void testSkipLastTimedWhenAllElementsAreValid() {
+    public void skipLastTimedWhenAllElementsAreValid() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();

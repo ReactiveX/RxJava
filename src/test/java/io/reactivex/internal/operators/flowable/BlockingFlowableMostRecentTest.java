@@ -28,12 +28,12 @@ import io.reactivex.testsupport.TestHelper;
 
 public class BlockingFlowableMostRecentTest {
     @Test
-    public void testMostRecentNull() {
+    public void mostRecentNull() {
         assertEquals(null, Flowable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
     @Test
-    public void testMostRecent() {
+    public void mostRecent() {
         FlowableProcessor<String> s = PublishProcessor.create();
 
         Iterator<String> it = s.blockingMostRecent("default").iterator();
@@ -58,7 +58,7 @@ public class BlockingFlowableMostRecentTest {
     }
 
     @Test(expected = TestException.class)
-    public void testMostRecentWithException() {
+    public void mostRecentWithException() {
         FlowableProcessor<String> s = PublishProcessor.create();
 
         Iterator<String> it = s.blockingMostRecent("default").iterator();
@@ -74,7 +74,7 @@ public class BlockingFlowableMostRecentTest {
     }
 
     @Test(timeout = 1000)
-    public void testSingleSourceManyIterators() {
+    public void singleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 

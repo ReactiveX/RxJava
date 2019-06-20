@@ -63,7 +63,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testNext() {
+    public void next() {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
@@ -99,7 +99,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testNextWithError() {
+    public void nextWithError() {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
@@ -117,7 +117,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testNextWithEmpty() {
+    public void nextWithEmpty() {
         Flowable<String> obs = Flowable.<String> empty().observeOn(Schedulers.newThread());
         Iterator<String> it = obs.blockingNext().iterator();
 
@@ -138,7 +138,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testOnError() throws Throwable {
+    public void onError() throws Throwable {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
 
@@ -154,7 +154,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testOnErrorInNewThread() {
+    public void onErrorInNewThread() {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
 
@@ -185,7 +185,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testNextWithOnlyUsingNextMethod() {
+    public void nextWithOnlyUsingNextMethod() {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
@@ -203,7 +203,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testNextWithCallingHasNextMultipleTimes() {
+    public void nextWithCallingHasNextMultipleTimes() {
         FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
@@ -229,7 +229,7 @@ public class BlockingFlowableNextTest {
      * @throws Throwable some method call is declared throws
      */
     @Test
-    public void testNoBufferingOrBlockingOfSequence() throws Throwable {
+    public void noBufferingOrBlockingOfSequence() throws Throwable {
         int repeat = 0;
         for (;;) {
             final SerialDisposable task = new SerialDisposable();
@@ -308,7 +308,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test /* (timeout = 8000) */
-    public void testSingleSourceManyIterators() throws InterruptedException {
+    public void singleSourceManyIterators() throws InterruptedException {
         Flowable<Long> f = Flowable.interval(250, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
         Flowable<Long> source = f.takeUntil(terminal);
@@ -327,7 +327,7 @@ public class BlockingFlowableNextTest {
     }
 
     @Test
-    public void testSynchronousNext() {
+    public void synchronousNext() {
         assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
         assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());

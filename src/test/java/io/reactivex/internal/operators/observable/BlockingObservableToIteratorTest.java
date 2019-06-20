@@ -29,7 +29,7 @@ import io.reactivex.internal.operators.observable.BlockingObservableIterable.Blo
 public class BlockingObservableToIteratorTest {
 
     @Test
-    public void testToIterator() {
+    public void toIterator() {
         Observable<String> obs = Observable.just("one", "two", "three");
 
         Iterator<String> it = obs.blockingIterable().iterator();
@@ -48,7 +48,7 @@ public class BlockingObservableToIteratorTest {
     }
 
     @Test(expected = TestException.class)
-    public void testToIteratorWithException() {
+    public void toIteratorWithException() {
         Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -70,7 +70,7 @@ public class BlockingObservableToIteratorTest {
 
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
-    public void testExceptionThrownFromOnSubscribe() {
+    public void exceptionThrownFromOnSubscribe() {
         Iterable<String> strings = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {

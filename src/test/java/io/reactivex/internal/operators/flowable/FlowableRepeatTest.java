@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 public class FlowableRepeatTest {
 
     @Test(timeout = 2000)
-    public void testRepetition() {
+    public void repetition() {
         int num = 10;
         final AtomicInteger count = new AtomicInteger();
         int value = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -55,19 +55,19 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatTake() {
+    public void repeatTake() {
         Flowable<Integer> xs = Flowable.just(1, 2);
         Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().blockingGet().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
-    public void testNoStackOverFlow() {
+    public void noStackOverFlow() {
         Flowable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).blockingLast();
     }
 
     @Test
-    public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
+    public void repeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
         Flowable<Integer> oi = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -101,7 +101,7 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatAndTake() {
+    public void repeatAndTake() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.just(1).repeat().take(10).subscribe(subscriber);
@@ -112,7 +112,7 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatLimited() {
+    public void repeatLimited() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.just(1).repeat(10).subscribe(subscriber);
@@ -123,7 +123,7 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatError() {
+    public void repeatError() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.error(new TestException()).repeat(10).subscribe(subscriber);
@@ -135,7 +135,7 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatZero() {
+    public void repeatZero() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.just(1).repeat(0).subscribe(subscriber);
@@ -146,7 +146,7 @@ public class FlowableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatOne() {
+    public void repeatOne() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Flowable.just(1).repeat(1).subscribe(subscriber);
@@ -158,7 +158,7 @@ public class FlowableRepeatTest {
 
     /** Issue #2587. */
     @Test
-    public void testRepeatAndDistinctUnbounded() {
+    public void repeatAndDistinctUnbounded() {
         Flowable<Integer> src = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
                 .take(3)
                 .repeat(3)
@@ -175,7 +175,7 @@ public class FlowableRepeatTest {
 
     /** Issue #2844: wrong target of request. */
     @Test(timeout = 3000)
-    public void testRepeatRetarget() {
+    public void repeatRetarget() {
         final List<Integer> concatBase = new ArrayList<Integer>();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1, 2)
@@ -346,7 +346,7 @@ public class FlowableRepeatTest {
     }
 
     @Test
-    public void testRepeatWhen() {
+    public void repeatWhen() {
         Flowable.error(new TestException())
         .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override

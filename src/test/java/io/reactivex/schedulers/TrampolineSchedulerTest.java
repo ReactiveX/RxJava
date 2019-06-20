@@ -41,7 +41,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     }
 
     @Test
-    public final void testMergeWithCurrentThreadScheduler1() {
+    public final void mergeWithCurrentThreadScheduler1() {
 
         final String currentThreadName = Thread.currentThread().getName();
 
@@ -66,7 +66,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     }
 
     @Test
-    public void testNestedTrampolineWithUnsubscribe() {
+    public void nestedTrampolineWithUnsubscribe() {
         final ArrayList<String> workDone = new ArrayList<String>();
         final CompositeDisposable workers = new CompositeDisposable();
         Worker worker = Schedulers.trampoline().createWorker();
@@ -108,7 +108,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
      * trampoline with enqueue requests from multiple threads concurrently.
      */
     @Test
-    public void testTrampolineWorkerHandlesConcurrentScheduling() {
+    public void trampolineWorkerHandlesConcurrentScheduling() {
         final Worker trampolineWorker = Schedulers.trampoline().createWorker();
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(subscriber);

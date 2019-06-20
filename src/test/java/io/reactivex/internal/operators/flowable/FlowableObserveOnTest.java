@@ -47,7 +47,7 @@ public class FlowableObserveOnTest {
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
      */
     @Test
-    public void testObserveOn() {
+    public void observeOn() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(subscriber);
 
@@ -58,7 +58,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testOrdering() throws InterruptedException {
+    public void ordering() throws InterruptedException {
 //        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         // FIXME null values not allowed
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
@@ -88,7 +88,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testThreadName() throws InterruptedException {
+    public void threadName() throws InterruptedException {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         // FIXME null values not allowed
 //        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
@@ -211,7 +211,7 @@ public class FlowableObserveOnTest {
      * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream.
      */
     @Test
-    public void testObserveOnWithNewThreadScheduler() {
+    public void observeOnWithNewThreadScheduler() {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
@@ -241,7 +241,7 @@ public class FlowableObserveOnTest {
      * Confirm that running on a ThreadPoolScheduler allows multiple threads but is still ordered.
      */
     @Test
-    public void testObserveOnWithThreadPoolScheduler() {
+    public void observeOnWithThreadPoolScheduler() {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
@@ -276,7 +276,7 @@ public class FlowableObserveOnTest {
      * it is a sign of potential issues as thread-races and scheduling should not affect output.
      */
     @Test
-    public void testObserveOnOrderingConcurrency() {
+    public void observeOnOrderingConcurrency() {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
@@ -310,7 +310,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testNonBlockingOuterWhileBlockingOnNext() throws InterruptedException {
+    public void nonBlockingOuterWhileBlockingOnNext() throws InterruptedException {
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
         final CountDownLatch nextLatch = new CountDownLatch(1);
@@ -363,7 +363,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testDelayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
+    public void delayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
 
         Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
@@ -383,7 +383,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
+    public void afterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
 
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -404,7 +404,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testBackpressureWithTakeAfter() {
+    public void backpressureWithTakeAfter() {
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
@@ -453,7 +453,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testBackpressureWithTakeAfterAndMultipleBatches() {
+    public void backpressureWithTakeAfterAndMultipleBatches() {
         int numForBatches = Flowable.bufferSize() * 3 + 1; // should be 4 batches == ((3*n)+1) items
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
@@ -498,7 +498,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testBackpressureWithTakeBefore() {
+    public void backpressureWithTakeBefore() {
         final AtomicInteger generated = new AtomicInteger();
         Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
@@ -534,7 +534,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testQueueFullEmitsError() {
+    public void queueFullEmitsError() {
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable<Integer> flowable = Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -592,7 +592,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testAsyncChild() {
+    public void asyncChild() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -600,7 +600,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testOnErrorCutsAheadOfOnNext() {
+    public void onErrorCutsAheadOfOnNext() {
         for (int i = 0; i < 50; i++) {
             final PublishProcessor<Long> processor = PublishProcessor.create();
 
@@ -651,7 +651,7 @@ public class FlowableObserveOnTest {
      * Make sure we get a MissingBackpressureException propagated through when we have a fast temporal (hot) producer.
      */
     @Test
-    public void testHotOperatorBackpressure() {
+    public void hotOperatorBackpressure() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.computation())
@@ -676,7 +676,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testErrorPropagatesWhenNoOutstandingRequests() {
+    public void errorPropagatesWhenNoOutstandingRequests() {
         Flowable<Long> timer = Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .doOnEach(new Consumer<Notification<Long>>() {
 
@@ -717,7 +717,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testRequestOverflow() throws InterruptedException {
+    public void requestOverflow() throws InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
@@ -758,7 +758,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testNoMoreRequestsAfterUnsubscribe() throws InterruptedException {
+    public void noMoreRequestsAfterUnsubscribe() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final List<Long> requests = Collections.synchronizedList(new ArrayList<Long>());
         Flowable.range(1, 1000000)
@@ -797,7 +797,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testErrorDelayed() {
+    public void errorDelayed() {
         TestScheduler s = new TestScheduler();
 
         Flowable<Integer> source = Flowable.just(1, 2, 3)
@@ -833,7 +833,7 @@ public class FlowableObserveOnTest {
     }
 
     @Test
-    public void testErrorDelayedAsync() {
+    public void errorDelayedAsync() {
         Flowable<Integer> source = Flowable.just(1, 2, 3)
                 .concatWith(Flowable.<Integer>error(new TestException()));
 

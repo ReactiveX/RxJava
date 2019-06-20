@@ -20,28 +20,28 @@ import io.reactivex.*;
 public class FlowableNotificationTest {
 
     @Test(expected = NullPointerException.class)
-    public void testOnNextIntegerNotificationDoesNotEqualNullNotification() {
+    public void onNextIntegerNotificationDoesNotEqualNullNotification() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
         Assert.assertFalse(integerNotification.equals(nullNotification));
     }
 
     @Test(expected = NullPointerException.class)
-    public void testOnNextNullNotificationDoesNotEqualIntegerNotification() {
+    public void onNextNullNotificationDoesNotEqualIntegerNotification() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
         Assert.assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
-    public void testOnNextIntegerNotificationsWhenEqual() {
+    public void onNextIntegerNotificationsWhenEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(1);
         Assert.assertTrue(integerNotification.equals(integerNotification2));
     }
 
     @Test
-    public void testOnNextIntegerNotificationsWhenNotEqual() {
+    public void onNextIntegerNotificationsWhenNotEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
         Assert.assertFalse(integerNotification.equals(integerNotification2));
@@ -49,7 +49,7 @@ public class FlowableNotificationTest {
 
     @Test
     @Ignore("Nulls are not allowed")
-    public void testOnErrorIntegerNotificationDoesNotEqualNullNotification() {
+    public void onErrorIntegerNotificationDoesNotEqualNullNotification() {
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
         Assert.assertFalse(integerNotification.equals(nullNotification));
@@ -57,14 +57,14 @@ public class FlowableNotificationTest {
 
     @Test
     @Ignore("Nulls are not allowed")
-    public void testOnErrorNullNotificationDoesNotEqualIntegerNotification() {
+    public void onErrorNullNotificationDoesNotEqualIntegerNotification() {
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
         Assert.assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
-    public void testOnErrorIntegerNotificationsWhenEqual() {
+    public void onErrorIntegerNotificationsWhenEqual() {
         final Exception exception = new Exception();
         final Notification<Integer> onErrorNotification = Notification.createOnError(exception);
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(exception);
@@ -72,7 +72,7 @@ public class FlowableNotificationTest {
     }
 
     @Test
-    public void testOnErrorIntegerNotificationWhenNotEqual() {
+    public void onErrorIntegerNotificationWhenNotEqual() {
         final Notification<Integer> onErrorNotification = Notification.createOnError(new Exception());
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(new Exception());
         Assert.assertFalse(onErrorNotification.equals(onErrorNotification2));

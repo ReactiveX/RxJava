@@ -28,7 +28,7 @@ import io.reactivex.observers.DefaultObserver;
 public class ObservableSwitchIfEmptyTest {
 
     @Test
-    public void testSwitchWhenNotEmpty() throws Exception {
+    public void switchWhenNotEmpty() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Observable<Integer> o = Observable.just(4)
                 .switchIfEmpty(Observable.just(2)
@@ -44,7 +44,7 @@ public class ObservableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchWhenEmpty() throws Exception {
+    public void switchWhenEmpty() throws Exception {
         final Observable<Integer> o = Observable.<Integer>empty()
                 .switchIfEmpty(Observable.fromIterable(Arrays.asList(42)));
 
@@ -52,7 +52,7 @@ public class ObservableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchTriggerUnsubscribe() throws Exception {
+    public void switchTriggerUnsubscribe() throws Exception {
 
         final Disposable d = Disposables.empty();
 
@@ -95,7 +95,7 @@ public class ObservableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchShouldTriggerUnsubscribe() {
+    public void switchShouldTriggerUnsubscribe() {
         final Disposable d = Disposables.empty();
 
         Observable.unsafeCreate(new ObservableSource<Long>() {

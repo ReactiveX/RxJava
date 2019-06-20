@@ -27,7 +27,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 public class FlowableDoOnSubscribeTest {
 
     @Test
-    public void testDoOnSubscribe() throws Exception {
+    public void doOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
             @Override
@@ -43,7 +43,7 @@ public class FlowableDoOnSubscribeTest {
     }
 
     @Test
-    public void testDoOnSubscribe2() throws Exception {
+    public void doOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> f = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
             @Override
@@ -62,7 +62,7 @@ public class FlowableDoOnSubscribeTest {
     }
 
     @Test
-    public void testDoOnUnSubscribeWorksWithRefCount() throws Exception {
+    public void doOnUnSubscribeWorksWithRefCount() throws Exception {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();

@@ -31,7 +31,7 @@ import io.reactivex.testsupport.*;
 public class ObservableRangeTest {
 
     @Test
-    public void testRangeStartAt2Count3() {
+    public void rangeStartAt2Count3() {
         Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable.range(2, 3).subscribe(observer);
@@ -45,7 +45,7 @@ public class ObservableRangeTest {
     }
 
     @Test
-    public void testRangeUnsubscribe() {
+    public void rangeUnsubscribe() {
         Observer<Integer> observer = TestHelper.mockObserver();
 
         final AtomicInteger count = new AtomicInteger();
@@ -68,32 +68,32 @@ public class ObservableRangeTest {
     }
 
     @Test
-    public void testRangeWithZero() {
+    public void rangeWithZero() {
         Observable.range(1, 0);
     }
 
     @Test
-    public void testRangeWithOverflow2() {
+    public void rangeWithOverflow2() {
         Observable.range(Integer.MAX_VALUE, 0);
     }
 
     @Test
-    public void testRangeWithOverflow3() {
+    public void rangeWithOverflow3() {
         Observable.range(1, Integer.MAX_VALUE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRangeWithOverflow4() {
+    public void rangeWithOverflow4() {
         Observable.range(2, Integer.MAX_VALUE);
     }
 
     @Test
-    public void testRangeWithOverflow5() {
+    public void rangeWithOverflow5() {
         assertFalse(Observable.range(Integer.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
     }
 
     @Test
-    public void testNoBackpressure() {
+    public void noBackpressure() {
         ArrayList<Integer> list = new ArrayList<Integer>(Flowable.bufferSize() * 2);
         for (int i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
@@ -110,7 +110,7 @@ public class ObservableRangeTest {
     }
 
     @Test
-    public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
+    public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
         Observable.range(1, 0).subscribe(new DefaultObserver<Integer>() {
 
@@ -137,7 +137,7 @@ public class ObservableRangeTest {
     }
 
     @Test(timeout = 1000)
-    public void testNearMaxValueWithoutBackpressure() {
+    public void nearMaxValueWithoutBackpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(to);
 

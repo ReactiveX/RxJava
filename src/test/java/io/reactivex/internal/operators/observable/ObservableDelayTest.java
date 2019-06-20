@@ -50,7 +50,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelay() {
+    public void delay() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Observable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(observer);
@@ -90,7 +90,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testLongDelay() {
+    public void longDelay() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Observable<Long> delayed = source.delay(5L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(observer);
@@ -119,7 +119,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithError() {
+    public void delayWithError() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler)
         .map(new Function<Long, Long>() {
             @Override
@@ -152,7 +152,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithMultipleSubscriptions() {
+    public void delayWithMultipleSubscriptions() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Observable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(observer);
@@ -193,7 +193,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySubscription() {
+    public void delaySubscription() {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = TestHelper.mockObserver();
@@ -215,7 +215,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySubscriptionDisposeBeforeTime() {
+    public void delaySubscriptionDisposeBeforeTime() {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = TestHelper.mockObserver();
@@ -231,7 +231,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableNormal1() {
+    public void delayWithObservableNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
         final List<PublishSubject<Integer>> delays = new ArrayList<PublishSubject<Integer>>();
         final int n = 10;
@@ -266,7 +266,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSingleSend1() {
+    public void delayWithObservableSingleSend1() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
@@ -292,7 +292,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSourceThrows() {
+    public void delayWithObservableSourceThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
@@ -318,7 +318,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableDelayFunctionThrows() {
+    public void delayWithObservableDelayFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
@@ -341,7 +341,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableDelayThrows() {
+    public void delayWithObservableDelayThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
@@ -366,7 +366,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionNormal() {
+    public void delayWithObservableSubscriptionNormal() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
         Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
@@ -401,7 +401,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionFunctionThrows() {
+    public void delayWithObservableSubscriptionFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
         Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
@@ -435,7 +435,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionThrows() {
+    public void delayWithObservableSubscriptionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
         Supplier<Observable<Integer>> subFunc = new Supplier<Observable<Integer>>() {
@@ -469,7 +469,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableEmptyDelayer() {
+    public void delayWithObservableEmptyDelayer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
@@ -494,7 +494,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionRunCompletion() {
+    public void delayWithObservableSubscriptionRunCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> sdelay = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
@@ -530,7 +530,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableAsTimed() {
+    public void delayWithObservableAsTimed() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
 
         final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
@@ -580,7 +580,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableReorder() {
+    public void delayWithObservableReorder() {
         int n = 3;
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -621,7 +621,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelayEmitsEverything() {
+    public void delayEmitsEverything() {
         Observable<Integer> source = Observable.range(1, 5);
         Observable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
@@ -640,7 +640,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithTimedDelay() {
+    public void backpressureWithTimedDelay() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -668,7 +668,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSubscriptionTimedDelay() {
+    public void backpressureWithSubscriptionTimedDelay() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
@@ -697,7 +697,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSelectorDelay() {
+    public void backpressureWithSelectorDelay() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(new Function<Integer, Observable<Long>>() {
@@ -732,7 +732,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
+    public void backpressureWithSelectorDelayAndSubscriptionDelay() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
@@ -768,7 +768,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testErrorRunsBeforeOnNext() {
+    public void errorRunsBeforeOnNext() {
         TestScheduler test = new TestScheduler();
 
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -791,7 +791,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierSimple() {
+    public void delaySupplierSimple() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observable<Integer> source = Observable.range(1, 5);
@@ -812,7 +812,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierCompletes() {
+    public void delaySupplierCompletes() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observable<Integer> source = Observable.range(1, 5);
@@ -834,7 +834,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierErrors() {
+    public void delaySupplierErrors() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observable<Integer> source = Observable.range(1, 5);
@@ -864,7 +864,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testOnErrorCalledOnScheduler() throws Exception {
+    public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Thread> thread = new AtomicReference<Thread>();
 

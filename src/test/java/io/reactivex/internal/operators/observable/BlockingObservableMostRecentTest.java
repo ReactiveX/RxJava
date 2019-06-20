@@ -27,7 +27,7 @@ import io.reactivex.subjects.*;
 
 public class BlockingObservableMostRecentTest {
     @Test
-    public void testMostRecentNull() {
+    public void mostRecentNull() {
         assertEquals(null, Observable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
@@ -36,7 +36,7 @@ public class BlockingObservableMostRecentTest {
     }
 
     @Test
-    public void testMostRecent() {
+    public void mostRecent() {
         Subject<String> s = PublishSubject.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
@@ -61,7 +61,7 @@ public class BlockingObservableMostRecentTest {
     }
 
     @Test(expected = TestException.class)
-    public void testMostRecentWithException() {
+    public void mostRecentWithException() {
         Subject<String> s = PublishSubject.create();
 
         Iterator<String> it = mostRecent(s, "default").iterator();
@@ -77,7 +77,7 @@ public class BlockingObservableMostRecentTest {
     }
 
     @Test(timeout = 1000)
-    public void testSingleSourceManyIterators() {
+    public void singleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
         Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 

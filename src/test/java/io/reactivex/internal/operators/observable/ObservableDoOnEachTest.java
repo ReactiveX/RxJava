@@ -46,7 +46,7 @@ public class ObservableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEach() {
+    public void doOnEach() {
         Observable<String> base = Observable.just("a", "b", "c");
         Observable<String> doOnEach = base.doOnEach(sideEffectObserver);
 
@@ -68,7 +68,7 @@ public class ObservableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEachWithError() {
+    public void doOnEachWithError() {
         Observable<String> base = Observable.just("one", "fail", "two", "three", "fail");
         Observable<String> errs = base.map(new Function<String, String>() {
             @Override
@@ -97,7 +97,7 @@ public class ObservableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEachWithErrorInCallback() {
+    public void doOnEachWithErrorInCallback() {
         Observable<String> base = Observable.just("one", "two", "fail", "three");
         Observable<String> doOnEach = base.doOnNext(new Consumer<String>() {
             @Override
@@ -118,7 +118,7 @@ public class ObservableDoOnEachTest {
     }
 
     @Test
-    public void testIssue1451Case1() {
+    public void issue1451Case1() {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
@@ -144,7 +144,7 @@ public class ObservableDoOnEachTest {
     }
 
     @Test
-    public void testIssue1451Case2() {
+    public void issue1451Case2() {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();

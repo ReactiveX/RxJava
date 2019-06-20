@@ -36,7 +36,7 @@ import io.reactivex.testsupport.*;
 public class ObservableOnErrorResumeNextViaFunctionTest {
 
     @Test
-    public void testResumeNextWithSynchronousExecution() {
+    public void resumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Observable<String> w = Observable.unsafeCreate(new ObservableSource<String>() {
 
@@ -76,7 +76,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testResumeNextWithAsyncExecution() {
+    public void resumeNextWithAsyncExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
@@ -115,7 +115,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
      * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
-    public void testFunctionThrowsError() {
+    public void functionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
         Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
@@ -151,7 +151,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
      */
     @Test
     @Ignore("Failed operator may leave the child Observer in an inconsistent state which prevents further error delivery.")
-    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
+    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
@@ -184,7 +184,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
      */
     @Test
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
-    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
+    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
@@ -234,7 +234,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
 
@@ -313,7 +313,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(new Function<Throwable, Observable<Integer>>() {

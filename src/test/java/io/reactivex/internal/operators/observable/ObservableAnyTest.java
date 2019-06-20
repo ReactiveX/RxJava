@@ -34,7 +34,7 @@ import io.reactivex.testsupport.*;
 public class ObservableAnyTest {
 
     @Test
-    public void testAnyWithTwoItemsObservable() {
+    public void anyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -54,7 +54,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithTwoItemsObservable() {
+    public void isEmptyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> observable = w.isEmpty().toObservable();
 
@@ -69,7 +69,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithOneItemObservable() {
+    public void anyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -89,7 +89,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithOneItemObservable() {
+    public void isEmptyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
         Observable<Boolean> observable = w.isEmpty().toObservable();
 
@@ -104,7 +104,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyObservable() {
+    public void anyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -124,7 +124,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithEmptyObservable() {
+    public void isEmptyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> observable = w.isEmpty().toObservable();
 
@@ -139,7 +139,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate1Observable() {
+    public void anyWithPredicate1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -159,7 +159,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testExists1Observable() {
+    public void exists1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -179,7 +179,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate2Observable() {
+    public void anyWithPredicate2Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
@@ -199,7 +199,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyAndPredicateObservable() {
+    public void anyWithEmptyAndPredicateObservable() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
@@ -220,7 +220,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testWithFollowingFirstObservable() {
+    public void withFollowingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
         Observable<Boolean> anyEven = o.any(new Predicate<Integer>() {
             @Override
@@ -233,7 +233,7 @@ public class ObservableAnyTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstreamObservable() {
+    public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
             .flatMap(new Function<Boolean, Observable<Integer>>() {
                 @Override
@@ -246,7 +246,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
+    public void predicateThrowsExceptionAndValueInCauseMessageObservable() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -266,7 +266,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithTwoItems() {
+    public void anyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -285,7 +285,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithTwoItems() {
+    public void isEmptyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
         Single<Boolean> single = w.isEmpty();
 
@@ -299,7 +299,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithOneItem() {
+    public void anyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -318,7 +318,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithOneItem() {
+    public void isEmptyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
         Single<Boolean> single = w.isEmpty();
 
@@ -332,7 +332,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmpty() {
+    public void anyWithEmpty() {
         Observable<Integer> w = Observable.empty();
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -351,7 +351,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithEmpty() {
+    public void isEmptyWithEmpty() {
         Observable<Integer> w = Observable.empty();
         Single<Boolean> single = w.isEmpty();
 
@@ -365,7 +365,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate1() {
+    public void anyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -384,7 +384,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testExists1() {
+    public void exists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -403,7 +403,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate2() {
+    public void anyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -422,7 +422,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyAndPredicate() {
+    public void anyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
         Single<Boolean> single = w.any(new Predicate<Integer>() {
@@ -442,7 +442,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void withFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
         Single<Boolean> anyEven = o.any(new Predicate<Integer>() {
             @Override
@@ -455,7 +455,7 @@ public class ObservableAnyTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstream() {
+    public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
             .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
                 @Override
@@ -468,7 +468,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessage() {
+    public void predicateThrowsExceptionAndValueInCauseMessage() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 

@@ -58,7 +58,7 @@ public class FlowableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNone() {
+    public void distinctUntilChangedOfNone() {
         Flowable<String> src = Flowable.empty();
         src.distinctUntilChanged().subscribe(w);
 
@@ -68,7 +68,7 @@ public class FlowableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNoneWithKeySelector() {
+    public void distinctUntilChangedOfNoneWithKeySelector() {
         Flowable<String> src = Flowable.empty();
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -78,7 +78,7 @@ public class FlowableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNormalSource() {
+    public void distinctUntilChangedOfNormalSource() {
         Flowable<String> src = Flowable.just("a", "b", "c", "c", "c", "b", "b", "a", "e");
         src.distinctUntilChanged().subscribe(w);
 
@@ -95,7 +95,7 @@ public class FlowableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
+    public void distinctUntilChangedOfNormalSourceWithKeySelector() {
         Flowable<String> src = Flowable.just("a", "b", "c", "C", "c", "B", "b", "a", "e");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -113,7 +113,7 @@ public class FlowableDistinctUntilChangedTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctUntilChangedOfSourceWithNulls() {
+    public void distinctUntilChangedOfSourceWithNulls() {
         Flowable<String> src = Flowable.just(null, "a", "a", null, null, "b", null, null);
         src.distinctUntilChanged().subscribe(w);
 
@@ -130,7 +130,7 @@ public class FlowableDistinctUntilChangedTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
+    public void distinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Flowable<String> src = Flowable.just("a", "b", null, "c");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -218,7 +218,7 @@ public class FlowableDistinctUntilChangedTest {
     };
 
     @Test
-    public void testDistinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
+    public void distinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
         Flowable<String> src = Flowable.just("a", "b", "null", "c");
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         src

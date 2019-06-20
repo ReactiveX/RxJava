@@ -43,7 +43,7 @@ public class ObservableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottlingWithCompleted() {
+    public void throttlingWithCompleted() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
@@ -71,7 +71,7 @@ public class ObservableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottlingWithError() {
+    public void throttlingWithError() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
@@ -122,7 +122,7 @@ public class ObservableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottle() {
+    public void throttle() {
         Observer<Integer> observer = TestHelper.mockObserver();
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();

@@ -27,7 +27,7 @@ import io.reactivex.testsupport.*;
 public class FlowableDefaultIfEmptyTest {
 
     @Test
-    public void testDefaultIfEmpty() {
+    public void defaultIfEmpty() {
         Flowable<Integer> source = Flowable.just(1, 2, 3);
         Flowable<Integer> flowable = source.defaultIfEmpty(10);
 
@@ -44,7 +44,7 @@ public class FlowableDefaultIfEmptyTest {
     }
 
     @Test
-    public void testDefaultIfEmptyWithEmpty() {
+    public void defaultIfEmptyWithEmpty() {
         Flowable<Integer> source = Flowable.empty();
         Flowable<Integer> flowable = source.defaultIfEmpty(10);
 
@@ -59,7 +59,7 @@ public class FlowableDefaultIfEmptyTest {
 
     @Test
     @Ignore("Subscribers should not throw")
-    public void testEmptyButClientThrows() {
+    public void emptyButClientThrows() {
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultSubscriber<Integer>() {
@@ -85,7 +85,7 @@ public class FlowableDefaultIfEmptyTest {
     }
 
     @Test
-    public void testBackpressureEmpty() {
+    public void backpressureEmpty() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
@@ -97,7 +97,7 @@ public class FlowableDefaultIfEmptyTest {
     }
 
     @Test
-    public void testBackpressureNonEmpty() {
+    public void backpressureNonEmpty() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         Flowable.just(1, 2, 3).defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();

@@ -68,7 +68,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testNext() {
+    public void next() {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
@@ -104,7 +104,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testNextWithError() {
+    public void nextWithError() {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
@@ -122,7 +122,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testNextWithEmpty() {
+    public void nextWithEmpty() {
         Observable<String> obs = Observable.<String> empty().observeOn(Schedulers.newThread());
         Iterator<String> it = next(obs).iterator();
 
@@ -143,7 +143,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testOnError() throws Throwable {
+    public void onError() throws Throwable {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
 
@@ -159,7 +159,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testOnErrorInNewThread() {
+    public void onErrorInNewThread() {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
 
@@ -190,7 +190,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testNextWithOnlyUsingNextMethod() {
+    public void nextWithOnlyUsingNextMethod() {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
@@ -208,7 +208,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testNextWithCallingHasNextMultipleTimes() {
+    public void nextWithCallingHasNextMultipleTimes() {
         Subject<String> obs = PublishSubject.create();
         Iterator<String> it = next(obs).iterator();
         fireOnNextInNewThread(obs, "one");
@@ -234,7 +234,7 @@ public class BlockingObservableNextTest {
      * @throws Throwable some method call is declared throws
      */
     @Test
-    public void testNoBufferingOrBlockingOfSequence() throws Throwable {
+    public void noBufferingOrBlockingOfSequence() throws Throwable {
         int repeat = 0;
         for (;;) {
             final SerialDisposable task = new SerialDisposable();
@@ -313,7 +313,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test /* (timeout = 8000) */
-    public void testSingleSourceManyIterators() throws InterruptedException {
+    public void singleSourceManyIterators() throws InterruptedException {
         Observable<Long> o = Observable.interval(250, TimeUnit.MILLISECONDS);
         PublishSubject<Integer> terminal = PublishSubject.create();
         Observable<Long> source = o.takeUntil(terminal);
@@ -332,7 +332,7 @@ public class BlockingObservableNextTest {
     }
 
     @Test
-    public void testSynchronousNext() {
+    public void synchronousNext() {
         assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
         assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());

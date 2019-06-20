@@ -37,12 +37,12 @@ import io.reactivex.testsupport.*;
 public class ObservableFromIterableTest {
 
     @Test(expected = NullPointerException.class)
-    public void testNull() {
+    public void nullValue() {
         Observable.fromIterable(null);
     }
 
     @Test
-    public void testListIterable() {
+    public void listIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -60,7 +60,7 @@ public class ObservableFromIterableTest {
      * This tests the path that can not optimize based on size so must use setProducer.
      */
     @Test
-    public void testRawIterable() {
+    public void rawIterable() {
         Iterable<String> it = new Iterable<String>() {
 
             @Override
@@ -101,7 +101,7 @@ public class ObservableFromIterableTest {
     }
 
     @Test
-    public void testObservableFromIterable() {
+    public void observableFromIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -116,7 +116,7 @@ public class ObservableFromIterableTest {
     }
 
     @Test
-    public void testNoBackpressure() {
+    public void noBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
@@ -128,7 +128,7 @@ public class ObservableFromIterableTest {
     }
 
     @Test
-    public void testSubscribeMultipleTimes() {
+    public void subscribeMultipleTimes() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
@@ -143,7 +143,7 @@ public class ObservableFromIterableTest {
     }
 
     @Test
-    public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
+    public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
         Iterable<Integer> iterable = new Iterable<Integer>() {
 
@@ -180,7 +180,7 @@ public class ObservableFromIterableTest {
     }
 
     @Test
-    public void testDoesNotCallIteratorHasNextMoreThanRequiredFastPath() {
+    public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
         Iterable<Integer> iterable = new Iterable<Integer>() {
 

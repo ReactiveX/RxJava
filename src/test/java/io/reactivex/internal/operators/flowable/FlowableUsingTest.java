@@ -60,12 +60,12 @@ public class FlowableUsingTest {
     };
 
     @Test
-    public void testUsing() {
+    public void using() {
         performTestUsing(false);
     }
 
     @Test
-    public void testUsingEagerly() {
+    public void usingEagerly() {
         performTestUsing(true);
     }
 
@@ -104,12 +104,12 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingWithSubscribingTwice() {
+    public void usingWithSubscribingTwice() {
         performTestUsingWithSubscribingTwice(false);
     }
 
     @Test
-    public void testUsingWithSubscribingTwiceDisposeEagerly() {
+    public void usingWithSubscribingTwiceDisposeEagerly() {
         performTestUsingWithSubscribingTwice(true);
     }
 
@@ -167,12 +167,12 @@ public class FlowableUsingTest {
     }
 
     @Test(expected = TestException.class)
-    public void testUsingWithResourceFactoryError() {
+    public void usingWithResourceFactoryError() {
         performTestUsingWithResourceFactoryError(false);
     }
 
     @Test(expected = TestException.class)
-    public void testUsingWithResourceFactoryErrorDisposeEagerly() {
+    public void usingWithResourceFactoryErrorDisposeEagerly() {
         performTestUsingWithResourceFactoryError(true);
     }
 
@@ -196,12 +196,12 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingWithFlowableFactoryError() {
+    public void usingWithFlowableFactoryError() {
         performTestUsingWithFlowableFactoryError(false);
     }
 
     @Test
-    public void testUsingWithFlowableFactoryErrorDisposeEagerly() {
+    public void usingWithFlowableFactoryErrorDisposeEagerly() {
         performTestUsingWithFlowableFactoryError(true);
     }
 
@@ -233,13 +233,13 @@ public class FlowableUsingTest {
 
     @Test
     @Ignore("subscribe() can't throw")
-    public void testUsingWithFlowableFactoryErrorInOnSubscribe() {
+    public void usingWithFlowableFactoryErrorInOnSubscribe() {
         performTestUsingWithFlowableFactoryErrorInOnSubscribe(false);
     }
 
     @Test
     @Ignore("subscribe() can't throw")
-    public void testUsingWithFlowableFactoryErrorInOnSubscribeDisposeEagerly() {
+    public void usingWithFlowableFactoryErrorInOnSubscribeDisposeEagerly() {
         performTestUsingWithFlowableFactoryErrorInOnSubscribe(true);
     }
 
@@ -278,7 +278,7 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingDisposesEagerlyBeforeCompletion() {
+    public void usingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
@@ -305,7 +305,7 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
+    public void usingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
@@ -332,7 +332,7 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingDisposesEagerlyBeforeError() {
+    public void usingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
@@ -360,7 +360,7 @@ public class FlowableUsingTest {
     }
 
     @Test
-    public void testUsingDoesNotDisposesEagerlyBeforeError() {
+    public void usingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         final Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);

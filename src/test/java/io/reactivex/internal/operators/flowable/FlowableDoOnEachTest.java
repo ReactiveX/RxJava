@@ -48,7 +48,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEach() {
+    public void doOnEach() {
         Flowable<String> base = Flowable.just("a", "b", "c");
         Flowable<String> doOnEach = base.doOnEach(sideEffectSubscriber);
 
@@ -70,7 +70,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEachWithError() {
+    public void doOnEachWithError() {
         Flowable<String> base = Flowable.just("one", "fail", "two", "three", "fail");
         Flowable<String> errs = base.map(new Function<String, String>() {
             @Override
@@ -99,7 +99,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testDoOnEachWithErrorInCallback() {
+    public void doOnEachWithErrorInCallback() {
         Flowable<String> base = Flowable.just("one", "two", "fail", "three");
         Flowable<String> doOnEach = base.doOnNext(new Consumer<String>() {
             @Override
@@ -120,7 +120,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testIssue1451Case1() {
+    public void issue1451Case1() {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
@@ -146,7 +146,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testIssue1451Case2() {
+    public void issue1451Case2() {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
@@ -173,7 +173,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     @Ignore("crashing publisher can't propagate to a subscriber")
-    public void testFatalError() {
+    public void fatalError() {
 //        try {
 //            Flowable.just(1, 2, 3)
 //                    .flatMap(new Function<Integer, Flowable<?>>() {

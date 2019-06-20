@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 public class FlowableOnErrorResumeNextViaFunctionTest {
 
     @Test
-    public void testResumeNextWithSynchronousExecution() {
+    public void resumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Flowable<String> w = Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -78,7 +78,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testResumeNextWithAsyncExecution() {
+    public void resumeNextWithAsyncExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
@@ -117,7 +117,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
      * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
-    public void testFunctionThrowsError() {
+    public void functionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
@@ -153,7 +153,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
      */
     @Test
     @Ignore("Failed operator may leave the child subscriber in an inconsistent state which prevents further error delivery.")
-    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
+    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
@@ -186,7 +186,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
      */
     @Test
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
-    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
+    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
@@ -236,7 +236,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         // Trigger multiple failures
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
 
@@ -315,7 +315,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
                 .onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {

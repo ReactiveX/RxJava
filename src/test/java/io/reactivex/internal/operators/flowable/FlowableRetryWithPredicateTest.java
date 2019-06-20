@@ -57,7 +57,7 @@ public class FlowableRetryWithPredicateTest {
         }
     };
     @Test
-    public void testWithNothingToRetry() {
+    public void withNothingToRetry() {
         Flowable<Integer> source = Flowable.range(0, 3);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -73,7 +73,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryTwice() {
+    public void retryTwice() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             int count;
             @Override
@@ -109,7 +109,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryTwiceAndGiveUp() {
+    public void retryTwiceAndGiveUp() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
@@ -137,7 +137,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryOnSpecificException() {
+    public void retryOnSpecificException() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             int count;
             @Override
@@ -172,7 +172,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryOnSpecificExceptionAndNotOther() {
+    public void retryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -210,7 +210,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testUnsubscribeFromRetry() {
+    public void unsubscribeFromRetry() {
         PublishProcessor<Integer> processor = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
         Disposable sub = processor.retry(retryTwice).subscribe(new Consumer<Integer>() {
@@ -226,7 +226,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test(timeout = 10000)
-    public void testUnsubscribeAfterError() {
+    public void unsubscribeAfterError() {
 
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
@@ -252,7 +252,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test(timeout = 10000)
-    public void testTimeoutWithRetry() {
+    public void timeoutWithRetry() {
 
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
@@ -278,7 +278,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue2826() {
+    public void issue2826() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
@@ -296,7 +296,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testJustAndRetry() throws Exception {
+    public void justAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);
         int value = Flowable.just(1).map(new Function<Integer, Integer>() {
             @Override
@@ -312,7 +312,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue3008RetryWithPredicate() {
+    public void issue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
@@ -340,7 +340,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue3008RetryInfinite() {
+    public void issue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
@@ -364,7 +364,7 @@ public class FlowableRetryWithPredicateTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         final List<Long> requests = new ArrayList<Long>();
 
         Flowable<Integer> source = Flowable

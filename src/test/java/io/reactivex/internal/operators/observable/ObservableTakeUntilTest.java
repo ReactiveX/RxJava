@@ -29,7 +29,7 @@ import io.reactivex.testsupport.*;
 public class ObservableTakeUntilTest {
 
     @Test
-    public void testTakeUntil() {
+    public void takeUntil() {
         Disposable sSource = mock(Disposable.class);
         Disposable sOther = mock(Disposable.class);
         TestObservable source = new TestObservable(sSource);
@@ -56,7 +56,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilSourceCompleted() {
+    public void takeUntilSourceCompleted() {
         Disposable sSource = mock(Disposable.class);
         Disposable sOther = mock(Disposable.class);
         TestObservable source = new TestObservable(sSource);
@@ -77,7 +77,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilSourceError() {
+    public void takeUntilSourceError() {
         Disposable sSource = mock(Disposable.class);
         Disposable sOther = mock(Disposable.class);
         TestObservable source = new TestObservable(sSource);
@@ -102,7 +102,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilOtherError() {
+    public void takeUntilOtherError() {
         Disposable sSource = mock(Disposable.class);
         Disposable sOther = mock(Disposable.class);
         TestObservable source = new TestObservable(sSource);
@@ -131,7 +131,7 @@ public class ObservableTakeUntilTest {
      * If the 'other' onCompletes then we unsubscribe from the source and onComplete.
      */
     @Test
-    public void testTakeUntilOtherCompleted() {
+    public void takeUntilOtherCompleted() {
         Disposable sSource = mock(Disposable.class);
         Disposable sOther = mock(Disposable.class);
         TestObservable source = new TestObservable(sSource);
@@ -186,7 +186,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testUntilFires() {
+    public void untilFires() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
@@ -213,7 +213,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testMainCompletes() {
+    public void mainCompletes() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
@@ -238,7 +238,7 @@ public class ObservableTakeUntilTest {
     }
 
     @Test
-    public void testDownstreamUnsubscribes() {
+    public void downstreamUnsubscribes() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 

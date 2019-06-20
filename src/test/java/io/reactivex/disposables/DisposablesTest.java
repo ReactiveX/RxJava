@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 public class DisposablesTest {
 
     @Test
-    public void testUnsubscribeOnlyOnce() {
+    public void unsubscribeOnlyOnce() {
         Runnable dispose = mock(Runnable.class);
         Disposable subscription = Disposables.fromRunnable(dispose);
         subscription.dispose();
@@ -41,7 +41,7 @@ public class DisposablesTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         Disposable empty = Disposables.empty();
         assertFalse(empty.isDisposed());
         empty.dispose();
@@ -49,7 +49,7 @@ public class DisposablesTest {
     }
 
     @Test
-    public void testUnsubscribed() {
+    public void unsubscribed() {
         Disposable disposed = Disposables.disposed();
         assertTrue(disposed.isDisposed());
     }

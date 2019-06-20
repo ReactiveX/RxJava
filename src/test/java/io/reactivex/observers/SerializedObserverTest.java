@@ -44,7 +44,7 @@ public class SerializedObserverTest {
     }
 
     @Test
-    public void testSingleThreadedBasic() {
+    public void singleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -64,7 +64,7 @@ public class SerializedObserverTest {
     }
 
     @Test
-    public void testMultiThreadedBasic() {
+    public void multiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -88,7 +88,7 @@ public class SerializedObserverTest {
     }
 
     @Test(timeout = 1000)
-    public void testMultiThreadedWithNPE() throws InterruptedException {
+    public void multiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -119,7 +119,7 @@ public class SerializedObserverTest {
     }
 
     @Test
-    public void testMultiThreadedWithNPEinMiddle() {
+    public void multiThreadedWithNPEinMiddle() {
         int n = 10;
         for (int i = 0; i < n; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null,
@@ -263,7 +263,7 @@ public class SerializedObserverTest {
      */
     @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
     @Test
-    public void testNotificationDelay() throws InterruptedException {
+    public void notificationDelay() throws InterruptedException {
         ExecutorService tp1 = Executors.newFixedThreadPool(1);
         ExecutorService tp2 = Executors.newFixedThreadPool(1);
         try {
@@ -353,7 +353,7 @@ public class SerializedObserverTest {
      */
     @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
     @Test
-    public void testThreadStarvation() throws InterruptedException {
+    public void threadStarvation() throws InterruptedException {
 
         TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
 
@@ -845,7 +845,7 @@ public class SerializedObserverTest {
 
     @Test
     @Ignore("Null values not permitted")
-    public void testSerializeNull() {
+    public void serializeNull() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -867,7 +867,7 @@ public class SerializedObserverTest {
 
     @Test
     @Ignore("Subscribers can't throw")
-    public void testSerializeAllowsOnError() {
+    public void serializeAllowsOnError() {
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -888,7 +888,7 @@ public class SerializedObserverTest {
 
     @Test
     @Ignore("Null values no longer permitted")
-    public void testSerializeReentrantNullAndComplete() {
+    public void serializeReentrantNullAndComplete() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -913,7 +913,7 @@ public class SerializedObserverTest {
 
     @Test
     @Ignore("Subscribers can't throw")
-    public void testSerializeReentrantNullAndError() {
+    public void serializeReentrantNullAndError() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -938,7 +938,7 @@ public class SerializedObserverTest {
 
     @Test
     @Ignore("Null values no longer permitted")
-    public void testSerializeDrainPhaseThrows() {
+    public void serializeDrainPhaseThrows() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -963,7 +963,7 @@ public class SerializedObserverTest {
     }
 
     @Test
-    public void testErrorReentry() {
+    public void errorReentry() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
@@ -992,7 +992,7 @@ public class SerializedObserverTest {
     }
 
     @Test
-    public void testCompleteReentry() {
+    public void completeReentry() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {

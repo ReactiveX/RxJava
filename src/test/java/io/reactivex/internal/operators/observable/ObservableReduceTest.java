@@ -47,7 +47,7 @@ public class ObservableReduceTest {
     };
 
     @Test
-    public void testAggregateAsIntSumObservable() {
+    public void aggregateAsIntSumObservable() {
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
                 .map(new Function<Integer, Integer>() {
@@ -65,7 +65,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumSourceThrowsObservable() {
+    public void aggregateAsIntSumSourceThrowsObservable() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(new Function<Integer, Integer>() {
@@ -83,7 +83,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumAccumulatorThrowsObservable() {
+    public void aggregateAsIntSumAccumulatorThrowsObservable() {
         BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -107,7 +107,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumResultSelectorThrowsObservable() {
+    public void aggregateAsIntSumResultSelectorThrowsObservable() {
 
         Function<Integer, Integer> error = new Function<Integer, Integer>() {
 
@@ -128,7 +128,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithNoInitialValueObservable() throws InterruptedException {
+    public void backpressureWithNoInitialValueObservable() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(sum).toObservable();
 
@@ -137,7 +137,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithInitialValueObservable() throws InterruptedException {
+    public void backpressureWithInitialValueObservable() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(0, sum).toObservable();
 
@@ -146,7 +146,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSum() {
+    public void aggregateAsIntSum() {
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
                 .map(new Function<Integer, Integer>() {
@@ -163,7 +163,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumSourceThrows() {
+    public void aggregateAsIntSumSourceThrows() {
         Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(new Function<Integer, Integer>() {
@@ -180,7 +180,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumAccumulatorThrows() {
+    public void aggregateAsIntSumAccumulatorThrows() {
         BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -203,7 +203,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumResultSelectorThrows() {
+    public void aggregateAsIntSumResultSelectorThrows() {
 
         Function<Integer, Integer> error = new Function<Integer, Integer>() {
 
@@ -223,7 +223,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithNoInitialValue() throws InterruptedException {
+    public void backpressureWithNoInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Maybe<Integer> reduced = source.reduce(sum);
 
@@ -232,7 +232,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithInitialValue() throws InterruptedException {
+    public void backpressureWithInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Single<Integer> reduced = source.reduce(0, sum);
 

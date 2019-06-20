@@ -55,7 +55,7 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNone() {
+    public void distinctUntilChangedOfNone() {
         Observable<String> src = Observable.empty();
         src.distinctUntilChanged().subscribe(w);
 
@@ -65,7 +65,7 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNoneWithKeySelector() {
+    public void distinctUntilChangedOfNoneWithKeySelector() {
         Observable<String> src = Observable.empty();
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -75,7 +75,7 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNormalSource() {
+    public void distinctUntilChangedOfNormalSource() {
         Observable<String> src = Observable.just("a", "b", "c", "c", "c", "b", "b", "a", "e");
         src.distinctUntilChanged().subscribe(w);
 
@@ -92,7 +92,7 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
+    public void distinctUntilChangedOfNormalSourceWithKeySelector() {
         Observable<String> src = Observable.just("a", "b", "c", "C", "c", "B", "b", "a", "e");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -110,7 +110,7 @@ public class ObservableDistinctUntilChangedTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctUntilChangedOfSourceWithNulls() {
+    public void distinctUntilChangedOfSourceWithNulls() {
         Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null, null);
         src.distinctUntilChanged().subscribe(w);
 
@@ -127,7 +127,7 @@ public class ObservableDistinctUntilChangedTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
+    public void distinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 

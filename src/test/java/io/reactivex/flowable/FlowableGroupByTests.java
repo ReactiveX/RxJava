@@ -25,7 +25,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableGroupByTests {
 
     @Test
-    public void testTakeUnsubscribesOnGroupBy() {
+    public void takeUnsubscribesOnGroupBy() {
         Flowable.merge(
             FlowableEventStream.getEventStream("HTTP-ClusterA", 50),
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
@@ -50,7 +50,7 @@ public class FlowableGroupByTests {
     }
 
     @Test
-    public void testTakeUnsubscribesOnFlatMapOfGroupBy() {
+    public void takeUnsubscribesOnFlatMapOfGroupBy() {
         Flowable.merge(
             FlowableEventStream.getEventStream("HTTP-ClusterA", 50),
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)

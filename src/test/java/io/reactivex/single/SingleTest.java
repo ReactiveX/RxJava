@@ -34,14 +34,14 @@ import io.reactivex.testsupport.*;
 public class SingleTest {
 
     @Test
-    public void testHelloWorld() {
+    public void helloWorld() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single.just("Hello World!").toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("Hello World!"));
     }
 
     @Test
-    public void testHelloWorld2() {
+    public void helloWorld2() {
         final AtomicReference<String> v = new AtomicReference<String>();
         Single.just("Hello World!").subscribe(new SingleObserver<String>() {
 
@@ -65,7 +65,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testMap() {
+    public void map() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single.just("A")
                 .map(new Function<String, String>() {
@@ -79,7 +79,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testZip() {
+    public void zip() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
@@ -95,7 +95,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testZipWith() {
+    public void zipWith() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Single.just("A").zipWith(Single.just("B"), new BiFunction<String, String, String>() {
@@ -109,7 +109,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testMerge() {
+    public void merge() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
@@ -119,7 +119,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testMergeWith() {
+    public void mergeWith() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Single.just("A").mergeWith(Single.just("B")).subscribe(ts);
@@ -127,7 +127,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testCreateSuccess() {
+    public void createSuccess() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         Single.unsafeCreate(new SingleSource<Object>() {
@@ -142,7 +142,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testCreateError() {
+    public void createError() {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
@@ -157,7 +157,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testAsync() {
+    public void async() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single.just("Hello")
                 .subscribeOn(Schedulers.io())
@@ -182,7 +182,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testFlatMap() throws InterruptedException {
+    public void flatMap() throws InterruptedException {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Single.just("Hello").flatMap(new Function<String, Single<String>>() {
             @Override
@@ -199,7 +199,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testTimeout() {
+    public void timeout() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
@@ -221,7 +221,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testTimeoutWithFallback() {
+    public void timeoutWithFallback() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
@@ -244,7 +244,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testUnsubscribe() throws InterruptedException {
+    public void unsubscribe() throws InterruptedException {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final AtomicBoolean interrupted = new AtomicBoolean();
@@ -300,7 +300,7 @@ public class SingleTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testUnsubscribe2() throws InterruptedException {
+    public void unsubscribe2() throws InterruptedException {
         final SerialDisposable sd = new SerialDisposable();
         SingleObserver<String> ts = new SingleObserver<String>() {
 
@@ -375,7 +375,7 @@ public class SingleTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testUnsubscribeViaReturnedSubscription() throws InterruptedException {
+    public void unsubscribeViaReturnedSubscription() throws InterruptedException {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
@@ -427,7 +427,7 @@ public class SingleTest {
     }
 
     @Test
-    public void testBackpressureAsObservable() {
+    public void backpressureAsObservable() {
         Single<String> s = Single.unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> t) {

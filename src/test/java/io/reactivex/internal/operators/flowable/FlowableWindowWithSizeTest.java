@@ -54,7 +54,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testNonOverlappingWindows() {
+    public void nonOverlappingWindows() {
         Flowable<String> subject = Flowable.just("one", "two", "three", "four", "five");
         Flowable<Flowable<String>> windowed = subject.window(3);
 
@@ -66,7 +66,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testSkipAndCountGaplessWindows() {
+    public void skipAndCountGaplessWindows() {
         Flowable<String> subject = Flowable.just("one", "two", "three", "four", "five");
         Flowable<Flowable<String>> windowed = subject.window(3, 3);
 
@@ -78,7 +78,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testOverlappingWindows() {
+    public void overlappingWindows() {
         Flowable<String> subject = Flowable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
         Flowable<Flowable<String>> windowed = subject.window(3, 1);
 
@@ -94,7 +94,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testSkipAndCountWindowsWithGaps() {
+    public void skipAndCountWindowsWithGaps() {
         Flowable<String> subject = Flowable.just("one", "two", "three", "four", "five");
         Flowable<Flowable<String>> windowed = subject.window(2, 3);
 
@@ -106,7 +106,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeNonOverlapping() {
+    public void windowUnsubscribeNonOverlapping() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         final AtomicInteger count = new AtomicInteger();
@@ -128,7 +128,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeNonOverlappingAsyncSource() {
+    public void windowUnsubscribeNonOverlappingAsyncSource() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
@@ -152,7 +152,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeOverlapping() {
+    public void windowUnsubscribeOverlapping() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
@@ -171,7 +171,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeOverlappingAsyncSource() {
+    public void windowUnsubscribeOverlappingAsyncSource() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
@@ -203,7 +203,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testBackpressureOuter() {
+    public void backpressureOuter() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10).window(3);
 
         final List<Integer> list = new ArrayList<Integer>();
@@ -278,7 +278,7 @@ public class FlowableWindowWithSizeTest {
     }
 
     @Test
-    public void testTakeFlatMapCompletes() {
+    public void takeFlatMapCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         final int indicator = 999999999;
@@ -300,7 +300,7 @@ public class FlowableWindowWithSizeTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testBackpressureOuterInexact() {
+    public void backpressureOuterInexact() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
 
         Flowable.range(1, 5)

@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSubscriberTest {
     @Test
-    public void testOnStartCalledOnceViaSubscribe() {
+    public void onStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
 
@@ -61,7 +61,7 @@ public class ObservableSubscriberTest {
     }
 
     @Test
-    public void testOnStartCalledOnceViaUnsafeSubscribe() {
+    public void onStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
 
@@ -90,7 +90,7 @@ public class ObservableSubscriberTest {
     }
 
     @Test
-    public void testOnStartCalledOnceViaLift() {
+    public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1, 2, 3, 4).lift(new ObservableOperator<Integer, Integer>() {
 

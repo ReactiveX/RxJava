@@ -30,14 +30,14 @@ public class FlowableMergeTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfMerge() {
+    public void covarianceOfMerge() {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<Flowable<HorrorMovie>> metaHorrors = Flowable.just(horrors);
         Flowable.<Media> merge(metaHorrors);
     }
 
     @Test
-    public void testMergeCovariance() {
+    public void mergeCovariance() {
         Flowable<Media> f1 = Flowable.<Media> just(new HorrorMovie(), new Movie());
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
@@ -49,7 +49,7 @@ public class FlowableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance2() {
+    public void mergeCovariance2() {
         Flowable<Media> f1 = Flowable.just(new HorrorMovie(), new Movie(), new Media());
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
@@ -61,7 +61,7 @@ public class FlowableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance3() {
+    public void mergeCovariance3() {
         Flowable<Movie> f1 = Flowable.just(new HorrorMovie(), new Movie());
         Flowable<Media> f2 = Flowable.just(new Media(), new HorrorMovie());
 
@@ -74,7 +74,7 @@ public class FlowableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance4() {
+    public void mergeCovariance4() {
 
         Flowable<Movie> f1 = Flowable.defer(new Supplier<Publisher<Movie>>() {
             @Override

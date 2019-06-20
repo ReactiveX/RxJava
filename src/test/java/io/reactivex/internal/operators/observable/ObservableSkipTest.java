@@ -28,7 +28,7 @@ import io.reactivex.testsupport.*;
 public class ObservableSkipTest {
 
     @Test
-    public void testSkipNegativeElements() {
+    public void skipNegativeElements() {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(-99);
 
@@ -42,7 +42,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipZeroElements() {
+    public void skipZeroElements() {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(0);
 
@@ -56,7 +56,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipOneElement() {
+    public void skipOneElement() {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(1);
 
@@ -70,7 +70,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipTwoElements() {
+    public void skipTwoElements() {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(2);
 
@@ -84,7 +84,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipEmptyStream() {
+    public void skipEmptyStream() {
 
         Observable<String> w = Observable.empty();
         Observable<String> skip = w.skip(1);
@@ -97,7 +97,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipMultipleObservers() {
+    public void skipMultipleObservers() {
 
         Observable<String> skip = Observable.just("one", "two", "three")
                 .skip(2);
@@ -118,7 +118,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testSkipError() {
+    public void skipError() {
 
         Exception e = new Exception();
 
@@ -137,7 +137,7 @@ public class ObservableSkipTest {
     }
 
     @Test
-    public void testRequestOverflowDoesNotOccur() {
+    public void requestOverflowDoesNotOccur() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         Observable.range(1, 10).skip(5).subscribe(to);

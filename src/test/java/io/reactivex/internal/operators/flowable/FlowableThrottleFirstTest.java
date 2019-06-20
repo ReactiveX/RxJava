@@ -45,7 +45,7 @@ public class FlowableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottlingWithCompleted() {
+    public void throttlingWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -73,7 +73,7 @@ public class FlowableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottlingWithError() {
+    public void throttlingWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -124,7 +124,7 @@ public class FlowableThrottleFirstTest {
     }
 
     @Test
-    public void testThrottle() {
+    public void throttle() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         TestScheduler s = new TestScheduler();
         PublishProcessor<Integer> o = PublishProcessor.create();

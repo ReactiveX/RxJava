@@ -52,7 +52,7 @@ public class FlowableDebounceTest {
     }
 
     @Test
-    public void testDebounceWithCompleted() {
+    public void debounceWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -78,7 +78,7 @@ public class FlowableDebounceTest {
     }
 
     @Test
-    public void testDebounceNeverEmits() {
+    public void debounceNeverEmits() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -108,7 +108,7 @@ public class FlowableDebounceTest {
     }
 
     @Test
-    public void testDebounceWithError() {
+    public void debounceWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {

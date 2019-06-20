@@ -56,7 +56,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testComplete() {
+    public void complete() {
         Observable<String> source = Observable.empty();
 
         Observable<List<String>> buffered = source.buffer(3, 3);
@@ -68,7 +68,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountOverlappingBuffers() {
+    public void skipAndCountOverlappingBuffers() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -94,7 +94,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountGaplessBuffers() {
+    public void skipAndCountGaplessBuffers() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five");
 
         Observable<List<String>> buffered = source.buffer(3, 3);
@@ -109,7 +109,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testSkipAndCountBuffersWithGaps() {
+    public void skipAndCountBuffersWithGaps() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five");
 
         Observable<List<String>> buffered = source.buffer(2, 3);
@@ -124,7 +124,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testTimedAndCount() {
+    public void timedAndCount() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -156,7 +156,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testTimed() {
+    public void timed() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -190,7 +190,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testObservableBasedOpenerAndCloser() {
+    public void observableBasedOpenerAndCloser() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -241,7 +241,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testObservableBasedCloser() {
+    public void observableBasedCloser() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -285,7 +285,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testLongTimeAction() throws InterruptedException {
+    public void longTimeAction() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         LongTimeAction action = new LongTimeAction(latch);
         Observable.just(1).buffer(10, TimeUnit.MILLISECONDS, 10)
@@ -345,7 +345,7 @@ public class ObservableBufferTest {
     }
 
     @Test
-    public void testBufferStopsWhenUnsubscribed1() {
+    public void bufferStopsWhenUnsubscribed1() {
         Observable<Integer> source = Observable.never();
 
         Observer<List<Integer>> o = TestHelper.mockObserver();
@@ -776,7 +776,7 @@ public class ObservableBufferTest {
     }
 
     @Test(timeout = 3000)
-    public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
+    public void bufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Observer<Object> o = TestHelper.mockObserver();
 
         final CountDownLatch cdl = new CountDownLatch(1);

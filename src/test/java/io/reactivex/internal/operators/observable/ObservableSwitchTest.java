@@ -51,7 +51,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWhenOuterCompleteBeforeInner() {
+    public void switchWhenOuterCompleteBeforeInner() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
@@ -80,7 +80,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWhenInnerCompleteBeforeOuter() {
+    public void switchWhenInnerCompleteBeforeOuter() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
@@ -126,7 +126,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithComplete() {
+    public void switchWithComplete() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
@@ -185,7 +185,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithError() {
+    public void switchWithError() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
@@ -244,7 +244,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithSubsequenceComplete() {
+    public void switchWithSubsequenceComplete() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
@@ -298,7 +298,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchWithSubsequenceError() {
+    public void switchWithSubsequenceError() {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
@@ -380,7 +380,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testSwitchIssue737() {
+    public void switchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
@@ -427,7 +427,7 @@ public class ObservableSwitchTest {
     }
 
     @Test
-    public void testUnsubscribe() {
+    public void unsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Observable.switchOnNext(
                 Observable.unsafeCreate(new ObservableSource<Observable<Integer>>() {
@@ -444,7 +444,7 @@ public class ObservableSwitchTest {
     }
     /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
     @Test
-    public void testIssue2654() {
+    public void issue2654() {
         Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
 
         Observable<String> src = oneItem.switchMap(new Function<String, Observable<String>>() {

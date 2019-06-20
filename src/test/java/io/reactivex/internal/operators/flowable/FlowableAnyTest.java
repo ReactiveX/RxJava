@@ -37,7 +37,7 @@ import io.reactivex.testsupport.*;
 public class FlowableAnyTest {
 
     @Test
-    public void testAnyWithTwoItems() {
+    public void anyWithTwoItems() {
         Flowable<Integer> w = Flowable.just(1, 2);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -56,7 +56,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithTwoItems() {
+    public void isEmptyWithTwoItems() {
         Flowable<Integer> w = Flowable.just(1, 2);
         Single<Boolean> single = w.isEmpty();
 
@@ -70,7 +70,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithOneItem() {
+    public void anyWithOneItem() {
         Flowable<Integer> w = Flowable.just(1);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -89,7 +89,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithOneItem() {
+    public void isEmptyWithOneItem() {
         Flowable<Integer> w = Flowable.just(1);
         Single<Boolean> single = w.isEmpty();
 
@@ -103,7 +103,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmpty() {
+    public void anyWithEmpty() {
         Flowable<Integer> w = Flowable.empty();
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -122,7 +122,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithEmpty() {
+    public void isEmptyWithEmpty() {
         Flowable<Integer> w = Flowable.empty();
         Single<Boolean> single = w.isEmpty();
 
@@ -136,7 +136,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate1() {
+    public void anyWithPredicate1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -155,7 +155,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testExists1() {
+    public void exists1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -174,7 +174,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate2() {
+    public void anyWithPredicate2() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
@@ -193,7 +193,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyAndPredicate() {
+    public void anyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
         Single<Boolean> single = w.any(new Predicate<Integer>() {
@@ -213,7 +213,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void withFollowingFirst() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
         Single<Boolean> anyEven = f.any(new Predicate<Integer>() {
             @Override
@@ -226,7 +226,7 @@ public class FlowableAnyTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstream() {
+    public void issue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
             .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {
                 @Override
@@ -240,7 +240,7 @@ public class FlowableAnyTest {
 
     @Test
     @Ignore("Single doesn't do backpressure")
-    public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
+    public void backpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         Flowable.just(1).any(new Predicate<Integer>() {
@@ -257,7 +257,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
+    public void backpressureIfOneRequestedOneShouldBeDelivered() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
@@ -273,7 +273,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessage() {
+    public void predicateThrowsExceptionAndValueInCauseMessage() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -293,7 +293,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithTwoItemsFlowable() {
+    public void anyWithTwoItemsFlowable() {
         Flowable<Integer> w = Flowable.just(1, 2);
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -315,7 +315,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithTwoItemsFlowable() {
+    public void isEmptyWithTwoItemsFlowable() {
         Flowable<Integer> w = Flowable.just(1, 2);
         Flowable<Boolean> flowable = w.isEmpty().toFlowable();
 
@@ -330,7 +330,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithOneItemFlowable() {
+    public void anyWithOneItemFlowable() {
         Flowable<Integer> w = Flowable.just(1);
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -350,7 +350,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithOneItemFlowable() {
+    public void isEmptyWithOneItemFlowable() {
         Flowable<Integer> w = Flowable.just(1);
         Single<Boolean> single = w.isEmpty();
 
@@ -364,7 +364,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyFlowable() {
+    public void anyWithEmptyFlowable() {
         Flowable<Integer> w = Flowable.empty();
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -384,7 +384,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithEmptyFlowable() {
+    public void isEmptyWithEmptyFlowable() {
         Flowable<Integer> w = Flowable.empty();
         Flowable<Boolean> flowable = w.isEmpty().toFlowable();
 
@@ -399,7 +399,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate1Flowable() {
+    public void anyWithPredicate1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -419,7 +419,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testExists1Flowable() {
+    public void exists1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -439,7 +439,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate2Flowable() {
+    public void anyWithPredicate2Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
             @Override
@@ -459,7 +459,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyAndPredicateFlowable() {
+    public void anyWithEmptyAndPredicateFlowable() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
         Flowable<Boolean> flowable = w.any(new Predicate<Integer>() {
@@ -480,7 +480,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testWithFollowingFirstFlowable() {
+    public void withFollowingFirstFlowable() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
         Flowable<Boolean> anyEven = f.any(new Predicate<Integer>() {
             @Override
@@ -493,7 +493,7 @@ public class FlowableAnyTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstreamFlowable() {
+    public void issue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
             .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {
                 @Override
@@ -506,7 +506,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testBackpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
+    public void backpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
 
         Flowable.just(1).any(new Predicate<Integer>() {
@@ -523,7 +523,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
+    public void backpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>(1L);
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
@@ -539,7 +539,7 @@ public class FlowableAnyTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessageFlowable() {
+    public void predicateThrowsExceptionAndValueInCauseMessageFlowable() {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 

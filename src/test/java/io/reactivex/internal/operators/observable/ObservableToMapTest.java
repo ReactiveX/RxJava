@@ -50,7 +50,7 @@ public class ObservableToMapTest {
     };
 
     @Test
-    public void testToMapObservable() {
+    public void toMapObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc).toObservable();
@@ -69,7 +69,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelectorObservable() {
+    public void toMapWithValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate).toObservable();
@@ -88,7 +88,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorObservable() {
+    public void toMapWithErrorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -117,7 +117,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelectorObservable() {
+    public void toMapWithErrorInValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -147,7 +147,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactoryObservable() {
+    public void toMapWithFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -191,7 +191,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactoryObservable() {
+    public void toMapWithErrorThrowingFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -227,7 +227,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMap() {
+    public void toMap() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
@@ -245,7 +245,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelector() {
+    public void toMapWithValueSelector() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
@@ -263,7 +263,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithError() {
+    public void toMapWithError() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -291,7 +291,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelector() {
+    public void toMapWithErrorInValueSelector() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -320,7 +320,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactory() {
+    public void toMapWithFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -363,7 +363,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactory() {
+    public void toMapWithErrorThrowingFactory() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {

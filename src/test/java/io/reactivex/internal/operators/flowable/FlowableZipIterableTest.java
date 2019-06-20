@@ -79,7 +79,7 @@ public class FlowableZipIterableTest {
     };
 
     @Test
-    public void testZipIterableSameSize() {
+    public void zipIterableSameSize() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -104,7 +104,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableEmptyFirstSize() {
+    public void zipIterableEmptyFirstSize() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -124,7 +124,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableEmptySecond() {
+    public void zipIterableEmptySecond() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -146,7 +146,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableFirstShorter() {
+    public void zipIterableFirstShorter() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -169,7 +169,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableSecondShorter() {
+    public void zipIterableSecondShorter() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -193,7 +193,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableFirstThrows() {
+    public void zipIterableFirstThrows() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -216,7 +216,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableIteratorThrows() {
+    public void zipIterableIteratorThrows() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -243,7 +243,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableHasNextThrows() {
+    public void zipIterableHasNextThrows() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -293,7 +293,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testZipIterableNextThrows() {
+    public void zipIterableNextThrows() {
         PublishProcessor<String> r1 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -353,7 +353,7 @@ public class FlowableZipIterableTest {
     }
 
     @Test
-    public void testTake2() {
+    public void take2() {
         Flowable<Integer> f = Flowable.just(1, 2, 3, 4, 5);
         Iterable<String> it = Arrays.asList("a", "b", "c", "d", "e");
 

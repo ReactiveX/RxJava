@@ -25,7 +25,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableDefaultIfEmptyTest {
 
     @Test
-    public void testDefaultIfEmpty() {
+    public void defaultIfEmpty() {
         Observable<Integer> source = Observable.just(1, 2, 3);
         Observable<Integer> observable = source.defaultIfEmpty(10);
 
@@ -42,7 +42,7 @@ public class ObservableDefaultIfEmptyTest {
     }
 
     @Test
-    public void testDefaultIfEmptyWithEmpty() {
+    public void defaultIfEmptyWithEmpty() {
         Observable<Integer> source = Observable.empty();
         Observable<Integer> observable = source.defaultIfEmpty(10);
 
@@ -57,7 +57,7 @@ public class ObservableDefaultIfEmptyTest {
 
     @Test
     @Ignore("Subscribers should not throw")
-    public void testEmptyButClientThrows() {
+    public void emptyButClientThrows() {
         final Observer<Integer> o = TestHelper.mockObserver();
 
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultObserver<Integer>() {

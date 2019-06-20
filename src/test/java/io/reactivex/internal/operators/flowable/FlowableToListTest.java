@@ -35,7 +35,7 @@ import io.reactivex.testsupport.*;
 public class FlowableToListTest {
 
     @Test
-    public void testListFlowable() {
+    public void listFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> flowable = w.toList().toFlowable();
 
@@ -48,7 +48,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListViaFlowableFlowable() {
+    public void listViaFlowableFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> flowable = w.toList().toFlowable();
 
@@ -61,7 +61,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListMultipleSubscribersFlowable() {
+    public void listMultipleSubscribersFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> flowable = w.toList().toFlowable();
 
@@ -84,7 +84,7 @@ public class FlowableToListTest {
 
     @Test
     @Ignore("Null values are not allowed")
-    public void testListWithNullValueFlowable() {
+    public void listWithNullValueFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
         Flowable<List<String>> flowable = w.toList().toFlowable();
 
@@ -97,14 +97,14 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListWithBlockingFirstFlowable() {
+    public void listWithBlockingFirstFlowable() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().toFlowable().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
     @Test
-    public void testBackpressureHonoredFlowable() {
+    public void backpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList().toFlowable();
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
 
@@ -129,7 +129,7 @@ public class FlowableToListTest {
 
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void testAsyncRequestedFlowable() {
+    public void asyncRequestedFlowable() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {
             for (int i = 0; i < 1000; i++) {
@@ -174,7 +174,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testList() {
+    public void list() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -185,7 +185,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListViaFlowable() {
+    public void listViaFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -196,7 +196,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListMultipleSubscribers() {
+    public void listMultipleSubscribers() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -217,7 +217,7 @@ public class FlowableToListTest {
 
     @Test
     @Ignore("Null values are not allowed")
-    public void testListWithNullValue() {
+    public void listWithNullValue() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
         Single<List<String>> single = w.toList();
 
@@ -228,7 +228,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListWithBlockingFirst() {
+    public void listWithBlockingFirst() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
@@ -236,7 +236,7 @@ public class FlowableToListTest {
 
     @Test
     @Ignore("Single doesn't do backpressure")
-    public void testBackpressureHonored() {
+    public void backpressureHonored() {
         Single<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList();
         TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
@@ -261,7 +261,7 @@ public class FlowableToListTest {
 
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void testAsyncRequested() {
+    public void asyncRequested() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {
             for (int i = 0; i < 1000; i++) {

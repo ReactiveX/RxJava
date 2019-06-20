@@ -43,7 +43,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorDelayed1() {
+    public void errorDelayed1() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
 
@@ -64,7 +64,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorDelayed2() {
+    public void errorDelayed2() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
@@ -89,7 +89,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorDelayed3() {
+    public void errorDelayed3() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
@@ -112,7 +112,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorDelayed4() {
+    public void errorDelayed4() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
         final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight"));
@@ -135,7 +135,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorDelayed4WithThreading() {
+    public void errorDelayed4WithThreading() {
         final TestAsyncErrorFlowable f1 = new TestAsyncErrorFlowable("one", "two", "three");
         final TestAsyncErrorFlowable f2 = new TestAsyncErrorFlowable("four", "five", "six");
         final TestAsyncErrorFlowable f3 = new TestAsyncErrorFlowable("seven", "eight");
@@ -168,7 +168,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testCompositeErrorDelayed1() {
+    public void compositeErrorDelayed1() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
@@ -188,7 +188,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testCompositeErrorDelayed2() {
+    public void compositeErrorDelayed2() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
@@ -218,7 +218,7 @@ public class FlowableMergeDelayErrorTest {
      */
 
     @Test
-    public void testMergeFlowableOfFlowables() {
+    public void mergeFlowableOfFlowables() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
@@ -243,7 +243,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testMergeArray() {
+    public void mergeArray() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
@@ -256,7 +256,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testMergeList() {
+    public void mergeList() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
@@ -272,7 +272,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testMergeArrayWithThreading() {
+    public void mergeArrayWithThreading() {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
@@ -292,7 +292,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test(timeout = 1000L)
-    public void testSynchronousError() {
+    public void synchronousError() {
         final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -440,7 +440,7 @@ public class FlowableMergeDelayErrorTest {
 
     @Test
     @Ignore("Subscribers should not throw")
-    public void testMergeSourceWhichDoesntPropagateExceptionBack() {
+    public void mergeSourceWhichDoesntPropagateExceptionBack() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> t1) {
@@ -495,7 +495,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorInParentFlowable() {
+    public void errorInParentFlowable() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         Flowable.mergeDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
@@ -509,7 +509,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testErrorInParentFlowableDelayed() throws Exception {
+    public void errorInParentFlowableDelayed() throws Exception {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedFlowable f1 = new TestASynchronous1sDelayedFlowable();
             final TestASynchronous1sDelayedFlowable f2 = new TestASynchronous1sDelayedFlowable();
@@ -563,7 +563,7 @@ public class FlowableMergeDelayErrorTest {
     }
 
     @Test
-    public void testDelayErrorMaxConcurrent() {
+    public void delayErrorMaxConcurrent() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
                 Flowable.just(1).hide(),

@@ -34,7 +34,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableSingleTest {
 
     @Test
-    public void testSingleFlowable() {
+    public void singleFlowable() {
         Flowable<Integer> flowable = Flowable.just(1).singleElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -47,7 +47,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithTooManyElementsFlowable() {
+    public void singleWithTooManyElementsFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2).singleElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -60,7 +60,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithEmptyFlowable() {
+    public void singleWithEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.<Integer> empty().singleElement().toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -73,7 +73,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleDoesNotRequestMoreThanItNeedsIf1Then2RequestedFlowable() {
+    public void singleDoesNotRequestMoreThanItNeedsIf1Then2RequestedFlowable() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
@@ -114,7 +114,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleDoesNotRequestMoreThanItNeedsIf3RequestedFlowable() {
+    public void singleDoesNotRequestMoreThanItNeedsIf3RequestedFlowable() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
@@ -154,7 +154,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleRequestsExactlyWhatItNeedsIf1RequestedFlowable() {
+    public void singleRequestsExactlyWhatItNeedsIf1RequestedFlowable() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
@@ -194,7 +194,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateFlowable() {
+    public void singleWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(
                 new Predicate<Integer>() {
@@ -216,7 +216,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndTooManyElementsFlowable() {
+    public void singleWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4)
                 .filter(
                 new Predicate<Integer>() {
@@ -238,7 +238,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndEmptyFlowable() {
+    public void singleWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
                 .filter(
                 new Predicate<Integer>() {
@@ -259,7 +259,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultFlowable() {
+    public void singleOrDefaultFlowable() {
         Flowable<Integer> flowable = Flowable.just(1).single(2).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -272,7 +272,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithTooManyElementsFlowable() {
+    public void singleOrDefaultWithTooManyElementsFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2).single(3).toFlowable();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -285,7 +285,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithEmptyFlowable() {
+    public void singleOrDefaultWithEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.<Integer> empty()
                 .single(1).toFlowable();
 
@@ -299,7 +299,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateFlowable() {
+    public void singleOrDefaultWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -319,7 +319,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndTooManyElementsFlowable() {
+    public void singleOrDefaultWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -339,7 +339,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndEmptyFlowable() {
+    public void singleOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> flowable = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -359,7 +359,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithBackpressureFlowable() {
+    public void singleWithBackpressureFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2).singleElement().toFlowable();
 
         Subscriber<Integer> subscriber = spy(new DefaultSubscriber<Integer>() {
@@ -392,7 +392,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingle() {
+    public void single() {
         Maybe<Integer> maybe = Flowable.just(1).singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -404,7 +404,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithTooManyElements() {
+    public void singleWithTooManyElements() {
         Maybe<Integer> maybe = Flowable.just(1, 2).singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -417,7 +417,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithEmpty() {
+    public void singleWithEmpty() {
         Maybe<Integer> maybe = Flowable.<Integer> empty().singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -430,7 +430,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
+    public void singleDoesNotRequestMoreThanItNeedsToEmitItem() {
         final AtomicLong request = new AtomicLong();
         Flowable.just(1).doOnRequest(new LongConsumer() {
             @Override
@@ -443,7 +443,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
+    public void singleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
         final AtomicLong request = new AtomicLong();
         try {
             Flowable.empty().doOnRequest(new LongConsumer() {
@@ -459,7 +459,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
+    public void singleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
         final AtomicLong request = new AtomicLong();
         try {
             Flowable.just(1, 2).doOnRequest(new LongConsumer() {
@@ -475,7 +475,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicate() {
+    public void singleWithPredicate() {
         Maybe<Integer> maybe = Flowable.just(1, 2)
                 .filter(
                 new Predicate<Integer>() {
@@ -496,7 +496,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndTooManyElements() {
+    public void singleWithPredicateAndTooManyElements() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4)
                 .filter(
                 new Predicate<Integer>() {
@@ -518,7 +518,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndEmpty() {
+    public void singleWithPredicateAndEmpty() {
         Maybe<Integer> maybe = Flowable.just(1)
                 .filter(
                 new Predicate<Integer>() {
@@ -540,7 +540,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefault() {
+    public void singleOrDefault() {
         Single<Integer> single = Flowable.just(1).single(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -552,7 +552,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithTooManyElements() {
+    public void singleOrDefaultWithTooManyElements() {
         Single<Integer> single = Flowable.just(1, 2).single(3);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -565,7 +565,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithEmpty() {
+    public void singleOrDefaultWithEmpty() {
         Single<Integer> single = Flowable.<Integer> empty()
                 .single(1);
 
@@ -578,7 +578,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicate() {
+    public void singleOrDefaultWithPredicate() {
         Single<Integer> single = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -597,7 +597,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndTooManyElements() {
+    public void singleOrDefaultWithPredicateAndTooManyElements() {
         Single<Integer> single = Flowable.just(1, 2, 3, 4)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -617,7 +617,7 @@ public class FlowableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndEmpty() {
+    public void singleOrDefaultWithPredicateAndEmpty() {
         Single<Integer> single = Flowable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -636,7 +636,7 @@ public class FlowableSingleTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue1527() throws InterruptedException {
+    public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Maybe<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
@@ -688,7 +688,7 @@ public class FlowableSingleTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue1527Flowable() throws InterruptedException {
+    public void issue1527Flowable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Flowable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {

@@ -34,7 +34,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableOnErrorResumeNextViaFlowableTest {
 
     @Test
-    public void testResumeNext() {
+    public void resumeNext() {
         Subscription s = mock(Subscription.class);
         // Trigger failure on second element
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
@@ -61,7 +61,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         Subscription sr = mock(Subscription.class);
         // Trigger multiple failures
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
@@ -105,7 +105,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailureOnSubscribe() {
+    public void resumeNextWithFailureOnSubscribe() {
         Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -127,7 +127,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailureOnSubscribeAsync() {
+    public void resumeNextWithFailureOnSubscribeAsync() {
         Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -194,7 +194,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
                 .onErrorResumeNext(Flowable.just(1))

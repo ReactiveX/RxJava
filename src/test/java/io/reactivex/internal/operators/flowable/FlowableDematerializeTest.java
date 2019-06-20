@@ -76,7 +76,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize1() {
+    public void dematerialize1() {
         Flowable<Notification<Integer>> notifications = Flowable.just(1, 2).materialize();
         Flowable<Integer> dematerialize = notifications.dematerialize();
 
@@ -91,7 +91,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize2() {
+    public void dematerialize2() {
         Throwable exception = new Throwable("test");
         Flowable<Integer> flowable = Flowable.error(exception);
         Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
@@ -106,7 +106,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize3() {
+    public void dematerialize3() {
         Exception exception = new Exception("test");
         Flowable<Integer> flowable = Flowable.error(exception);
         Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
@@ -121,7 +121,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testErrorPassThru() {
+    public void errorPassThru() {
         Exception exception = new Exception("test");
         Flowable<Integer> flowable = Flowable.error(exception);
         Flowable<Integer> dematerialize = flowable.dematerialize();
@@ -136,7 +136,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testCompletePassThru() {
+    public void completePassThru() {
         Flowable<Integer> flowable = Flowable.empty();
         Flowable<Integer> dematerialize = flowable.dematerialize();
 
@@ -153,7 +153,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testHonorsContractWhenCompleted() {
+    public void honorsContractWhenCompleted() {
         Flowable<Integer> source = Flowable.just(1);
 
         Flowable<Integer> result = source.materialize().dematerialize();
@@ -168,7 +168,7 @@ public class FlowableDematerializeTest {
     }
 
     @Test
-    public void testHonorsContractWhenThrows() {
+    public void honorsContractWhenThrows() {
         Flowable<Integer> source = Flowable.error(new TestException());
 
         Flowable<Integer> result = source.materialize().dematerialize();

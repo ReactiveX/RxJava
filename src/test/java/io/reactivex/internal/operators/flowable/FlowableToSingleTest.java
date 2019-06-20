@@ -24,7 +24,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableToSingleTest {
 
     @Test
-    public void testJustSingleItemObservable() {
+    public void justSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("Hello World!").single("");
         single.toFlowable().subscribe(subscriber);
@@ -33,7 +33,7 @@ public class FlowableToSingleTest {
     }
 
     @Test
-    public void testErrorObservable() {
+    public void errorObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
         Single<String> single = Flowable.<String>error(error).single("");
@@ -43,7 +43,7 @@ public class FlowableToSingleTest {
     }
 
     @Test
-    public void testJustTwoEmissionsObservableThrowsError() {
+    public void justTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("First", "Second").single("");
         single.toFlowable().subscribe(subscriber);
@@ -52,7 +52,7 @@ public class FlowableToSingleTest {
     }
 
     @Test
-    public void testEmptyObservable() {
+    public void emptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.<String>empty().single("");
         single.toFlowable().subscribe(subscriber);
@@ -61,7 +61,7 @@ public class FlowableToSingleTest {
     }
 
     @Test
-    public void testRepeatObservableThrowsError() {
+    public void repeatObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("First", "Second").repeat().single("");
         single.toFlowable().subscribe(subscriber);
@@ -70,7 +70,7 @@ public class FlowableToSingleTest {
     }
 
     @Test
-    public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
+    public void shouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Single<String> single = Flowable.just("Hello World!").doOnCancel(new Action() {

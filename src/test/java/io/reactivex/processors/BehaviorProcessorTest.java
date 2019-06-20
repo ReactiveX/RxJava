@@ -45,7 +45,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
+    public void thatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -64,7 +64,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testThatSubscriberReceivesLatestAndThenSubsequentEvents() {
+    public void thatSubscriberReceivesLatestAndThenSubsequentEvents() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         processor.onNext("one");
@@ -84,7 +84,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeThenOnComplete() {
+    public void subscribeThenOnComplete() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -100,7 +100,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeToCompletedOnlyEmitsOnComplete() {
+    public void subscribeToCompletedOnlyEmitsOnComplete() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
         processor.onNext("one");
         processor.onComplete();
@@ -115,7 +115,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeToErrorOnlyEmitsOnError() {
+    public void subscribeToErrorOnlyEmitsOnError() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
         processor.onNext("one");
         RuntimeException re = new RuntimeException("test error");
@@ -131,7 +131,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         BehaviorProcessor<Integer> channel = BehaviorProcessor.createDefault(2013);
         Subscriber<Object> observerA = TestHelper.mockSubscriber();
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
@@ -176,7 +176,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent() {
+    public void completedAfterErrorIsNotSent() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -195,7 +195,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent2() {
+    public void completedAfterErrorIsNotSent2() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -220,7 +220,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent3() {
+    public void completedAfterErrorIsNotSent3() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -245,7 +245,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         BehaviorProcessor<String> src = BehaviorProcessor.createDefault("null"); // FIXME was plain null which is not allowed
 
         for (int i = 0; i < 10; i++) {
@@ -285,7 +285,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testStartEmpty() {
+    public void startEmpty() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -309,7 +309,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testStartEmptyThenAddOne() {
+    public void startEmptyThenAddOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(subscriber);
@@ -332,7 +332,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testStartEmptyCompleteWithOne() {
+    public void startEmptyCompleteWithOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -349,7 +349,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testTakeOneSubscriber() {
+    public void takeOneSubscriber() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
@@ -410,7 +410,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 //    }
 
     @Test
-    public void testEmissionSubscriptionRace() throws Exception {
+    public void emissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {
@@ -483,7 +483,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsNormalEmptyStart() {
+    public void currentStateMethodsNormalEmptyStart() {
         BehaviorProcessor<Object> as = BehaviorProcessor.create();
 
         assertFalse(as.hasValue());
@@ -510,7 +510,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsNormalSomeStart() {
+    public void currentStateMethodsNormalSomeStart() {
         BehaviorProcessor<Object> as = BehaviorProcessor.createDefault((Object)1);
 
         assertTrue(as.hasValue());
@@ -536,7 +536,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         BehaviorProcessor<Object> as = BehaviorProcessor.create();
 
         assertFalse(as.hasValue());
@@ -555,7 +555,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         BehaviorProcessor<Object> as = BehaviorProcessor.create();
 
         assertFalse(as.hasValue());

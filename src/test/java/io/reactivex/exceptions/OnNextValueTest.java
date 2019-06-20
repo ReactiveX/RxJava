@@ -127,55 +127,55 @@ public final class OnNextValueTest {
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderInteger() {
+    public void renderInteger() {
 //        assertEquals("123", OnNextValue.renderValue(123));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderByte() {
+    public void renderByte() {
 //        assertEquals("10", OnNextValue.renderValue((byte) 10));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderBoolean() {
+    public void renderBoolean() {
 //        assertEquals("true", OnNextValue.renderValue(true));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderShort() {
+    public void renderShort() {
 //        assertEquals("10", OnNextValue.renderValue((short) 10));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderLong() {
+    public void renderLong() {
 //        assertEquals("10", OnNextValue.renderValue(10L));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderCharacter() {
+    public void renderCharacter() {
 //        assertEquals("10", OnNextValue.renderValue(10L));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderFloat() {
+    public void renderFloat() {
 //        assertEquals("10.0", OnNextValue.renderValue(10.0f));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderDouble() {
+    public void renderDouble() {
 //        assertEquals("10.0", OnNextValue.renderValue(10.0));
     }
 
     @Ignore("OnNextValue not ported")
     @Test
-    public void testRenderVoid() {
+    public void renderVoid() {
 //        assertEquals("null", OnNextValue.renderValue((Void) null));
     }
 }

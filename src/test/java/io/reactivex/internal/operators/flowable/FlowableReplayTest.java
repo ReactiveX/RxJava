@@ -45,7 +45,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableReplayTest {
     @Test
-    public void testBufferedReplay() {
+    public void bufferedReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         ConnectableFlowable<Integer> cf = source.replay(3);
@@ -90,7 +90,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBufferedWindowReplay() {
+    public void bufferedWindowReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestScheduler scheduler = new TestScheduler();
         ConnectableFlowable<Integer> cf = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
@@ -140,7 +140,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testWindowedReplay() {
+    public void windowedReplay() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -186,7 +186,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testReplaySelector() {
+    public void replaySelector() {
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
             @Override
@@ -247,7 +247,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBufferedReplaySelector() {
+    public void bufferedReplaySelector() {
 
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
@@ -307,7 +307,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testWindowedReplaySelector() {
+    public void windowedReplaySelector() {
 
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
@@ -370,7 +370,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBufferedReplayError() {
+    public void bufferedReplayError() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         ConnectableFlowable<Integer> cf = source.replay(3);
@@ -416,7 +416,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testWindowedReplayError() {
+    public void windowedReplayError() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -462,7 +462,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testSynchronousDisconnect() {
+    public void synchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4)
         .doOnNext(new Consumer<Integer>() {
@@ -513,7 +513,7 @@ public class FlowableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_UnsubscribeSource() throws Throwable {
+    public void issue2191_UnsubscribeSource() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -563,7 +563,7 @@ public class FlowableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribe() throws Throwable {
+    public void issue2191_SchedulerUnsubscribe() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -623,7 +623,7 @@ public class FlowableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribeOnError() throws Throwable {
+    public void issue2191_SchedulerUnsubscribeOnError() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -731,7 +731,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBoundedReplayBuffer() {
+    public void boundedReplayBuffer() {
         BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>();
         buf.addLast(new Node(1, 0));
         buf.addLast(new Node(2, 1));
@@ -761,7 +761,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testTimedAndSizedTruncation() {
+    public void timedAndSizedTruncation() {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
         List<Integer> values = new ArrayList<Integer>();
@@ -798,7 +798,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
                 .doOnRequest(new LongConsumer() {
@@ -829,7 +829,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testBackpressureBounded() {
+    public void backpressureBounded() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
                 .doOnRequest(new LongConsumer() {
@@ -860,7 +860,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testColdReplayNoBackpressure() {
+    public void coldReplayNoBackpressure() {
         Flowable<Integer> source = Flowable.range(0, 1000).replay().autoConnect();
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
@@ -878,7 +878,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testColdReplayBackpressure() {
+    public void coldReplayBackpressure() {
         Flowable<Integer> source = Flowable.range(0, 1000).replay().autoConnect();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
@@ -899,7 +899,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -951,7 +951,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Throwable {
+    public void unsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).replay().autoConnect();
         f.subscribe();
@@ -961,7 +961,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testTake() {
+    public void take() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable<Integer> cached = Flowable.range(1, 100).replay().autoConnect();
@@ -973,7 +973,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testAsync() {
+    public void async() {
         Flowable<Integer> source = Flowable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
@@ -998,7 +998,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testAsyncComeAndGo() {
+    public void asyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
@@ -1034,7 +1034,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testNoMissingBackpressureException() {
+    public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
         Flowable<Integer> firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
@@ -1058,7 +1058,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testValuesAndThenError() {
+    public void valuesAndThenError() {
         Flowable<Integer> source = Flowable.range(1, 10)
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .replay().autoConnect();
@@ -1132,7 +1132,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testSubscribersComeAndGoAtRequestBoundaries() {
+    public void subscribersComeAndGoAtRequestBoundaries() {
         ConnectableFlowable<Integer> source = Flowable.range(1, 10).replay(1);
         source.connect();
 
@@ -1179,7 +1179,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testSubscribersComeAndGoAtRequestBoundaries2() {
+    public void subscribersComeAndGoAtRequestBoundaries2() {
         ConnectableFlowable<Integer> source = Flowable.range(1, 10).replay(2);
         source.connect();
 
@@ -1627,7 +1627,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testTimedAndSizedTruncationError() {
+    public void timedAndSizedTruncationError() {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
 
@@ -1671,7 +1671,7 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testSizedTruncation() {
+    public void sizedTruncation() {
         SizeBoundReplayBuffer<Integer> buf = new SizeBoundReplayBuffer<Integer>(2);
         List<Integer> values = new ArrayList<Integer>();
 

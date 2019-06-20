@@ -59,7 +59,7 @@ public class FlowableZipCompletionTest {
     }
 
     @Test
-    public void testFirstCompletesThenSecondInfinite() {
+    public void firstCompletesThenSecondInfinite() {
         s1.onNext("a");
         s1.onNext("b");
         s1.onComplete();
@@ -72,7 +72,7 @@ public class FlowableZipCompletionTest {
     }
 
     @Test
-    public void testSecondInfiniteThenFirstCompletes() {
+    public void secondInfiniteThenFirstCompletes() {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
@@ -85,7 +85,7 @@ public class FlowableZipCompletionTest {
     }
 
     @Test
-    public void testSecondCompletesThenFirstInfinite() {
+    public void secondCompletesThenFirstInfinite() {
         s2.onNext("1");
         s2.onNext("2");
         s2.onComplete();
@@ -98,7 +98,7 @@ public class FlowableZipCompletionTest {
     }
 
     @Test
-    public void testFirstInfiniteThenSecondCompletes() {
+    public void firstInfiniteThenSecondCompletes() {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");

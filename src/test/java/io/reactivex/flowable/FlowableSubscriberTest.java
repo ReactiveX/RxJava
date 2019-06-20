@@ -40,7 +40,7 @@ public class FlowableSubscriberTest {
      * Should request n for whatever the final Subscriber asks for.
      */
     @Test
-    public void testRequestFromFinalSubscribeWithRequestValue() {
+    public void requestFromFinalSubscribeWithRequestValue() {
         TestSubscriber<String> s = new TestSubscriber<String>(0L);
         s.request(10);
         final AtomicLong r = new AtomicLong();
@@ -64,7 +64,7 @@ public class FlowableSubscriberTest {
      * Should request -1 for infinite.
      */
     @Test
-    public void testRequestFromFinalSubscribeWithoutRequestValue() {
+    public void requestFromFinalSubscribeWithoutRequestValue() {
         TestSubscriber<String> s = new TestSubscriber<String>();
         final AtomicLong r = new AtomicLong();
         s.onSubscribe(new Subscription() {
@@ -84,7 +84,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestFromChainedOperator() throws Exception {
+    public void requestFromChainedOperator() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>(10L);
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
@@ -136,7 +136,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestFromDecoupledOperator() throws Exception {
+    public void requestFromDecoupledOperator() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>(0L);
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
@@ -189,7 +189,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestFromDecoupledOperatorThatRequestsN() throws Exception {
+    public void requestFromDecoupledOperatorThatRequestsN() throws Exception {
         TestSubscriber<String> s = new TestSubscriber<String>(10L);
         final AtomicLong innerR = new AtomicLong();
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
@@ -260,7 +260,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestToFlowable() {
+    public void requestToFlowable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         final AtomicLong requested = new AtomicLong();
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
@@ -284,7 +284,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestThroughMap() {
+    public void requestThroughMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
@@ -309,7 +309,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestThroughTakeThatReducesRequest() {
+    public void requestThroughTakeThatReducesRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
@@ -337,7 +337,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestThroughTakeWhereRequestIsSmallerThanTake() {
+    public void requestThroughTakeWhereRequestIsSmallerThanTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
@@ -363,7 +363,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testOnStartCalledOnceViaSubscribe() {
+    public void onStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
         Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -394,7 +394,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testOnStartCalledOnceViaUnsafeSubscribe() {
+    public void onStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
         Flowable.just(1, 2, 3, 4).take(2).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -425,7 +425,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testOnStartCalledOnceViaLift() {
+    public void onStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
         Flowable.just(1, 2, 3, 4).lift(new FlowableOperator<Integer, Integer>() {
 
@@ -465,7 +465,7 @@ public class FlowableSubscriberTest {
 
     @Ignore("Non-positive requests are relayed to the plugin and is a no-op otherwise")
     @Test
-    public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
+    public void negativeRequestThrowsIllegalArgumentException() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
         Flowable.just(1, 2, 3, 4).subscribe(new DefaultSubscriber<Integer>() {
@@ -497,7 +497,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testOnStartRequestsAreAdditive() {
+    public void onStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();
         Flowable.just(1, 2, 3, 4, 5)
         .subscribe(new DefaultSubscriber<Integer>() {
@@ -525,7 +525,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
+    public void onStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<Integer>();
         Flowable.just(1, 2, 3, 4, 5).subscribe(new DefaultSubscriber<Integer>() {
             @Override

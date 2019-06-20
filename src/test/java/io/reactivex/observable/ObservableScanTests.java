@@ -23,7 +23,7 @@ import io.reactivex.observable.ObservableEventStream.Event;
 public class ObservableScanTests {
 
     @Test
-    public void testUnsubscribeScan() throws Exception {
+    public void unsubscribeScan() throws Exception {
 
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {

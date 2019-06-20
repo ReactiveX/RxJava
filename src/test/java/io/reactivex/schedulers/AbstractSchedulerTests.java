@@ -49,7 +49,7 @@ public abstract class AbstractSchedulerTests {
     protected abstract Scheduler getScheduler();
 
     @Test
-    public void testNestedActions() throws InterruptedException {
+    public void nestedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
         try {
@@ -108,7 +108,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testNestedScheduling() {
+    public final void nestedScheduling() {
 
         Flowable<Integer> ids = Flowable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
@@ -145,7 +145,7 @@ public abstract class AbstractSchedulerTests {
      */
     @SuppressWarnings("rawtypes")
     @Test
-    public final void testSequenceOfActions() throws InterruptedException {
+    public final void sequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
         try {
@@ -190,7 +190,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public void testSequenceOfDelayedActions() throws InterruptedException {
+    public void sequenceOfDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 
@@ -225,7 +225,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public void testMixOfDelayedAndNonDelayedActions() throws InterruptedException {
+    public void mixOfDelayedAndNonDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 
@@ -266,7 +266,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testRecursiveExecution() throws InterruptedException {
+    public final void recursiveExecution() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 
@@ -294,7 +294,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testRecursiveExecutionWithDelayTime() throws InterruptedException {
+    public final void recursiveExecutionWithDelayTime() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 
@@ -326,7 +326,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testRecursiveSchedulerInObservable() {
+    public final void recursiveSchedulerInObservable() {
         Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> subscriber) {
@@ -372,7 +372,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
+    public final void concurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
         Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
@@ -409,7 +409,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testObserveOn() throws InterruptedException {
+    public final void observeOn() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
         Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
@@ -429,7 +429,7 @@ public abstract class AbstractSchedulerTests {
     }
 
     @Test
-    public final void testSubscribeOnNestedConcurrency() throws InterruptedException {
+    public final void subscribeOnNestedConcurrency() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
         Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")

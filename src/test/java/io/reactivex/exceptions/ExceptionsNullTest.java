@@ -24,7 +24,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnCompleteFailedException will likely not be ported")
     @Test
-    public void testOnCompleteFailedExceptionNull() {
+    public void onCompleteFailedExceptionNull() {
 //        Throwable t = new OnCompleteFailedException(null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -32,7 +32,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnCompleteFailedException will likely not be ported")
     @Test
-    public void testOnCompleteFailedExceptionMessageAndNull() {
+    public void onCompleteFailedExceptionMessageAndNull() {
 //        Throwable t = new OnCompleteFailedException("Message", null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -40,7 +40,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnErrorFailedException will likely not be ported")
     @Test
-    public void testOnErrorFailedExceptionNull() {
+    public void onErrorFailedExceptionNull() {
 //        Throwable t = new OnErrorFailedException(null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -48,7 +48,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnErrorFailedException will likely not be ported")
     @Test
-    public void testOnErrorFailedExceptionMessageAndNull() {
+    public void onErrorFailedExceptionMessageAndNull() {
 //        Throwable t = new OnErrorFailedException("Message", null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -56,7 +56,7 @@ public class ExceptionsNullTest {
 
     @Ignore("UnsubscribeFailedException will likely not be ported")
     @Test
-    public void testUnsubscribeFailedExceptionNull() {
+    public void unsubscribeFailedExceptionNull() {
 //        Throwable t = new UnsubscribeFailedException(null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -64,7 +64,7 @@ public class ExceptionsNullTest {
 
     @Ignore("UnsubscribeFailedException will likely not be ported")
     @Test
-    public void testUnsubscribeFailedExceptionMessageAndNull() {
+    public void unsubscribeFailedExceptionMessageAndNull() {
 //        Throwable t = new UnsubscribeFailedException("Message", null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -72,7 +72,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnErrorNotImplementedException will likely not be ported")
     @Test
-    public void testOnErrorNotImplementedExceptionNull() {
+    public void onErrorNotImplementedExceptionNull() {
 //        Throwable t = new OnErrorNotImplementedException(null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -80,7 +80,7 @@ public class ExceptionsNullTest {
 
     @Ignore("OnErrorNotImplementedException will likely not be ported")
     @Test
-    public void testOnErrorNotImplementedExceptionMessageAndNull() {
+    public void onErrorNotImplementedExceptionMessageAndNull() {
 //        Throwable t = new OnErrorNotImplementedException("Message", null);
 //
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
@@ -88,14 +88,14 @@ public class ExceptionsNullTest {
 
     @Ignore("OnErrorThrowable may be ported later")
     @Test
-    public void testOnErrorThrowableFrom() {
+    public void onErrorThrowableFrom() {
 //        Throwable t = OnErrorThrowable.from(null);
 //        Assert.assertTrue(t.getCause() instanceof NullPointerException);
     }
 
     @Ignore("OnErrorThrowable may be ported later")
     @Test
-    public void testOnErrorThrowableAddValueAsLastCause() {
+    public void onErrorThrowableAddValueAsLastCause() {
 //        Throwable t = OnErrorThrowable.addValueAsLastCause(null, "value");
 //        Assert.assertTrue(t instanceof NullPointerException);
     }

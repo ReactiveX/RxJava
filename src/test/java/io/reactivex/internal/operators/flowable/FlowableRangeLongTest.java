@@ -33,7 +33,7 @@ import io.reactivex.testsupport.*;
 public class FlowableRangeLongTest {
 
     @Test
-    public void testRangeStartAt2Count3() {
+    public void rangeStartAt2Count3() {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         Flowable.rangeLong(2, 3).subscribe(subscriber);
@@ -47,7 +47,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testRangeUnsubscribe() {
+    public void rangeUnsubscribe() {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         final AtomicInteger count = new AtomicInteger();
@@ -70,32 +70,32 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testRangeWithZero() {
+    public void rangeWithZero() {
         Flowable.rangeLong(1, 0);
     }
 
     @Test
-    public void testRangeWithOverflow2() {
+    public void rangeWithOverflow2() {
         Flowable.rangeLong(Long.MAX_VALUE, 0);
     }
 
     @Test
-    public void testRangeWithOverflow3() {
+    public void rangeWithOverflow3() {
         Flowable.rangeLong(1, Long.MAX_VALUE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRangeWithOverflow4() {
+    public void rangeWithOverflow4() {
         Flowable.rangeLong(2, Long.MAX_VALUE);
     }
 
     @Test
-    public void testRangeWithOverflow5() {
+    public void rangeWithOverflow5() {
         assertFalse(Flowable.rangeLong(Long.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
     }
 
     @Test
-    public void testBackpressureViaRequest() {
+    public void backpressureViaRequest() {
         Flowable<Long> f = Flowable.rangeLong(1, Flowable.bufferSize());
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
@@ -118,7 +118,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testNoBackpressure() {
+    public void noBackpressure() {
         ArrayList<Long> list = new ArrayList<Long>(Flowable.bufferSize() * 2);
         for (long i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
@@ -136,7 +136,7 @@ public class FlowableRangeLongTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
-    void testWithBackpressureOneByOne(long start) {
+    void withBackpressureOneByOne(long start) {
         Flowable<Long> source = Flowable.rangeLong(start, 100);
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
@@ -151,7 +151,7 @@ public class FlowableRangeLongTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
-    void testWithBackpressureAllAtOnce(long start) {
+    void withBackpressureAllAtOnce(long start) {
         Flowable<Long> source = Flowable.rangeLong(start, 100);
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
@@ -167,21 +167,21 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testWithBackpressure1() {
+    public void withBackpressure1() {
         for (long i = 0; i < 100; i++) {
-            testWithBackpressureOneByOne(i);
+            withBackpressureOneByOne(i);
         }
     }
 
     @Test
-    public void testWithBackpressureAllAtOnce() {
+    public void withBackpressureAllAtOnce() {
         for (long i = 0; i < 100; i++) {
-            testWithBackpressureAllAtOnce(i);
+            withBackpressureAllAtOnce(i);
         }
     }
 
     @Test
-    public void testWithBackpressureRequestWayMore() {
+    public void withBackpressureRequestWayMore() {
         Flowable<Long> source = Flowable.rangeLong(50, 100);
 
         TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
@@ -200,7 +200,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testRequestOverflow() {
+    public void requestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
         Flowable.rangeLong(1, n).subscribe(new DefaultSubscriber<Long>() {
@@ -229,7 +229,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test
-    public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
+    public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
         Flowable.rangeLong(1, 0).subscribe(new DefaultSubscriber<Long>() {
 
@@ -256,7 +256,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test(timeout = 1000)
-    public void testNearMaxValueWithoutBackpressure() {
+    public void nearMaxValueWithoutBackpressure() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
         Flowable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(ts);
 
@@ -266,7 +266,7 @@ public class FlowableRangeLongTest {
     }
 
     @Test(timeout = 1000)
-    public void testNearMaxValueWithBackpressure() {
+    public void nearMaxValueWithBackpressure() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(3L);
         Flowable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(ts);
 

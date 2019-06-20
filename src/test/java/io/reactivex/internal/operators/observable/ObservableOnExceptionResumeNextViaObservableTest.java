@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableOnExceptionResumeNextViaObservableTest {
 
     @Test
-    public void testResumeNextWithException() {
+    public void resumeNextWithException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
@@ -60,7 +60,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
     @Test
-    public void testResumeNextWithRuntimeException() {
+    public void resumeNextWithRuntimeException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
@@ -88,7 +88,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
     @Test
-    public void testThrowablePassesThru() {
+    public void throwablePassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
@@ -116,7 +116,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
     @Test
-    public void testErrorPassesThru() {
+    public void errorPassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
@@ -144,7 +144,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
@@ -188,7 +188,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onExceptionResumeNext(Observable.just(1))

@@ -50,7 +50,7 @@ public class ObservableMapTest {
     }
 
     @Test
-    public void testMap() {
+    public void map() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> o = Observable.just(m1, m2);
@@ -71,7 +71,7 @@ public class ObservableMapTest {
     }
 
     @Test
-    public void testMapMany() {
+    public void mapMany() {
         /* simulate a top-level async call which returns IDs */
         Observable<Integer> ids = Observable.just(1, 2);
 
@@ -113,7 +113,7 @@ public class ObservableMapTest {
     }
 
     @Test
-    public void testMapMany2() {
+    public void mapMany2() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> observable1 = Observable.just(m1, m2);
@@ -150,7 +150,7 @@ public class ObservableMapTest {
     }
 
     @Test
-    public void testMapWithError() {
+    public void mapWithError() {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         Observable<String> m = w.map(new Function<String, String>() {
             @Override
@@ -178,7 +178,7 @@ public class ObservableMapTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMapWithIssue417() {
+    public void mapWithIssue417() {
         Observable.just(1).observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     @Override
@@ -189,7 +189,7 @@ public class ObservableMapTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
+    public void mapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
@@ -210,7 +210,7 @@ public class ObservableMapTest {
      * While mapping over range(1,0).last() we expect NoSuchElementException since the sequence is empty.
      */
     @Test
-    public void testErrorPassesThruMap() {
+    public void errorPassesThruMap() {
         assertNull(Observable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
@@ -225,7 +225,7 @@ public class ObservableMapTest {
      * We expect IllegalStateException to pass thru map.
      */
     @Test(expected = IllegalStateException.class)
-    public void testErrorPassesThruMap2() {
+    public void errorPassesThruMap2() {
         Observable.error(new IllegalStateException()).map(new Function<Object, Object>() {
 
             @Override
@@ -241,7 +241,7 @@ public class ObservableMapTest {
      * but then we divide by 0.
      */
     @Test(expected = ArithmeticException.class)
-    public void testMapWithErrorInFunc() {
+    public void mapWithErrorInFunc() {
         Observable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
 
             @Override

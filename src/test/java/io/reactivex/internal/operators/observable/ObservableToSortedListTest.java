@@ -30,7 +30,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableToSortedListTest {
 
     @Test
-    public void testSortedListObservable() {
+    public void sortedListObservable() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.toSortedList().toObservable();
 
@@ -42,7 +42,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunctionFlowable() {
+    public void sortedListWithCustomFunctionFlowable() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
 
@@ -61,7 +61,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirstObservable() {
+    public void withFollowingFirstObservable() {
         Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toObservable().blockingFirst());
     }
@@ -117,7 +117,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testSortedList() {
+    public void sortedList() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Single<List<Integer>> single = w.toSortedList();
 
@@ -128,7 +128,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunction() {
+    public void sortedListWithCustomFunction() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Single<List<Integer>> single = w.toSortedList(new Comparator<Integer>() {
 
@@ -146,7 +146,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void withFollowingFirst() {
         Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingGet());
     }

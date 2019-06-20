@@ -28,7 +28,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 public class BlockingFlowableToIteratorTest {
 
     @Test
-    public void testToIterator() {
+    public void toIterator() {
         Flowable<String> obs = Flowable.just("one", "two", "three");
 
         Iterator<String> it = obs.blockingIterable().iterator();
@@ -47,7 +47,7 @@ public class BlockingFlowableToIteratorTest {
     }
 
     @Test(expected = TestException.class)
-    public void testToIteratorWithException() {
+    public void toIteratorWithException() {
         Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -69,7 +69,7 @@ public class BlockingFlowableToIteratorTest {
 
     @Ignore("subscribe() should not throw")
     @Test(expected = TestException.class)
-    public void testExceptionThrownFromOnSubscribe() {
+    public void exceptionThrownFromOnSubscribe() {
         Iterable<String> strings = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> subscriber) {
@@ -90,7 +90,7 @@ public class BlockingFlowableToIteratorTest {
     }
 
     @Test
-    public void testIteratorExertBackpressure() {
+    public void iteratorExertBackpressure() {
         final Counter src = new Counter();
 
         Flowable<Integer> obs = Flowable.fromIterable(new Iterable<Integer>() {

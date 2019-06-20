@@ -30,7 +30,7 @@ import io.reactivex.testsupport.*;
 public class SerializedProcessorTest {
 
     @Test
-    public void testBasic() {
+    public void basic() {
         SerializedProcessor<String> processor = new SerializedProcessor<String>(PublishProcessor.<String> create());
         TestSubscriber<String> ts = new TestSubscriber<String>();
         processor.subscribe(ts);
@@ -41,7 +41,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testAsyncSubjectValueRelay() {
+    public void asyncSubjectValueRelay() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onNext(1);
         async.onComplete();
@@ -56,7 +56,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testAsyncSubjectValueEmpty() {
+    public void asyncSubjectValueEmpty() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -70,7 +70,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testAsyncSubjectValueError() {
+    public void asyncSubjectValueError() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         TestException te = new TestException();
         async.onError(te);
@@ -85,7 +85,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testPublishSubjectValueRelay() {
+    public void publishSubjectValueRelay() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         async.onNext(1);
         async.onComplete();
@@ -98,7 +98,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testPublishSubjectValueEmpty() {
+    public void publishSubjectValueEmpty() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -110,7 +110,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testPublishSubjectValueError() {
+    public void publishSubjectValueError() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         TestException te = new TestException();
         async.onError(te);
@@ -123,7 +123,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testBehaviorSubjectValueRelay() {
+    public void behaviorSubjectValueRelay() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onNext(1);
         async.onComplete();
@@ -138,7 +138,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testBehaviorSubjectValueRelayIncomplete() {
+    public void behaviorSubjectValueRelayIncomplete() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onNext(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -152,7 +152,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testBehaviorSubjectIncompleteEmpty() {
+    public void behaviorSubjectIncompleteEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         FlowableProcessor<Integer> serial = async.toSerialized();
 
@@ -165,7 +165,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testBehaviorSubjectEmpty() {
+    public void behaviorSubjectEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -179,7 +179,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testBehaviorSubjectError() {
+    public void behaviorSubjectError() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         TestException te = new TestException();
         async.onError(te);
@@ -194,7 +194,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelay() {
+    public void replaySubjectValueRelay() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
         async.onComplete();
@@ -213,7 +213,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayIncomplete() {
+    public void replaySubjectValueRelayIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -231,7 +231,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBounded() {
+    public void replaySubjectValueRelayBounded() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
@@ -251,7 +251,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBoundedIncomplete() {
+    public void replaySubjectValueRelayBoundedIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
@@ -270,7 +270,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
+    public void replaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
 
@@ -287,7 +287,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayEmptyIncomplete() {
+    public void replaySubjectValueRelayEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         FlowableProcessor<Integer> serial = async.toSerialized();
 
@@ -304,7 +304,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectEmpty() {
+    public void replaySubjectEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -322,7 +322,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectError() {
+    public void replaySubjectError() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         TestException te = new TestException();
         async.onError(te);
@@ -341,7 +341,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectBoundedEmpty() {
+    public void replaySubjectBoundedEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
@@ -359,7 +359,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testReplaySubjectBoundedError() {
+    public void replaySubjectBoundedError() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         TestException te = new TestException();
         async.onError(te);
@@ -378,7 +378,7 @@ public class SerializedProcessorTest {
     }
 
     @Test
-    public void testDontWrapSerializedSubjectAgain() {
+    public void dontWrapSerializedSubjectAgain() {
         PublishProcessor<Object> s = PublishProcessor.create();
         FlowableProcessor<Object> s1 = s.toSerialized();
         FlowableProcessor<Object> s2 = s1.toSerialized();

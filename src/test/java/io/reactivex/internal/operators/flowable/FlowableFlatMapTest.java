@@ -36,7 +36,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableFlatMapTest {
     @Test
-    public void testNormal() {
+    public void normal() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
@@ -69,7 +69,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testCollectionFunctionThrows() {
+    public void collectionFunctionThrows() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
@@ -96,7 +96,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testResultFunctionThrows() {
+    public void resultFunctionThrows() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
@@ -125,7 +125,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testMergeError() {
+    public void mergeError() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         Function<Integer, Flowable<Integer>> func = new Function<Integer, Flowable<Integer>>() {
@@ -172,7 +172,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsNormal() {
+    public void flatMapTransformsNormal() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
         Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -194,7 +194,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsException() {
+    public void flatMapTransformsException() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
         Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -237,7 +237,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnNextFuncThrows() {
+    public void flatMapTransformsOnNextFuncThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
@@ -260,7 +260,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnErrorFuncThrows() {
+    public void flatMapTransformsOnErrorFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
         Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -277,7 +277,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsOnCompletedFuncThrows() {
+    public void flatMapTransformsOnCompletedFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
         Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -294,7 +294,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsMergeException() {
+    public void flatMapTransformsMergeException() {
         Flowable<Integer> onNext = Flowable.error(new TestException());
         Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -331,7 +331,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapMaxConcurrent() {
+    public void flatMapMaxConcurrent() {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
@@ -357,7 +357,7 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapSelectorMaxConcurrent() {
+    public void flatMapSelectorMaxConcurrent() {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
@@ -390,17 +390,17 @@ public class FlowableFlatMapTest {
     }
 
     @Test
-    public void testFlatMapTransformsMaxConcurrentNormalLoop() {
+    public void flatMapTransformsMaxConcurrentNormalLoop() {
         for (int i = 0; i < 1000; i++) {
             if (i % 100 == 0) {
                 System.out.println("testFlatMapTransformsMaxConcurrentNormalLoop => " + i);
             }
-            testFlatMapTransformsMaxConcurrentNormal();
+            flatMapTransformsMaxConcurrentNormal();
         }
     }
 
     @Test
-    public void testFlatMapTransformsMaxConcurrentNormal() {
+    public void flatMapTransformsMaxConcurrentNormal() {
         final int m = 2;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> onNext =

@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableTakeLastTimedTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testTakeLastTimedWithNegativeCount() {
+    public void takeLastTimedWithNegativeCount() {
         Flowable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
     }
 
@@ -204,7 +204,7 @@ public class FlowableTakeLastTimedTest {
     }
 
     @Test
-    public void testContinuousDelivery() {
+    public void continuousDelivery() {
         TestScheduler scheduler = new TestScheduler();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);

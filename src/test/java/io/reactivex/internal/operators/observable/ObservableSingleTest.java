@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableSingleTest {
 
     @Test
-    public void testSingleObservable() {
+    public void singleObservable() {
         Observable<Integer> o = Observable.just(1).singleElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -44,7 +44,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithTooManyElementsObservable() {
+    public void singleWithTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2).singleElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -57,7 +57,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithEmptyObservable() {
+    public void singleWithEmptyObservable() {
         Observable<Integer> o = Observable.<Integer> empty().singleElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -70,7 +70,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateObservable() {
+    public void singleWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2)
                 .filter(
                 new Predicate<Integer>() {
@@ -92,7 +92,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndTooManyElementsObservable() {
+    public void singleWithPredicateAndTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(
                 new Predicate<Integer>() {
@@ -114,7 +114,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndEmptyObservable() {
+    public void singleWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
                 .filter(
                 new Predicate<Integer>() {
@@ -135,7 +135,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultObservable() {
+    public void singleOrDefaultObservable() {
         Observable<Integer> o = Observable.just(1).single(2).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -148,7 +148,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithTooManyElementsObservable() {
+    public void singleOrDefaultWithTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2).single(3).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -161,7 +161,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithEmptyObservable() {
+    public void singleOrDefaultWithEmptyObservable() {
         Observable<Integer> o = Observable.<Integer> empty()
                 .single(1).toObservable();
 
@@ -175,7 +175,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateObservable() {
+    public void singleOrDefaultWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -195,7 +195,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndTooManyElementsObservable() {
+    public void singleOrDefaultWithPredicateAndTooManyElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -215,7 +215,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndEmptyObservable() {
+    public void singleOrDefaultWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -235,7 +235,7 @@ public class ObservableSingleTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue1527Observable() throws InterruptedException {
+    public void issue1527Observable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
@@ -250,7 +250,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingle() {
+    public void single() {
         Maybe<Integer> o = Observable.just(1).singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -262,7 +262,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithTooManyElements() {
+    public void singleWithTooManyElements() {
         Maybe<Integer> o = Observable.just(1, 2).singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -275,7 +275,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithEmpty() {
+    public void singleWithEmpty() {
         Maybe<Integer> o = Observable.<Integer> empty().singleElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -288,7 +288,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicate() {
+    public void singleWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2)
                 .filter(
                 new Predicate<Integer>() {
@@ -309,7 +309,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndTooManyElements() {
+    public void singleWithPredicateAndTooManyElements() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(
                 new Predicate<Integer>() {
@@ -331,7 +331,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleWithPredicateAndEmpty() {
+    public void singleWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
                 .filter(
                 new Predicate<Integer>() {
@@ -352,7 +352,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefault() {
+    public void singleOrDefault() {
         Single<Integer> o = Observable.just(1).single(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -364,7 +364,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithTooManyElements() {
+    public void singleOrDefaultWithTooManyElements() {
         Single<Integer> o = Observable.just(1, 2).single(3);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -377,7 +377,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithEmpty() {
+    public void singleOrDefaultWithEmpty() {
         Single<Integer> o = Observable.<Integer> empty()
                 .single(1);
 
@@ -390,7 +390,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicate() {
+    public void singleOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -409,7 +409,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndTooManyElements() {
+    public void singleOrDefaultWithPredicateAndTooManyElements() {
         Single<Integer> o = Observable.just(1, 2, 3, 4)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -429,7 +429,7 @@ public class ObservableSingleTest {
     }
 
     @Test
-    public void testSingleOrDefaultWithPredicateAndEmpty() {
+    public void singleOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -448,7 +448,7 @@ public class ObservableSingleTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue1527() throws InterruptedException {
+    public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Maybe<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {

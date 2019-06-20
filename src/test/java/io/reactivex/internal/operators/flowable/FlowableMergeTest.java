@@ -75,7 +75,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeFlowableOfFlowables() {
+    public void mergeFlowableOfFlowables() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
@@ -100,7 +100,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeArray() {
+    public void mergeArray() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
@@ -113,7 +113,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeList() {
+    public void mergeList() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
@@ -129,7 +129,7 @@ public class FlowableMergeTest {
     }
 
     @Test(timeout = 1000)
-    public void testUnSubscribeFlowableOfFlowables() throws InterruptedException {
+    public void unSubscribeFlowableOfFlowables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -197,7 +197,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeArrayWithThreading() {
+    public void mergeArrayWithThreading() {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
@@ -214,15 +214,15 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testSynchronizationOfMultipleSequencesLoop() throws Throwable {
+    public void synchronizationOfMultipleSequencesLoop() throws Throwable {
         for (int i = 0; i < 100; i++) {
             System.out.println("testSynchronizationOfMultipleSequencesLoop > " + i);
-            testSynchronizationOfMultipleSequences();
+            synchronizationOfMultipleSequences();
         }
     }
 
     @Test
-    public void testSynchronizationOfMultipleSequences() throws Throwable {
+    public void synchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
         final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
@@ -310,7 +310,7 @@ public class FlowableMergeTest {
      * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
-    public void testError1() {
+    public void error1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
@@ -332,7 +332,7 @@ public class FlowableMergeTest {
      * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
-    public void testError2() {
+    public void error2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six"
@@ -357,7 +357,7 @@ public class FlowableMergeTest {
 
     @Test
     @Ignore("Subscribe should not throw")
-    public void testThrownErrorHandling() {
+    public void thrownErrorHandling() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable<String> f1 = Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -435,7 +435,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testUnsubscribeAsFlowablesComplete() {
+    public void unsubscribeAsFlowablesComplete() {
         TestScheduler scheduler1 = new TestScheduler();
         AtomicBoolean os1 = new AtomicBoolean(false);
         Flowable<Long> f1 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
@@ -476,7 +476,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testEarlyUnsubscribe() {
+    public void earlyUnsubscribe() {
         for (int i = 0; i < 10; i++) {
             TestScheduler scheduler1 = new TestScheduler();
             AtomicBoolean os1 = new AtomicBoolean(false);
@@ -557,7 +557,7 @@ public class FlowableMergeTest {
     }
 
     @Test//(timeout = 10000)
-    public void testConcurrency() {
+    public void concurrency() {
         Flowable<Integer> f = Flowable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
@@ -576,7 +576,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testConcurrencyWithSleeping() {
+    public void concurrencyWithSleeping() {
 
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -627,7 +627,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testConcurrencyWithBrokenOnCompleteContract() {
+    public void concurrencyWithBrokenOnCompleteContract() {
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -675,7 +675,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testBackpressureUpstream() throws InterruptedException {
+    public void backpressureUpstream() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
         final AtomicInteger generated2 = new AtomicInteger();
@@ -704,17 +704,17 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testBackpressureUpstream2InLoop() throws InterruptedException {
+    public void backpressureUpstream2InLoop() throws InterruptedException {
         for (int i = 0; i < 1000; i++) {
             System.err.flush();
             System.out.println("---");
             System.out.flush();
-            testBackpressureUpstream2();
+            backpressureUpstream2();
         }
     }
 
     @Test
-    public void testBackpressureUpstream2() throws InterruptedException {
+    public void backpressureUpstream2() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
 
@@ -749,7 +749,7 @@ public class FlowableMergeTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 10000)
-    public void testBackpressureDownstreamWithConcurrentStreams() throws InterruptedException {
+    public void backpressureDownstreamWithConcurrentStreams() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
         final AtomicInteger generated2 = new AtomicInteger();
@@ -786,7 +786,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarFlowables() throws InterruptedException {
+    public void backpressureBothUpstreamAndDownstreamWithSynchronousScalarFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1)
         .map(new Function<Integer, Flowable<Integer>>() {
@@ -840,7 +840,7 @@ public class FlowableMergeTest {
      * @throws InterruptedException if the await is interrupted
      */
     @Test(timeout = 5000)
-    public void testBackpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {
+    public void backpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1).map(new Function<Integer, Flowable<Integer>>() {
 
@@ -1209,7 +1209,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeKeepsRequesting() throws InterruptedException {
+    public void mergeKeepsRequesting() throws InterruptedException {
         //for (int i = 0; i < 5000; i++) {
             //System.out.println(i + ".......................................................................");
             final CountDownLatch latch = new CountDownLatch(1);
@@ -1268,7 +1268,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testMergeRequestOverflow() throws InterruptedException {
+    public void mergeRequestOverflow() throws InterruptedException {
         //do a non-trivial merge so that future optimisations with EMPTY don't invalidate this test
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2))
                 .mergeWith(Flowable.fromIterable(Arrays.asList(3, 4)));
@@ -1358,17 +1358,17 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testFastMergeFullScalar() {
+    public void fastMergeFullScalar() {
         runMerge(toScalar, new TestSubscriberEx<Integer>());
     }
 
     @Test
-    public void testFastMergeHiddenScalar() {
+    public void fastMergeHiddenScalar() {
         runMerge(toHiddenScalar, new TestSubscriberEx<Integer>());
     }
 
     @Test
-    public void testSlowMergeFullScalar() {
+    public void slowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) {
                 int remaining = req;
@@ -1387,7 +1387,7 @@ public class FlowableMergeTest {
     }
 
     @Test
-    public void testSlowMergeHiddenScalar() {
+    public void slowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) {
                 int remaining = req;
@@ -1627,7 +1627,7 @@ public class FlowableMergeTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void mergeArray() {
+    public void mergeArray2() {
         Flowable.mergeArray(Flowable.just(1), Flowable.just(2))
         .test()
         .assertResult(1, 2);

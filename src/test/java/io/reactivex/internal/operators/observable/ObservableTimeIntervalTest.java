@@ -47,7 +47,7 @@ public class ObservableTimeIntervalTest {
     }
 
     @Test
-    public void testTimeInterval() {
+    public void timeInterval() {
         InOrder inOrder = inOrder(observer);
         observable.subscribe(observer);
 

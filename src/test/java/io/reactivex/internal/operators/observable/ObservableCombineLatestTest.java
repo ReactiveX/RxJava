@@ -40,7 +40,7 @@ import io.reactivex.testsupport.*;
 public class ObservableCombineLatestTest {
 
     @Test
-    public void testCombineLatestWithFunctionThatThrowsAnException() {
+    public void combineLatestWithFunctionThatThrowsAnException() {
         Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
@@ -63,7 +63,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestDifferentLengthObservableSequences1() {
+    public void combineLatestDifferentLengthObservableSequences1() {
         Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
@@ -101,7 +101,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestDifferentLengthObservableSequences2() {
+    public void combineLatestDifferentLengthObservableSequences2() {
         Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
@@ -136,7 +136,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestWithInterleavingSequences() {
+    public void combineLatestWithInterleavingSequences() {
         Observer<String> w = TestHelper.mockObserver();
 
         PublishSubject<String> w1 = PublishSubject.create();
@@ -174,7 +174,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest2Types() {
+    public void combineLatest2Types() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -191,7 +191,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest3TypesA() {
+    public void combineLatest3TypesA() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -206,7 +206,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest3TypesB() {
+    public void combineLatest3TypesB() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -380,7 +380,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testFirstNeverProduces() {
+    public void firstNeverProduces() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
@@ -402,7 +402,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testSecondNeverProduces() {
+    public void secondNeverProduces() {
         PublishSubject<Integer> a = PublishSubject.create();
         PublishSubject<Integer> b = PublishSubject.create();
 
@@ -424,12 +424,8 @@ public class ObservableCombineLatestTest {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    public void test0Sources() {
-
-    }
-
     @Test
-    public void test1ToNSources() {
+    public void oneToNSources() {
         int n = 30;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
 
@@ -460,7 +456,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test(timeout = 5000)
-    public void test1ToNSourcesScheduled() throws InterruptedException {
+    public void oneToNSourcesScheduled() throws InterruptedException {
         int n = 10;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
 
@@ -515,7 +511,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test2SourcesOverload() {
+    public void twoSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
 
@@ -537,7 +533,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test3SourcesOverload() {
+    public void threeSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -560,7 +556,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test4SourcesOverload() {
+    public void fourSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -584,7 +580,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test5SourcesOverload() {
+    public void fiveSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -609,7 +605,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test6SourcesOverload() {
+    public void sixSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -635,7 +631,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test7SourcesOverload() {
+    public void sevenSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -662,7 +658,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test8SourcesOverload() {
+    public void eightSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -690,7 +686,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void test9SourcesOverload() {
+    public void nineSourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
@@ -719,7 +715,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testZeroSources() {
+    public void zeroSources() {
         Observable<Object> result = Observable.combineLatest(
                 Collections.<Observable<Object>> emptyList(), new Function<Object[], Object>() {
 
@@ -741,7 +737,7 @@ public class ObservableCombineLatestTest {
     }
 
     @Test
-    public void testWithCombineLatestIssue1717() throws InterruptedException {
+    public void withCombineLatestIssue1717() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final int SIZE = 2000;

@@ -71,7 +71,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testMergeObservableOfObservables() {
+    public void mergeObservableOfObservables() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
@@ -96,7 +96,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testMergeArray() {
+    public void mergeArray() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
@@ -109,7 +109,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testMergeList() {
+    public void mergeList() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
         List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
@@ -125,7 +125,7 @@ public class ObservableMergeTest {
     }
 
     @Test(timeout = 1000)
-    public void testUnSubscribeObservableOfObservables() throws InterruptedException {
+    public void unSubscribeObservableOfObservables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -186,7 +186,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testMergeArrayWithThreading() {
+    public void mergeArrayWithThreading() {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
@@ -203,15 +203,15 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testSynchronizationOfMultipleSequencesLoop() throws Throwable {
+    public void synchronizationOfMultipleSequencesLoop() throws Throwable {
         for (int i = 0; i < 100; i++) {
             System.out.println("testSynchronizationOfMultipleSequencesLoop > " + i);
-            testSynchronizationOfMultipleSequences();
+            synchronizationOfMultipleSequences();
         }
     }
 
     @Test
-    public void testSynchronizationOfMultipleSequences() throws Throwable {
+    public void synchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
@@ -293,7 +293,7 @@ public class ObservableMergeTest {
      * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
-    public void testError1() {
+    public void error1() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
@@ -315,7 +315,7 @@ public class ObservableMergeTest {
      * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
-    public void testError2() {
+    public void error2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
         final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
@@ -340,7 +340,7 @@ public class ObservableMergeTest {
 
     @Test
     @Ignore("Subscribe should not throw")
-    public void testThrownErrorHandling() {
+    public void thrownErrorHandling() {
         TestObserverEx<String> to = new TestObserverEx<String>();
         Observable<String> o1 = Observable.unsafeCreate(new ObservableSource<String>() {
 
@@ -418,7 +418,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testUnsubscribeAsObservablesComplete() {
+    public void unsubscribeAsObservablesComplete() {
         TestScheduler scheduler1 = new TestScheduler();
         AtomicBoolean os1 = new AtomicBoolean(false);
         Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
@@ -459,7 +459,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testEarlyUnsubscribe() {
+    public void earlyUnsubscribe() {
         for (int i = 0; i < 10; i++) {
             TestScheduler scheduler1 = new TestScheduler();
             AtomicBoolean os1 = new AtomicBoolean(false);
@@ -537,7 +537,7 @@ public class ObservableMergeTest {
     }
 
     @Test//(timeout = 10000)
-    public void testConcurrency() {
+    public void concurrency() {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
@@ -556,7 +556,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testConcurrencyWithSleeping() {
+    public void concurrencyWithSleeping() {
 
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
@@ -607,7 +607,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testConcurrencyWithBrokenOnCompleteContract() {
+    public void concurrencyWithBrokenOnCompleteContract() {
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -655,7 +655,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testBackpressureUpstream() throws InterruptedException {
+    public void backpressureUpstream() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
         final AtomicInteger generated2 = new AtomicInteger();
@@ -685,17 +685,17 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testBackpressureUpstream2InLoop() throws InterruptedException {
+    public void backpressureUpstream2InLoop() throws InterruptedException {
         for (int i = 0; i < 1000; i++) {
             System.err.flush();
             System.out.println("---");
             System.out.flush();
-            testBackpressureUpstream2();
+            backpressureUpstream2();
         }
     }
 
     @Test
-    public void testBackpressureUpstream2() throws InterruptedException {
+    public void backpressureUpstream2() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
 
@@ -730,7 +730,7 @@ public class ObservableMergeTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 10000)
-    public void testBackpressureDownstreamWithConcurrentStreams() throws InterruptedException {
+    public void backpressureDownstreamWithConcurrentStreams() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
         final AtomicInteger generated2 = new AtomicInteger();
@@ -779,7 +779,7 @@ public class ObservableMergeTest {
      * @throws InterruptedException if the await is interrupted
      */
     @Test(timeout = 5000)
-    public void testBackpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
+    public void backpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function<Integer, Observable<Integer>>() {
 
@@ -1081,17 +1081,17 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testFastMergeFullScalar() {
+    public void fastMergeFullScalar() {
         runMerge(toScalar, new TestObserverEx<Integer>());
     }
 
     @Test
-    public void testFastMergeHiddenScalar() {
+    public void fastMergeHiddenScalar() {
         runMerge(toHiddenScalar, new TestObserverEx<Integer>());
     }
 
     @Test
-    public void testSlowMergeFullScalar() {
+    public void slowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
             TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
                 int remaining = req;
@@ -1109,7 +1109,7 @@ public class ObservableMergeTest {
     }
 
     @Test
-    public void testSlowMergeHiddenScalar() {
+    public void slowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
             TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
                 int remaining = req;
@@ -1127,7 +1127,7 @@ public class ObservableMergeTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void mergeArray() {
+    public void mergeArray2() {
         Observable.mergeArray(Observable.just(1), Observable.just(2))
         .test()
         .assertResult(1, 2);

@@ -45,7 +45,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test
     @Ignore("Subscribers can't throw")
-    public void testOnCompletedThrows() {
+    public void onCompletedThrows() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onComplete() {
@@ -63,7 +63,7 @@ public class SafeSubscriberWithPluginTest {
     }
 
     @Test
-    public void testOnCompletedThrows2() {
+    public void onCompletedThrows2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onComplete() {
@@ -84,7 +84,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginException() {
+    public void pluginException() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) {
@@ -105,7 +105,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginExceptionWhileOnErrorUnsubscribeThrows() {
+    public void pluginExceptionWhileOnErrorUnsubscribeThrows() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             int calls;
             @Override
@@ -125,7 +125,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginExceptionWhileOnErrorThrowsNotImplAndUnsubscribeThrows() {
+    public void pluginExceptionWhileOnErrorThrowsNotImplAndUnsubscribeThrows() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             int calls;
             @Override
@@ -150,7 +150,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginExceptionWhileOnErrorThrows() {
+    public void pluginExceptionWhileOnErrorThrows() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             int calls;
             @Override
@@ -174,7 +174,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginExceptionWhileOnErrorThrowsAndUnsubscribeThrows() {
+    public void pluginExceptionWhileOnErrorThrowsAndUnsubscribeThrows() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             int calls;
             @Override
@@ -199,7 +199,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
-    public void testPluginExceptionWhenUnsubscribing2() {
+    public void pluginExceptionWhenUnsubscribing2() {
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             int calls;
             @Override
@@ -224,7 +224,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test
     @Ignore("Subscribers can't throw")
-    public void testPluginErrorHandlerReceivesExceptionWhenUnsubscribeAfterCompletionThrows() {
+    public void pluginErrorHandlerReceivesExceptionWhenUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override
@@ -265,7 +265,7 @@ public class SafeSubscriberWithPluginTest {
 
     @Test
     @Ignore("Subscribers can't throw")
-    public void testPluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
+    public void pluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override

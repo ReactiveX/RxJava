@@ -544,7 +544,7 @@ public class RxJavaPluginsTest {
     };
 
     @Test
-    public void testDefaultSingleSchedulerIsInitializedLazily() {
+    public void defaultSingleSchedulerIsInitializedLazily() {
         // unsafe default Scheduler Supplier should not be evaluated
         try {
             RxJavaPlugins.setInitSingleSchedulerHandler(initReplaceWithImmediate);
@@ -558,7 +558,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testDefaultIoSchedulerIsInitializedLazily() {
+    public void defaultIoSchedulerIsInitializedLazily() {
         // unsafe default Scheduler Supplier should not be evaluated
         try {
             RxJavaPlugins.setInitIoSchedulerHandler(initReplaceWithImmediate);
@@ -572,7 +572,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testDefaultComputationSchedulerIsInitializedLazily() {
+    public void defaultComputationSchedulerIsInitializedLazily() {
         // unsafe default Scheduler Supplier should not be evaluated
         try {
             RxJavaPlugins.setInitComputationSchedulerHandler(initReplaceWithImmediate);
@@ -586,7 +586,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testDefaultNewThreadSchedulerIsInitializedLazily() {
+    public void defaultNewThreadSchedulerIsInitializedLazily() {
         // unsafe default Scheduler Supplier should not be evaluated
         try {
             RxJavaPlugins.setInitNewThreadSchedulerHandler(initReplaceWithImmediate);

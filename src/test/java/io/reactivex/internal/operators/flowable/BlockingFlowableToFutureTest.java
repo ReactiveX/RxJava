@@ -35,14 +35,14 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test
-    public void testToFuture() throws InterruptedException, ExecutionException {
+    public void toFuture() throws InterruptedException, ExecutionException {
         Flowable<String> obs = Flowable.just("one");
         Future<String> f = obs.toFuture();
         assertEquals("one", f.get());
     }
 
     @Test
-    public void testToFutureList() throws InterruptedException, ExecutionException {
+    public void toFutureList() throws InterruptedException, ExecutionException {
         Flowable<String> obs = Flowable.just("one", "two", "three");
         Future<List<String>> f = obs.toList().toFuture();
         assertEquals("one", f.get().get(0));
@@ -51,7 +51,7 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test(/* timeout = 5000, */expected = IndexOutOfBoundsException.class)
-    public void testExceptionWithMoreThanOneElement() throws Throwable {
+    public void exceptionWithMoreThanOneElement() throws Throwable {
         Flowable<String> obs = Flowable.just("one", "two");
         Future<String> f = obs.toFuture();
         try {
@@ -65,7 +65,7 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test
-    public void testToFutureWithException() {
+    public void toFutureWithException() {
         Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -86,7 +86,7 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test(expected = CancellationException.class)
-    public void testGetAfterCancel() throws Exception {
+    public void getAfterCancel() throws Exception {
         Flowable<String> obs = Flowable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
@@ -95,7 +95,7 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test(expected = CancellationException.class)
-    public void testGetWithTimeoutAfterCancel() throws Exception {
+    public void getWithTimeoutAfterCancel() throws Exception {
         Flowable<String> obs = Flowable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
@@ -104,7 +104,7 @@ public class BlockingFlowableToFutureTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void testGetWithEmptyFlowable() throws Throwable {
+    public void getWithEmptyFlowable() throws Throwable {
         Flowable<String> obs = Flowable.empty();
         Future<String> f = obs.toFuture();
         try {
@@ -117,7 +117,7 @@ public class BlockingFlowableToFutureTest {
 
     @Ignore("null value is not allowed")
     @Test
-    public void testGetWithASingleNullItem() throws Exception {
+    public void getWithASingleNullItem() throws Exception {
         Flowable<String> obs = Flowable.just((String)null);
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());

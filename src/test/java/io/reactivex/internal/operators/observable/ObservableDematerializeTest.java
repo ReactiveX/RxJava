@@ -75,7 +75,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize1() {
+    public void dematerialize1() {
         Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
@@ -90,7 +90,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize2() {
+    public void dematerialize2() {
         Throwable exception = new Throwable("test");
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
@@ -105,7 +105,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testDematerialize3() {
+    public void dematerialize3() {
         Exception exception = new Exception("test");
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
@@ -120,7 +120,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testErrorPassThru() {
+    public void errorPassThru() {
         Exception exception = new Exception("test");
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.dematerialize();
@@ -135,7 +135,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testCompletePassThru() {
+    public void completePassThru() {
         Observable<Integer> o = Observable.empty();
         Observable<Integer> dematerialize = o.dematerialize();
 
@@ -152,7 +152,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testHonorsContractWhenCompleted() {
+    public void honorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
 
         Observable<Integer> result = source.materialize().dematerialize();
@@ -167,7 +167,7 @@ public class ObservableDematerializeTest {
     }
 
     @Test
-    public void testHonorsContractWhenThrows() {
+    public void honorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
 
         Observable<Integer> result = source.materialize().dematerialize();

@@ -41,7 +41,7 @@ import io.reactivex.testsupport.*;
 public class FlowableCombineLatestTest {
 
     @Test
-    public void testCombineLatestWithFunctionThatThrowsAnException() {
+    public void combineLatestWithFunctionThatThrowsAnException() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
         PublishProcessor<String> w1 = PublishProcessor.create();
@@ -64,7 +64,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestDifferentLengthFlowableSequences1() {
+    public void combineLatestDifferentLengthFlowableSequences1() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
         PublishProcessor<String> w1 = PublishProcessor.create();
@@ -102,7 +102,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestDifferentLengthFlowableSequences2() {
+    public void combineLatestDifferentLengthFlowableSequences2() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
         PublishProcessor<String> w1 = PublishProcessor.create();
@@ -137,7 +137,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatestWithInterleavingSequences() {
+    public void combineLatestWithInterleavingSequences() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
         PublishProcessor<String> w1 = PublishProcessor.create();
@@ -175,7 +175,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest2Types() {
+    public void combineLatest2Types() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -192,7 +192,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest3TypesA() {
+    public void combineLatest3TypesA() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -207,7 +207,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineLatest3TypesB() {
+    public void combineLatest3TypesB() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
@@ -381,7 +381,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testFirstNeverProduces() {
+    public void firstNeverProduces() {
         PublishProcessor<Integer> a = PublishProcessor.create();
         PublishProcessor<Integer> b = PublishProcessor.create();
 
@@ -403,7 +403,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testSecondNeverProduces() {
+    public void secondNeverProduces() {
         PublishProcessor<Integer> a = PublishProcessor.create();
         PublishProcessor<Integer> b = PublishProcessor.create();
 
@@ -425,12 +425,8 @@ public class FlowableCombineLatestTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    public void test0Sources() {
-
-    }
-
     @Test
-    public void test1ToNSources() {
+    public void oneToNSources() {
         int n = 30;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
 
@@ -461,7 +457,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test(timeout = 5000)
-    public void test1ToNSourcesScheduled() throws InterruptedException {
+    public void oneToNSourcesScheduled() throws InterruptedException {
         int n = 10;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
 
@@ -516,7 +512,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test2SourcesOverload() {
+    public void twoSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
 
@@ -538,7 +534,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test3SourcesOverload() {
+    public void threeSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -561,7 +557,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test4SourcesOverload() {
+    public void fourSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -585,7 +581,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test5SourcesOverload() {
+    public void fiveSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -610,7 +606,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test6SourcesOverload() {
+    public void sixSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -636,7 +632,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test7SourcesOverload() {
+    public void sevenSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -663,7 +659,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test8SourcesOverload() {
+    public void eightSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -691,7 +687,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void test9SourcesOverload() {
+    public void nineSourcesOverload() {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
         Flowable<Integer> s3 = Flowable.just(3);
@@ -720,7 +716,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testZeroSources() {
+    public void zeroSources() {
         Flowable<Object> result = Flowable.combineLatest(
                 Collections.<Flowable<Object>> emptyList(), new Function<Object[], Object>() {
 
@@ -742,14 +738,14 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testBackpressureLoop() {
+    public void backpressureLoop() {
         for (int i = 0; i < 5000; i++) {
-            testBackpressure();
+            backpressure();
         }
     }
 
     @Test//(timeout = 2000)
-    public void testBackpressure() {
+    public void backpressure() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         int num = Flowable.bufferSize() * 4;
@@ -772,7 +768,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testWithCombineLatestIssue1717() throws InterruptedException {
+    public void withCombineLatestIssue1717() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final int SIZE = 2000;
@@ -805,7 +801,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test(timeout = 10000)
-    public void testCombineLatestRequestOverflow() throws InterruptedException {
+    public void combineLatestRequestOverflow() throws InterruptedException {
         @SuppressWarnings("unchecked")
         List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
                 Flowable.fromArray(5, 6, 7, 8));
@@ -850,7 +846,7 @@ public class FlowableCombineLatestTest {
     };
 
     @Test
-    public void testNonFatalExceptionThrownByCombinatorForSingleSourceIsNotReportedByUpstreamOperator() {
+    public void nonFatalExceptionThrownByCombinatorForSingleSourceIsNotReportedByUpstreamOperator() {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         TestSubscriber<Integer> ts = TestSubscriber.create(1);
         Flowable<Integer> source = Flowable.just(1)
@@ -870,7 +866,7 @@ public class FlowableCombineLatestTest {
 
     @Ignore("Nulls are not allowed")
     @Test
-    public void testCombineManyNulls() {
+    public void combineManyNulls() {
         int n = Flowable.bufferSize() * 3;
 
         Flowable<Integer> source = Flowable.just((Integer)null);
@@ -923,7 +919,7 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    public void testCombineMany() {
+    public void combineMany() {
         int n = Flowable.bufferSize() * 3;
 
         List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();

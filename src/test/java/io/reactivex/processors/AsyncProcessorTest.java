@@ -41,7 +41,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testNeverCompleted() {
+    public void neverCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -57,7 +57,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -75,7 +75,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testNull() {
+    public void nullValues() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -90,7 +90,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeAfterCompleted() {
+    public void subscribeAfterCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -108,7 +108,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeAfterError() {
+    public void subscribeAfterError() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -128,7 +128,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -148,7 +148,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testUnsubscribeBeforeCompleted() {
+    public void unsubscribeBeforeCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -173,7 +173,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testEmptySubjectCompleted() {
+    public void emptySubjectCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -192,7 +192,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
     @Test(timeout = 10000)
-    public void testSubscribeCompletionRaceCondition() {
+    public void subscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
@@ -324,7 +324,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
 
         assertFalse(as.hasValue());
@@ -350,7 +350,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
 
         assertFalse(as.hasValue());
@@ -369,7 +369,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
 
         assertFalse(as.hasValue());

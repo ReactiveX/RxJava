@@ -84,7 +84,7 @@ public class ObservableAmbTest {
     }
 
     @Test
-    public void testAmb() {
+    public void amb() {
         Observable<String> observable1 = createObservable(new String[] {
                 "1", "11", "111", "1111" }, 2000, null);
         Observable<String> observable2 = createObservable(new String[] {
@@ -111,7 +111,7 @@ public class ObservableAmbTest {
     }
 
     @Test
-    public void testAmb2() {
+    public void amb2() {
         IOException expectedException = new IOException(
                 "fake exception");
         Observable<String> observable1 = createObservable(new String[] {},
@@ -140,7 +140,7 @@ public class ObservableAmbTest {
     }
 
     @Test
-    public void testAmb3() {
+    public void amb3() {
         Observable<String> observable1 = createObservable(new String[] {
                 "1" }, 2000, null);
         Observable<String> observable2 = createObservable(new String[] {},
@@ -163,7 +163,7 @@ public class ObservableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
+    public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
         Consumer<Disposable> incrementer = new Consumer<Disposable>() {
             @Override
@@ -186,7 +186,7 @@ public class ObservableAmbTest {
     }
 
     @Test
-    public void testSynchronousSources() {
+    public void synchronousSources() {
         // under async subscription the second Observable would complete before
         // the first but because this is a synchronous subscription to sources
         // then second Observable does not get subscribed to before first
@@ -207,7 +207,7 @@ public class ObservableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAmbCancelsOthers() {
+    public void ambCancelsOthers() {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
         PublishSubject<Integer> source3 = PublishSubject.create();

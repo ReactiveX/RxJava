@@ -29,14 +29,14 @@ public class ObservableMergeTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfMerge() {
+    public void covarianceOfMerge() {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<Observable<HorrorMovie>> metaHorrors = Observable.just(horrors);
         Observable.<Media> merge(metaHorrors);
     }
 
     @Test
-    public void testMergeCovariance() {
+    public void mergeCovariance() {
         Observable<Media> o1 = Observable.<Media> just(new HorrorMovie(), new Movie());
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
@@ -48,7 +48,7 @@ public class ObservableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance2() {
+    public void mergeCovariance2() {
         Observable<Media> o1 = Observable.just(new HorrorMovie(), new Movie(), new Media());
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
@@ -60,7 +60,7 @@ public class ObservableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance3() {
+    public void mergeCovariance3() {
         Observable<Movie> o1 = Observable.just(new HorrorMovie(), new Movie());
         Observable<Media> o2 = Observable.just(new Media(), new HorrorMovie());
 
@@ -73,7 +73,7 @@ public class ObservableMergeTests {
     }
 
     @Test
-    public void testMergeCovariance4() {
+    public void mergeCovariance4() {
 
         Observable<Movie> o1 = Observable.defer(new Supplier<Observable<Movie>>() {
             @Override

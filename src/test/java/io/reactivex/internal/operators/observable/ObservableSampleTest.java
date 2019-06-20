@@ -46,7 +46,7 @@ public class ObservableSampleTest {
     }
 
     @Test
-    public void testSample() {
+    public void sample() {
         Observable<Long> source = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> observer1) {
@@ -266,7 +266,7 @@ public class ObservableSampleTest {
     }
 
     @Test
-    public void testSampleUnsubscribe() {
+    public void sampleUnsubscribe() {
         final Disposable upstream = mock(Disposable.class);
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {

@@ -29,7 +29,7 @@ import io.reactivex.testsupport.*;
 public class FlowableTakeUntilTest {
 
     @Test
-    public void testTakeUntil() {
+    public void takeUntil() {
         Subscription sSource = mock(Subscription.class);
         Subscription sOther = mock(Subscription.class);
         TestObservable source = new TestObservable(sSource);
@@ -56,7 +56,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilSourceCompleted() {
+    public void takeUntilSourceCompleted() {
         Subscription sSource = mock(Subscription.class);
         Subscription sOther = mock(Subscription.class);
         TestObservable source = new TestObservable(sSource);
@@ -77,7 +77,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilSourceError() {
+    public void takeUntilSourceError() {
         Subscription sSource = mock(Subscription.class);
         Subscription sOther = mock(Subscription.class);
         TestObservable source = new TestObservable(sSource);
@@ -102,7 +102,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testTakeUntilOtherError() {
+    public void takeUntilOtherError() {
         Subscription sSource = mock(Subscription.class);
         Subscription sOther = mock(Subscription.class);
         TestObservable source = new TestObservable(sSource);
@@ -131,7 +131,7 @@ public class FlowableTakeUntilTest {
      * If the 'other' onCompletes then we unsubscribe from the source and onComplete.
      */
     @Test
-    public void testTakeUntilOtherCompleted() {
+    public void takeUntilOtherCompleted() {
         Subscription sSource = mock(Subscription.class);
         Subscription sOther = mock(Subscription.class);
         TestObservable source = new TestObservable(sSource);
@@ -186,7 +186,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testUntilFires() {
+    public void untilFires() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
@@ -212,7 +212,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testMainCompletes() {
+    public void mainCompletes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
@@ -236,7 +236,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testDownstreamUnsubscribes() {
+    public void downstreamUnsubscribes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
@@ -259,7 +259,7 @@ public class FlowableTakeUntilTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         PublishProcessor<Integer> until = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);

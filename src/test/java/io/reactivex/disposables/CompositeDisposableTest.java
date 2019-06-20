@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 public class CompositeDisposableTest {
 
     @Test
-    public void testSuccess() {
+    public void success() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(Disposables.fromRunnable(new Runnable() {
@@ -97,7 +97,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testException() {
+    public void exception() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(Disposables.fromRunnable(new Runnable() {
@@ -131,7 +131,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testCompositeException() {
+    public void compositeException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(Disposables.fromRunnable(new Runnable() {
@@ -173,7 +173,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testRemoveUnsubscribes() {
+    public void removeUnsubscribes() {
         Disposable d1 = Disposables.empty();
         Disposable d2 = Disposables.empty();
 
@@ -188,7 +188,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testClear() {
+    public void clear() {
         Disposable d1 = Disposables.empty();
         Disposable d2 = Disposables.empty();
 
@@ -215,7 +215,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testUnsubscribeIdempotence() {
+    public void unsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(Disposables.fromRunnable(new Runnable() {
@@ -236,7 +236,7 @@ public class CompositeDisposableTest {
     }
 
     @Test(timeout = 1000)
-    public void testUnsubscribeIdempotenceConcurrently()
+    public void unsubscribeIdempotenceConcurrently()
             throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         final CompositeDisposable cd = new CompositeDisposable();
@@ -279,7 +279,7 @@ public class CompositeDisposableTest {
     }
 
     @Test
-    public void testTryRemoveIfNotIn() {
+    public void tryRemoveIfNotIn() {
         CompositeDisposable cd = new CompositeDisposable();
 
         CompositeDisposable cd1 = new CompositeDisposable();
@@ -293,7 +293,7 @@ public class CompositeDisposableTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testAddingNullDisposableIllegal() {
+    public void addingNullDisposableIllegal() {
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(null);
     }

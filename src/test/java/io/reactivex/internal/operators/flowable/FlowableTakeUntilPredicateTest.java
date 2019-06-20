@@ -158,7 +158,7 @@ public class FlowableTakeUntilPredicateTest {
     }
 
     @Test
-    public void testErrorIncludesLastValueAsCause() {
+    public void errorIncludesLastValueAsCause() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = new Predicate<String>() {

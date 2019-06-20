@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableOnErrorResumeNextViaObservableTest {
 
     @Test
-    public void testResumeNext() {
+    public void resumeNext() {
         Disposable upstream = mock(Disposable.class);
         // Trigger failure on second element
         TestObservable f = new TestObservable(upstream, "one", "fail", "two", "three");
@@ -59,7 +59,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         Disposable sr = mock(Disposable.class);
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
@@ -103,7 +103,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailureOnSubscribe() {
+    public void resumeNextWithFailureOnSubscribe() {
         Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -125,7 +125,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
     @Test
     @Ignore("Publishers should not throw")
-    public void testResumeNextWithFailureOnSubscribeAsync() {
+    public void resumeNextWithFailureOnSubscribeAsync() {
         Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -192,7 +192,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(Observable.just(1))

@@ -46,7 +46,7 @@ public class ObservableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testObservableBasedOpenerAndCloser() {
+    public void observableBasedOpenerAndCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -97,7 +97,7 @@ public class ObservableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testObservableBasedCloser() {
+    public void observableBasedCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -198,7 +198,7 @@ public class ObservableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testNoUnsubscribeAndNoLeak() {
+    public void noUnsubscribeAndNoLeak() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         PublishSubject<Integer> open = PublishSubject.create();
@@ -236,7 +236,7 @@ public class ObservableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testUnsubscribeAll() {
+    public void unsubscribeAll() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         PublishSubject<Integer> open = PublishSubject.create();

@@ -44,12 +44,12 @@ public class ObservableFinallyTest {
     }
 
     @Test
-    public void testFinallyCalledOnComplete() {
+    public void finallyCalledOnComplete() {
         checkActionCalled(Observable.fromArray("1", "2", "3"));
     }
 
     @Test
-    public void testFinallyCalledOnError() {
+    public void finallyCalledOnError() {
         checkActionCalled(Observable.<String> error(new RuntimeException("expected")));
     }
 }

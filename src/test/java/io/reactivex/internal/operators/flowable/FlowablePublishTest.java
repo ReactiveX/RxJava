@@ -41,7 +41,7 @@ import io.reactivex.testsupport.*;
 public class FlowablePublishTest {
 
     @Test
-    public void testPublish() throws InterruptedException {
+    public void publish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         ConnectableFlowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -94,7 +94,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testBackpressureFastSlow() {
+    public void backpressureFastSlow() {
         ConnectableFlowable<Integer> is = Flowable.range(1, Flowable.bufferSize() * 2).publish();
         Flowable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
@@ -138,7 +138,7 @@ public class FlowablePublishTest {
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
     @Test
-    public void testTakeUntilWithPublishedStreamUsingSelector() {
+    public void takeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
 
@@ -173,7 +173,7 @@ public class FlowablePublishTest {
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
     @Test
-    public void testTakeUntilWithPublishedStream() {
+    public void takeUntilWithPublishedStream() {
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ConnectableFlowable<Integer> xsp = xs.publish();
@@ -190,7 +190,7 @@ public class FlowablePublishTest {
     }
 
     @Test(timeout = 10000)
-    public void testBackpressureTwoConsumers() {
+    public void backpressureTwoConsumers() {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Flowable<Integer> source = Flowable.range(1, 100)
@@ -253,7 +253,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testConnectWithNoSubscriber() {
+    public void connectWithNoSubscriber() {
         TestScheduler scheduler = new TestScheduler();
         ConnectableFlowable<Long> cf = Flowable.interval(10, 10, TimeUnit.MILLISECONDS, scheduler).take(3).publish();
         cf.connect();
@@ -268,7 +268,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testSubscribeAfterDisconnectThenConnect() {
+    public void subscribeAfterDisconnectThenConnect() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
@@ -298,7 +298,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testNoSubscriberRetentionOnCompleted() {
+    public void noSubscriberRetentionOnCompleted() {
         FlowablePublish<Integer> source = (FlowablePublish<Integer>)Flowable.just(1).publish();
 
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
@@ -319,7 +319,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testNonNullConnection() {
+    public void nonNullConnection() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
 
         assertNotNull(source.connect());
@@ -327,7 +327,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testNoDisconnectSomeoneElse() {
+    public void noDisconnectSomeoneElse() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
 
         Disposable connection1 = source.connect();
@@ -350,7 +350,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testZeroRequested() {
+    public void zeroRequested() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -375,7 +375,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testConnectIsIdempotent() {
+    public void connectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
@@ -483,7 +483,7 @@ public class FlowablePublishTest {
     }
 
     @Test
-    public void testObserveOn() {
+    public void observeOn() {
         ConnectableFlowable<Integer> cf = Flowable.range(0, 1000).hide().publish();
         Flowable<Integer> obs = cf.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {

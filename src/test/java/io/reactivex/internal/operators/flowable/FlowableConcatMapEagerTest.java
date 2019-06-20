@@ -282,7 +282,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testSimple() {
+    public void simple() {
         Flowable.range(1, 100).concatMapEager(toJust).subscribe(ts);
 
         ts.assertNoErrors();
@@ -291,7 +291,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testSimple2() {
+    public void simple2() {
         Flowable.range(1, 100).concatMapEager(toRange).subscribe(ts);
 
         ts.assertNoErrors();
@@ -301,7 +301,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness2() {
+    public void eagerness2() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -326,7 +326,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness3() {
+    public void eagerness3() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -351,7 +351,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness4() {
+    public void eagerness4() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -376,7 +376,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness5() {
+    public void eagerness5() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -401,7 +401,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness6() {
+    public void eagerness6() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -426,7 +426,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness7() {
+    public void eagerness7() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -451,7 +451,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness8() {
+    public void eagerness8() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -476,7 +476,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness9() {
+    public void eagerness9() {
         final AtomicInteger count = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -500,7 +500,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testMainError() {
+    public void mainError() {
         Flowable.<Integer>error(new TestException()).concatMapEager(toJust).subscribe(ts);
 
         ts.assertNoValues();
@@ -510,7 +510,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInnerError() {
+    public void innerError() {
         Flowable.concatArrayEager(Flowable.just(1), Flowable.error(new TestException())).subscribe(ts);
 
         ts.assertValue(1);
@@ -520,7 +520,7 @@ public class FlowableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInnerEmpty() {
+    public void innerEmpty() {
         Flowable.concatArrayEager(Flowable.empty(), Flowable.empty()).subscribe(ts);
 
         ts.assertNoValues();
@@ -529,7 +529,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testMapperThrows() {
+    public void mapperThrows() {
         Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
@@ -543,18 +543,18 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidMaxConcurrent() {
+    public void invalidMaxConcurrent() {
         Flowable.just(1).concatMapEager(toJust, 0, Flowable.bufferSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidCapacityHint() {
+    public void invalidCapacityHint() {
         Flowable.just(1).concatMapEager(toJust, Flowable.bufferSize(), 0);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testBackpressure() {
+    public void backpressure() {
         Flowable.concatArrayEager(Flowable.just(1), Flowable.just(1)).subscribe(tsBp);
 
         tsBp.assertNoErrors();
@@ -573,7 +573,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testAsynchronousRun() {
+    public void asynchronousRun() {
         Flowable.range(1, 2).concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
@@ -588,7 +588,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testReentrantWork() {
+    public void reentrantWork() {
         final PublishProcessor<Integer> processor = PublishProcessor.create();
 
         final AtomicBoolean once = new AtomicBoolean();
@@ -617,7 +617,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testPrefetchIsBounded() {
+    public void prefetchIsBounded() {
         final AtomicInteger count = new AtomicInteger();
 
         TestSubscriber<Object> ts = TestSubscriber.create(0);
@@ -643,7 +643,7 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     @Ignore("Null values are not allowed in RS")
-    public void testInnerNull() {
+    public void innerNull() {
         Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
@@ -657,7 +657,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void testMaxConcurrent5() {
+    public void maxConcurrent5() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.range(1, 100).doOnRequest(new LongConsumer() {
             @Override
@@ -843,7 +843,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void innerError() {
+    public void innerError2() {
         Flowable.<Integer>just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {

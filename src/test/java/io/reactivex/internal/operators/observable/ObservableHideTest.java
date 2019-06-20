@@ -26,7 +26,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class ObservableHideTest {
     @Test
-    public void testHiding() {
+    public void hiding() {
         PublishSubject<Integer> src = PublishSubject.create();
 
         Observable<Integer> dst = src.hide();
@@ -46,7 +46,7 @@ public class ObservableHideTest {
     }
 
     @Test
-    public void testHidingError() {
+    public void hidingError() {
         PublishSubject<Integer> src = PublishSubject.create();
 
         Observable<Integer> dst = src.hide();

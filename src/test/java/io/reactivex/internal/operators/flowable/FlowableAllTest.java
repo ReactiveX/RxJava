@@ -37,7 +37,7 @@ import io.reactivex.testsupport.*;
 public class FlowableAllTest {
 
     @Test
-    public void testAll() {
+    public void all() {
         Flowable<String> obs = Flowable.just("one", "two", "six");
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -56,7 +56,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testNotAll() {
+    public void notAll() {
         Flowable<String> obs = Flowable.just("one", "two", "three", "six");
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -75,7 +75,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         Flowable<String> obs = Flowable.empty();
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -94,7 +94,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         Throwable error = new Throwable();
         Flowable<String> obs = Flowable.error(error);
 
@@ -114,7 +114,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testFollowingFirst() {
+    public void followingFirst() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
         Single<Boolean> allOdd = f.all(new Predicate<Integer>() {
             @Override
@@ -127,7 +127,7 @@ public class FlowableAllTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstream() {
+    public void issue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1)
             .all(new Predicate<Integer>() {
                 @Override
@@ -147,7 +147,7 @@ public class FlowableAllTest {
 
     @Test
     @Ignore("No backpressure in Single")
-    public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
+    public void backpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestObserver<Boolean> to = new TestObserver<Boolean>();
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -162,7 +162,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
+    public void backpressureIfOneRequestedOneShouldBeDelivered() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         Flowable.empty().all(new Predicate<Object>() {
@@ -180,7 +180,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessage() {
+    public void predicateThrowsExceptionAndValueInCauseMessage() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
@@ -202,7 +202,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testAllFlowable() {
+    public void allFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "six");
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
@@ -223,7 +223,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testNotAllFlowable() {
+    public void notAllFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "three", "six");
 
         Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
@@ -244,7 +244,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testEmptyFlowable() {
+    public void emptyFlowable() {
         Flowable<String> obs = Flowable.empty();
 
         Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
@@ -265,7 +265,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testErrorFlowable() {
+    public void errorFlowable() {
         Throwable error = new Throwable();
         Flowable<String> obs = Flowable.error(error);
 
@@ -286,7 +286,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testFollowingFirstFlowable() {
+    public void followingFirstFlowable() {
         Flowable<Integer> f = Flowable.fromArray(1, 3, 5, 6);
         Flowable<Boolean> allOdd = f.all(new Predicate<Integer>() {
             @Override
@@ -301,7 +301,7 @@ public class FlowableAllTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstreamFlowable() {
+    public void issue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1)
             .all(new Predicate<Integer>() {
                 @Override
@@ -322,7 +322,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testBackpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
+    public void backpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -339,7 +339,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
+    public void backpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>(1L);
 
         Flowable.empty().all(new Predicate<Object>() {
@@ -359,7 +359,7 @@ public class FlowableAllTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessageFlowable() {
+    public void predicateThrowsExceptionAndValueInCauseMessageFlowable() {
         TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();

@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestHelper;
 public final class FlowableCollectTest {
 
     @Test
-    public void testCollectToListFlowable() {
+    public void collectToListFlowable() {
         Flowable<List<Integer>> f = Flowable.just(1, 2, 3)
         .collect(new Supplier<List<Integer>>() {
             @Override
@@ -62,7 +62,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectToStringFlowable() {
+    public void collectToStringFlowable() {
         String value = Flowable.just(1, 2, 3)
             .collect(
                 new Supplier<StringBuilder>() {
@@ -85,7 +85,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testFactoryFailureResultsInErrorEmissionFlowable() {
+    public void factoryFailureResultsInErrorEmissionFlowable() {
         final RuntimeException e = new RuntimeException();
         Flowable.just(1).collect(new Supplier<List<Integer>>() {
 
@@ -107,7 +107,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInTwoErrorEmissionsFlowable() {
+    public void collectorFailureDoesNotResultInTwoErrorEmissionsFlowable() {
         try {
             final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
             RxJavaPlugins.setErrorHandler(addToList(list));
@@ -129,7 +129,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissionsFlowable() {
+    public void collectorFailureDoesNotResultInErrorAndCompletedEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
                 .collect(supplierListCreator(), biConsumerThrows(e)) //
@@ -140,7 +140,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissionsFlowable() {
+    public void collectorFailureDoesNotResultInErrorAndOnNextEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
         BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
@@ -183,7 +183,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectToList() {
+    public void collectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
         .collect(new Supplier<List<Integer>>() {
             @Override
@@ -214,7 +214,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectToString() {
+    public void collectToString() {
         String value = Flowable.just(1, 2, 3)
             .collect(
                 new Supplier<StringBuilder>() {
@@ -237,7 +237,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testFactoryFailureResultsInErrorEmission() {
+    public void factoryFailureResultsInErrorEmission() {
         final RuntimeException e = new RuntimeException();
         Flowable.just(1).collect(new Supplier<List<Integer>>() {
 
@@ -259,7 +259,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInTwoErrorEmissions() {
+    public void collectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
             final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
             RxJavaPlugins.setErrorHandler(addToList(list));
@@ -280,7 +280,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissions() {
+    public void collectorFailureDoesNotResultInErrorAndCompletedEmissions() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
                 .collect(supplierListCreator(), biConsumerThrows(e)) //
@@ -290,7 +290,7 @@ public final class FlowableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissions() {
+    public void collectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
         BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {

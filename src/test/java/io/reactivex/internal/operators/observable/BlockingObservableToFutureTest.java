@@ -36,14 +36,14 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test
-    public void testToFuture() throws InterruptedException, ExecutionException {
+    public void toFuture() throws InterruptedException, ExecutionException {
         Observable<String> obs = Observable.just("one");
         Future<String> f = obs.toFuture();
         assertEquals("one", f.get());
     }
 
     @Test
-    public void testToFutureList() throws InterruptedException, ExecutionException {
+    public void toFutureList() throws InterruptedException, ExecutionException {
         Observable<String> obs = Observable.just("one", "two", "three");
         Future<List<String>> f = obs.toList().toFuture();
         assertEquals("one", f.get().get(0));
@@ -52,7 +52,7 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test(/* timeout = 5000, */expected = IndexOutOfBoundsException.class)
-    public void testExceptionWithMoreThanOneElement() throws Throwable {
+    public void exceptionWithMoreThanOneElement() throws Throwable {
         Observable<String> obs = Observable.just("one", "two");
         Future<String> f = obs.toFuture();
         try {
@@ -66,7 +66,7 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test
-    public void testToFutureWithException() {
+    public void toFutureWithException() {
         Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -87,7 +87,7 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test(expected = CancellationException.class)
-    public void testGetAfterCancel() throws Exception {
+    public void getAfterCancel() throws Exception {
         Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
@@ -96,7 +96,7 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test(expected = CancellationException.class)
-    public void testGetWithTimeoutAfterCancel() throws Exception {
+    public void getWithTimeoutAfterCancel() throws Exception {
         Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
@@ -105,7 +105,7 @@ public class BlockingObservableToFutureTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void testGetWithEmptyFlowable() throws Throwable {
+    public void getWithEmptyFlowable() throws Throwable {
         Observable<String> obs = Observable.empty();
         Future<String> f = obs.toFuture();
         try {
@@ -118,7 +118,7 @@ public class BlockingObservableToFutureTest {
 
     @Ignore("null value is not allowed")
     @Test
-    public void testGetWithASingleNullItem() throws Exception {
+    public void getWithASingleNullItem() throws Exception {
         Observable<String> obs = Observable.just((String)null);
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());

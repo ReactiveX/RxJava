@@ -41,7 +41,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testNeverCompleted() {
+    public void neverCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -57,7 +57,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -75,7 +75,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testNull() {
+    public void nullValues() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -90,7 +90,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeAfterCompleted() {
+    public void subscribeAfterCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -108,7 +108,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeAfterError() {
+    public void subscribeAfterError() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -128,7 +128,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -148,7 +148,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testUnsubscribeBeforeCompleted() {
+    public void unsubscribeBeforeCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -173,7 +173,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testEmptySubjectCompleted() {
+    public void emptySubjectCompleted() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -192,7 +192,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
     @Test(timeout = 10000)
-    public void testSubscribeCompletionRaceCondition() {
+    public void subscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
@@ -324,7 +324,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         AsyncSubject<Object> as = AsyncSubject.create();
 
         assertFalse(as.hasValue());
@@ -350,7 +350,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         AsyncSubject<Object> as = AsyncSubject.create();
 
         assertFalse(as.hasValue());
@@ -369,7 +369,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         AsyncSubject<Object> as = AsyncSubject.create();
 
         assertFalse(as.hasValue());

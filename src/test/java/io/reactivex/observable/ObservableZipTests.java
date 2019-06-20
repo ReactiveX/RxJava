@@ -28,7 +28,7 @@ import io.reactivex.observables.GroupedObservable;
 public class ObservableZipTests {
 
     @Test
-    public void testZipObservableOfObservables() throws Exception {
+    public void zipObservableOfObservables() throws Exception {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
                 .groupBy(new Function<Event, String>() {
                     @Override
@@ -71,7 +71,7 @@ public class ObservableZipTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfZip() {
+    public void covarianceOfZip() {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.just(new CoolRating());
 

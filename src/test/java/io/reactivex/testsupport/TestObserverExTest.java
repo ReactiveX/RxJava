@@ -42,7 +42,7 @@ public class TestObserverExTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testAssert() {
+    public void assertTestObserverEx() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
         TestObserverEx<Integer> subscriber = new TestObserverEx<Integer>();
         oi.subscribe(subscriber);
@@ -53,7 +53,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testAssertNotMatchCount() {
+    public void assertNotMatchCount() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
         TestObserverEx<Integer> subscriber = new TestObserverEx<Integer>();
         oi.subscribe(subscriber);
@@ -68,7 +68,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testAssertNotMatchValue() {
+    public void assertNotMatchValue() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
         TestObserverEx<Integer> subscriber = new TestObserverEx<Integer>();
         oi.subscribe(subscriber);
@@ -141,7 +141,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testAssertTerminalEventNotReceived() {
+    public void assertTerminalEventNotReceived() {
         PublishSubject<Integer> p = PublishSubject.create();
         TestObserverEx<Integer> subscriber = new TestObserverEx<Integer>();
         p.subscribe(subscriber);
@@ -159,7 +159,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testWrappingMock() {
+    public void wrappingMock() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2));
 
         Observer<Integer> mockSubscriber = TestHelper.mockObserver();
@@ -174,7 +174,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testWrappingMockWhenUnsubscribeInvolved() {
+    public void wrappingMockWhenUnsubscribeInvolved() {
         Observable<Integer> oi = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Observer<Integer> mockSubscriber = TestHelper.mockObserver();
         oi.subscribe(new TestObserverEx<Integer>(mockSubscriber));
@@ -187,12 +187,12 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testErrorSwallowed() {
+    public void errorSwallowed() {
         Observable.error(new RuntimeException()).subscribe(new TestObserverEx<Object>());
     }
 
     @Test
-    public void testNullExpected() {
+    public void nullExpected() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         to.onNext(1);
 
@@ -206,7 +206,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testNullActual() {
+    public void nullActual() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         to.onNext(null);
 
@@ -220,7 +220,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testTerminalErrorOnce() {
+    public void terminalErrorOnce() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         to.onError(new TestException());
         to.onError(new TestException());
@@ -235,7 +235,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testTerminalCompletedOnce() {
+    public void terminalCompletedOnce() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         to.onComplete();
         to.onComplete();
@@ -250,7 +250,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testTerminalOneKind() {
+    public void terminalOneKind() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         to.onError(new TestException());
         to.onComplete();
@@ -945,7 +945,7 @@ public class TestObserverExTest {
     }
 
     @Test
-    public void testErrorInPredicate() {
+    public void errorInPredicate() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         to.onError(new RuntimeException());
         try {

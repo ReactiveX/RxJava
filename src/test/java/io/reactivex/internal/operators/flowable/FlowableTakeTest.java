@@ -38,7 +38,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableTakeTest {
 
     @Test
-    public void testTake1() {
+    public void take1() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<String> take = w.take(2);
 
@@ -53,7 +53,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testTake2() {
+    public void take2() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<String> take = w.take(1);
 
@@ -68,7 +68,7 @@ public class FlowableTakeTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTakeWithError() {
+    public void takeWithError() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
         .map(new Function<Integer, Integer>() {
             @Override
@@ -79,7 +79,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testTakeWithErrorHappeningInOnNext() {
+    public void takeWithErrorHappeningInOnNext() {
         Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3))
                 .take(2).map(new Function<Integer, Integer>() {
             @Override
@@ -97,7 +97,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testTakeWithErrorHappeningInTheLastOnNext() {
+    public void takeWithErrorHappeningInTheLastOnNext() {
         Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
             @Override
             public Integer apply(Integer t1) {
@@ -114,7 +114,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testTakeDoesntLeakErrors() {
+    public void takeDoesntLeakErrors() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
@@ -145,7 +145,7 @@ public class FlowableTakeTest {
 
     @Test
     @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
-    public void testTakeZeroDoesntLeakError() {
+    public void takeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final BooleanSubscription bs = new BooleanSubscription();
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
@@ -172,7 +172,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testUnsubscribeAfterTake() {
+    public void unsubscribeAfterTake() {
         TestFlowableFunc f = new TestFlowableFunc("one", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
 
@@ -201,7 +201,7 @@ public class FlowableTakeTest {
     }
 
     @Test(timeout = 2000)
-    public void testUnsubscribeFromSynchronousInfiniteFlowable() {
+    public void unsubscribeFromSynchronousInfiniteFlowable() {
         final AtomicLong count = new AtomicLong();
         INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
 
@@ -215,7 +215,7 @@ public class FlowableTakeTest {
     }
 
     @Test(timeout = 2000)
-    public void testMultiTake() {
+    public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -295,7 +295,7 @@ public class FlowableTakeTest {
     });
 
     @Test(timeout = 2000)
-    public void testTakeObserveOn() {
+    public void takeObserveOn() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
@@ -311,7 +311,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testProducerRequestThroughTake() {
+    public void producerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -337,7 +337,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testProducerRequestThroughTakeIsModified() {
+    public void producerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -364,7 +364,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testInterrupt() throws InterruptedException {
+    public void interrupt() throws InterruptedException {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable.just(1).subscribeOn(Schedulers.computation()).take(1)
@@ -389,7 +389,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testDoesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
+    public void doesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
         final AtomicLong requests = new AtomicLong();
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
@@ -433,7 +433,7 @@ public class FlowableTakeTest {
     }
 
     @Test
-    public void testReentrantTake() {
+    public void reentrantTake() {
         final PublishProcessor<Integer> source = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

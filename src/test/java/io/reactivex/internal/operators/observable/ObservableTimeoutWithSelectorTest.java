@@ -41,7 +41,7 @@ import io.reactivex.testsupport.*;
 
 public class ObservableTimeoutWithSelectorTest {
     @Test(timeout = 2000)
-    public void testTimeoutSelectorNormal1() {
+    public void timeoutSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -74,7 +74,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorTimeoutFirst() throws InterruptedException {
+    public void timeoutSelectorTimeoutFirst() throws InterruptedException {
         Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -101,7 +101,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorFirstThrows() {
+    public void timeoutSelectorFirstThrows() {
         Observable<Integer> source = Observable.<Integer>never();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -132,7 +132,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorSubsequentThrows() {
+    public void timeoutSelectorSubsequentThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -159,7 +159,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorFirstObservableThrows() {
+    public void timeoutSelectorFirstObservableThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -183,7 +183,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorSubsequentObservableThrows() {
+    public void timeoutSelectorSubsequentObservableThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -210,7 +210,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithFirstTimeoutFirstAndNoOtherObservable() {
+    public void timeoutSelectorWithFirstTimeoutFirstAndNoOtherObservable() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -232,7 +232,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithTimeoutFirstAndNoOtherObservable() {
+    public void timeoutSelectorWithTimeoutFirstAndNoOtherObservable() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
@@ -256,7 +256,7 @@ public class ObservableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithTimeoutAndOnNextRaceCondition() throws InterruptedException {
+    public void timeoutSelectorWithTimeoutAndOnNextRaceCondition() throws InterruptedException {
         // Thread 1                                    Thread 2
         //
         // observer.onNext(1)

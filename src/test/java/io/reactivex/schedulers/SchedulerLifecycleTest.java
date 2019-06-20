@@ -25,7 +25,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class SchedulerLifecycleTest {
     @Test
-    public void testShutdown() throws InterruptedException {
+    public void shutdown() throws InterruptedException {
         tryOutSchedulers();
 
         System.out.println("testShutdown >> Giving time threads to spin-up");
@@ -101,7 +101,7 @@ public class SchedulerLifecycleTest {
     }
 
     @Test
-    public void testStartIdempotence() throws InterruptedException {
+    public void startIdempotence() throws InterruptedException {
         tryOutSchedulers();
 
         System.out.println("testStartIdempotence >> giving some time");

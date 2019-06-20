@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestSubscriberEx;
 public class FlowableMergeMaxConcurrentTest {
 
     @Test
-    public void testWhenMaxConcurrentIsOne() {
+    public void whenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
             List<Flowable<String>> os = new ArrayList<Flowable<String>>();
             os.add(Flowable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
@@ -50,7 +50,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMaxConcurrent() {
+    public void maxConcurrent() {
         for (int times = 0; times < 100; times++) {
             int observableCount = 100;
             // Test maxConcurrent from 2 to 12
@@ -116,7 +116,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMergeALotOfSourcesOneByOneSynchronously() {
+    public void mergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(n);
         for (int i = 0; i < n; i++) {
@@ -132,7 +132,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
+    public void mergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(n);
         for (int i = 0; i < n; i++) {
@@ -148,7 +148,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testSimple() {
+    public void simple() {
         for (int i = 1; i < 100; i++) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
@@ -167,7 +167,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testSimpleOneLess() {
+    public void simpleOneLess() {
         for (int i = 2; i < 100; i++) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
@@ -186,11 +186,11 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test//(timeout = 20000)
-    public void testSimpleAsyncLoop() {
+    public void simpleAsyncLoop() {
         IoScheduler ios = (IoScheduler)Schedulers.io();
         int c = ios.size();
         for (int i = 0; i < 200; i++) {
-            testSimpleAsync();
+            simpleAsync();
             int c1 = ios.size();
             if (c + 60 < c1) {
                 throw new AssertionError("Worker leak: " + c + " - " + c1);
@@ -199,7 +199,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 10000)
-    public void testSimpleAsync() {
+    public void simpleAsync() {
         for (int i = 1; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
@@ -220,14 +220,14 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 10000)
-    public void testSimpleOneLessAsyncLoop() {
+    public void simpleOneLessAsyncLoop() {
         for (int i = 0; i < 200; i++) {
-            testSimpleOneLessAsync();
+            simpleOneLessAsync();
         }
     }
 
     @Test(timeout = 10000)
-    public void testSimpleOneLessAsync() {
+    public void simpleOneLessAsync() {
         long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
@@ -252,7 +252,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 5000)
-    public void testBackpressureHonored() throws Exception {
+    public void backpressureHonored() throws Exception {
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
 
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
@@ -283,7 +283,7 @@ public class FlowableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 5000)
-    public void testTake() throws Exception {
+    public void take() throws Exception {
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
 
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));

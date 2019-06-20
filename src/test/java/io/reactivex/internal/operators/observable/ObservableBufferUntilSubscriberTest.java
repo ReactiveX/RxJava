@@ -27,7 +27,7 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableBufferUntilSubscriberTest {
 
     @Test
-    public void testIssue1677() throws InterruptedException {
+    public void issue1677() throws InterruptedException {
         final AtomicLong counter = new AtomicLong();
         final Integer[] numbers = new Integer[5000];
         for (int i = 0; i < numbers.length; i++) {

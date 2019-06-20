@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestHelper;
 public final class ObservableCollectTest {
 
     @Test
-    public void testCollectToListObservable() {
+    public void collectToListObservable() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
         .collect(new Supplier<List<Integer>>() {
             @Override
@@ -62,7 +62,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectToStringObservable() {
+    public void collectToStringObservable() {
         String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
             @Override
             public StringBuilder get() {
@@ -83,7 +83,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInTwoErrorEmissionsObservable() {
+    public void collectorFailureDoesNotResultInTwoErrorEmissionsObservable() {
         try {
             final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
             RxJavaPlugins.setErrorHandler(addToList(list));
@@ -105,7 +105,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissionsObservable() {
+    public void collectorFailureDoesNotResultInErrorAndCompletedEmissionsObservable() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
                 .collect(supplierListCreator(), biConsumerThrows(e)) //
@@ -116,7 +116,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissionsObservable() {
+    public void collectorFailureDoesNotResultInErrorAndOnNextEmissionsObservable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
         BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
@@ -157,7 +157,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectToList() {
+    public void collectToList() {
         Single<List<Integer>> o = Observable.just(1, 2, 3)
         .collect(new Supplier<List<Integer>>() {
             @Override
@@ -188,7 +188,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectToString() {
+    public void collectToString() {
         String value = Observable.just(1, 2, 3).collect(new Supplier<StringBuilder>() {
             @Override
             public StringBuilder get() {
@@ -209,7 +209,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInTwoErrorEmissions() {
+    public void collectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
             final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
             RxJavaPlugins.setErrorHandler(addToList(list));
@@ -230,7 +230,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissions() {
+    public void collectorFailureDoesNotResultInErrorAndCompletedEmissions() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create() //
                 .collect(supplierListCreator(), biConsumerThrows(e)) //
@@ -240,7 +240,7 @@ public final class ObservableCollectTest {
     }
 
     @Test
-    public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissions() {
+    public void collectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
         BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {

@@ -39,14 +39,14 @@ public class FlowableCovarianceTest {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfFrom() {
+    public void covarianceOfFrom() {
         Flowable.<Movie> just(new HorrorMovie());
         Flowable.<Movie> fromIterable(new ArrayList<HorrorMovie>());
         // Observable.<HorrorMovie>from(new Movie()); // may not compile
     }
 
     @Test
-    public void testSortedList() {
+    public void sortedList() {
         Comparator<Media> sortFunction = new Comparator<Media>() {
             @Override
             public int compare(Media t1, Media t2) {
@@ -64,7 +64,7 @@ public class FlowableCovarianceTest {
     }
 
     @Test
-    public void testGroupByCompose() {
+    public void groupByCompose() {
         Flowable<Movie> movies = Flowable.just(new HorrorMovie(), new ActionMovie(), new Movie());
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
 
@@ -115,7 +115,7 @@ public class FlowableCovarianceTest {
 
     @SuppressWarnings("unused")
     @Test
-    public void testCovarianceOfCompose() {
+    public void covarianceOfCompose() {
         Flowable<HorrorMovie> movie = Flowable.just(new HorrorMovie());
         Flowable<Movie> movie2 = movie.compose(new FlowableTransformer<HorrorMovie, Movie>() {
             @Override
@@ -127,7 +127,7 @@ public class FlowableCovarianceTest {
 
     @SuppressWarnings("unused")
     @Test
-    public void testCovarianceOfCompose2() {
+    public void covarianceOfCompose2() {
         Flowable<Movie> movie = Flowable.<Movie> just(new HorrorMovie());
         Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<Movie, HorrorMovie>() {
             @Override
@@ -139,7 +139,7 @@ public class FlowableCovarianceTest {
 
     @SuppressWarnings("unused")
     @Test
-    public void testCovarianceOfCompose3() {
+    public void covarianceOfCompose3() {
         Flowable<Movie> movie = Flowable.<Movie>just(new HorrorMovie());
         Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<Movie, HorrorMovie>() {
             @Override
@@ -157,7 +157,7 @@ public class FlowableCovarianceTest {
 
     @SuppressWarnings("unused")
     @Test
-    public void testCovarianceOfCompose4() {
+    public void covarianceOfCompose4() {
         Flowable<HorrorMovie> movie = Flowable.just(new HorrorMovie());
         Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<HorrorMovie, HorrorMovie>() {
             @Override
@@ -173,7 +173,7 @@ public class FlowableCovarianceTest {
     }
 
     @Test
-    public void testComposeWithDeltaLogic() {
+    public void composeWithDeltaLogic() {
         List<Movie> list1 = Arrays.asList(new Movie(), new HorrorMovie(), new ActionMovie());
         List<Movie> list2 = Arrays.asList(new ActionMovie(), new Movie(), new HorrorMovie(), new ActionMovie());
         Flowable<List<Movie>> movies = Flowable.just(list1, list2);

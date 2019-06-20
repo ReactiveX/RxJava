@@ -33,13 +33,13 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     @Ignore("Unhandled errors are no longer thrown")
-    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    public final void unhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.unhandledErrorIsDeliveredToThreadHandler(getScheduler());
     }
 
     @Test
-    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    public final void handledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 
     // FIXME no longer testable due to internal changes

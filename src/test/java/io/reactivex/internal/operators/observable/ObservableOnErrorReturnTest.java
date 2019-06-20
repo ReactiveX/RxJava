@@ -34,7 +34,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableOnErrorReturnTest {
 
     @Test
-    public void testResumeNext() {
+    public void resumeNext() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
@@ -69,7 +69,7 @@ public class ObservableOnErrorReturnTest {
      * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
-    public void testFunctionThrowsError() {
+    public void functionThrowsError() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
@@ -103,7 +103,7 @@ public class ObservableOnErrorReturnTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
 
@@ -143,7 +143,7 @@ public class ObservableOnErrorReturnTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {

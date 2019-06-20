@@ -23,7 +23,7 @@ import io.reactivex.observables.GroupedObservable;
 public class ObservableGroupByTests {
 
     @Test
-    public void testTakeUnsubscribesOnGroupBy() throws Exception {
+    public void takeUnsubscribesOnGroupBy() throws Exception {
         Observable.merge(
             ObservableEventStream.getEventStream("HTTP-ClusterA", 50),
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
@@ -50,7 +50,7 @@ public class ObservableGroupByTests {
     }
 
     @Test
-    public void testTakeUnsubscribesOnFlatMapOfGroupBy() throws Exception {
+    public void takeUnsubscribesOnFlatMapOfGroupBy() throws Exception {
         Observable.merge(
             ObservableEventStream.getEventStream("HTTP-ClusterA", 50),
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)

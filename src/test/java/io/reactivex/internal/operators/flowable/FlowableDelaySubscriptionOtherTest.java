@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class FlowableDelaySubscriptionOtherTest {
     @Test
-    public void testNoPrematureSubscription() {
+    public void noPrematureSubscription() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -61,7 +61,7 @@ public class FlowableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoMultipleSubscriptions() {
+    public void noMultipleSubscriptions() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -95,7 +95,7 @@ public class FlowableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testCompleteTriggersSubscription() {
+    public void completeTriggersSubscription() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -128,7 +128,7 @@ public class FlowableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoPrematureSubscriptionToError() {
+    public void noPrematureSubscriptionToError() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -161,7 +161,7 @@ public class FlowableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoSubscriptionIfOtherErrors() {
+    public void noSubscriptionIfOtherErrors() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -194,7 +194,7 @@ public class FlowableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testBackpressurePassesThrough() {
+    public void backpressurePassesThrough() {
 
         PublishProcessor<Object> other = PublishProcessor.create();
 

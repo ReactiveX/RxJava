@@ -47,7 +47,7 @@ public class ObservableGroupByTest {
     };
 
     @Test
-    public void testGroupBy() {
+    public void groupBy() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, String>> grouped = source.groupBy(length);
 
@@ -60,7 +60,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupByWithElementSelector() {
+    public void groupByWithElementSelector() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, Integer>> grouped = source.groupBy(length, length);
 
@@ -73,7 +73,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupByWithElementSelector2() {
+    public void groupByWithElementSelector2() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, Integer>> grouped = source.groupBy(length, length);
 
@@ -86,7 +86,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         Observable<String> source = Observable.empty();
         Observable<GroupedObservable<Integer, String>> grouped = source.groupBy(length);
 
@@ -96,7 +96,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         Observable<String> sourceStrings = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
@@ -175,7 +175,7 @@ public class ObservableGroupByTest {
      * @throws Throwable some method may throw
      */
     @Test
-    public void testGroupedEventStream() throws Throwable {
+    public void groupedEventStream() throws Throwable {
 
         final AtomicInteger eventCounter = new AtomicInteger();
         final AtomicInteger subscribeCounter = new AtomicInteger();
@@ -262,7 +262,7 @@ public class ObservableGroupByTest {
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
     @Test
-    public void testUnsubscribeOnNestedTakeAndSyncInfiniteStream() throws InterruptedException {
+    public void unsubscribeOnNestedTakeAndSyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(SYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
@@ -274,7 +274,7 @@ public class ObservableGroupByTest {
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
     @Test
-    public void testUnsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
+    public void unsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(ASYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
@@ -345,7 +345,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testUnsubscribeViaTakeOnGroupThenMergeAndTake() {
+    public void unsubscribeViaTakeOnGroupThenMergeAndTake() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -391,7 +391,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testUnsubscribeViaTakeOnGroupThenTakeOnInner() {
+    public void unsubscribeViaTakeOnGroupThenTakeOnInner() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -444,7 +444,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testStaggeredCompletion() throws InterruptedException {
+    public void staggeredCompletion() throws InterruptedException {
         final AtomicInteger eventCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.range(0, 100)
@@ -501,7 +501,7 @@ public class ObservableGroupByTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompletionIfInnerNotSubscribed() throws InterruptedException {
+    public void completionIfInnerNotSubscribed() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();
         Observable.range(0, 100)
@@ -538,7 +538,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testIgnoringGroups() {
+    public void ignoringGroups() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -593,7 +593,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -671,7 +671,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
@@ -764,7 +764,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -842,7 +842,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
+    public void groupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
@@ -899,7 +899,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupsWithNestedObserveOn() throws InterruptedException {
+    public void groupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
@@ -985,7 +985,7 @@ public class ObservableGroupByTest {
     };
 
     @Test
-    public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
+    public void groupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
 
         // choose an asynchronous source
         Observable<Long> source = Observable.interval(10, TimeUnit.MILLISECONDS).take(1);
@@ -1023,7 +1023,7 @@ public class ObservableGroupByTest {
     };
 
     @Test
-    public void testGroupByBackpressure() throws InterruptedException {
+    public void groupByBackpressure() throws InterruptedException {
 
         TestObserver<String> to = new TestObserver<String>();
 
@@ -1205,7 +1205,7 @@ public class ObservableGroupByTest {
      * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once.
      */
     @Test
-    public void testExceptionIfSubscribeToChildMoreThanOnce() {
+    public void exceptionIfSubscribeToChildMoreThanOnce() {
         Observable<Integer> source = Observable.just(0);
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
@@ -1231,7 +1231,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testError2() {
+    public void error2() {
         Observable<Integer> source = Observable.concat(Observable.just(0),
                 Observable.<Integer> error(new TestException("Forced failure")));
 
@@ -1245,7 +1245,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure() throws InterruptedException {
+    public void groupByBackpressure3() throws InterruptedException {
         TestObserver<String> to = new TestObserver<String>();
 
         Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
@@ -1301,7 +1301,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure2() throws InterruptedException {
+    public void groupByBackpressure2() throws InterruptedException {
 
         TestObserver<String> to = new TestObserver<String>();
 
@@ -1342,7 +1342,7 @@ public class ObservableGroupByTest {
     };
 
     @Test
-    public void testGroupByWithNullKey() {
+    public void groupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
         final List<String> values = new ArrayList<String>();
         Observable.just("a", "b", "c").groupBy(new Function<String, String>() {
@@ -1370,7 +1370,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupByUnsubscribe() {
+    public void groupByUnsubscribe() {
         final Disposable upstream = mock(Disposable.class);
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
@@ -1396,7 +1396,7 @@ public class ObservableGroupByTest {
     }
 
     @Test
-    public void testGroupByShouldPropagateError() {
+    public void groupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
         final TestObserverEx<Integer> inner1 = new TestObserverEx<Integer>();
         final TestObserverEx<Integer> inner2 = new TestObserverEx<Integer>();

@@ -52,7 +52,7 @@ public class FlowableGroupByTest {
     };
 
     @Test
-    public void testGroupBy() {
+    public void groupBy() {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<GroupedFlowable<Integer, String>> grouped = source.groupBy(length);
 
@@ -65,7 +65,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupByWithElementSelector() {
+    public void groupByWithElementSelector() {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<GroupedFlowable<Integer, Integer>> grouped = source.groupBy(length, length);
 
@@ -78,7 +78,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupByWithElementSelector2() {
+    public void groupByWithElementSelector2() {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<GroupedFlowable<Integer, Integer>> grouped = source.groupBy(length, length);
 
@@ -91,7 +91,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         Flowable<String> source = Flowable.empty();
         Flowable<GroupedFlowable<Integer, String>> grouped = source.groupBy(length);
 
@@ -101,7 +101,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         Flowable<String> sourceStrings = Flowable.just("one", "two", "three", "four", "five", "six");
         Flowable<String> errorSource = Flowable.error(new TestException("forced failure"));
         Flowable<String> source = Flowable.concat(sourceStrings, errorSource);
@@ -182,7 +182,7 @@ public class FlowableGroupByTest {
      * @throws Throwable some method call is declared throws
      */
     @Test
-    public void testGroupedEventStream() throws Throwable {
+    public void groupedEventStream() throws Throwable {
 
         final AtomicInteger eventCounter = new AtomicInteger();
         final AtomicInteger subscribeCounter = new AtomicInteger();
@@ -269,7 +269,7 @@ public class FlowableGroupByTest {
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
     @Test
-    public void testUnsubscribeOnNestedTakeAndSyncInfiniteStream() throws InterruptedException {
+    public void unsubscribeOnNestedTakeAndSyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(SYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
@@ -281,7 +281,7 @@ public class FlowableGroupByTest {
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
     @Test
-    public void testUnsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
+    public void unsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream(ASYNC_INFINITE_OBSERVABLE_OF_EVENT(2, subscribeCounter, sentEventCounter), subscribeCounter);
@@ -352,7 +352,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testUnsubscribeViaTakeOnGroupThenMergeAndTake() {
+    public void unsubscribeViaTakeOnGroupThenMergeAndTake() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -398,7 +398,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testUnsubscribeViaTakeOnGroupThenTakeOnInner() {
+    public void unsubscribeViaTakeOnGroupThenTakeOnInner() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -451,7 +451,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testStaggeredCompletion() throws InterruptedException {
+    public void staggeredCompletion() throws InterruptedException {
         final AtomicInteger eventCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable.range(0, 100)
@@ -508,7 +508,7 @@ public class FlowableGroupByTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompletionIfInnerNotSubscribed() throws InterruptedException {
+    public void completionIfInnerNotSubscribed() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();
         Flowable.range(0, 100)
@@ -545,7 +545,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testIgnoringGroups() {
+    public void ignoringGroups() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -600,7 +600,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -678,7 +678,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
@@ -771,7 +771,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
+    public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -849,7 +849,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
+    public void groupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -906,7 +906,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupsWithNestedObserveOn() throws InterruptedException {
+    public void groupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -992,7 +992,7 @@ public class FlowableGroupByTest {
     };
 
     @Test
-    public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
+    public void groupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
 
         // choose an asynchronous source
         Flowable<Long> source = Flowable.interval(10, TimeUnit.MILLISECONDS).take(1);
@@ -1030,7 +1030,7 @@ public class FlowableGroupByTest {
     };
 
     @Test
-    public void testGroupByBackpressure() throws InterruptedException {
+    public void groupByBackpressure() throws InterruptedException {
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
@@ -1212,7 +1212,7 @@ public class FlowableGroupByTest {
      * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedFlowable more than once.
      */
     @Test
-    public void testExceptionIfSubscribeToChildMoreThanOnce() {
+    public void exceptionIfSubscribeToChildMoreThanOnce() {
         Flowable<Integer> source = Flowable.just(0);
 
         final AtomicReference<GroupedFlowable<Integer, Integer>> inner = new AtomicReference<GroupedFlowable<Integer, Integer>>();
@@ -1238,7 +1238,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testError2() {
+    public void error2() {
         Flowable<Integer> source = Flowable.concat(Flowable.just(0),
                 Flowable.<Integer> error(new TestException("Forced failure")));
 
@@ -1252,7 +1252,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure() throws InterruptedException {
+    public void groupByBackpressure3() throws InterruptedException {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Flowable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
@@ -1308,7 +1308,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testgroupByBackpressure2() throws InterruptedException {
+    public void groupByBackpressure2() throws InterruptedException {
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
@@ -1356,7 +1356,7 @@ public class FlowableGroupByTest {
     };
 
     @Test
-    public void testGroupByWithNullKey() {
+    public void groupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
         final List<String> values = new ArrayList<String>();
         Flowable.just("a", "b", "c").groupBy(new Function<String, String>() {
@@ -1384,7 +1384,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupByUnsubscribe() {
+    public void groupByUnsubscribe() {
         final Subscription s = mock(Subscription.class);
         Flowable<Integer> f = Flowable.unsafeCreate(
                 new Publisher<Integer>() {
@@ -1410,7 +1410,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupByShouldPropagateError() {
+    public void groupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
         final TestSubscriberEx<Integer> inner1 = new TestSubscriberEx<Integer>();
         final TestSubscriberEx<Integer> inner2 = new TestSubscriberEx<Integer>();
@@ -1458,7 +1458,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testRequestOverflow() {
+    public void requestOverflow() {
         final AtomicBoolean completed = new AtomicBoolean(false);
         Flowable
                 .just(1, 2, 3)
@@ -1512,7 +1512,7 @@ public class FlowableGroupByTest {
      * group receives a value.
      */
     @Test
-    public void testBackpressureObserveOnOuter() {
+    public void backpressureObserveOnOuter() {
         for (int j = 0; j < 1000; j++) {
             Flowable.merge(
                     Flowable.range(0, 500)
@@ -1531,7 +1531,7 @@ public class FlowableGroupByTest {
      * Synchronous verification of issue #3425.
      */
     @Test
-    public void testBackpressureInnerDoesntOverflowOuter() {
+    public void backpressureInnerDoesntOverflowOuter() {
         TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
 
         Flowable.fromArray(1, 2)
@@ -1557,7 +1557,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testOneGroupInnerRequestsTwiceBuffer() {
+    public void oneGroupInnerRequestsTwiceBuffer() {
         TestSubscriber<Object> ts1 = new TestSubscriber<Object>(0L);
         final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
 
@@ -1958,7 +1958,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testGroupByEvictionCancellationOfSource5933() {
+    public void groupByEvictionCancellationOfSource5933() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final TestTicker testTicker = new TestTicker();
 
@@ -2048,7 +2048,7 @@ public class FlowableGroupByTest {
     }
 
     @Test
-    public void testCancellationOfUpstreamWhenGroupedFlowableCompletes() {
+    public void cancellationOfUpstreamWhenGroupedFlowableCompletes() {
         final AtomicBoolean cancelled = new AtomicBoolean();
         Flowable.just(1).repeat().doOnCancel(new Action() {
             @Override

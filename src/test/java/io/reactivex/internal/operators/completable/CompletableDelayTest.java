@@ -40,7 +40,7 @@ public class CompletableDelayTest {
     }
 
     @Test
-    public void testOnErrorCalledOnScheduler() throws Exception {
+    public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Thread> thread = new AtomicReference<Thread>();
 

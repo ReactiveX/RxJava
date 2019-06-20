@@ -95,7 +95,7 @@ public class FlowableAmbTest {
     }
 
     @Test
-    public void testAmb() {
+    public void amb() {
         Flowable<String> flowable1 = createFlowable(new String[] {
                 "1", "11", "111", "1111" }, 2000, null);
         Flowable<String> flowable2 = createFlowable(new String[] {
@@ -122,7 +122,7 @@ public class FlowableAmbTest {
     }
 
     @Test
-    public void testAmb2() {
+    public void amb2() {
         IOException expectedException = new IOException(
                 "fake exception");
         Flowable<String> flowable1 = createFlowable(new String[] {},
@@ -151,7 +151,7 @@ public class FlowableAmbTest {
     }
 
     @Test
-    public void testAmb3() {
+    public void amb3() {
         Flowable<String> flowable1 = createFlowable(new String[] {
                 "1" }, 2000, null);
         Flowable<String> flowable2 = createFlowable(new String[] {},
@@ -174,7 +174,7 @@ public class FlowableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testProducerRequestThroughAmb() {
+    public void producerRequestThroughAmb() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
@@ -225,7 +225,7 @@ public class FlowableAmbTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, Flowable.bufferSize() * 2)
                 .ambWith(Flowable.range(0, Flowable.bufferSize() * 2))
@@ -240,7 +240,7 @@ public class FlowableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
+    public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
         Consumer<Subscription> incrementer = new Consumer<Subscription>() {
             @Override
@@ -265,7 +265,7 @@ public class FlowableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
+    public void secondaryRequestsPropagatedToChildren() throws InterruptedException {
         //this aync stream should emit first
         Flowable<Integer> f1 = Flowable.fromArray(1, 2, 3)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
@@ -284,7 +284,7 @@ public class FlowableAmbTest {
     }
 
     @Test
-    public void testSynchronousSources() {
+    public void synchronousSources() {
         // under async subscription the second Flowable would complete before
         // the first but because this is a synchronous subscription to sources
         // then second Flowable does not get subscribed to before first
@@ -305,7 +305,7 @@ public class FlowableAmbTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAmbCancelsOthers() {
+    public void ambCancelsOthers() {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
         PublishProcessor<Integer> source3 = PublishProcessor.create();
@@ -327,7 +327,7 @@ public class FlowableAmbTest {
     }
 
     @Test(timeout = 1000)
-    public void testMultipleUse() {
+    public void multipleUse() {
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
         TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
 

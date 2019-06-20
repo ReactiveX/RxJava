@@ -23,7 +23,7 @@ import io.reactivex.disposables.Disposable;
 
 public class AsyncSubscriptionTest {
     @Test
-    public void testNoResource() {
+    public void noResource() {
         AsyncSubscription as = new AsyncSubscription();
 
         Subscription s = mock(Subscription.class);
@@ -39,7 +39,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testRequestBeforeSet() {
+    public void requestBeforeSet() {
         AsyncSubscription as = new AsyncSubscription();
 
         Subscription s = mock(Subscription.class);
@@ -55,7 +55,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testCancelBeforeSet() {
+    public void cancelBeforeSet() {
         AsyncSubscription as = new AsyncSubscription();
 
         Subscription s = mock(Subscription.class);
@@ -70,7 +70,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testSingleSet() {
+    public void singleSet() {
         AsyncSubscription as = new AsyncSubscription();
 
         Subscription s = mock(Subscription.class);
@@ -87,7 +87,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testInitialResource() {
+    public void initialResource() {
         Disposable r = mock(Disposable.class);
         AsyncSubscription as = new AsyncSubscription(r);
 
@@ -97,7 +97,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testSetResource() {
+    public void setResource() {
         AsyncSubscription as = new AsyncSubscription();
 
         Disposable r = mock(Disposable.class);
@@ -110,7 +110,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testReplaceResource() {
+    public void replaceResource() {
         AsyncSubscription as = new AsyncSubscription();
 
         Disposable r = mock(Disposable.class);
@@ -123,7 +123,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testSetResource2() {
+    public void setResource2() {
         AsyncSubscription as = new AsyncSubscription();
 
         Disposable r = mock(Disposable.class);
@@ -141,7 +141,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testReplaceResource2() {
+    public void replaceResource2() {
         AsyncSubscription as = new AsyncSubscription();
 
         Disposable r = mock(Disposable.class);
@@ -159,7 +159,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testSetResourceAfterCancel() {
+    public void setResourceAfterCancel() {
         AsyncSubscription as = new AsyncSubscription();
 
         as.cancel();
@@ -172,7 +172,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testReplaceResourceAfterCancel() {
+    public void replaceResourceAfterCancel() {
         AsyncSubscription as = new AsyncSubscription();
         as.cancel();
 
@@ -184,7 +184,7 @@ public class AsyncSubscriptionTest {
     }
 
     @Test
-    public void testCancelOnce() {
+    public void cancelOnce() {
         Disposable r = mock(Disposable.class);
         AsyncSubscription as = new AsyncSubscription(r);
         Subscription s = mock(Subscription.class);
