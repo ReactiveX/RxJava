@@ -637,7 +637,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromSupplier(final Supplier<?> supplier) {
-        ObjectHelper.requireNonNull(supplier, "callable is null");
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new CompletableFromSupplier(supplier));
     }
 

@@ -875,7 +875,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <p>
      * This operator allows you to defer the execution of the given {@code Supplier} until a {@code MaybeObserver}
      * subscribes to the  returned {@link Maybe}. In other terms, this source operator evaluates the given
-     * {@code Callable} "lazily".
+     * {@code Supplier} "lazily".
      * <p>
      * Note that the {@code null} handling of this operator differs from the similar source operators in the other
      * {@link io.reactivex base reactive classes}. Those operators signal a {@code NullPointerException} if the value returned by their

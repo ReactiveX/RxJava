@@ -36,7 +36,7 @@ import io.reactivex.testsupport.TestHelper;
 public class SingleFromSupplierTest {
 
     @Test
-    public void fromCallableValue() {
+    public void fromSupplierValue() {
         Single.fromSupplier(new Supplier<Integer>() {
             @Override public Integer get() throws Exception {
                 return 5;
@@ -72,20 +72,20 @@ public class SingleFromSupplierTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Integer> callable = new Supplier<Integer>() {
+        Supplier<Integer> supplier = new Supplier<Integer>() {
             @Override
             public Integer get() throws Exception {
                 return atomicInteger.incrementAndGet();
             }
         };
 
-        Single.fromSupplier(callable)
+        Single.fromSupplier(supplier)
                 .test()
                 .assertResult(1);
 
         assertEquals(1, atomicInteger.get());
 
-        Single.fromSupplier(callable)
+        Single.fromSupplier(supplier)
                 .test()
                 .assertResult(2);
 

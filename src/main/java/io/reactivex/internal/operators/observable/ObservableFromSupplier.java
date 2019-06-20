@@ -21,7 +21,7 @@ import io.reactivex.internal.observers.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Calls a Callable and emits its resulting single value or signals its exception.
+ * Calls a Supplier and emits its resulting single value or signals its exception.
  * @param <T> the value type
  * @since 3.0.0
  */
@@ -57,6 +57,6 @@ public final class ObservableFromSupplier<T> extends Observable<T> implements Su
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(supplier.get(), "The callable returned a null value");
+        return ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
     }
 }

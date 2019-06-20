@@ -61,7 +61,7 @@ public class MaybeFromSupplierTest {
     public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Supplier<Object> callable = new Supplier<Object>() {
+        Supplier<Object> supplier = new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 atomicInteger.incrementAndGet();
@@ -69,13 +69,13 @@ public class MaybeFromSupplierTest {
             }
         };
 
-        Maybe.fromSupplier(callable)
+        Maybe.fromSupplier(supplier)
             .test()
             .assertResult();
 
         assertEquals(1, atomicInteger.get());
 
-        Maybe.fromSupplier(callable)
+        Maybe.fromSupplier(supplier)
             .test()
             .assertResult();
 
@@ -117,7 +117,7 @@ public class MaybeFromSupplierTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void callable() throws Throwable {
+    public void supplier() throws Throwable {
         final int[] counter = { 0 };
 
         Maybe<Integer> m = Maybe.fromSupplier(new Supplier<Integer>() {

@@ -20,7 +20,7 @@ import io.reactivex.functions.Supplier;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Executes a callable and signals its value as success or signals an exception.
+ * Executes a supplier and signals its value as success or signals an exception.
  *
  * @param <T> the value type
  * @since 3.0.0
