@@ -279,6 +279,8 @@ public class ObservablePublishTest {
         to1.assertNoErrors();
         to1.assertTerminated();
 
+        source.reset();
+        
         TestObserver<Integer> to2 = new TestObserver<Integer>();
 
         source.subscribe(to2);
@@ -311,7 +313,7 @@ public class ObservablePublishTest {
         to1.assertNoErrors();
         to1.assertTerminated();
 
-        assertNull(source.current.get());
+        assertEquals(0, source.current.get().get().length);
     }
 
     @Test
@@ -342,7 +344,7 @@ public class ObservablePublishTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((ObservablePublish.PublishObserver<Object>)d).isDisposed();
+        return ((ObservablePublish.PublishConnection<Object>)d).isDisposed();
     }
 
     @Test
@@ -607,16 +609,13 @@ public class ObservablePublishTest {
 
     @Test
     public void noErrorLoss() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            ConnectableObservable<Object> co = Observable.error(new TestException()).publish();
+        ConnectableObservable<Object> co = Observable.error(new TestException()).publish();
 
-            co.connect();
+        co.connect();
 
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+        // 3.x: terminal events remain observable until reset
+        co.test()
+        .assertFailure(TestException.class);
     }
 
     @Test
@@ -757,5 +756,113 @@ public class ObservablePublishTest {
         to2.assertEmpty();
 
         ((ObservablePublish<Integer>)co).current.get().remove(null);
+    }
+
+    @Test
+    public void altConnectCrash() {
+        try {
+            new ObservablePublish<Integer>(Observable.<Integer>empty())
+            .connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable t) throws Exception {
+                    throw new TestException();
+                }
+            });
+            fail("Should have thrown");
+        } catch (TestException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void altConnectRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final ConnectableObservable<Integer> co =
+                    new ObservablePublish<Integer>(Observable.<Integer>never());
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    co.connect();
+                }
+            };
+
+            TestHelper.race(r, r);
+        }
+    }
+
+    @Test
+    public void onCompleteAvailableUntilReset() {
+        ConnectableObservable<Integer> co = Observable.just(1).publish();
+
+        TestObserver<Integer> to = co.test();
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertResult(1);
+
+        co.test().assertResult();
+
+        co.reset();
+
+        to = co.test();
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void onErrorAvailableUntilReset() {
+        ConnectableObservable<Integer> co = Observable.just(1)
+                .concatWith(Observable.<Integer>error(new TestException()))
+                .publish();
+
+        TestObserver<Integer> to = co.test();
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertFailure(TestException.class, 1);
+
+        co.test().assertFailure(TestException.class);
+
+        co.reset();
+
+        to = co.test();
+        to.assertEmpty();
+
+        co.connect();
+
+        to.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void disposeResets() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.publish();
+
+        assertFalse(ps.hasObservers());
+
+        Disposable d = co.connect();
+
+        assertTrue(ps.hasObservers());
+
+        d.dispose();
+
+        assertFalse(ps.hasObservers());
+
+        TestObserver<Integer> to = co.test();
+
+        co.connect();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to.assertValuesOnly(1);
     }
 }

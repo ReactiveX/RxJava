@@ -32,6 +32,18 @@ import io.reactivex.schedulers.Schedulers;
  * before the {@code Observable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
+ * <p>
+ * When the upstream terminates, the {@code ConnectableObservable} remains in this terminated state and,
+ * depending on the actual underlying implementation, relays cached events to late {@link Observer}s.
+ * In order to reuse and restart this {@code ConnectableObservable}, the {@link #reset()} method has to be called.
+ * When called, this {@code ConnectableObservable} will appear as fresh, unconnected source to new {@link Observer}s.
+ * Disposing the connection will reset the {@code ConnectableFlowable} to its fresh state and there is no need to call
+ * {@code reset()} in this case.
+ * <p>
+ * Note that although {@link #connect()} and {@link #reset()} are safe to call from multiple threads, it is recommended
+ * a dedicated thread or business logic manages the connection or resetting of a {@code ConnectableObservable} so that
+ * there is no unwanted signal loss due to early {@code connect()} or {@code reset()} calls while {@code Observer}s are
+ * still being subscribed to to this {@code ConnectableObservable} to receive signals from the get go.
  *
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
  *      Connectable Observable Operators</a>
@@ -50,6 +62,15 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+
+    /**
+     * Resets this ConnectableObservable into its fresh state if it has terminated
+     * or has been disposed.
+     * <p>
+     * Calling this method on a fresh or active {@code ConnectableObservable} has no effect.
+     * @since 3.0.0
+     */
+    public abstract void reset();
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
@@ -88,7 +109,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Connects to the upstream {@code ConnectableObservable} if the number of subscribed
-     * subscriber reaches the specified count and disconnect if all subscribers have unsubscribed.
+     * observers reaches the specified count and disconnect if all subscribers have unsubscribed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload does not operate on any particular {@link Scheduler}.</dd>
@@ -106,7 +127,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Connects to the upstream {@code ConnectableObservable} if the number of subscribed
-     * subscriber reaches 1 and disconnect after the specified
+     * observers reaches 1 and disconnect after the specified
      * timeout if all subscribers have unsubscribed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -127,7 +148,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Connects to the upstream {@code ConnectableObservable} if the number of subscribed
-     * subscriber reaches 1 and disconnect after the specified
+     * observers reaches 1 and disconnect after the specified
      * timeout if all subscribers have unsubscribed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -148,7 +169,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Connects to the upstream {@code ConnectableObservable} if the number of subscribed
-     * subscriber reaches the specified count and disconnect after the specified
+     * observers reaches the specified count and disconnect after the specified
      * timeout if all subscribers have unsubscribed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -170,7 +191,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Connects to the upstream {@code ConnectableObservable} if the number of subscribed
-     * subscriber reaches the specified count and disconnect after the specified
+     * observers reaches the specified count and disconnect after the specified
      * timeout if all subscribers have unsubscribed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

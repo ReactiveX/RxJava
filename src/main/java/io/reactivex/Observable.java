@@ -10207,7 +10207,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> publish() {
-        return ObservablePublish.create(this);
+        return RxJavaPlugins.onAssembly(new ObservablePublish<T>(this));
     }
 
     /**

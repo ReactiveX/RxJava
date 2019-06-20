@@ -262,9 +262,8 @@ public class FlowablePublishTest {
         cf.subscribe(subscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
-        subscriber.assertValues(1L, 2L);
-        subscriber.assertNoErrors();
-        subscriber.assertTerminated();
+        // 3.x: Flowable.publish no longer drains the input buffer if there are no subscribers 
+        subscriber.assertResult(0L, 1L, 2L);
     }
 
     @Test
@@ -280,6 +279,8 @@ public class FlowablePublishTest {
         ts1.assertValue(1);
         ts1.assertNoErrors();
         ts1.assertTerminated();
+        
+        source.reset();
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
@@ -313,7 +314,7 @@ public class FlowablePublishTest {
         ts1.assertNoErrors();
         ts1.assertTerminated();
 
-        assertNull(source.current.get());
+        assertEquals(0, source.current.get().subscribers.get().length);
     }
 
     @Test
@@ -344,7 +345,7 @@ public class FlowablePublishTest {
 
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
-        return ((FlowablePublish.PublishSubscriber<Object>)d).isDisposed();
+        return ((FlowablePublish.PublishConnection<Object>)d).isDisposed();
     }
 
     @Test
@@ -674,16 +675,13 @@ public class FlowablePublishTest {
 
     @Test
     public void noErrorLoss() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            ConnectableFlowable<Object> cf = Flowable.error(new TestException()).publish();
+        ConnectableFlowable<Object> cf = Flowable.error(new TestException()).publish();
 
-            cf.connect();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+        cf.connect();
+        
+        // 3.x: terminal events are always kept until reset.
+        cf.test()
+        .assertFailure(TestException.class);
     }
 
     @Test
@@ -857,38 +855,36 @@ public class FlowablePublishTest {
 
     @Test
     public void dryRunCrash() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
-                @Override
-                public void onNext(Object t) {
-                    super.onNext(t);
-                    onComplete();
-                    cancel();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+            @Override
+            public void onNext(Object t) {
+                super.onNext(t);
+                onComplete();
+                cancel();
+            }
+        };
+
+        Flowable<Object> source = Flowable.range(1, 10)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                if (v == 2) {
+                    throw new TestException();
                 }
-            };
+                return v;
+            }
+        })
+        .publish()
+        .autoConnect();
 
-            Flowable.range(1, 10)
-            .map(new Function<Integer, Object>() {
-                @Override
-                public Object apply(Integer v) throws Exception {
-                    if (v == 2) {
-                        throw new TestException();
-                    }
-                    return v;
-                }
-            })
-            .publish()
-            .autoConnect()
-            .subscribe(ts);
+        source.subscribe(ts);
 
-            ts
-            .assertResult(1);
+        ts
+        .assertResult(1);
 
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+        // 3.x: terminal events remain observable until reset
+        source.test()
+        .assertFailure(TestException.class);
     }
 
     @Test
@@ -906,7 +902,9 @@ public class FlowablePublishTest {
             .publish(8)
             .autoConnect()
             .test(0L)
-           .assertFailure(MissingBackpressureException.class);
+            // 3.x emits errors last, even the full queue errors
+            .requestMore(10)
+            .assertFailure(MissingBackpressureException.class, 0, 1, 2, 3, 4, 5, 6, 7);
 
             TestHelper.assertError(errors, 0, MissingBackpressureException.class);
         } finally {
@@ -964,20 +962,20 @@ public class FlowablePublishTest {
 
     @Test
     public void removeNotPresent() {
-        final AtomicReference<PublishSubscriber<Integer>> ref = new AtomicReference<PublishSubscriber<Integer>>();
+        final AtomicReference<PublishConnection<Integer>> ref = new AtomicReference<PublishConnection<Integer>>();
 
         final ConnectableFlowable<Integer> cf = new Flowable<Integer>() {
             @Override
             @SuppressWarnings("unchecked")
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 s.onSubscribe(new BooleanSubscription());
-                ref.set((PublishSubscriber<Integer>)s);
+                ref.set((PublishConnection<Integer>)s);
             }
         }.publish();
 
         cf.connect();
 
-        ref.get().add(new InnerSubscriber<Integer>(new TestSubscriber<Integer>()));
+        ref.get().add(new InnerSubscription<Integer>(new TestSubscriber<Integer>(), ref.get()));
         ref.get().remove(null);
     }
 
@@ -1304,7 +1302,7 @@ public class FlowablePublishTest {
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
-        final AtomicReference<InnerSubscriber<Integer>> ref = new AtomicReference<InnerSubscriber<Integer>>();
+        final AtomicReference<InnerSubscription<Integer>> ref = new AtomicReference<InnerSubscription<Integer>>();
 
         cf.subscribe(new FlowableSubscriber<Integer>() {
             @SuppressWarnings("unchecked")
@@ -1312,7 +1310,7 @@ public class FlowablePublishTest {
             public void onSubscribe(Subscription s) {
                 ts1.onSubscribe(new BooleanSubscription());
                 // pretend to be cancelled without removing it from the subscriber list
-                ref.set((InnerSubscriber<Integer>)s);
+                ref.set((InnerSubscription<Integer>)s);
             }
 
             @Override
@@ -1497,5 +1495,208 @@ public class FlowablePublishTest {
                 Arrays.asList(16, 17),
                 Arrays.asList(18, 19)
         );
+    }
+
+    @Test
+    public void altConnectCrash() {
+        try {
+            new FlowablePublish<Integer>(Flowable.<Integer>empty(), 128)
+            .connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable t) throws Exception {
+                    throw new TestException();
+                }
+            });
+            fail("Should have thrown");
+        } catch (TestException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void altConnectRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final ConnectableFlowable<Integer> cf =
+                    new FlowablePublish<Integer>(Flowable.<Integer>never(), 128);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    cf.connect();
+                }
+            };
+
+            TestHelper.race(r, r);
+        }
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Flowable.range(1, 5)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .publish()
+        .refCount()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void syncFusedNoRequest() {
+        Flowable.range(1, 5)
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalBackpressuredPolls() {
+        Flowable.range(1, 5)
+        .hide()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void emptyHidden() {
+        Flowable.empty()
+        .hide()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emptyFused() {
+        Flowable.empty()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void overflowQueueRefCount() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+            }
+        }
+        .publish(1)
+        .refCount()
+        .test(0)
+        .requestMore(1)
+        .assertFailure(MissingBackpressureException.class, 1);
+    }
+
+    @Test
+    public void doubleErrorRefCount() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("one"));
+                    s.onError(new TestException("two"));
+                }
+            }
+            .publish(1)
+            .refCount()
+            .test(0)
+            .assertFailureAndMessage(TestException.class, "one");
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "two");
+            assertEquals(1, errors.size());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteAvailableUntilReset() {
+        ConnectableFlowable<Integer> cf = Flowable.just(1).publish();
+
+        TestSubscriber<Integer> ts = cf.test();
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertResult(1);
+
+        cf.test().assertResult();
+
+        cf.reset();
+
+        ts = cf.test();
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void onErrorAvailableUntilReset() {
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
+                .concatWith(Flowable.<Integer>error(new TestException()))
+                .publish();
+
+        TestSubscriber<Integer> ts = cf.test();
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertFailure(TestException.class, 1);
+
+        cf.test().assertFailure(TestException.class);
+
+        cf.reset();
+
+        ts = cf.test();
+        ts.assertEmpty();
+
+        cf.connect();
+
+        ts.assertFailure(TestException.class, 1);
+    }
+    
+    @Test
+    public void disposeResets() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> cf = pp.publish();
+
+        assertFalse(pp.hasSubscribers());
+
+        Disposable d = cf.connect();
+
+        assertTrue(pp.hasSubscribers());
+
+        d.dispose();
+
+        assertFalse(pp.hasSubscribers());
+
+        TestSubscriber<Integer> ts = cf.test();
+
+        cf.connect();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts.assertValuesOnly(1);
     }
 }

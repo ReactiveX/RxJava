@@ -551,7 +551,7 @@ public class FlowableRefCountTest {
                                         return Flowable.defer(new Supplier<Publisher<String>>() {
                                             @Override
                                             public Publisher<String> get() {
-                                                return Flowable.<String>error(new TestException("Some exception"));
+                                                    return Flowable.<String>error(new TestException("Some exception"));
                                             }
                                         });
                                 }
@@ -638,6 +638,11 @@ public class FlowableRefCountTest {
             }
 
             @Override
+            public void reset() {
+                // nothing to do in this test
+            }
+
+            @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
             }
@@ -653,6 +658,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void replayNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -669,6 +675,7 @@ public class FlowableRefCountTest {
 
         source.subscribe();
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -680,6 +687,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void replayNoLeak2() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -703,6 +711,7 @@ public class FlowableRefCountTest {
         d1 = null;
         d2 = null;
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -724,6 +733,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void publishNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -740,12 +750,14 @@ public class FlowableRefCountTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
         Thread.sleep(100);
+        System.gc();
+        Thread.sleep(200);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
         source = null;
+
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
     }
 
@@ -813,22 +825,17 @@ public class FlowableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Subscriber<? super Object> subscriber) {
             throw new TestException("subscribeActual");
         }
     }
 
-    static final class BadFlowableDispose extends ConnectableFlowable<Object> implements Disposable {
-
-        @Override
-        public void dispose() {
-            throw new TestException("dispose");
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return false;
-        }
+    static final class BadFlowableDispose extends ConnectableFlowable<Object> {
 
         @Override
         public void connect(Consumer<? super Disposable> connection) {
@@ -837,6 +844,11 @@ public class FlowableRefCountTest {
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
+        }
+
+        @Override
+        public void reset() {
+            throw new TestException("dispose");
         }
 
         @Override
@@ -850,6 +862,11 @@ public class FlowableRefCountTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             throw new TestException("connect");
+        }
+
+        @Override
+        public void reset() {
+            // nothing to do in this test
         }
 
         @Override
@@ -925,6 +942,11 @@ public class FlowableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Subscriber<? super Object> subscriber) {
             if (++count == 1) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -955,8 +977,7 @@ public class FlowableRefCountTest {
         }
     }
 
-    static final class BadFlowableConnect2 extends ConnectableFlowable<Object>
-    implements Disposable {
+    static final class BadFlowableConnect2 extends ConnectableFlowable<Object> {
 
         @Override
         public void connect(Consumer<? super Disposable> connection) {
@@ -968,19 +989,14 @@ public class FlowableRefCountTest {
         }
 
         @Override
-        protected void subscribeActual(Subscriber<? super Object> subscriber) {
-            subscriber.onSubscribe(new BooleanSubscription());
-            subscriber.onComplete();
-        }
-
-        @Override
-        public void dispose() {
+        public void reset() {
             throw new TestException("dispose");
         }
 
         @Override
-        public boolean isDisposed() {
-            return false;
+        protected void subscribeActual(Subscriber<? super Object> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onComplete();
         }
     }
 
@@ -1218,6 +1234,11 @@ public class FlowableRefCountTest {
         }
 
         @Override
+        public void reset() {
+            // nothing to do in this test
+        }
+
+        @Override
         protected void subscribeActual(Subscriber<? super Object> subscriber) {
             subscriber.onSubscribe(new BooleanSubscription());
             subscriber.onSubscribe(new BooleanSubscription());
@@ -1326,6 +1347,7 @@ public class FlowableRefCountTest {
         rc.subscriberCount = 1;
         rc.connected = true;
         o.connection = rc;
+        rc.set(null);
         o.cancel(rc);
 
         o.connection = rc;
@@ -1357,19 +1379,13 @@ public class FlowableRefCountTest {
         }
     }
 
-    static final class TestConnectableFlowable<T> extends ConnectableFlowable<T>
-    implements Disposable {
+    static final class TestConnectableFlowable<T> extends ConnectableFlowable<T> {
 
-        volatile boolean disposed;
-
-        @Override
-        public void dispose() {
-            disposed = true;
-        }
+        volatile boolean reset;
 
         @Override
-        public boolean isDisposed() {
-            return disposed;
+        public void reset() {
+            reset = true;
         }
 
         @Override
@@ -1384,15 +1400,18 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void timeoutDisposesSource() {
-        FlowableRefCount<Object> o = (FlowableRefCount<Object>)new TestConnectableFlowable<Object>().refCount();
+    public void timeoutResetsSource() {
+        TestConnectableFlowable<Object> tcf = new TestConnectableFlowable<Object>();
+        FlowableRefCount<Object> o = (FlowableRefCount<Object>)tcf.refCount();
 
         RefConnection rc = new RefConnection(o);
+        rc.set(Disposables.empty());
         o.connection = rc;
 
         o.timeout(rc);
+        
 
-        assertTrue(((Disposable)o.source).isDisposed());
+        assertTrue(tcf.reset);
     }
 
     @Test
@@ -1408,5 +1427,32 @@ public class FlowableRefCountTest {
         processor.onNext(2);
 
         flowable.take(1).test().assertResult(2);
+    }
+
+    @Test
+    public void publishRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Flowable<Integer> flowable = Flowable.just(1).publish().refCount();
+
+            TestSubscriber<Integer> subscriber1 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestSubscriber<Integer> subscriber2 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            subscriber1
+            .withTag("subscriber1 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+
+            subscriber2
+            .withTag("subscriber2 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+        }
     }
 }
