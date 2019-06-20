@@ -520,10 +520,13 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     vr = supplier.call();
                                 } catch (Throwable e) {
                                     Exceptions.throwIfFatal(e);
-                                    upstream.cancel();
                                     errors.addThrowable(e);
-                                    downstream.onError(errors.terminate());
-                                    return;
+                                    if (!veryEnd) {
+                                        upstream.cancel();
+                                        downstream.onError(errors.terminate());
+                                        return;
+                                    }
+                                    vr = null;
                                 }
 
                                 if (vr == null) {
