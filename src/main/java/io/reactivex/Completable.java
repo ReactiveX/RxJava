@@ -444,6 +444,8 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param callable the callable instance to execute for each subscriber
      * @return the new Completable instance
+     * @see #defer(Supplier)
+     * @see #fromSupplier(Supplier)
      */
     @CheckReturnValue
     @NonNull
@@ -607,6 +609,36 @@ public abstract class Completable implements CompletableSource {
     public static <T> Completable fromSingle(final SingleSource<T> single) {
         ObjectHelper.requireNonNull(single, "single is null");
         return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(single));
+    }
+
+    /**
+     * Returns a Completable which when subscribed, executes the supplier function, ignores its
+     * normal result and emits onError or onComplete only.
+     * <p>
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromCallable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd> If the {@link Supplier} throws an exception, the respective {@link Throwable} is
+     *  delivered to the downstream via {@link CompletableObserver#onError(Throwable)},
+     *  except when the downstream has disposed this {@code Completable} source.
+     *  In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *  </dd>
+     * </dl>
+     * @param supplier the Supplier instance to execute for each subscriber
+     * @return the new Completable instance
+     * @see #defer(Supplier)
+     * @see #fromCallable(Callable)
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable fromSupplier(final Supplier<?> supplier) {
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableFromSupplier(supplier));
     }
 
     /**

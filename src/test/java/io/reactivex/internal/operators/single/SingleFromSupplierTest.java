@@ -13,34 +13,32 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.testsupport.TestHelper;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Supplier;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-public class SingleFromCallableTest {
+public class SingleFromSupplierTest {
 
     @Test
-    public void fromCallableValue() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
+    public void fromSupplierValue() {
+        Single.fromSupplier(new Supplier<Integer>() {
+            @Override public Integer get() throws Exception {
                 return 5;
             }
         })
@@ -49,9 +47,9 @@ public class SingleFromCallableTest {
     }
 
     @Test
-    public void fromCallableError() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
+    public void fromSupplierError() {
+        Single.fromSupplier(new Supplier<Integer>() {
+            @Override public Integer get() throws Exception {
                 throw new UnsupportedOperationException();
             }
         })
@@ -60,34 +58,34 @@ public class SingleFromCallableTest {
     }
 
     @Test
-    public void fromCallableNull() {
-        Single.fromCallable(new Callable<Integer>() {
-            @Override public Integer call() throws Exception {
+    public void fromSupplierNull() {
+        Single.fromSupplier(new Supplier<Integer>() {
+            @Override public Integer get() throws Exception {
                 return null;
             }
         })
         .to(TestHelper.<Integer>testConsumer())
-        .assertFailureAndMessage(NullPointerException.class, "The callable returned a null value");
+        .assertFailureAndMessage(NullPointerException.class, "The supplier returned a null value");
     }
 
     @Test
-    public void fromCallableTwice() {
+    public void fromSupplierTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Callable<Integer> callable = new Callable<Integer>() {
+        Supplier<Integer> supplier = new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 return atomicInteger.incrementAndGet();
             }
         };
 
-        Single.fromCallable(callable)
+        Single.fromSupplier(supplier)
                 .test()
                 .assertResult(1);
 
         assertEquals(1, atomicInteger.get());
 
-        Single.fromCallable(callable)
+        Single.fromSupplier(supplier)
                 .test()
                 .assertResult(2);
 
@@ -96,18 +94,18 @@ public class SingleFromCallableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldNotInvokeFuncUntilSubscription() throws Exception {
-        Callable<Object> func = mock(Callable.class);
+    public void shouldNotInvokeFuncUntilSubscription() throws Throwable {
+        Supplier<Object> func = mock(Supplier.class);
 
-        when(func.call()).thenReturn(new Object());
+        when(func.get()).thenReturn(new Object());
 
-        Single<Object> fromCallableSingle = Single.fromCallable(func);
+        Single<Object> fromSupplierSingle = Single.fromSupplier(func);
 
         verifyZeroInteractions(func);
 
-        fromCallableSingle.subscribe();
+        fromSupplierSingle.subscribe();
 
-        verify(func).call();
+        verify(func).get();
     }
 
     @Test
@@ -117,9 +115,9 @@ public class SingleFromCallableTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Integer> to = Single.fromCallable(new Callable<Integer>() {
+            TestObserver<Integer> to = Single.fromSupplier(new Supplier<Integer>() {
                 @Override
-                public Integer call() throws Exception {
+                public Integer get() throws Exception {
                     cdl1.countDown();
                     cdl2.await(5, TimeUnit.SECONDS);
                     return 1;
@@ -144,13 +142,13 @@ public class SingleFromCallableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldNotDeliverResultIfSubscriberUnsubscribedBeforeEmission() throws Exception {
-        Callable<String> func = mock(Callable.class);
+    public void shouldNotDeliverResultIfSubscriberUnsubscribedBeforeEmission() throws Throwable {
+        Supplier<String> func = mock(Supplier.class);
 
         final CountDownLatch funcLatch = new CountDownLatch(1);
         final CountDownLatch observerLatch = new CountDownLatch(1);
 
-        when(func.call()).thenAnswer(new Answer<String>() {
+        when(func.get()).thenAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
                 observerLatch.countDown();
@@ -168,13 +166,13 @@ public class SingleFromCallableTest {
             }
         });
 
-        Single<String> fromCallableObservable = Single.fromCallable(func);
+        Single<String> fromSupplierObservable = Single.fromSupplier(func);
 
         Observer<Object> observer = TestHelper.mockObserver();
 
         TestObserver<String> outer = new TestObserver<String>(observer);
 
-        fromCallableObservable
+        fromSupplierObservable
                 .subscribeOn(Schedulers.computation())
                 .subscribe(outer);
 
@@ -188,7 +186,7 @@ public class SingleFromCallableTest {
         funcLatch.countDown();
 
         // func must be invoked
-        verify(func).call();
+        verify(func).get();
 
         // Observer must not be notified at all
         verify(observer).onSubscribe(any(Disposable.class));
@@ -199,16 +197,16 @@ public class SingleFromCallableTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Single<Object> fromCallableObservable = Single.fromCallable(new Callable<Object>() {
+        Single<Object> fromSupplierObservable = Single.fromSupplier(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 throw checkedException;
             }
         });
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
 
-        fromCallableObservable.subscribe(observer);
+        fromSupplierObservable.subscribe(observer);
 
         verify(observer).onSubscribe(any(Disposable.class));
         verify(observer).onError(checkedException);
@@ -218,9 +216,9 @@ public class SingleFromCallableTest {
     @Test
     public void disposedOnArrival() {
         final int[] count = { 0 };
-        Single.fromCallable(new Callable<Object>() {
+        Single.fromSupplier(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 count[0]++;
                 return 1;
             }
@@ -235,9 +233,9 @@ public class SingleFromCallableTest {
     public void disposedOnCall() {
         final TestObserver<Integer> to = new TestObserver<Integer>();
 
-        Single.fromCallable(new Callable<Integer>() {
+        Single.fromSupplier(new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 to.dispose();
                 return 1;
             }
@@ -249,29 +247,29 @@ public class SingleFromCallableTest {
 
     @Test
     public void toObservableTake() {
-        Single.fromCallable(new Callable<Object>() {
+        Single.fromSupplier(new Supplier<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object get() throws Exception {
                 return 1;
             }
         })
-                .toObservable()
-                .take(1)
-                .test()
-                .assertResult(1);
+        .toObservable()
+        .take(1)
+        .test()
+        .assertResult(1);
     }
 
     @Test
     public void toObservableAndBack() {
-        Single.fromCallable(new Callable<Integer>() {
+        Single.fromSupplier(new Supplier<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer get() throws Exception {
                 return 1;
             }
         })
-                .toObservable()
-                .singleOrError()
-                .test()
-                .assertResult(1);
+        .toObservable()
+        .singleOrError()
+        .test()
+        .assertResult(1);
     }
 }

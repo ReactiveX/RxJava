@@ -613,6 +613,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T>
      *         the type of the item emitted by the {@link Single}.
      * @return a {@link Single} whose {@link SingleObserver}s' subscriptions trigger an invocation of the given function.
+     * @see #defer(Supplier)
+     * @see #fromSupplier(Supplier)
      */
     @CheckReturnValue
     @NonNull
@@ -809,6 +811,44 @@ public abstract class Single<T> implements SingleSource<T> {
     public static <T> Single<T> fromObservable(ObservableSource<? extends T> observableSource) {
         ObjectHelper.requireNonNull(observableSource, "observableSource is null");
         return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(observableSource, null));
+    }
+
+    /**
+     * Returns a {@link Single} that invokes passed supplierfunction and emits its result
+     * for each new SingleObserver that subscribes.
+     * <p>
+     * Allows you to defer execution of passed function until SingleObserver subscribes to the {@link Single}.
+     * It makes passed function "lazy".
+     * Result of the function invocation will be emitted by the {@link Single}.
+     * <p>
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.png" alt="">
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd> If the {@link Supplier} throws an exception, the respective {@link Throwable} is
+     *   delivered to the downstream via {@link SingleObserver#onError(Throwable)},
+     *   except when the downstream has disposed this {@code Single} source.
+     *   In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   </dd>
+     * </dl>
+     *
+     * @param supplier
+     *         function which execution should be deferred, it will be invoked when SingleObserver will subscribe to the {@link Single}.
+     * @param <T>
+     *         the type of the item emitted by the {@link Single}.
+     * @return a {@link Single} whose {@link SingleObserver}s' subscriptions trigger an invocation of the given function.
+     * @see #defer(Supplier)
+     * @see #fromCallable(Callable)
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Single<T> fromSupplier(final Supplier<? extends T> supplier) {
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new SingleFromSupplier<T>(supplier));
     }
 
     /**

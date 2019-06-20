@@ -763,6 +763,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T>
      *         the type of the item emitted by the {@link Maybe}.
      * @return a new Maybe instance
+     * @see #defer(Supplier)
+     * @see #fromSupplier(Supplier)
      */
     @CheckReturnValue
     @NonNull
@@ -863,6 +865,51 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <T> Maybe<T> fromRunnable(final Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return RxJavaPlugins.onAssembly(new MaybeFromRunnable<T>(run));
+    }
+
+    /**
+     * Returns a {@link Maybe} that invokes the given {@link Supplier} for each individual {@link MaybeObserver} that
+     * subscribes and emits the resulting non-null item via {@code onSuccess} while
+     * considering a {@code null} result from the {@code Supplier} as indication for valueless completion
+     * via {@code onComplete}.
+     * <p>
+     * This operator allows you to defer the execution of the given {@code Supplier} until a {@code MaybeObserver}
+     * subscribes to the  returned {@link Maybe}. In other terms, this source operator evaluates the given
+     * {@code Supplier} "lazily".
+     * <p>
+     * Note that the {@code null} handling of this operator differs from the similar source operators in the other
+     * {@link io.reactivex base reactive classes}. Those operators signal a {@code NullPointerException} if the value returned by their
+     * {@code Supplier} is {@code null} while this {@code fromSupplier} considers it to indicate the
+     * returned {@code Maybe} is empty.
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd>Any non-fatal exception thrown by {@link Supplier#get()} will be forwarded to {@code onError},
+     *   except if the {@code MaybeObserver} disposed the subscription in the meantime. In this latter case,
+     *   the exception is forwarded to the global error handler via
+     *   {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} wrapped into a
+     *   {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   Fatal exceptions are rethrown and usually will end up in the executing thread's
+     *   {@link java.lang.Thread.UncaughtExceptionHandler#uncaughtException(Thread, Throwable)} handler.</dd>
+     * </dl>
+     *
+     * @param supplier
+     *         a {@link Supplier} instance whose execution should be deferred and performed for each individual
+     *         {@code MaybeObserver} that subscribes to the returned {@link Maybe}.
+     * @param <T>
+     *         the type of the item emitted by the {@link Maybe}.
+     * @return a new Maybe instance
+     * @see #defer(Supplier)
+     * @see #fromCallable(Callable)
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromSupplier(@NonNull final Supplier<? extends T> supplier) {
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromSupplier<T>(supplier));
     }
 
     /**
