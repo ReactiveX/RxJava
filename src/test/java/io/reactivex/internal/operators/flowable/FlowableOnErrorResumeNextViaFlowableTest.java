@@ -14,18 +14,22 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableOnErrorResumeNextViaFlowableTest {
 
@@ -139,7 +143,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
         flowable.subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
 
         verify(subscriber, Mockito.never()).onError(any(Throwable.class));
         verify(subscriber, times(1)).onComplete();
@@ -213,7 +217,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
                 })
                 .subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 

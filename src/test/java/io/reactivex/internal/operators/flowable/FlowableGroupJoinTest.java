@@ -33,6 +33,7 @@ import io.reactivex.internal.operators.flowable.FlowableGroupJoin.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableGroupJoinTest {
 
@@ -521,7 +522,7 @@ public class FlowableGroupJoinTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
-                TestSubscriber<Flowable<Integer>> ts = Flowable.just(1)
+                TestSubscriberEx<Flowable<Integer>> ts = Flowable.just(1)
                 .groupJoin(
                     Flowable.just(2).concatWith(Flowable.<Integer>never()),
                     new Function<Integer, Flowable<Object>>() {
@@ -543,7 +544,7 @@ public class FlowableGroupJoinTest {
                         }
                     }
                 )
-                .test();
+                .to(TestHelper.<Flowable<Integer>>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -593,7 +594,7 @@ public class FlowableGroupJoinTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
-                TestSubscriber<Object> ts = pp1
+                TestSubscriberEx<Object> ts = pp1
                 .groupJoin(
                     pp2,
                     new Function<Object, Flowable<Object>>() {
@@ -616,7 +617,7 @@ public class FlowableGroupJoinTest {
                     }
                 )
                 .flatMap(Functions.<Flowable<Object>>identity())
-                .test();
+                .to(TestHelper.<Object>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();

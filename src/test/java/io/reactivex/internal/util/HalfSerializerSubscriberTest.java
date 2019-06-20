@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class HalfSerializerSubscriberTest {
 
@@ -234,7 +235,7 @@ public class HalfSerializerSubscriberTest {
 
             ts.assertComplete().assertNoErrors();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(ts.values().size() <= 1);
         }
     }
 
@@ -245,7 +246,7 @@ public class HalfSerializerSubscriberTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
             ts.onSubscribe(new BooleanSubscription());
 

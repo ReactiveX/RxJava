@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class ObservableSkipTest {
 
@@ -137,8 +138,10 @@ public class ObservableSkipTest {
 
     @Test
     public void testRequestOverflowDoesNotOccur() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
         Observable.range(1, 10).skip(5).subscribe(to);
+
         to.assertTerminated();
         to.assertComplete();
         to.assertNoErrors();

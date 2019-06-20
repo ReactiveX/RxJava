@@ -25,9 +25,10 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableFlatMapCompletableTest {
 
@@ -117,14 +118,14 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void normalDelayErrorAllObservable() {
-        TestObserver<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true).<Integer>toObservable()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -136,14 +137,14 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void normalDelayInnerErrorAllObservable() {
-        TestObserver<Integer> to = Observable.range(1, 10)
+        TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true).<Integer>toObservable()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -168,7 +169,7 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void fusedObservable() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -180,8 +181,8 @@ public class ObservableFlatMapCompletableTest {
         .subscribe(to);
 
         to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult();
     }
 
@@ -282,14 +283,14 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestObserver<Void> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        TestObserverEx<Void> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true)
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -301,14 +302,14 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void normalDelayInnerErrorAll() {
-        TestObserver<Void> to = Observable.range(1, 10)
+        TestObserverEx<Void> to = Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true)
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -333,7 +334,7 @@ public class ObservableFlatMapCompletableTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -346,8 +347,8 @@ public class ObservableFlatMapCompletableTest {
         .subscribe(to);
 
         to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult();
     }
 

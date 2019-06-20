@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleObserveOnTest {
 

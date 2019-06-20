@@ -26,6 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.testsupport.TestHelper;
 
 public class BlockingFlowableLatestTest {
     @Test(timeout = 1000)

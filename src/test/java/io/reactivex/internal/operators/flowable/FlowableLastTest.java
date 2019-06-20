@@ -24,6 +24,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableLastTest {
 
@@ -290,7 +291,7 @@ public class FlowableLastTest {
     public void lastOrErrorError() {
         Flowable.error(new RuntimeException("error"))
             .lastOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

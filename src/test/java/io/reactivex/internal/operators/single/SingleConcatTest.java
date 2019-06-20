@@ -20,6 +20,8 @@ import java.util.Arrays;
 
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -62,7 +64,7 @@ public class SingleConcatTest {
             Arrays.fill(array, Single.just(1));
 
             Single.concatArray(array)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertSubscribed()
             .assertValueCount(i)
             .assertNoErrors()
@@ -135,7 +137,7 @@ public class SingleConcatTest {
             Arrays.fill(array, Single.just(1));
 
             Single.concat(Observable.fromArray(array))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertSubscribed()
             .assertValueCount(i)
             .assertNoErrors()

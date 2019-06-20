@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -22,12 +23,13 @@ import java.util.concurrent.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
-import io.reactivex.observers.*;
+import io.reactivex.observers.DefaultObserver;
+import io.reactivex.testsupport.*;
 
 public class ObservableMergeDelayErrorTest {
 
@@ -488,15 +490,15 @@ public class ObservableMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentObservable() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.mergeDelayError(
                 Observable.just(Observable.just(1), Observable.just(2))
                         .startWith(Observable.<Integer> error(new RuntimeException()))
                 ).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertTerminated();
         to.assertValues(1, 2);
-        assertEquals(1, to.errorCount());
+        assertEquals(1, to.errors().size());
 
     }
 
@@ -517,11 +519,11 @@ public class ObservableMergeDelayErrorTest {
 
             Observer<String> stringObserver = TestHelper.mockObserver();
 
-            TestObserver<String> to = new TestObserver<String>(stringObserver);
+            TestObserverEx<String> to = new TestObserverEx<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
             m.subscribe(to);
             System.out.println("testErrorInParentObservableDelayed | " + i);
-            to.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
+            to.awaitDone(2000, TimeUnit.MILLISECONDS);
             to.assertTerminated();
 
             verify(stringObserver, times(2)).onNext("hello");

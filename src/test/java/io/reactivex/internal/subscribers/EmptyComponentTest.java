@@ -19,12 +19,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.EmptyComponent;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class EmptyComponentTest {
 

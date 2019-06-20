@@ -4030,18 +4030,18 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param cancelled if true, the TestObserver will be cancelled before subscribing to this
+     * @param dispose if true, the TestObserver will be cancelled before subscribing to this
      * Single.
      * @return the new TestObserver instance
      * @since 2.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestObserver<T> test(boolean cancelled) {
+    public final TestObserver<T> test(boolean dispose) {
         TestObserver<T> to = new TestObserver<T>();
 
-        if (cancelled) {
-            to.cancel();
+        if (dispose) {
+            to.dispose();
         }
 
         subscribe(to);

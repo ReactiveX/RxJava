@@ -22,6 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableMergeIterableTest {
 
@@ -74,7 +75,7 @@ public class CompletableMergeIterableTest {
                 return new Iterator<Completable>() {
                     @Override
                     public boolean hasNext() {
-                        to.cancel();
+                        to.dispose();
                         return true;
                     }
 
@@ -109,7 +110,7 @@ public class CompletableMergeIterableTest {
 
                     @Override
                     public Completable next() {
-                        to.cancel();
+                        to.dispose();
                         return Completable.complete();
                     }
 

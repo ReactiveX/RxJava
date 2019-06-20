@@ -20,11 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableFlattenIterableTest {
 

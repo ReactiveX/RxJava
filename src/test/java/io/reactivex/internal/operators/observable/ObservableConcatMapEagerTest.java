@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -31,6 +31,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableConcatMapEagerTest {
 
@@ -159,13 +160,13 @@ public class ObservableConcatMapEagerTest {
         PublishSubject<Integer> main = PublishSubject.create();
         final PublishSubject<Integer> inner = PublishSubject.create();
 
-        TestObserver<Integer> to = main.concatMapEagerDelayError(
+        TestObserverEx<Integer> to = main.concatMapEagerDelayError(
                 new Function<Integer, ObservableSource<Integer>>() {
                     @Override
                     public ObservableSource<Integer> apply(Integer t) {
                         return inner;
                     }
-                }, false).test();
+                }, false).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
 
@@ -188,13 +189,13 @@ public class ObservableConcatMapEagerTest {
         PublishSubject<Integer> main = PublishSubject.create();
         final PublishSubject<Integer> inner = PublishSubject.create();
 
-        TestObserver<Integer> to = main.concatMapEagerDelayError(
+        TestObserverEx<Integer> to = main.concatMapEagerDelayError(
                 new Function<Integer, ObservableSource<Integer>>() {
                     @Override
                     public ObservableSource<Integer> apply(Integer t) {
                         return inner;
                     }
-                }, true).test();
+                }, true).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -218,13 +219,13 @@ public class ObservableConcatMapEagerTest {
         PublishSubject<Integer> main = PublishSubject.create();
         final PublishSubject<Integer> inner = PublishSubject.create();
 
-        TestObserver<Integer> to = main.concatMapEager(
+        TestObserverEx<Integer> to = main.concatMapEager(
                 new Function<Integer, ObservableSource<Integer>>() {
                     @Override
                     public ObservableSource<Integer> apply(Integer t) {
                         return inner;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -548,7 +549,7 @@ public class ObservableConcatMapEagerTest {
             }
         }).observeOn(Schedulers.newThread()).subscribe(to);
 
-        to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertValueCount(2000);
     }
@@ -812,12 +813,12 @@ public class ObservableConcatMapEagerTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+                TestObserverEx<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
                     @Override
                     public ObservableSource<Integer> apply(Integer v) throws Exception {
                         return ps2;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -880,7 +881,7 @@ public class ObservableConcatMapEagerTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -898,7 +899,7 @@ public class ObservableConcatMapEagerTest {
         .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer v) throws Exception {
-                to.cancel();
+                to.dispose();
                 return Observable.never();
             }
         }, 1, 128)

@@ -20,10 +20,10 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class DisposableObserverTest {
 

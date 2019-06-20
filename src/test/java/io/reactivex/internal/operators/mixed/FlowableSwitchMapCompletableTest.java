@@ -29,6 +29,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSwitchMapCompletableTest {
 
@@ -178,7 +179,7 @@ public class FlowableSwitchMapCompletableTest {
         Flowable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer f) throws Exception {
-                to.cancel();
+                to.dispose();
                 return Completable.complete();
             }
         })
@@ -321,7 +322,7 @@ public class FlowableSwitchMapCompletableTest {
                 }
             }
             .switchMapCompletable(Functions.justFunction(Completable.error(new TestException("inner"))))
-            .test()
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "main");

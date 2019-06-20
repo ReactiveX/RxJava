@@ -22,13 +22,13 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class ObservableTakeLastOneTest {
 
     @Test
     public void testLastOfManyReturnsLast() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.range(1, 10).takeLast(1).subscribe(to);
         to.assertValue(10);
         to.assertNoErrors();
@@ -39,7 +39,7 @@ public class ObservableTakeLastOneTest {
 
     @Test
     public void testLastOfEmptyReturnsEmpty() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.empty().takeLast(1).subscribe(to);
         to.assertNoValues();
         to.assertNoErrors();
@@ -50,7 +50,7 @@ public class ObservableTakeLastOneTest {
 
     @Test
     public void testLastOfOneReturnsLast() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.just(1).takeLast(1).subscribe(to);
         to.assertValue(1);
         to.assertNoErrors();

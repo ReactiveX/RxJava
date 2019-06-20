@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
@@ -32,6 +32,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.observers.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableFromIterableTest {
 
@@ -118,7 +119,7 @@ public class ObservableFromIterableTest {
     public void testNoBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         o.subscribe(to);
 
@@ -252,14 +253,14 @@ public class ObservableFromIterableTest {
     @Test
     public void iteratorThrows() {
         Observable.fromIterable(new CrashingIterable(1, 100, 100))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNext2Throws() {
         Observable.fromIterable(new CrashingIterable(100, 2, 100))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -276,7 +277,7 @@ public class ObservableFromIterableTest {
                     @Override
                     public boolean hasNext() {
                         if (++count == 2) {
-                            to.cancel();
+                            to.dispose();
                         }
                         return true;
                     }
@@ -302,12 +303,12 @@ public class ObservableFromIterableTest {
 
     @Test
     public void fusionRejected() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         Observable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3);
     }
 

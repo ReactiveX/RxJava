@@ -19,7 +19,7 @@ import java.util.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Maybe;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
@@ -27,6 +27,7 @@ import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeZipIterableTest {
 
@@ -63,7 +64,7 @@ public class MaybeZipIterableTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -161,7 +162,7 @@ public class MaybeZipIterableTest {
                 return Maybe.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -173,7 +174,7 @@ public class MaybeZipIterableTest {
                 return Maybe.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -185,7 +186,7 @@ public class MaybeZipIterableTest {
                 return Maybe.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -217,7 +218,7 @@ public class MaybeZipIterableTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Maybe.zipArray(Functions.justFunction(null), Maybe.just(1))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 }

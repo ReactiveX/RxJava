@@ -30,6 +30,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSampleTest {
     private TestScheduler scheduler;

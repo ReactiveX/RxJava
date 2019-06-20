@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class BlockingObservableNextTest {
 

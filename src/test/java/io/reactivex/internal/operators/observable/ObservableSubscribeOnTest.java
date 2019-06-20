@@ -18,13 +18,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.annotations.NonNull;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableSubscribeOnTest {
 
@@ -74,7 +75,7 @@ public class ObservableSubscribeOnTest {
     @Test
     @Ignore("ObservableSource.subscribe can't throw")
     public void testThrownErrorHandling() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -83,13 +84,13 @@ public class ObservableSubscribeOnTest {
             }
 
         }).subscribeOn(Schedulers.computation()).subscribe(to);
-        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
     }
 
     @Test
     public void testOnError() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -99,7 +100,7 @@ public class ObservableSubscribeOnTest {
             }
 
         }).subscribeOn(Schedulers.computation()).subscribe(to);
-        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
     }
 
@@ -178,7 +179,7 @@ public class ObservableSubscribeOnTest {
 
         }).subscribeOn(Schedulers.newThread()).take(10).subscribe(to);
 
-        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.dispose();
         Thread.sleep(200); // give time for the loop to continue
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -189,7 +190,7 @@ public class ObservableSubscribeOnTest {
     public void cancelBeforeActualSubscribe() {
         TestScheduler test = new TestScheduler();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         Observable.just(1).hide()
                 .subscribeOn(test).subscribe(to);

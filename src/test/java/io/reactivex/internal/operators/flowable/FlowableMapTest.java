@@ -23,7 +23,6 @@ import java.util.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -33,7 +32,8 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableMapTest {
 
@@ -422,7 +422,7 @@ public class FlowableMapTest {
 
     @Test
     public void mapFilterFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 2)
         .map(new Function<Integer, Integer>() {
@@ -439,14 +439,14 @@ public class FlowableMapTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(2, 3);
     }
 
     @Test
     public void mapFilterFusedHidden() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 2).hide()
         .map(new Function<Integer, Integer>() {
@@ -463,8 +463,8 @@ public class FlowableMapTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(2, 3);
     }
 
@@ -500,7 +500,7 @@ public class FlowableMapTest {
 
     @Test
     public void mapFilterMapperCrashFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 2).hide()
         .map(new Function<Integer, Integer>() {
@@ -517,8 +517,8 @@ public class FlowableMapTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertFailure(TestException.class);
     }
 
@@ -560,7 +560,7 @@ public class FlowableMapTest {
 
     @Test
     public void mapFilterFused2() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -583,8 +583,8 @@ public class FlowableMapTest {
         up.onNext(2);
         up.onComplete();
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(2, 3);
     }
 
@@ -642,19 +642,19 @@ public class FlowableMapTest {
 
     @Test
     public void fusedSync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 5)
         .map(Functions.<Integer>identity())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
+        ts.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedAsync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         UnicastProcessor<Integer> us = UnicastProcessor.create();
 
@@ -664,19 +664,19 @@ public class FlowableMapTest {
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
+        ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedReject() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Flowable.range(1, 5)
         .map(Functions.<Integer>identity())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 

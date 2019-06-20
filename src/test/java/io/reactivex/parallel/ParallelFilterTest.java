@@ -24,6 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class ParallelFilterTest {
 

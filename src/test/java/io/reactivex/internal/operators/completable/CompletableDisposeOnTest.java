@@ -27,6 +27,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableDisposeOnTest {
 
@@ -39,7 +40,7 @@ public class CompletableDisposeOnTest {
         ps.ignoreElements()
         .unsubscribeOn(scheduler)
         .test()
-        .cancel();
+        .dispose();
 
         assertTrue(ps.hasObservers());
 

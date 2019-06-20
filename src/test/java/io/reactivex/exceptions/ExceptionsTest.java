@@ -31,6 +31,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ExceptionsTest {
 

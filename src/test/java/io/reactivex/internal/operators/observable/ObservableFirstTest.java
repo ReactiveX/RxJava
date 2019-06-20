@@ -22,6 +22,7 @@ import java.util.NoSuchElementException;
 
 import io.reactivex.*;
 import io.reactivex.functions.Predicate;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableFirstTest {
 
@@ -536,7 +537,7 @@ public class ObservableFirstTest {
     public void firstOrErrorError() {
         Observable.error(new RuntimeException("error"))
             .firstOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
@@ -577,7 +578,7 @@ public class ObservableFirstTest {
         Observable.error(new RuntimeException("error"))
             .firstOrError()
             .toObservable()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

@@ -17,12 +17,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class ParallelFilterTryTest implements Consumer<Object> {
 
@@ -195,7 +195,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     @SuppressWarnings("unchecked")
     @Test
     public void filterFailHandlerThrows() {
-        TestSubscriber<Integer> ts = Flowable.range(0, 2)
+        TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
         .filter(new Predicate<Integer>() {
             @Override
@@ -209,7 +209,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
             }
         })
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);
@@ -330,7 +330,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     @SuppressWarnings("unchecked")
     @Test
     public void filterFailHandlerThrowsConditional() {
-        TestSubscriber<Integer> ts = Flowable.range(0, 2)
+        TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
         .filter(new Predicate<Integer>() {
             @Override
@@ -345,7 +345,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
         })
         .filter(Functions.alwaysTrue())
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);

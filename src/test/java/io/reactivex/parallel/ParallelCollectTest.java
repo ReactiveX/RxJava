@@ -25,6 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class ParallelCollectTest {
 

@@ -24,6 +24,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableAsObservableTest {
     @Test

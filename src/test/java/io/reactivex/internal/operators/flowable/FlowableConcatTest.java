@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableConcatTest {
 
@@ -415,7 +416,7 @@ public class FlowableConcatTest {
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext once.
             callOnce.await();
             // Unsubcribe
-            ts.dispose();
+            ts.cancel();
             //Unblock the observable to continue.
             okToContinue.countDown();
             w1.t.join();
@@ -459,7 +460,7 @@ public class FlowableConcatTest {
             //Block main thread to allow observable "w1" to complete and observable "w2" to call onNext exactly once.
             callOnce.await();
             //"four" from w2 has been processed by onNext()
-            ts.dispose();
+            ts.cancel();
             //"five" and "six" will NOT be processed by onNext()
             //Unblock the observable to continue.
             okToContinue.countDown();
@@ -679,9 +680,9 @@ public class FlowableConcatTest {
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
                 .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 4, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 4, ts.values().size());
     }
 
     /*
@@ -698,9 +699,9 @@ public class FlowableConcatTest {
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
                 .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals((Flowable.bufferSize() * 4) + 20, ts.valueCount());
+        assertEquals((Flowable.bufferSize() * 4) + 20, ts.values().size());
     }
 
     // https://github.com/ReactiveX/RxJava/issues/1818
@@ -718,9 +719,9 @@ public class FlowableConcatTest {
 
         });
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.concat(f, f).subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertNoErrors();
         ts.assertValues("hello", "hello");
@@ -814,7 +815,7 @@ public class FlowableConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             Flowable.range(0, 1000)
             .concatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override
@@ -824,10 +825,10 @@ public class FlowableConcatTest {
             })
             .observeOn(Schedulers.computation()).subscribe(ts);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            ts.awaitDone(2500, TimeUnit.MILLISECONDS);
             ts.assertTerminated();
             ts.assertNoErrors();
-            assertEquals(1000, ts.valueCount());
+            assertEquals(1000, ts.values().size());
             assertEquals((Integer)999, ts.values().get(999));
         }
     }
@@ -843,7 +844,7 @@ public class FlowableConcatTest {
                 Flowable.empty()
         };
 
-        TestSubscriber<Integer> ts = Flowable.concatArrayDelayError(sources).test();
+        TestSubscriberEx<Integer> ts = Flowable.concatArrayDelayError(sources).to(TestHelper.<Integer>testConsumer());
 
         ts.assertFailure(CompositeException.class, 1, 2, 3, 4);
 
@@ -1324,7 +1325,7 @@ public class FlowableConcatTest {
     public void immediateInnerNextOuterError() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1348,7 +1349,7 @@ public class FlowableConcatTest {
     public void immediateInnerNextOuterError2() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1398,7 +1399,7 @@ public class FlowableConcatTest {
     public void badInnerSource() {
         @SuppressWarnings("rawtypes")
         final Subscriber[] ts0 = { null };
-        TestSubscriber<Integer> ts = Flowable.just(1).hide().concatMap(Functions.justFunction(new Flowable<Integer>() {
+        TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMap(Functions.justFunction(new Flowable<Integer>() {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 ts0[0] = s;
@@ -1406,7 +1407,7 @@ public class FlowableConcatTest {
                 s.onError(new TestException("First"));
             }
         }))
-        .test();
+        .to(TestHelper.<Integer>testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
 
@@ -1424,7 +1425,7 @@ public class FlowableConcatTest {
     public void badInnerSourceDelayError() {
         @SuppressWarnings("rawtypes")
         final Subscriber[] ts0 = { null };
-        TestSubscriber<Integer> ts = Flowable.just(1).hide().concatMapDelayError(Functions.justFunction(new Flowable<Integer>() {
+        TestSubscriberEx<Integer> ts = Flowable.just(1).hide().concatMapDelayError(Functions.justFunction(new Flowable<Integer>() {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> s) {
                 ts0[0] = s;
@@ -1432,7 +1433,7 @@ public class FlowableConcatTest {
                 s.onError(new TestException("First"));
             }
         }))
-        .test();
+        .to(TestHelper.<Integer>testConsumer());
 
         ts.assertFailureAndMessage(TestException.class, "First");
 

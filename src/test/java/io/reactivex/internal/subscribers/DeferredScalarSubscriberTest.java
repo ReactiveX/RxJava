@@ -33,6 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class DeferredScalarSubscriberTest {
 
@@ -331,7 +332,7 @@ public class DeferredScalarSubscriberTest {
 
                 ds.onComplete();
 
-                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                ts.awaitDone(5, TimeUnit.SECONDS);
                 ts.assertValues(1);
                 ts.assertNoErrors();
                 ts.assertComplete();
@@ -385,7 +386,7 @@ public class DeferredScalarSubscriberTest {
 
                 ds.onComplete();
 
-                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                ts.awaitDone(5, TimeUnit.SECONDS);
                 ts.assertValues(1);
                 ts.assertNoErrors();
                 ts.assertComplete();

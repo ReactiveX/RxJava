@@ -15,9 +15,9 @@ package io.reactivex.internal.subscribers;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class SinglePostCompleteSubscriberTest {
 

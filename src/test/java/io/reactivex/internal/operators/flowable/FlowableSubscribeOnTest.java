@@ -18,18 +18,19 @@ import static org.junit.Assert.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.NonNull;
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableSubscribeOn.SubscribeOnSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableSubscribeOnTest {
 
@@ -69,7 +70,7 @@ public class FlowableSubscribeOnTest {
         // wait for scheduling
         scheduled.await();
         // trigger unsubscribe
-        ts.dispose();
+        ts.cancel();
         latch.countDown();
         doneLatch.await();
         ts.assertNoErrors();
@@ -79,7 +80,7 @@ public class FlowableSubscribeOnTest {
     @Test
     @Ignore("Publisher.subscribe can't throw")
     public void testThrownErrorHandling() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -88,13 +89,13 @@ public class FlowableSubscribeOnTest {
             }
 
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
     }
 
     @Test
     public void testOnError() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -104,7 +105,7 @@ public class FlowableSubscribeOnTest {
             }
 
         }).subscribeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
     }
 
@@ -183,8 +184,8 @@ public class FlowableSubscribeOnTest {
 
         }).subscribeOn(Schedulers.newThread()).take(10).subscribe(ts);
 
-        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
-        ts.dispose();
+        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
+        ts.cancel();
         Thread.sleep(200); // give time for the loop to continue
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         assertEquals(10, count.get());
@@ -193,7 +194,7 @@ public class FlowableSubscribeOnTest {
     @Test
     public void testBackpressureReschedulesCorrectly() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(10);
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new DefaultSubscriber<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -216,7 +217,7 @@ public class FlowableSubscribeOnTest {
         System.out.println("First schedule: " + t);
         assertTrue(t.getName().startsWith("Rx"));
         ts.request(10);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("After reschedule: " + ts.lastThread());
         assertEquals(t, ts.lastThread());
     }
@@ -268,7 +269,7 @@ public class FlowableSubscribeOnTest {
             }
 
         }).subscribeOn(Schedulers.newThread()).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -276,8 +277,10 @@ public class FlowableSubscribeOnTest {
     public void cancelBeforeActualSubscribe() {
         TestScheduler test = new TestScheduler();
 
-        TestSubscriber<Integer> ts = Flowable.just(1).hide()
-                .subscribeOn(test).test(Long.MAX_VALUE, true);
+        TestSubscriberEx<Integer> ts = Flowable.just(1)
+                .hide()
+                .subscribeOn(test)
+                .to(TestHelper.<Integer>testConsumer(true));
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -346,7 +349,7 @@ public class FlowableSubscribeOnTest {
         .assertNoErrors()
         .assertComplete();
 
-        int c = ts.valueCount();
+        int c = ts.values().size();
 
         assertTrue("" + c, c > Flowable.bufferSize());
     }
@@ -393,7 +396,7 @@ public class FlowableSubscribeOnTest {
         .assertNoErrors()
         .assertComplete();
 
-        int c = ts.valueCount();
+        int c = ts.values().size();
 
         assertTrue("" + c, c > Flowable.bufferSize());
     }

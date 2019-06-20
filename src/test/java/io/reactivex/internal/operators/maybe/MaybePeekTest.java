@@ -27,6 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.*;
 
 public class MaybePeekTest {
 
@@ -52,7 +53,7 @@ public class MaybePeekTest {
         final Throwable[] err = { null };
 
         try {
-            TestObserver<Integer> to = new Maybe<Integer>() {
+            TestObserverEx<Integer> to = new Maybe<Integer>() {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -66,7 +67,7 @@ public class MaybePeekTest {
                     err[0] = e;
                 }
             })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
@@ -106,14 +107,14 @@ public class MaybePeekTest {
 
     @Test
     public void doOnErrorThrows() {
-        TestObserver<Object> to = Maybe.error(new TestException("Main"))
+        TestObserverEx<Object> to = Maybe.error(new TestException("Main"))
         .doOnError(new Consumer<Object>() {
             @Override
             public void accept(Object t) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test();
+        .to(TestHelper.<Object>testConsumer());
 
         to.assertFailure(CompositeException.class);
 

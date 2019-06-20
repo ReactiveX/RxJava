@@ -25,6 +25,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeCacheTest {
 
@@ -251,14 +252,14 @@ public class MaybeCacheTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to2.cancel();
+                    to2.dispose();
                 }
             };
 

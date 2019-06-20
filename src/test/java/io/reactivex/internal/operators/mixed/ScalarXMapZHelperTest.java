@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.mixed;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
+import io.reactivex.testsupport.TestHelper;
 
 public class ScalarXMapZHelperTest {
 

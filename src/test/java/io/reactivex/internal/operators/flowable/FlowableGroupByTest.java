@@ -40,6 +40,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableGroupByTest {
 
@@ -1058,7 +1059,7 @@ public class FlowableGroupByTest {
                     }
 
                 }).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -1160,7 +1161,7 @@ public class FlowableGroupByTest {
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         m.subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("ts .get " + ts.values());
         ts.assertNoErrors();
         assertEquals(ts.values(),
@@ -1174,10 +1175,10 @@ public class FlowableGroupByTest {
 
         Flowable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         m.subscribe(ts);
-        ts.awaitTerminalEvent();
-        assertEquals(1, ts.errorCount());
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, ts.errors().size());
         ts.assertNoValues();
     }
 
@@ -1186,10 +1187,10 @@ public class FlowableGroupByTest {
         Flowable<Integer> source = Flowable.just(0, 1, 2, 3, 4, 5, 6);
 
         Flowable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         m.subscribe(ts);
-        ts.awaitTerminalEvent();
-        assertEquals(1, ts.errorCount());
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, ts.errors().size());
         ts.assertNoValues();
 
     }
@@ -1202,7 +1203,7 @@ public class FlowableGroupByTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         m.subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         System.out.println(ts.values());
     }
@@ -1243,10 +1244,10 @@ public class FlowableGroupByTest {
 
         Flowable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         m.subscribe(ts);
-        ts.awaitTerminalEvent();
-        assertEquals(1, ts.errorCount());
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, ts.errors().size());
         ts.assertValueCount(1);
     }
 
@@ -1302,7 +1303,7 @@ public class FlowableGroupByTest {
             }
 
         }).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -1341,7 +1342,7 @@ public class FlowableGroupByTest {
             }
 
         }).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -1403,7 +1404,7 @@ public class FlowableGroupByTest {
             }
         }).subscribe(ts);
 
-        ts.dispose();
+        ts.cancel();
 
         verify(s).cancel();
     }
@@ -1411,11 +1412,11 @@ public class FlowableGroupByTest {
     @Test
     public void testGroupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
-        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
-        final TestSubscriber<Integer> inner2 = new TestSubscriber<Integer>();
+        final TestSubscriberEx<Integer> inner1 = new TestSubscriberEx<Integer>();
+        final TestSubscriberEx<Integer> inner2 = new TestSubscriberEx<Integer>();
 
-        final TestSubscriber<GroupedFlowable<Integer, Integer>> outer
-                = new TestSubscriber<GroupedFlowable<Integer, Integer>>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
+        final TestSubscriberEx<GroupedFlowable<Integer, Integer>> outer
+                = new TestSubscriberEx<GroupedFlowable<Integer, Integer>>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {
@@ -1602,9 +1603,9 @@ public class FlowableGroupByTest {
 
     @Test
     public void outerInnerFusion() {
-        final TestSubscriber<Integer> ts1 = SubscriberFusion.newTest(QueueFuseable.ANY);
+        final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        final TestSubscriber<GroupedFlowable<Integer, Integer>> ts2 = SubscriberFusion.newTest(QueueFuseable.ANY);
+        final TestSubscriberEx<GroupedFlowable<Integer, Integer>> ts2 = new TestSubscriberEx<GroupedFlowable<Integer, Integer>>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10).groupBy(new Function<Integer, Integer>() {
             @Override
@@ -1626,13 +1627,13 @@ public class FlowableGroupByTest {
         .subscribe(ts2);
 
         ts1
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         .assertNoErrors()
         .assertComplete();
 
         ts2
-        .assertOf(SubscriberFusion.<GroupedFlowable<Integer, Integer>>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertValueCount(1)
         .assertNoErrors()
         .assertComplete();
@@ -1707,7 +1708,7 @@ public class FlowableGroupByTest {
     public void reentrantCompleteCancel() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1737,13 +1738,13 @@ public class FlowableGroupByTest {
 
     @Test
     public void mainFusionRejected() {
-        TestSubscriber<Flowable<Integer>> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Flowable<Integer>> ts = new TestSubscriberEx<Flowable<Integer>>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.just(1)
         .groupBy(Functions.justFunction(1))
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertValueCount(1)
         .assertComplete()
         .assertNoErrors();
@@ -1796,25 +1797,25 @@ public class FlowableGroupByTest {
 
     @Test
     public void errorFused() {
-        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.error(new TestException())
         .groupBy(Functions.justFunction(1))
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
+        ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertFailure(TestException.class);
     }
 
     @Test
     public void errorFusedDelayed() {
-        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.error(new TestException())
         .groupBy(Functions.justFunction(1), true)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
+        ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertFailure(TestException.class);
     }
 
@@ -1869,10 +1870,10 @@ public class FlowableGroupByTest {
         final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
         PublishSubject<Integer> subject = PublishSubject.create();
-        TestSubscriber<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
+        TestSubscriberEx<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
                 .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
                 .flatMap(addCompletedKey(completed))
-                .test();
+                .to(TestHelper.<Integer>testConsumer());
         subject.onNext(1);
         subject.onNext(2);
         subject.onNext(3);

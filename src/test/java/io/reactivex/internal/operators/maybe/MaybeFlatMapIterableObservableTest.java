@@ -27,8 +27,8 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
-import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class MaybeFlatMapIterableObservableTest {
 
@@ -99,7 +99,7 @@ public class MaybeFlatMapIterableObservableTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -109,15 +109,15 @@ public class MaybeFlatMapIterableObservableTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
         ;
     }
 
     @Test
     public void fusedNoSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -127,9 +127,9 @@ public class MaybeFlatMapIterableObservableTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
-        .assertResult(1, 2);
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
+        .assertResult(1, 2)
         ;
     }
 
@@ -142,7 +142,7 @@ public class MaybeFlatMapIterableObservableTest {
                 return new CrashingIterable(1, 100, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -155,7 +155,7 @@ public class MaybeFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 1, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -168,7 +168,7 @@ public class MaybeFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 100, 1);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -181,7 +181,7 @@ public class MaybeFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 2, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -223,7 +223,7 @@ public class MaybeFlatMapIterableObservableTest {
                 })
         .hide()
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -243,7 +243,7 @@ public class MaybeFlatMapIterableObservableTest {
                     }
                 })
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -264,7 +264,7 @@ public class MaybeFlatMapIterableObservableTest {
                 })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -285,7 +285,7 @@ public class MaybeFlatMapIterableObservableTest {
                 })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)

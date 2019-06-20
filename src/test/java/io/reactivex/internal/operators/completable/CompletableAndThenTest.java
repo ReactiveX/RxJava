@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.completable;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableAndThenTest {
     @Test(expected = NullPointerException.class)
@@ -36,7 +37,7 @@ public class CompletableAndThenTest {
     public void andThenMaybeCompleteError() {
         Completable.complete()
             .andThen(Maybe.error(new RuntimeException("test")))
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNotComplete()
             .assertNoValues()
             .assertError(RuntimeException.class)
@@ -57,7 +58,7 @@ public class CompletableAndThenTest {
     public void andThenMaybeError() {
         Completable.error(new RuntimeException("bla"))
             .andThen(Maybe.empty())
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNotComplete()
             .assertNoValues()
             .assertError(RuntimeException.class)

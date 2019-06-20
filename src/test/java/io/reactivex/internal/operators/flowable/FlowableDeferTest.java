@@ -22,6 +22,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Supplier;
+import io.reactivex.testsupport.TestHelper;
 
 @SuppressWarnings("unchecked")
 public class FlowableDeferTest {

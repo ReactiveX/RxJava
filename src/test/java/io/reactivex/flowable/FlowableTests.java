@@ -37,6 +37,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableTests {
 
@@ -1052,7 +1053,7 @@ public class FlowableTests {
 
     @Test
     public void testCompose() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1, 2, 3).compose(new FlowableTransformer<Integer, String>() {
             @Override
             public Publisher<String> apply(Flowable<Integer> t1) {

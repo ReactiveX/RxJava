@@ -19,17 +19,18 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableOnBackpressureLatestTest {
     @Test
     public void testSimple() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5).onBackpressureLatest().subscribe(ts);
 
@@ -40,7 +41,7 @@ public class FlowableOnBackpressureLatestTest {
 
     @Test
     public void testSimpleError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .onBackpressureLatest().subscribe(ts);
@@ -64,7 +65,7 @@ public class FlowableOnBackpressureLatestTest {
     @Test
     public void testSynchronousDrop() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         source.onBackpressureLatest().subscribe(ts);
 
@@ -105,7 +106,7 @@ public class FlowableOnBackpressureLatestTest {
 
     @Test
     public void testAsynchronousDrop() throws InterruptedException {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) {
             final Random rnd = new Random();
             @Override
             public void onNext(Integer t) {
@@ -127,7 +128,7 @@ public class FlowableOnBackpressureLatestTest {
         .observeOn(Schedulers.io())
         .subscribe(ts);
 
-        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        ts.awaitDone(2, TimeUnit.SECONDS);
         ts.assertTerminated();
         int n = ts.values().size();
         System.out.println("testAsynchronousDrop -> " + n);

@@ -23,7 +23,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -31,6 +31,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableUsingTest {
 
@@ -523,7 +524,7 @@ public class FlowableUsingTest {
 
     @Test
     public void supplierDisposerCrash() {
-        TestSubscriber<Object> ts = Flowable.using(new Supplier<Object>() {
+        TestSubscriberEx<Object> ts = Flowable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -539,7 +540,7 @@ public class FlowableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -550,7 +551,7 @@ public class FlowableUsingTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestSubscriber<Object> ts = Flowable.using(new Supplier<Object>() {
+        TestSubscriberEx<Object> ts = Flowable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -566,7 +567,7 @@ public class FlowableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -593,7 +594,7 @@ public class FlowableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
     }
 
@@ -631,7 +632,7 @@ public class FlowableUsingTest {
         Flowable.using(Functions.justSupplier(1),
                 Functions.justFunction((Publisher<Object>)null),
                 Functions.emptyConsumer())
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null Publisher")
         ;
     }

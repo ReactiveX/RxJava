@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableMaterializeTest {
 

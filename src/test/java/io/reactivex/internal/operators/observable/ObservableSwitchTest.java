@@ -34,7 +34,8 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
-import io.reactivex.subjects.*;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableSwitchTest {
 
@@ -462,11 +463,11 @@ public class ObservableSwitchTest {
         .share()
         ;
 
-        TestObserver<String> to = new TestObserver<String>() {
+        TestObserverEx<String> to = new TestObserverEx<String>() {
             @Override
             public void onNext(String t) {
                 super.onNext(t);
-                if (valueCount() == 250) {
+                if (values().size() == 250) {
                     onComplete();
                     dispose();
                 }
@@ -474,22 +475,22 @@ public class ObservableSwitchTest {
         };
         src.subscribe(to);
 
-        to.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        to.awaitDone(10, TimeUnit.SECONDS);
 
-        System.out.println("> testIssue2654: " + to.valueCount());
+        System.out.println("> testIssue2654: " + to.values().size());
 
         to.assertTerminated();
         to.assertNoErrors();
 
-        Assert.assertEquals(250, to.valueCount());
+        Assert.assertEquals(250, to.values().size());
     }
 
     @Test
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
 
-        TestObserver<Integer> to = source.switchMapDelayError(Functions.<ObservableSource<Integer>>identity())
-        .test();
+        TestObserverEx<Integer> to = source.switchMapDelayError(Functions.<ObservableSource<Integer>>identity())
+                .to(TestHelper.<Integer>testConsumer());
 
         to.assertNoValues()
         .assertNoErrors()
@@ -617,7 +618,7 @@ public class ObservableSwitchTest {
 
         assertTrue(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
     }
@@ -839,7 +840,7 @@ public class ObservableSwitchTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -1171,7 +1172,7 @@ public class ObservableSwitchTest {
     public void fusedBoundary() {
         String thread = Thread.currentThread().getName();
 
-        Observable.range(1, 10000)
+        TestObserver<Object> to = Observable.range(1, 10000)
         .switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
             @Override
             public ObservableSource<? extends Object> apply(Integer v)
@@ -1188,8 +1189,11 @@ public class ObservableSwitchTest {
         })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertNever(thread)
         .assertNoErrors()
         .assertComplete();
+
+        for (Object o : to.values()) {
+            assertNotEquals(thread, o);
+        }
     }
 }

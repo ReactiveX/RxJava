@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 
 import java.util.List;

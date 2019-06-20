@@ -39,6 +39,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableObserveOnTest {
 
@@ -65,11 +66,11 @@ public class ObservableObserveOnTest {
         Observer<String> observer = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(observer);
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserverEx<String> to = new TestObserverEx<String>(observer);
 
         obs.observeOn(Schedulers.computation()).subscribe(to);
 
-        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         if (to.errors().size() > 0) {
             for (Throwable t : to.errors()) {
                 t.printStackTrace();
@@ -433,7 +434,7 @@ public class ObservableObserveOnTest {
                 .observeOn(Schedulers.newThread())
                 .subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertValues(0, 1, 2, 3, 4, 5, 6);
         assertEquals(7, generated.get());
     }
@@ -442,7 +443,7 @@ public class ObservableObserveOnTest {
     public void testAsyncChild() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 
@@ -564,33 +565,33 @@ public class ObservableObserveOnTest {
 
     @Test
     public void outputFused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void outputFusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void inputOutputAsyncFusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -603,14 +604,14 @@ public class ObservableObserveOnTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
 
     @Test
     public void inputOutputAsyncFusedErrorDelayed() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -623,7 +624,7 @@ public class ObservableObserveOnTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
@@ -789,7 +790,7 @@ public class ObservableObserveOnTest {
     }
 
     static final class TestObserverFusedCanceling
-            extends TestObserver<Integer> {
+            extends TestObserverEx<Integer> {
 
         TestObserverFusedCanceling() {
             super();
@@ -798,7 +799,7 @@ public class ObservableObserveOnTest {
 
         @Override
         public void onComplete() {
-            cancel();
+            dispose();
             super.onComplete();
         }
     }
@@ -807,7 +808,7 @@ public class ObservableObserveOnTest {
     public void workerNotDisposedPrematurelyNormalInAsyncOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        TestObserver<Integer> to = new TestObserverFusedCanceling();
+        TestObserverEx<Integer> to = new TestObserverFusedCanceling();
 
         Observable.just(1).hide().observeOn(s).subscribe(to);
 

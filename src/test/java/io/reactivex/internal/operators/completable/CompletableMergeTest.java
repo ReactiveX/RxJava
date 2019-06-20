@@ -28,6 +28,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.*;
 
 public class CompletableMergeTest {
     @Test
@@ -49,7 +50,7 @@ public class CompletableMergeTest {
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposables.empty());
                 observer.onComplete();
-                to.cancel();
+                to.dispose();
             }
         }, Completable.complete())
         .subscribe(to);
@@ -66,7 +67,7 @@ public class CompletableMergeTest {
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposables.empty());
                 observer.onComplete();
-                to.cancel();
+                to.dispose();
             }
         }, Completable.complete())
         .subscribe(to);
@@ -149,7 +150,7 @@ public class CompletableMergeTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
 
@@ -197,12 +198,12 @@ public class CompletableMergeTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestObserver<Void> to = Completable.merge(pp1.map(new Function<Integer, Completable>() {
+                TestObserverEx<Void> to = Completable.merge(pp1.map(new Function<Integer, Completable>() {
                     @Override
                     public Completable apply(Integer v) throws Exception {
                         return pp2.ignoreElements();
                     }
-                })).test();
+                })).to(TestHelper.<Void>testConsumer());
 
                 pp1.onNext(1);
 
@@ -250,12 +251,12 @@ public class CompletableMergeTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Void> to = Completable.mergeDelayError(pp1.map(new Function<Integer, Completable>() {
+            TestObserverEx<Void> to = Completable.mergeDelayError(pp1.map(new Function<Integer, Completable>() {
                 @Override
                 public Completable apply(Integer v) throws Exception {
                     return pp2.ignoreElements();
                 }
-            })).test();
+            })).to(TestHelper.<Void>testConsumer());
 
             pp1.onNext(1);
 
@@ -392,7 +393,7 @@ public class CompletableMergeTest {
                     s.onError(new TestException("Second"));
                 }
             })
-            .test()
+            .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -414,7 +415,7 @@ public class CompletableMergeTest {
                     o[0] = observer;
                 }
             }))
-            .test()
+            .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             o[0].onError(new TestException("Second"));
@@ -501,7 +502,7 @@ public class CompletableMergeTest {
                 return new Iterator<Completable>() {
                     @Override
                     public boolean hasNext() {
-                        to.cancel();
+                        to.dispose();
                         return true;
                     }
 
@@ -537,7 +538,7 @@ public class CompletableMergeTest {
 
                     @Override
                     public Completable next() {
-                        to.cancel();
+                        to.dispose();
                         return Completable.complete();
                     }
 

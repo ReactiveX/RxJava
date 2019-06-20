@@ -19,16 +19,16 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class ObservableUnsubscribeOnTest {
 
@@ -53,13 +53,14 @@ public class ObservableUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> observer = new TestObserver<Integer>();
+            TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+
             w.subscribeOn(uiEventLoop).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(observer);
 
-            observer.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            observer.awaitDone(5, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -102,13 +103,14 @@ public class ObservableUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> observer = new TestObserver<Integer>();
+            TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(observer);
 
-            observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            observer.awaitDone(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 

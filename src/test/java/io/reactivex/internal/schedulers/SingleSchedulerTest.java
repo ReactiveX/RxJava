@@ -26,6 +26,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.SingleScheduler.ScheduledWorker;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleSchedulerTest extends AbstractSchedulerTests {
 

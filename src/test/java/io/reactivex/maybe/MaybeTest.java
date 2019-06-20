@@ -38,7 +38,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class MaybeTest {
     @Test
@@ -93,7 +94,7 @@ public class MaybeTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -150,7 +151,7 @@ public class MaybeTest {
 
         assertTrue(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
     }
@@ -186,7 +187,7 @@ public class MaybeTest {
     @Test
     public void never() {
         Maybe.never()
-        .test()
+        .to(TestHelper.testConsumer())
         .assertSubscribed()
         .assertNoValues()
         .assertNoErrors()
@@ -559,7 +560,7 @@ public class MaybeTest {
     @Test
     public void observeOnSuccess() {
         String main = Thread.currentThread().getName();
-        Maybe.just(1)
+        TestObserver<String> to = Maybe.just(1)
         .observeOn(Schedulers.single())
         .map(new Function<Integer, String>() {
             @Override
@@ -569,8 +570,10 @@ public class MaybeTest {
         })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertOf(TestHelper.observerSingleNot("1: " + main))
+        .assertValueCount(1)
         ;
+
+        assertNotEquals("1: " + main, to.values().get(0));
     }
 
     @Test
@@ -611,7 +614,7 @@ public class MaybeTest {
     @Test
     public void subscribeOnSuccess() {
         String main = Thread.currentThread().getName();
-        Maybe.fromCallable(new Callable<String>() {
+        TestObserver<String> to = Maybe.fromCallable(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 return Thread.currentThread().getName();
@@ -620,8 +623,10 @@ public class MaybeTest {
         .subscribeOn(Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertOf(TestHelper.observerSingleNot(main))
+        .assertValueCount(1)
         ;
+
+        assertNotEquals(main, to.values().get(0));
     }
 
     @Test
@@ -848,7 +853,7 @@ public class MaybeTest {
                 call[0]++;
             }
         })
-        .test(true)
+        .to(TestHelper.<Integer>testConsumer(true))
         .assertSubscribed()
         .assertNoValues()
         .assertNoErrors()
@@ -864,17 +869,17 @@ public class MaybeTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestObserver<Integer> to = pp.singleElement().doOnDispose(new Action() {
+            TestObserverEx<Integer> to = pp.singleElement().doOnDispose(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new TestException();
                 }
             })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             assertTrue(pp.hasSubscribers());
 
-            to.cancel();
+            to.dispose();
 
             assertFalse(pp.hasSubscribers());
 
@@ -1887,8 +1892,8 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
-                .test();
+        TestObserverEx<Integer> to = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
+                .to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 
@@ -2092,13 +2097,13 @@ public class MaybeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.mergeArray(Maybe.just(1), Maybe.just(2), Maybe.just(3)).subscribe(ts);
 
         ts.assertSubscribed()
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3);
     }
 
@@ -2109,13 +2114,13 @@ public class MaybeTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
             Maybe.mergeArray(pp1.singleElement(), pp2.singleElement()).subscribe(ts);
 
             ts.assertSubscribed()
-            .assertOf(SubscriberFusion.<Integer>assertFuseable())
-            .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+            .assertFuseable()
+            .assertFusionMode(QueueFuseable.ASYNC)
             ;
 
             TestHelper.race(new Runnable() {
@@ -2198,7 +2203,7 @@ public class MaybeTest {
         Arrays.fill(sources, Maybe.just(1));
 
         Maybe.mergeArray(sources)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertSubscribed()
         .assertValueCount(sources.length)
         .assertNoErrors()
@@ -2213,7 +2218,7 @@ public class MaybeTest {
         sources[sources.length - 1] = Maybe.empty();
 
         Maybe.mergeArray(sources)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertSubscribed()
         .assertValueCount(sources.length - 1)
         .assertNoErrors()
@@ -2226,14 +2231,14 @@ public class MaybeTest {
         Maybe<Integer>[] sources = new Maybe[Flowable.bufferSize() * 2];
         Arrays.fill(sources, Maybe.just(1));
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.mergeArray(sources).subscribe(ts);
 
         ts
         .assertSubscribed()
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertValueCount(sources.length)
         .assertNoErrors()
         .assertComplete();
@@ -2443,14 +2448,14 @@ public class MaybeTest {
 
     @Test
     public void doOnEventErrorThrows() {
-        TestObserver<Integer> to = Maybe.<Integer>error(new TestException("Outer"))
+        TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Outer"))
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
             public void accept(Integer v, Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -2716,7 +2721,9 @@ public class MaybeTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Maybe.sequenceEqual(Maybe.error(new TestException("One")), Maybe.error(new TestException("Two"))).test().assertFailureAndMessage(TestException.class, "One");
+            Maybe.sequenceEqual(Maybe.error(new TestException("One")), Maybe.error(new TestException("Two")))
+            .to(TestHelper.<Boolean>testConsumer())
+            .assertFailureAndMessage(TestException.class, "One");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");
         } finally {
@@ -3234,7 +3241,7 @@ public class MaybeTest {
     public void errorConcatWithValue() {
         Maybe.<Integer>error(new RuntimeException("error"))
             .concatWith(Maybe.just(2))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertError(RuntimeException.class)
             .assertErrorMessage("error")
             .assertNoValues();
@@ -3244,7 +3251,7 @@ public class MaybeTest {
     public void valueConcatWithError() {
         Maybe.just(1)
             .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertValue(1)
             .assertError(RuntimeException.class)
             .assertErrorMessage("error");
@@ -3264,7 +3271,7 @@ public class MaybeTest {
     public void emptyConcatWithError() {
         Maybe.<Integer>empty()
             .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("error");

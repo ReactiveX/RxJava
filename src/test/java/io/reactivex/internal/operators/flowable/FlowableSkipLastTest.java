@@ -14,19 +14,22 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSkipLastTest {
 
@@ -103,9 +106,9 @@ public class FlowableSkipLastTest {
         Flowable<Integer> f = Flowable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         f.observeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals((Flowable.bufferSize()) - 10, ts.valueCount());
+        assertEquals((Flowable.bufferSize()) - 10, ts.values().size());
 
     }
 

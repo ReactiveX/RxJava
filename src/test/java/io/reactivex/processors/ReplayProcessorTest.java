@@ -34,6 +34,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.ReplayProcessor.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -91,7 +92,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         inOrderA.verify(observerA).onNext(42);
         inOrderB.verify(observerB).onNext(42);
 
-        ts.dispose();
+        ts.cancel();
 
         // a should receive no more
         inOrderA.verifyNoMoreInteractions();
@@ -232,7 +233,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("one");
         processor.onNext("two");
 
-        ts.dispose();
+        ts.cancel();
         assertObservedUntilTwo(subscriber);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();

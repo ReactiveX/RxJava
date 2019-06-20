@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class ScalarSubscriptionTest {
 

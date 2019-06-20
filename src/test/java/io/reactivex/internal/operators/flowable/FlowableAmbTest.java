@@ -35,7 +35,8 @@ import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableAmbTest {
 
@@ -232,7 +233,7 @@ public class FlowableAmbTest {
                 .delay(1, TimeUnit.MICROSECONDS) // make it a slightly slow consumer
                 .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
@@ -257,7 +258,7 @@ public class FlowableAmbTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.ambArray(f1, f2).subscribe(ts);
         ts.request(1);
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(2, count.get());
     }
@@ -278,7 +279,7 @@ public class FlowableAmbTest {
         // this request should suffice to emit all
         ts.request(20);
         //ensure stream does not hang
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 
@@ -335,8 +336,8 @@ public class FlowableAmbTest {
         amb.subscribe(ts1);
         amb.subscribe(ts2);
 
-        ts1.awaitTerminalEvent();
-        ts2.awaitTerminalEvent();
+        ts1.awaitDone(5, TimeUnit.SECONDS);
+        ts2.awaitDone(5, TimeUnit.SECONDS);
 
         ts1.assertValue(0L);
         ts1.assertComplete();
@@ -455,7 +456,7 @@ public class FlowableAmbTest {
 
                 Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
 
-                TestSubscriber<Integer> ts = TestSubscriber.create();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
                 obs.subscribe(ts);
 
@@ -569,7 +570,7 @@ public class FlowableAmbTest {
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
             @SuppressWarnings("unchecked")
-            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
+            TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -673,7 +674,7 @@ public class FlowableAmbTest {
                 return Flowable.never();
             }
         }))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
 
         Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 1, 100, new Function<Integer, Flowable<Integer>>() {
@@ -682,7 +683,7 @@ public class FlowableAmbTest {
                 return Flowable.never();
             }
         }))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
 
         Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 100, 1, new Function<Integer, Flowable<Integer>>() {
@@ -691,7 +692,7 @@ public class FlowableAmbTest {
                 return Flowable.never();
             }
         }))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

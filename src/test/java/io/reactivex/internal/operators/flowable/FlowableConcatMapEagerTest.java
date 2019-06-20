@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableConcatMapEagerTest {
 
@@ -157,13 +158,13 @@ public class FlowableConcatMapEagerTest {
         PublishProcessor<Integer> main = PublishProcessor.create();
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = main.concatMapEagerDelayError(
+        TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
                 new Function<Integer, Publisher<Integer>>() {
                     @Override
                     public Publisher<Integer> apply(Integer t) {
                         return inner;
                     }
-                }, false).test();
+                }, false).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
 
@@ -186,13 +187,13 @@ public class FlowableConcatMapEagerTest {
         PublishProcessor<Integer> main = PublishProcessor.create();
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = main.concatMapEagerDelayError(
+        TestSubscriberEx<Integer> ts = main.concatMapEagerDelayError(
                 new Function<Integer, Publisher<Integer>>() {
                     @Override
                     public Publisher<Integer> apply(Integer t) {
                         return inner;
                     }
-                }, true).test();
+                }, true).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -216,13 +217,13 @@ public class FlowableConcatMapEagerTest {
         PublishProcessor<Integer> main = PublishProcessor.create();
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = main.concatMapEager(
+        TestSubscriberEx<Integer> ts = main.concatMapEager(
                 new Function<Integer, Publisher<Integer>>() {
                     @Override
                     public Publisher<Integer> apply(Integer t) {
                         return inner;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
         main.onNext(1);
         main.onNext(2);
@@ -861,12 +862,12 @@ public class FlowableConcatMapEagerTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> ts = pp1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                TestSubscriberEx<Integer> ts = pp1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
                     @Override
                     public Flowable<Integer> apply(Integer v) throws Exception {
                         return pp2;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -1078,7 +1079,7 @@ public class FlowableConcatMapEagerTest {
                 }
             }
             .concatMapEager(Functions.justFunction(Flowable.just(1)))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First", 1);
 
             sub[0].onError(new TestException("Second"));

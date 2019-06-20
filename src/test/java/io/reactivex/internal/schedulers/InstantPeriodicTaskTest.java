@@ -23,10 +23,10 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class InstantPeriodicTaskTest {
 

@@ -24,6 +24,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class FlowableToCompletableTest {
 
@@ -72,7 +73,7 @@ public class FlowableToCompletableTest {
 
     @Test
     public void testNeverObservable() {
-        TestSubscriber<String> subscriber = TestSubscriber.create();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
         Completable cmp = Flowable.<String>never().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 

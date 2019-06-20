@@ -40,6 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableRefCountTest {
 
@@ -212,12 +213,12 @@ public class FlowableRefCountTest {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
             }
-            ts1.dispose();
-            ts2.dispose();
+            ts1.cancel();
+            ts2.cancel();
             ts1.assertNoErrors();
             ts2.assertNoErrors();
-            assertTrue(ts1.valueCount() > 0);
-            assertTrue(ts2.valueCount() > 0);
+            assertTrue(ts1.values().size() > 0);
+            assertTrue(ts2.values().size() > 0);
         }
 
         assertEquals(10, subscribeCount.get());
@@ -247,13 +248,13 @@ public class FlowableRefCountTest {
                     }
                 });
 
-        TestSubscriber<Long> s = new TestSubscriber<Long>();
+        TestSubscriberEx<Long> s = new TestSubscriberEx<Long>();
         f.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(s);
         System.out.println("send unsubscribe");
         // wait until connected
         subscribeLatch.await();
         // now unsubscribe
-        s.dispose();
+        s.cancel();
         System.out.println("DONE sending unsubscribe ... now waiting");
         if (!unsubscribeLatch.await(3000, TimeUnit.MILLISECONDS)) {
             System.out.println("Errors: " + s.errors());
@@ -292,12 +293,12 @@ public class FlowableRefCountTest {
                     }
                 });
 
-        TestSubscriber<Long> s = new TestSubscriber<Long>();
+        TestSubscriberEx<Long> s = new TestSubscriberEx<Long>();
 
         f.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
         System.out.println("send unsubscribe");
         // now immediately unsubscribe while subscribeOn is racing to subscribe
-        s.dispose();
+        s.cancel();
         // this generally will mean it won't even subscribe as it is already unsubscribed by the time connect() gets scheduled
         // give time to the counter to update
         Thread.sleep(10);
@@ -516,8 +517,8 @@ public class FlowableRefCountTest {
         })
         .publish().refCount();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
 
         combined.subscribe(ts1);
         combined.subscribe(ts2);
@@ -777,11 +778,11 @@ public class FlowableRefCountTest {
         .publish()
         .refCount();
 
-        Disposable d1 = source.test();
-        Disposable d2 = source.test();
+        TestSubscriber<Object> d1 = source.test();
+        TestSubscriber<Object> d2 = source.test();
 
-        d1.dispose();
-        d2.dispose();
+        d1.cancel();
+        d2.cancel();
 
         d1 = null;
         d2 = null;
@@ -1409,7 +1410,6 @@ public class FlowableRefCountTest {
         o.connection = rc;
 
         o.timeout(rc);
-        
 
         assertTrue(tcf.reset);
     }

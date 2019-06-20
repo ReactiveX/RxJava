@@ -29,6 +29,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableDoAfterTerminateTest {
 

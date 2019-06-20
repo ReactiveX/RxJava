@@ -24,6 +24,7 @@ import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableDelaySubscriptionOtherTest {
     @Test
@@ -255,7 +256,7 @@ public class FlowableDelaySubscriptionOtherTest {
         Assert.assertFalse("source subscribed?", source.hasSubscribers());
         Assert.assertTrue("other not subscribed?", other.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         Assert.assertFalse("source subscribed?", source.hasSubscribers());
         Assert.assertFalse("other still subscribed?", other.hasSubscribers());
@@ -278,7 +279,7 @@ public class FlowableDelaySubscriptionOtherTest {
         Assert.assertTrue("source not subscribed?", source.hasSubscribers());
         Assert.assertFalse("other still subscribed?", other.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         Assert.assertFalse("source subscribed?", source.hasSubscribers());
         Assert.assertFalse("other still subscribed?", other.hasSubscribers());
@@ -340,7 +341,7 @@ public class FlowableDelaySubscriptionOtherTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS, s)
                 .subscribe(ts);
 
-                ts.awaitTerminalEvent();
+                ts.awaitDone(5, TimeUnit.SECONDS);
                 ts.assertValue(false);
             }
         } finally {

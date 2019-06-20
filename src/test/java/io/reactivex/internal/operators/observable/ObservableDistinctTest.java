@@ -24,15 +24,14 @@ import org.mockito.InOrder;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableDistinctTest {
 
@@ -143,19 +142,19 @@ public class ObservableDistinctTest {
 
     @Test
     public void fusedSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
+        to.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -165,7 +164,7 @@ public class ObservableDistinctTest {
 
         TestHelper.emit(us, 1, 1, 2, 1, 3, 2, 4, 5, 4);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
@@ -221,7 +220,7 @@ public class ObservableDistinctTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }

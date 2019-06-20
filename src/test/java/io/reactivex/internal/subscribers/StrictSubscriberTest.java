@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class StrictSubscriberTest {
 
@@ -65,9 +65,9 @@ public class StrictSubscriberTest {
     }
 
     static final class SubscriberWrapper<T> implements Subscriber<T> {
-        final TestSubscriber<T> tester;
+        final TestSubscriberEx<T> tester;
 
-        SubscriberWrapper(TestSubscriber<T> tester) {
+        SubscriberWrapper(TestSubscriberEx<T> tester) {
             this.tester = tester;
         }
 
@@ -94,7 +94,7 @@ public class StrictSubscriberTest {
 
     @Test
     public void normalOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
 
         Flowable.range(1, 5).subscribe(wrapper);
@@ -104,7 +104,7 @@ public class StrictSubscriberTest {
 
     @Test
     public void normalOnNextBackpressured() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
 
         Flowable.range(1, 5).subscribe(wrapper);
@@ -120,7 +120,7 @@ public class StrictSubscriberTest {
 
     @Test
     public void normalOnError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
@@ -311,7 +311,7 @@ public class StrictSubscriberTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
 
         new Flowable<Integer>() {

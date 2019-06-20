@@ -24,8 +24,8 @@ import java.util.*;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
@@ -35,6 +35,7 @@ import io.reactivex.internal.operators.observable.ObservableGroupJoin.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableGroupJoinTest {
 
@@ -515,7 +516,7 @@ public class ObservableGroupJoinTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
-                TestObserver<Observable<Integer>> to = Observable.just(1)
+                TestObserverEx<Observable<Integer>> to = Observable.just(1)
                 .groupJoin(
                     Observable.just(2).concatWith(Observable.<Integer>never()),
                     new Function<Integer, ObservableSource<Object>>() {
@@ -537,7 +538,7 @@ public class ObservableGroupJoinTest {
                         }
                     }
                 )
-                .test();
+                .to(TestHelper.<Observable<Integer>>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -587,7 +588,7 @@ public class ObservableGroupJoinTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
-                TestObserver<Object> to = ps1
+                TestObserverEx<Object> to = ps1
                 .groupJoin(
                     ps2,
                     new Function<Object, ObservableSource<Object>>() {
@@ -610,7 +611,7 @@ public class ObservableGroupJoinTest {
                     }
                 )
                 .flatMap(Functions.<Observable<Object>>identity())
-                .test();
+                .to(TestHelper.<Object>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();

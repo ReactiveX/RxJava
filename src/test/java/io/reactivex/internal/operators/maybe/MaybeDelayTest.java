@@ -25,6 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeDelayTest {
 
@@ -69,7 +70,7 @@ public class MaybeDelayTest {
         TestObserver<Integer> to = Maybe.just(1).delay(100, TimeUnit.MILLISECONDS, scheduler)
         .test();
 
-        to.cancel();
+        to.dispose();
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -84,7 +85,7 @@ public class MaybeDelayTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }

@@ -35,6 +35,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableConcatMapMaybeTest {
 
@@ -125,7 +126,7 @@ public class FlowableConcatMapMaybeTest {
 
     @Test
     public void mixedLong() {
-        Flowable.range(1, 1024)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 1024)
         .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
@@ -136,19 +137,16 @@ public class FlowableConcatMapMaybeTest {
                 return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(512)
         .assertNoErrors()
         .assertComplete()
-        .assertOf(new Consumer<TestSubscriber<Integer>>() {
-            @Override
-            public void accept(TestSubscriber<Integer> ts) throws Exception {
-                for (int i = 0; i < 512; i ++) {
-                    ts.assertValueAt(i, (i + 1) * 2);
-                }
-            }
-        });
+        ;
+
+        for (int i = 0; i < 512; i ++) {
+            ts.assertValueAt(i, (i + 1) * 2);
+        }
     }
 
     @Test
@@ -295,7 +293,7 @@ public class FlowableConcatMapMaybeTest {
 
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
 
-            TestSubscriber<Integer> ts = pp.concatMapMaybe(
+            TestSubscriberEx<Integer> ts = pp.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
                         @Override
                         public MaybeSource<Integer> apply(Integer v)
@@ -310,7 +308,7 @@ public class FlowableConcatMapMaybeTest {
                             };
                         }
                     }
-            ).test();
+            ).to(TestHelper.<Integer>testConsumer());
 
             pp.onNext(1);
 
@@ -327,7 +325,7 @@ public class FlowableConcatMapMaybeTest {
 
     @Test
     public void delayAllErrors() {
-        Flowable.range(1, 5)
+        TestSubscriberEx<Object> ts = Flowable.range(1, 5)
         .concatMapMaybeDelayError(new Function<Integer, MaybeSource<? extends Object>>() {
             @Override
             public MaybeSource<? extends Object> apply(Integer v)
@@ -335,15 +333,12 @@ public class FlowableConcatMapMaybeTest {
                 return Maybe.error(new TestException());
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestSubscriber<Object>>() {
-            @Override
-            public void accept(TestSubscriber<Object> ts) throws Exception {
-                CompositeException ce = (CompositeException)ts.errors().get(0);
-                assertEquals(5, ce.getExceptions().size());
-            }
-        });
+        ;
+
+        CompositeException ce = (CompositeException)ts.errors().get(0);
+        assertEquals(5, ce.getExceptions().size());
     }
 
     @Test
@@ -415,7 +410,7 @@ public class FlowableConcatMapMaybeTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.dispose();
+                    ts.cancel();
                 }
             };
 

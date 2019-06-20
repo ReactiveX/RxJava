@@ -27,7 +27,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -37,6 +37,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableTimeoutWithSelectorTest {
     @Test(timeout = 2000)
@@ -431,7 +432,7 @@ public class FlowableTimeoutWithSelectorTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp
+            TestSubscriberEx<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
@@ -442,7 +443,7 @@ public class FlowableTimeoutWithSelectorTest {
                     subscriber.onComplete();
                 }
             }))
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             pp.onNext(1);
 
@@ -460,7 +461,7 @@ public class FlowableTimeoutWithSelectorTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp
+            TestSubscriberEx<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> subscriber) {
@@ -471,7 +472,7 @@ public class FlowableTimeoutWithSelectorTest {
                     subscriber.onComplete();
                 }
             }), Flowable.just(2))
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             pp.onNext(1);
 

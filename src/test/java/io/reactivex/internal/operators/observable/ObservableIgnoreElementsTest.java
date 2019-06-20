@@ -19,11 +19,12 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableIgnoreElementsTest {
 
@@ -57,7 +58,7 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testCompletedOkObservable() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.range(1, 10).ignoreElements().toObservable().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -68,7 +69,7 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testErrorReceivedObservable() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().toObservable().subscribe(to);
         to.assertNoValues();
@@ -123,7 +124,7 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testCompletedOk() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -134,7 +135,7 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testErrorReceived() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().subscribe(to);
         to.assertNoValues();
@@ -161,7 +162,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void cancel() {
+    public void dispose() {
 
         PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -169,7 +170,7 @@ public class ObservableIgnoreElementsTest {
 
         assertTrue(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
 
@@ -177,7 +178,7 @@ public class ObservableIgnoreElementsTest {
     }
 
     @Test
-    public void dispose() {
+    public void checkDispose() {
         TestHelper.checkDisposed(Observable.just(1).ignoreElements());
 
         TestHelper.checkDisposed(Observable.just(1).ignoreElements().toObservable());

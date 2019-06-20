@@ -30,6 +30,7 @@ import io.reactivex.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class ParallelFromPublisherTest {
 
@@ -150,7 +151,7 @@ public class ParallelFromPublisherTest {
         final Set<String> between = new HashSet<String>();
         final ConcurrentHashMap<String, String> processing = new ConcurrentHashMap<String, String>();
 
-        Flowable.range(1, 10)
+        TestSubscriberEx<Object> ts = Flowable.range(1, 10)
         .observeOn(Schedulers.single(), false, 1)
         .doOnNext(new Consumer<Integer>() {
             @Override
@@ -168,13 +169,14 @@ public class ParallelFromPublisherTest {
             }
         })
         .sequential()
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertComplete()
         .assertNoErrors()
         ;
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
         assertEquals(between.toString(), 1, between.size());
         assertTrue(between.toString(), between.iterator().next().contains("RxSingleScheduler"));

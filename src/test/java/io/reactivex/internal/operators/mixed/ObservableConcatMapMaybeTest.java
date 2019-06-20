@@ -32,6 +32,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableConcatMapMaybeTest {
 
@@ -98,7 +99,7 @@ public class ObservableConcatMapMaybeTest {
 
     @Test
     public void mixedLong() {
-        Observable.range(1, 1024)
+        TestObserverEx<Integer> to = Observable.range(1, 1024)
         .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
@@ -109,19 +110,16 @@ public class ObservableConcatMapMaybeTest {
                 return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(512)
         .assertNoErrors()
         .assertComplete()
-        .assertOf(new Consumer<TestObserver<Integer>>() {
-            @Override
-            public void accept(TestObserver<Integer> to) throws Exception {
-                for (int i = 0; i < 512; i ++) {
-                    to.assertValueAt(i, (i + 1) * 2);
-                }
-            }
-        });
+        ;
+
+        for (int i = 0; i < 512; i ++) {
+            to.assertValueAt(i, (i + 1) * 2);
+        }
     }
 
     @Test
@@ -231,7 +229,7 @@ public class ObservableConcatMapMaybeTest {
         .assertValues(1, 2, 3, 4, 5)
         .assertNoErrors()
         .assertNotComplete()
-        .cancel();
+        .dispose();
     }
 
     @Test
@@ -249,7 +247,7 @@ public class ObservableConcatMapMaybeTest {
             .concatMapMaybe(
                     Functions.justFunction(Maybe.error(new TestException("inner"))), 1
             )
-            .test()
+            .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -266,7 +264,7 @@ public class ObservableConcatMapMaybeTest {
 
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
 
-            TestObserver<Integer> to = ps.concatMapMaybe(
+            TestObserverEx<Integer> to = ps.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
                         @Override
                         public MaybeSource<Integer> apply(Integer v)
@@ -281,7 +279,7 @@ public class ObservableConcatMapMaybeTest {
                             };
                         }
                     }
-            ).test();
+            ).to(TestHelper.<Integer>testConsumer());
 
             ps.onNext(1);
 
@@ -298,7 +296,7 @@ public class ObservableConcatMapMaybeTest {
 
     @Test
     public void delayAllErrors() {
-        Observable.range(1, 5)
+        TestObserverEx<Object> to = Observable.range(1, 5)
         .concatMapMaybeDelayError(new Function<Integer, MaybeSource<? extends Object>>() {
             @Override
             public MaybeSource<? extends Object> apply(Integer v)
@@ -306,15 +304,12 @@ public class ObservableConcatMapMaybeTest {
                 return Maybe.error(new TestException());
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestObserver<Object>>() {
-            @Override
-            public void accept(TestObserver<Object> to) throws Exception {
-                CompositeException ce = (CompositeException)to.errors().get(0);
-                assertEquals(5, ce.getExceptions().size());
-            }
-        });
+        ;
+
+        CompositeException ce = (CompositeException)to.errors().get(0);
+        assertEquals(5, ce.getExceptions().size());
     }
 
     @Test

@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
@@ -32,6 +32,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableScanTest {
 
@@ -206,7 +207,9 @@ public class ObservableScanTest {
             }
 
         }).take(1);
-        TestObserver<Integer> observer = new TestObserver<Integer>();
+
+        TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+
         o.subscribe(observer);
         observer.assertValue(0);
         observer.assertTerminated();

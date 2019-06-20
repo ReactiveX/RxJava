@@ -17,8 +17,8 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.subscribers.SubscriberFusion;
+import io.reactivex.internal.fuseable.QueueFuseable;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableFuseableTest {
 
@@ -26,8 +26,8 @@ public class FlowableFuseableTest {
     public void syncRange() {
 
         Flowable.range(1, 10)
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -37,8 +37,8 @@ public class FlowableFuseableTest {
     public void syncArray() {
 
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -48,8 +48,8 @@ public class FlowableFuseableTest {
     public void syncIterable() {
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -59,9 +59,9 @@ public class FlowableFuseableTest {
     public void syncRangeHidden() {
 
         Flowable.range(1, 10).hide()
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertNotFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -71,9 +71,9 @@ public class FlowableFuseableTest {
     public void syncArrayHidden() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
         .hide()
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertNotFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -83,9 +83,9 @@ public class FlowableFuseableTest {
     public void syncIterableHidden() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .hide()
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
-        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        .to(TestHelper.<Integer>testSubscriber(Long.MAX_VALUE, QueueFuseable.ANY, false))
+        .assertNotFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();

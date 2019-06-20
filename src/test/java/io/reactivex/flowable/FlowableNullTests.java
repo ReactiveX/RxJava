@@ -29,6 +29,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 /**
  * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.

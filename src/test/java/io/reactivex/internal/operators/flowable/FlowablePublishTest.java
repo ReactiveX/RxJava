@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowablePublishTest {
 
@@ -130,9 +131,9 @@ public class FlowablePublishTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.merge(fast, slow).subscribe(ts);
         is.connect();
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 4, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 4, ts.values().size());
     }
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
@@ -163,7 +164,7 @@ public class FlowablePublishTest {
             }
 
         }).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValues(0, 1, 2, 3);
         assertEquals(5, emitted.get());
@@ -215,7 +216,7 @@ public class FlowablePublishTest {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (valueCount() == 2) {
+                if (values().size() == 2) {
                     source.doOnCancel(new Action() {
                         @Override
                         public void run() {
@@ -235,8 +236,8 @@ public class FlowablePublishTest {
         }).take(5)
         .subscribe(ts1);
 
-        ts1.awaitTerminalEvent();
-        ts2.awaitTerminalEvent();
+        ts1.awaitDone(5, TimeUnit.SECONDS);
+        ts2.awaitDone(5, TimeUnit.SECONDS);
 
         ts1.assertNoErrors();
         ts2.assertNoErrors();
@@ -262,7 +263,7 @@ public class FlowablePublishTest {
         cf.subscribe(subscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
-        // 3.x: Flowable.publish no longer drains the input buffer if there are no subscribers 
+        // 3.x: Flowable.publish no longer drains the input buffer if there are no subscribers
         subscriber.assertResult(0L, 1L, 2L);
     }
 
@@ -270,7 +271,7 @@ public class FlowablePublishTest {
     public void testSubscribeAfterDisconnectThenConnect() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts1);
 
@@ -279,10 +280,10 @@ public class FlowablePublishTest {
         ts1.assertValue(1);
         ts1.assertNoErrors();
         ts1.assertTerminated();
-        
+
         source.reset();
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts2);
 
@@ -300,7 +301,7 @@ public class FlowablePublishTest {
     public void testNoSubscriberRetentionOnCompleted() {
         FlowablePublish<Integer> source = (FlowablePublish<Integer>)Flowable.just(1).publish();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts1);
 
@@ -352,7 +353,7 @@ public class FlowablePublishTest {
     public void testZeroRequested() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         source.subscribe(ts);
 
@@ -407,16 +408,16 @@ public class FlowablePublishTest {
         Flowable<Integer> obs = cf.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
 
                 Disposable connection = cf.connect();
 
-                for (TestSubscriber<Integer> ts : tss) {
+                for (TestSubscriberEx<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
                     .assertSubscribed()
                     .assertValueCount(1000)
@@ -434,16 +435,16 @@ public class FlowablePublishTest {
         Flowable<Integer> obs = cf.observeOn(ImmediateThinScheduler.INSTANCE);
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
 
                 Disposable connection = cf.connect();
 
-                for (TestSubscriber<Integer> ts : tss) {
+                for (TestSubscriberEx<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
                     .assertSubscribed()
                     .assertValueCount(1000)
@@ -460,16 +461,16 @@ public class FlowablePublishTest {
         ConnectableFlowable<Integer> cf = Flowable.range(0, 1000).observeOn(ImmediateThinScheduler.INSTANCE).publish();
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
                     tss.add(ts);
                     cf.subscribe(ts);
                 }
 
                 Disposable connection = cf.connect();
 
-                for (TestSubscriber<Integer> ts : tss) {
+                for (TestSubscriberEx<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
                     .assertSubscribed()
                     .assertValueCount(1000)
@@ -487,16 +488,16 @@ public class FlowablePublishTest {
         Flowable<Integer> obs = cf.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
 
                 Disposable connection = cf.connect();
 
-                for (TestSubscriber<Integer> ts : tss) {
+                for (TestSubscriberEx<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
                     .assertSubscribed()
                     .assertValueCount(1000)
@@ -678,7 +679,7 @@ public class FlowablePublishTest {
         ConnectableFlowable<Object> cf = Flowable.error(new TestException()).publish();
 
         cf.connect();
-        
+
         // 3.x: terminal events are always kept until reset.
         cf.test()
         .assertFailure(TestException.class);
@@ -1615,7 +1616,7 @@ public class FlowablePublishTest {
             }
             .publish(1)
             .refCount()
-            .test(0)
+            .to(TestHelper.<Integer>testSubscriber(0L))
             .assertFailureAndMessage(TestException.class, "one");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "two");
@@ -1672,7 +1673,7 @@ public class FlowablePublishTest {
 
         ts.assertFailure(TestException.class, 1);
     }
-    
+
     @Test
     public void disposeResets() {
         PublishProcessor<Integer> pp = PublishProcessor.create();

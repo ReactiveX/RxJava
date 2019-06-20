@@ -20,13 +20,13 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableForEachTest {
 

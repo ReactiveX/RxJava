@@ -26,6 +26,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public final class ObservableCollectTest {
 

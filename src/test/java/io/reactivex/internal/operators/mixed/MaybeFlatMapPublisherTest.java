@@ -25,6 +25,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeFlatMapPublisherTest {
 

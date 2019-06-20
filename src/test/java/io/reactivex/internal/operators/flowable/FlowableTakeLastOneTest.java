@@ -20,16 +20,17 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableTakeLastOneTest {
 
     @Test
     public void testLastOfManyReturnsLast() {
-        TestSubscriber<Integer> s = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
         Flowable.range(1, 10).takeLast(1).subscribe(s);
         s.assertValue(10);
         s.assertNoErrors();
@@ -40,7 +41,7 @@ public class FlowableTakeLastOneTest {
 
     @Test
     public void testLastOfEmptyReturnsEmpty() {
-        TestSubscriber<Object> s = new TestSubscriber<Object>();
+        TestSubscriberEx<Object> s = new TestSubscriberEx<Object>();
         Flowable.empty().takeLast(1).subscribe(s);
         s.assertNoValues();
         s.assertNoErrors();
@@ -51,7 +52,7 @@ public class FlowableTakeLastOneTest {
 
     @Test
     public void testLastOfOneReturnsLast() {
-        TestSubscriber<Integer> s = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
         Flowable.just(1).takeLast(1).subscribe(s);
         s.assertValue(1);
         s.assertNoErrors();

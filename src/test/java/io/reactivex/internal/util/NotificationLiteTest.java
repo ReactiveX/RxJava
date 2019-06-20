@@ -19,13 +19,13 @@ import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestObserverEx;
 
 public class NotificationLiteTest {
 
     @Test
     public void acceptFullObserver() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         Disposable d = Disposables.empty();
 
@@ -33,7 +33,7 @@ public class NotificationLiteTest {
 
         to.assertSubscribed();
 
-        to.cancel();
+        to.dispose();
 
         assertTrue(d.isDisposed());
     }

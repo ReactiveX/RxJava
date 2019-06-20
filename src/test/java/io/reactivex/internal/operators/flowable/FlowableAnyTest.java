@@ -32,6 +32,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableAnyTest {
 
@@ -257,7 +258,7 @@ public class FlowableAnyTest {
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
@@ -273,7 +274,7 @@ public class FlowableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Flowable.just("Boo!").any(new Predicate<String>() {
@@ -523,7 +524,7 @@ public class FlowableAnyTest {
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>(1L);
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
@@ -539,7 +540,7 @@ public class FlowableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageFlowable() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Flowable.just("Boo!").any(new Predicate<String>() {
@@ -628,7 +629,7 @@ public class FlowableAnyTest {
                 }
             }
             .any(Functions.alwaysTrue())
-            .test()
+            .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

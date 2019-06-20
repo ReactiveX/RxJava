@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class DisposableHelperTest {
     @Test

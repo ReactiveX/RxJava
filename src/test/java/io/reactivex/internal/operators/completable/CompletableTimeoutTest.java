@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
@@ -31,6 +31,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class CompletableTimeoutTest {
 
@@ -39,7 +40,7 @@ public class CompletableTimeoutTest {
 
         Completable.never()
         .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailureAndMessage(TimeoutException.class, timeoutMessage(100, TimeUnit.MILLISECONDS));
     }
@@ -118,8 +119,9 @@ public class CompletableTimeoutTest {
 
                 final PublishSubject<Integer> ps = PublishSubject.create();
 
-                TestObserver<Void> to = ps.ignoreElements()
-                        .timeout(1, TimeUnit.MILLISECONDS, scheduler, Completable.complete()).test();
+                TestObserverEx<Void> to = ps.ignoreElements()
+                        .timeout(1, TimeUnit.MILLISECONDS, scheduler, Completable.complete())
+                        .to(TestHelper.<Void>testConsumer());
 
                 final TestException ex = new TestException();
 

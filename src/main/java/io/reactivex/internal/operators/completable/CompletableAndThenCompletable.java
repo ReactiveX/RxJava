@@ -84,7 +84,7 @@ public final class CompletableAndThenCompletable extends Completable {
 
         final CompletableObserver downstream;
 
-        public NextObserver(AtomicReference<Disposable> parent, CompletableObserver downstream) {
+        NextObserver(AtomicReference<Disposable> parent, CompletableObserver downstream) {
             this.parent = parent;
             this.downstream = downstream;
         }

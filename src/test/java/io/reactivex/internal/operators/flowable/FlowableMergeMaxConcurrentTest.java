@@ -19,14 +19,15 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class FlowableMergeMaxConcurrentTest {
 
@@ -149,7 +150,7 @@ public class FlowableMergeMaxConcurrentTest {
     @Test
     public void testSimple() {
         for (int i = 1; i < 100; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
@@ -168,7 +169,7 @@ public class FlowableMergeMaxConcurrentTest {
     @Test
     public void testSimpleOneLess() {
         for (int i = 2; i < 100; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
@@ -210,7 +211,7 @@ public class FlowableMergeMaxConcurrentTest {
 
             Flowable.merge(sourceList, i).subscribe(ts);
 
-            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.values());
 
@@ -242,7 +243,7 @@ public class FlowableMergeMaxConcurrentTest {
 
             Flowable.merge(sourceList, i - 1).subscribe(ts);
 
-            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.values());
 
@@ -278,7 +279,7 @@ public class FlowableMergeMaxConcurrentTest {
         ts.assertValueCount(5);
         ts.assertNotComplete();
 
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test(timeout = 5000)
@@ -293,7 +294,7 @@ public class FlowableMergeMaxConcurrentTest {
 
         Flowable.merge(sourceList, 2).take(5).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValueCount(5);
     }

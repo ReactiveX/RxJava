@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
@@ -31,6 +31,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableCacheTest {
     @Test
@@ -39,7 +40,7 @@ public class ObservableCacheTest {
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         source.subscribe(to);
 
@@ -140,7 +141,7 @@ public class ObservableCacheTest {
 
             cached.observeOn(Schedulers.computation()).subscribe(to1);
 
-            to1.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            to1.awaitDone(2, TimeUnit.SECONDS);
             to1.assertNoErrors();
             to1.assertComplete();
             assertEquals(10000, to1.values().size());
@@ -148,7 +149,7 @@ public class ObservableCacheTest {
             TestObserver<Integer> to2 = new TestObserver<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(to2);
 
-            to2.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            to2.awaitDone(2, TimeUnit.SECONDS);
             to2.assertNoErrors();
             to2.assertComplete();
             assertEquals(10000, to2.values().size());
@@ -177,7 +178,7 @@ public class ObservableCacheTest {
         }
         int j = 0;
         for (TestObserver<Long> to : list) {
-            to.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            to.awaitDone(3, TimeUnit.SECONDS);
             to.assertNoErrors();
             to.assertComplete();
 
@@ -208,7 +209,7 @@ public class ObservableCacheTest {
         TestObserver<Integer> to = new TestObserver<Integer>();
         firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(to);
 
-        to.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        to.awaitDone(3, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertComplete();
 
@@ -325,7 +326,7 @@ public class ObservableCacheTest {
 
             cache.test();
 
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override

@@ -13,16 +13,16 @@
 
 package io.reactivex.schedulers;
 
-import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -130,7 +130,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
                 })
                 .subscribeOn(Schedulers.computation())
                 .subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 

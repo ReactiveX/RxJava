@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.Single;
-import io.reactivex.TestHelper;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 

@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableAndThenObservableTest {
 
@@ -35,7 +36,7 @@ public class CompletableAndThenObservableTest {
         assertTrue(cs.hasObservers());
         assertFalse(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(cs.hasObservers());
         assertFalse(ps.hasObservers());
@@ -57,7 +58,7 @@ public class CompletableAndThenObservableTest {
         assertFalse(cs.hasObservers());
         assertTrue(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(cs.hasObservers());
         assertFalse(ps.hasObservers());

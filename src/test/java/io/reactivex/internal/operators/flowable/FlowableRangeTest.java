@@ -23,11 +23,12 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableRangeTest {
 
@@ -97,7 +98,7 @@ public class FlowableRangeTest {
     public void testBackpressureViaRequest() {
         Flowable<Integer> f = Flowable.range(1, Flowable.bufferSize());
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(1);
@@ -125,7 +126,7 @@ public class FlowableRangeTest {
 
         Flowable<Integer> f = Flowable.range(1, list.size());
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -138,7 +139,7 @@ public class FlowableRangeTest {
     void testWithBackpressureOneByOne(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         ts.request(1);
         source.subscribe(ts);
 
@@ -153,7 +154,7 @@ public class FlowableRangeTest {
     void testWithBackpressureAllAtOnce(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         ts.request(100);
         source.subscribe(ts);
 
@@ -183,7 +184,7 @@ public class FlowableRangeTest {
     public void testWithBackpressureRequestWayMore() {
         Flowable<Integer> source = Flowable.range(50, 100);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         ts.request(150);
         source.subscribe(ts);
 
@@ -286,12 +287,12 @@ public class FlowableRangeTest {
 
     @Test
     public void requestWrongFusion() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.range(1, 5)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 
@@ -304,21 +305,21 @@ public class FlowableRangeTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
+        ts.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2);
     }
 
     @Test
     public void fusedReject() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.range(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
     }
 

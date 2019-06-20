@@ -22,6 +22,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class OnErrorNotImplementedExceptionTest {
 

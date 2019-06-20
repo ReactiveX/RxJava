@@ -27,6 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.WeakScalarSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableConcatMapTest {
 

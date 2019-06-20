@@ -25,6 +25,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSerializeTest {
 

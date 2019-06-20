@@ -25,6 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class MaybeTimeoutTest {
 
@@ -314,7 +315,7 @@ public class MaybeTimeoutTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+            TestObserverEx<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -333,7 +334,7 @@ public class MaybeTimeoutTest {
 
             to.assertSubscribed().assertNoValues();
 
-            if (to.errorCount() != 0) {
+            if (to.errors().size() != 0) {
                 to.assertError(TimeoutException.class).assertNotComplete();
             } else {
                 to.assertNoErrors().assertComplete();

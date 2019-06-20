@@ -41,6 +41,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableReplayTest {
     @Test
@@ -808,8 +809,8 @@ public class FlowableReplayTest {
                 });
         ConnectableFlowable<Integer> cf = source.replay();
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(10L);
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(90L);
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>(10L);
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>(90L);
 
         cf.subscribe(ts1);
         cf.subscribe(ts2);
@@ -839,8 +840,8 @@ public class FlowableReplayTest {
                 });
         ConnectableFlowable<Integer> cf = source.replay(50);
 
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(10L);
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(90L);
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>(10L);
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>(90L);
 
         cf.subscribe(ts1);
         cf.subscribe(ts2);
@@ -862,7 +863,7 @@ public class FlowableReplayTest {
     public void testColdReplayNoBackpressure() {
         Flowable<Integer> source = Flowable.range(0, 1000).replay().autoConnect();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts);
 
@@ -894,7 +895,7 @@ public class FlowableReplayTest {
             assertEquals((Integer)i, onNextEvents.get(i));
         }
 
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -961,7 +962,7 @@ public class FlowableReplayTest {
 
     @Test
     public void testTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable<Integer> cached = Flowable.range(1, 100).replay().autoConnect();
         cached.take(10).subscribe(ts);
@@ -975,21 +976,21 @@ public class FlowableReplayTest {
     public void testAsync() {
         Flowable<Integer> source = Flowable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
 
             Flowable<Integer> cached = source.replay().autoConnect();
 
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
 
-            ts1.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            ts1.awaitDone(2, TimeUnit.SECONDS);
             ts1.assertNoErrors();
             ts1.assertTerminated();
             assertEquals(10000, ts1.values().size());
 
-            TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
 
-            ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            ts2.awaitDone(2, TimeUnit.SECONDS);
             ts2.assertNoErrors();
             ts2.assertTerminated();
             assertEquals(10000, ts2.values().size());
@@ -1005,9 +1006,9 @@ public class FlowableReplayTest {
 
         Flowable<Long> output = cached.observeOn(Schedulers.computation(), false, 1024);
 
-        List<TestSubscriber<Long>> list = new ArrayList<TestSubscriber<Long>>(100);
+        List<TestSubscriberEx<Long>> list = new ArrayList<TestSubscriberEx<Long>>(100);
         for (int i = 0; i < 100; i++) {
-            TestSubscriber<Long> ts = new TestSubscriber<Long>();
+            TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>();
             list.add(ts);
             output.skip(i * 10).take(10).subscribe(ts);
         }
@@ -1017,8 +1018,8 @@ public class FlowableReplayTest {
             expected.add((long)(i - 10));
         }
         int j = 0;
-        for (TestSubscriber<Long> ts : list) {
-            ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        for (TestSubscriberEx<Long> ts : list) {
+            ts.awaitDone(3, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertTerminated();
 
@@ -1046,10 +1047,10 @@ public class FlowableReplayTest {
             }
         });
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         firehose.replay().autoConnect().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
 
-        ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        ts.awaitDone(3, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertTerminated();
 
@@ -1062,14 +1063,14 @@ public class FlowableReplayTest {
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .replay().autoConnect();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         source.subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNotComplete();
         Assert.assertEquals(1, ts.errors().size());
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
         source.subscribe(ts2);
 
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -1125,7 +1126,7 @@ public class FlowableReplayTest {
 
         out.subscribe(ts1);
         out.subscribe(ts2);
-        ts2.dispose();
+        ts2.cancel();
 
         Assert.assertEquals(Arrays.asList(5L, 5L), requests);
     }
@@ -1141,7 +1142,7 @@ public class FlowableReplayTest {
 
         ts1.assertValues(1, 2);
         ts1.assertNoErrors();
-        ts1.dispose();
+        ts1.cancel();
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(2L);
 
@@ -1149,7 +1150,7 @@ public class FlowableReplayTest {
 
         ts2.assertValues(2, 3);
         ts2.assertNoErrors();
-        ts2.dispose();
+        ts2.cancel();
 
         TestSubscriber<Integer> ts21 = new TestSubscriber<Integer>(1L);
 
@@ -1157,7 +1158,7 @@ public class FlowableReplayTest {
 
         ts21.assertValues(3);
         ts21.assertNoErrors();
-        ts21.dispose();
+        ts21.cancel();
 
         TestSubscriber<Integer> ts22 = new TestSubscriber<Integer>(1L);
 
@@ -1165,7 +1166,7 @@ public class FlowableReplayTest {
 
         ts22.assertValues(3);
         ts22.assertNoErrors();
-        ts22.dispose();
+        ts22.cancel();
 
         TestSubscriber<Integer> ts3 = new TestSubscriber<Integer>();
 
@@ -1188,7 +1189,7 @@ public class FlowableReplayTest {
 
         ts1.assertValues(1, 2);
         ts1.assertNoErrors();
-        ts1.dispose();
+        ts1.cancel();
 
         TestSubscriber<Integer> ts11 = new TestSubscriber<Integer>(2L);
 
@@ -1196,7 +1197,7 @@ public class FlowableReplayTest {
 
         ts11.assertValues(1, 2);
         ts11.assertNoErrors();
-        ts11.dispose();
+        ts11.cancel();
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(3L);
 
@@ -1204,7 +1205,7 @@ public class FlowableReplayTest {
 
         ts2.assertValues(1, 2, 3);
         ts2.assertNoErrors();
-        ts2.dispose();
+        ts2.cancel();
 
         TestSubscriber<Integer> ts21 = new TestSubscriber<Integer>(1L);
 
@@ -1212,7 +1213,7 @@ public class FlowableReplayTest {
 
         ts21.assertValues(2);
         ts21.assertNoErrors();
-        ts21.dispose();
+        ts21.cancel();
 
         TestSubscriber<Integer> ts22 = new TestSubscriber<Integer>(1L);
 
@@ -1220,7 +1221,7 @@ public class FlowableReplayTest {
 
         ts22.assertValues(2);
         ts22.assertNoErrors();
-        ts22.dispose();
+        ts22.cancel();
 
         TestSubscriber<Integer> ts3 = new TestSubscriber<Integer>();
 
@@ -1432,7 +1433,7 @@ public class FlowableReplayTest {
                 }
             }.replay()
             .autoConnect()
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -1484,7 +1485,7 @@ public class FlowableReplayTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.dispose();
+                    ts1.cancel();
                 }
             };
 
@@ -1520,7 +1521,7 @@ public class FlowableReplayTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.dispose();
+                    ts1.cancel();
                 }
             };
 
@@ -1750,7 +1751,7 @@ public class FlowableReplayTest {
                 return null;
             }
         }, Schedulers.trampoline())
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The selector returned a null Publisher");
     }
 

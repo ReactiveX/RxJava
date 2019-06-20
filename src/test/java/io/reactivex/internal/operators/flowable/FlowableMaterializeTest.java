@@ -26,6 +26,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableMaterializeTest {
 
@@ -174,7 +175,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testWithCompletionCausingError() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>();
+        TestSubscriberEx<Notification<Integer>> ts = new TestSubscriberEx<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -194,7 +195,7 @@ public class FlowableMaterializeTest {
         Flowable.<Integer>empty().materialize()
                 .subscribe(ts);
         ts.assertNoValues();
-        ts.dispose();
+        ts.cancel();
         ts.request(1);
         ts.assertNoValues();
     }

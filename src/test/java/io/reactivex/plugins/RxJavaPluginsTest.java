@@ -48,6 +48,7 @@ import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class RxJavaPluginsTest {
 

@@ -21,7 +21,7 @@ import java.util.List;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -29,6 +29,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 ;
 
 public class FlowableTakeUntilPredicateTest {
@@ -158,7 +159,7 @@ public class FlowableTakeUntilPredicateTest {
 
     @Test
     public void testErrorIncludesLastValueAsCause() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = new Predicate<String>() {
             @Override

@@ -18,6 +18,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleToObservableTest {
 

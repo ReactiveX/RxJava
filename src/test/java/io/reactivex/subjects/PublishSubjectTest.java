@@ -29,6 +29,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class PublishSubjectTest extends SubjectTest<Integer> {
 
@@ -448,7 +449,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                to1.cancel();
+                to1.dispose();
             }
         };
 
@@ -471,7 +472,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             @Override
             public void onError(Throwable t) {
                 super.onError(t);
-                to1.cancel();
+                to1.dispose();
             }
         };
 
@@ -494,7 +495,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             @Override
             public void onComplete() {
                 super.onComplete();
-                to1.cancel();
+                to1.dispose();
             }
         };
 
@@ -556,7 +557,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
         });
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
     }
@@ -601,7 +602,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

@@ -23,6 +23,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableToMultimapTest {
     Subscriber<Object> objectSubscriber;

@@ -27,6 +27,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableTakeLastTimedTest {
 
@@ -281,7 +282,7 @@ public class FlowableTakeLastTimedTest {
         .takeLast(1, TimeUnit.DAYS)
         .take(500)
         .observeOn(Schedulers.single(), true, 1)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)

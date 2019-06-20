@@ -25,6 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeDoFinallyTest implements Action {
 
@@ -132,7 +133,7 @@ public class MaybeDoFinallyTest implements Action {
             })
             .test()
             .assertResult(1)
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -154,7 +155,7 @@ public class MaybeDoFinallyTest implements Action {
             .filter(Functions.alwaysTrue())
             .test()
             .assertResult(1)
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {

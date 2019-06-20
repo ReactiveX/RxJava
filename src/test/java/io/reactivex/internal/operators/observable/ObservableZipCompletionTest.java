@@ -21,6 +21,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 /**
  * Systematically tests that when zipping an infinite and a finite Observable,

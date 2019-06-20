@@ -14,10 +14,11 @@
 package io.reactivex.internal.subscriptions;
 
 import io.reactivex.annotations.Nullable;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import io.reactivex.TestHelper;
 
 public class QueueSubscriptionTest {
     static final class EmptyQS extends BasicQueueSubscription<Integer> {

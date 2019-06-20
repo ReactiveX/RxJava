@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class SingleOnErrorXTest {
 
@@ -34,14 +34,14 @@ public class SingleOnErrorXTest {
 
     @Test
     public void resumeThrows() {
-        TestObserver<Integer> to = Single.<Integer>error(new TestException("Outer"))
+        TestObserverEx<Integer> to = Single.<Integer>error(new TestException("Outer"))
         .onErrorReturn(new Function<Throwable, Integer>() {
             @Override
             public Integer apply(Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -54,7 +54,7 @@ public class SingleOnErrorXTest {
     public void resumeErrors() {
         Single.error(new TestException("Main"))
         .onErrorResumeNext(Single.error(new TestException("Resume")))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Resume");
     }
 

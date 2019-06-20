@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableWindowWithTimeTest {
 
@@ -217,9 +218,9 @@ public class FlowableWindowWithTimeTest {
         })
         .subscribe(ts);
 
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertComplete();
-        Assert.assertTrue(ts.valueCount() != 0);
+        Assert.assertTrue(ts.values().size() != 0);
     }
 
     @Test
@@ -549,7 +550,7 @@ public class FlowableWindowWithTimeTest {
     public void exactBoundaryError() {
         Flowable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .test()
+        .to(TestHelper.<Flowable<Object>>testConsumer())
         .assertSubscribed()
         .assertError(TestException.class)
         .assertNotComplete();
@@ -568,7 +569,7 @@ public class FlowableWindowWithTimeTest {
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
         .flatMap(Functions.<Flowable<Long>>identity())
         .take(500)
-        .test()
+        .to(TestHelper.<Long>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)

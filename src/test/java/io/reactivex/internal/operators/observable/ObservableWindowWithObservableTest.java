@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
@@ -33,6 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableWindowWithObservableTest {
 
@@ -439,10 +440,10 @@ public class ObservableWindowWithObservableTest {
 
     @Test
     public void boundaryOnError() {
-        TestObserver<Object> to = Observable.error(new TestException())
+        TestObserverEx<Object> to = Observable.error(new TestException())
         .window(Observable.never())
         .flatMap(Functions.<Observable<Object>>identity(), true)
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -673,7 +674,7 @@ public class ObservableWindowWithObservableTest {
         try {
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-            TestObserver<Observable<Object>> to = Observable.error(new TestException("main"))
+            TestObserverEx<Observable<Object>> to = Observable.error(new TestException("main"))
             .window(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
@@ -681,7 +682,7 @@ public class ObservableWindowWithObservableTest {
                     ref.set(observer);
                 }
             })
-            .test();
+            .to(TestHelper.<Observable<Object>>testConsumer());
 
             to
             .assertValueCount(1)
@@ -707,7 +708,7 @@ public class ObservableWindowWithObservableTest {
                 final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
                 final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-                TestObserver<Observable<Object>> to = new Observable<Object>() {
+                TestObserverEx<Observable<Object>> to = new Observable<Object>() {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
                         observer.onSubscribe(Disposables.empty());
@@ -721,7 +722,7 @@ public class ObservableWindowWithObservableTest {
                         ref.set(observer);
                     }
                 })
-                .test();
+                .to(TestHelper.<Observable<Object>>testConsumer());
 
                 Runnable r1 = new Runnable() {
                     @Override
@@ -800,7 +801,7 @@ public class ObservableWindowWithObservableTest {
         final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
         final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-        TestObserver<Observable<Object>> to = new Observable<Object>() {
+        TestObserverEx<Observable<Object>> to = new Observable<Object>() {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposables.empty());
@@ -814,11 +815,11 @@ public class ObservableWindowWithObservableTest {
                 ref.set(observer);
             }
         })
-        .test();
+        .to(TestHelper.<Observable<Object>>testConsumer());
 
         to.assertValueCount(1)
         .assertNotTerminated()
-        .cancel();
+        .dispose();
 
         ref.get().onNext(1);
 
@@ -866,7 +867,7 @@ public class ObservableWindowWithObservableTest {
              Runnable r1 = new Runnable() {
                  @Override
                  public void run() {
-                     to.cancel();
+                     to.dispose();
                  }
              };
              Runnable r2 = new Runnable() {
@@ -924,7 +925,7 @@ public class ObservableWindowWithObservableTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
             Runnable r2 = new Runnable() {
@@ -981,7 +982,7 @@ public class ObservableWindowWithObservableTest {
         try {
             final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-            TestObserver<Observable<Object>> to = Observable.error(new TestException("main"))
+            TestObserverEx<Observable<Object>> to = Observable.error(new TestException("main"))
             .window(Functions.justSupplier(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
@@ -989,7 +990,7 @@ public class ObservableWindowWithObservableTest {
                     ref.set(observer);
                 }
             }))
-            .test();
+            .to(TestHelper.<Observable<Object>>testConsumer());
 
             to
             .assertValueCount(1)
@@ -1015,7 +1016,7 @@ public class ObservableWindowWithObservableTest {
                 final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
                 final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-                TestObserver<Observable<Object>> to = new Observable<Object>() {
+                TestObserverEx<Observable<Object>> to = new Observable<Object>() {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
                         observer.onSubscribe(Disposables.empty());
@@ -1029,7 +1030,7 @@ public class ObservableWindowWithObservableTest {
                         ref.set(observer);
                     }
                 }))
-                .test();
+                .to(TestHelper.<Observable<Object>>testConsumer());
 
                 Runnable r1 = new Runnable() {
                     @Override
@@ -1108,7 +1109,7 @@ public class ObservableWindowWithObservableTest {
         final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
         final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
 
-        TestObserver<Observable<Object>> to = new Observable<Object>() {
+        TestObserverEx<Observable<Object>> to = new Observable<Object>() {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
                 observer.onSubscribe(Disposables.empty());
@@ -1122,11 +1123,11 @@ public class ObservableWindowWithObservableTest {
                 ref.set(observer);
             }
         }))
-        .test();
+        .to(TestHelper.<Observable<Object>>testConsumer());
 
         to.assertValueCount(1)
         .assertNotTerminated()
-        .cancel();
+        .dispose();
 
         ref.get().onNext(1);
 
@@ -1174,7 +1175,7 @@ public class ObservableWindowWithObservableTest {
              Runnable r1 = new Runnable() {
                  @Override
                  public void run() {
-                     to.cancel();
+                     to.dispose();
                  }
              };
              Runnable r2 = new Runnable() {
@@ -1243,7 +1244,7 @@ public class ObservableWindowWithObservableTest {
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        to.cancel();
+                        to.dispose();
                     }
                 };
                 Runnable r2 = new Runnable() {

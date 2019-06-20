@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -27,6 +28,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableTakeLastTest {
 
@@ -107,7 +109,7 @@ public class ObservableTakeLastTest {
         Observable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertValue(100000);
     }
@@ -117,9 +119,9 @@ public class ObservableTakeLastTest {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 4, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 4, to.values().size());
     }
 
     private Function<Integer, Integer> newSlowProcessor() {

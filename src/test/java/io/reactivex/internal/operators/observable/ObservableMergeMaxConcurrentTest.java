@@ -21,13 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class ObservableMergeMaxConcurrentTest {
 
@@ -157,7 +158,7 @@ public class ObservableMergeMaxConcurrentTest {
     @Test
     public void testSimple() {
         for (int i = 1; i < 100; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
@@ -176,7 +177,7 @@ public class ObservableMergeMaxConcurrentTest {
     @Test
     public void testSimpleOneLess() {
         for (int i = 2; i < 100; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
             for (int j = 1; j <= i; j++) {
@@ -218,7 +219,7 @@ public class ObservableMergeMaxConcurrentTest {
 
             Observable.merge(sourceList, i).subscribe(to);
 
-            to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            to.awaitDone(1, TimeUnit.SECONDS);
             to.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(to.values());
 
@@ -250,7 +251,7 @@ public class ObservableMergeMaxConcurrentTest {
 
             Observable.merge(sourceList, i - 1).subscribe(to);
 
-            to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            to.awaitDone(1, TimeUnit.SECONDS);
             to.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(to.values());
 
@@ -270,7 +271,7 @@ public class ObservableMergeMaxConcurrentTest {
 
         Observable.merge(sourceList, 2).take(5).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertValueCount(5);
     }

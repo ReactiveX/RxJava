@@ -27,6 +27,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSkipLastTimedTest {
 
@@ -210,7 +211,7 @@ public class ObservableSkipLastTimedTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

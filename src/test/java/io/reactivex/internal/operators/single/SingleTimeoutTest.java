@@ -29,6 +29,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleTimeoutTest {
 
@@ -111,7 +112,7 @@ public class SingleTimeoutTest {
         assertFalse(subj.hasObservers());
         assertTrue(fallback.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(fallback.hasObservers());
     }
@@ -217,7 +218,7 @@ public class SingleTimeoutTest {
         Single
                 .never()
                 .timeout(1, TimeUnit.NANOSECONDS)
-                .test()
+                .to(TestHelper.<Object>testConsumer())
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertFailureAndMessage(TimeoutException.class, timeoutMessage(1, TimeUnit.NANOSECONDS));
     }

@@ -23,6 +23,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableMergeWithCompletableTest {
 

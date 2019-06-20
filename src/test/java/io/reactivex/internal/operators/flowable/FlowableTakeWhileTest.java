@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -30,6 +30,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableTakeWhileTest {
 
@@ -268,7 +269,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testErrorCauseIncludesLastValue() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {

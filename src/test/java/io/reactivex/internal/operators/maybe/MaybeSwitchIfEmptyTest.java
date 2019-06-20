@@ -22,6 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeSwitchIfEmptyTest {
 
@@ -71,7 +72,7 @@ public class MaybeSwitchIfEmptyTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -110,7 +111,7 @@ public class MaybeSwitchIfEmptyTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

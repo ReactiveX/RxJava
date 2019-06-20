@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -21,6 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -33,8 +35,7 @@ import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
-
-import org.mockito.Mockito;
+import io.reactivex.testsupport.*;
 
 public class ObservableGroupByTest {
 
@@ -1051,7 +1052,7 @@ public class ObservableGroupByTest {
                     }
 
                 }).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 
@@ -1153,7 +1154,7 @@ public class ObservableGroupByTest {
 
         TestObserver<String> to = new TestObserver<String>();
         m.subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("ts .get " + to.values());
         to.assertNoErrors();
         assertEquals(to.values(),
@@ -1167,10 +1168,10 @@ public class ObservableGroupByTest {
 
         Observable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         m.subscribe(to);
-        to.awaitTerminalEvent();
-        assertEquals(1, to.errorCount());
+        to.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, to.errors().size());
         to.assertNoValues();
     }
 
@@ -1179,10 +1180,10 @@ public class ObservableGroupByTest {
         Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Observable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         m.subscribe(to);
-        to.awaitTerminalEvent();
-        assertEquals(1, to.errorCount());
+        to.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, to.errors().size());
         to.assertNoValues();
 
     }
@@ -1195,7 +1196,7 @@ public class ObservableGroupByTest {
 
         TestObserver<Object> to = new TestObserver<Object>();
         m.subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         System.out.println(to.values());
     }
@@ -1236,10 +1237,10 @@ public class ObservableGroupByTest {
 
         Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         m.subscribe(to);
-        to.awaitTerminalEvent();
-        assertEquals(1, to.errorCount());
+        to.awaitDone(5, TimeUnit.SECONDS);
+        assertEquals(1, to.errors().size());
         to.assertValueCount(1);
     }
 
@@ -1295,7 +1296,7 @@ public class ObservableGroupByTest {
             }
 
         }).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 
@@ -1327,7 +1328,7 @@ public class ObservableGroupByTest {
             }
 
         }).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 
@@ -1397,11 +1398,11 @@ public class ObservableGroupByTest {
     @Test
     public void testGroupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
-        final TestObserver<Integer> inner1 = new TestObserver<Integer>();
-        final TestObserver<Integer> inner2 = new TestObserver<Integer>();
+        final TestObserverEx<Integer> inner1 = new TestObserverEx<Integer>();
+        final TestObserverEx<Integer> inner2 = new TestObserverEx<Integer>();
 
-        final TestObserver<GroupedObservable<Integer, Integer>> outer
-                = new TestObserver<GroupedObservable<Integer, Integer>>(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
+        final TestObserverEx<GroupedObservable<Integer, Integer>> outer
+                = new TestObserverEx<GroupedObservable<Integer, Integer>>(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {
@@ -1511,7 +1512,7 @@ public class ObservableGroupByTest {
     public void reentrantCompleteCancel() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);

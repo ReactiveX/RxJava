@@ -23,7 +23,7 @@ import org.reactivestreams.Publisher;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class SingleFlatMapTest {
 
@@ -167,7 +167,7 @@ public class SingleFlatMapTest {
     @Test
     public void flatMapPublisherCancelDuringSingle() {
         final AtomicBoolean disposed = new AtomicBoolean();
-        TestSubscriber<Integer> ts = Single.<Integer>never()
+        TestSubscriberEx<Integer> ts = Single.<Integer>never()
         .doOnDispose(new Action() {
             @Override
             public void run() throws Exception {
@@ -180,7 +180,7 @@ public class SingleFlatMapTest {
                 return Flowable.range(v, 5);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
@@ -192,7 +192,7 @@ public class SingleFlatMapTest {
     @Test
     public void flatMapPublisherCancelDuringFlowable() {
         final AtomicBoolean disposed = new AtomicBoolean();
-        TestSubscriber<Integer> ts =
+        TestSubscriberEx<Integer> ts =
         Single.just(1)
         .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -206,7 +206,7 @@ public class SingleFlatMapTest {
                         });
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
@@ -258,7 +258,7 @@ public class SingleFlatMapTest {
                 return null;
             }
         })
-            .test()
+        .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The single returned by the mapper is null");
@@ -271,7 +271,7 @@ public class SingleFlatMapTest {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");

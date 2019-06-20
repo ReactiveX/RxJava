@@ -26,6 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableTakeLastTimedTest {
 
@@ -244,7 +245,7 @@ public class ObservableTakeLastTimedTest {
         .takeLast(1, TimeUnit.DAYS)
         .take(500)
         .observeOn(Schedulers.single(), true, 1)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -269,7 +270,7 @@ public class ObservableTakeLastTimedTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

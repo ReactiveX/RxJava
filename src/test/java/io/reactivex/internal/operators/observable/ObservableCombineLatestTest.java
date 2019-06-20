@@ -35,6 +35,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableCombineLatestTest {
 
@@ -883,7 +884,7 @@ public class ObservableCombineLatestTest {
                 .doOnNext(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer v) throws Exception {
-                        to.cancel();
+                        to.dispose();
                     }
                 }),
                 Observable.never(),
@@ -969,12 +970,12 @@ public class ObservableCombineLatestTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                TestObserverEx<Integer> to = Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -994,7 +995,7 @@ public class ObservableCombineLatestTest {
 
                 TestHelper.race(r1, r2);
 
-                if (to.errorCount() != 0) {
+                if (to.errors().size() != 0) {
                     if (to.errors().get(0) instanceof CompositeException) {
                         to.assertSubscribed()
                         .assertNotComplete()
@@ -1157,7 +1158,7 @@ public class ObservableCombineLatestTest {
 
             testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-            testObserver.awaitTerminalEvent();
+            testObserver.awaitDone(5, TimeUnit.SECONDS);
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -1174,7 +1175,7 @@ public class ObservableCombineLatestTest {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                cancel();
+                dispose();
                 if (ps1.hasObservers()) {
                     onError(new IllegalStateException("ps1 not disposed"));
                 } else

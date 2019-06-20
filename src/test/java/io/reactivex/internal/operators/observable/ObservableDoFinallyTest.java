@@ -21,15 +21,14 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableDoFinallyTest implements Action {
 
@@ -99,13 +98,13 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void syncFused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doFinally(this)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
+        to.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -113,13 +112,13 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedBoundary() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .doFinally(this)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -127,7 +126,7 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void asyncFused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -136,7 +135,7 @@ public class ObservableDoFinallyTest implements Action {
         .doFinally(this)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -144,7 +143,7 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedBoundary() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -153,7 +152,7 @@ public class ObservableDoFinallyTest implements Action {
         .doFinally(this)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -206,14 +205,14 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
+        to.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -221,13 +220,13 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void nonFused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .doFinally(this)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -235,14 +234,14 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void nonFusedConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -250,14 +249,14 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedBoundaryConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -265,7 +264,7 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -275,7 +274,7 @@ public class ObservableDoFinallyTest implements Action {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
+        to.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -283,7 +282,7 @@ public class ObservableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedBoundaryConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -293,7 +292,7 @@ public class ObservableDoFinallyTest implements Action {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -317,7 +316,7 @@ public class ObservableDoFinallyTest implements Action {
             })
             .test()
             .assertResult(1)
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -339,7 +338,7 @@ public class ObservableDoFinallyTest implements Action {
             .filter(Functions.alwaysTrue())
             .test()
             .assertResult(1)
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {

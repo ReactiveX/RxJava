@@ -13,14 +13,13 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -67,8 +66,8 @@ public class SingleFromCallableTest {
                 return null;
             }
         })
-            .test()
-            .assertFailureAndMessage(NullPointerException.class, "The callable returned a null value");
+        .to(TestHelper.<Integer>testConsumer())
+        .assertFailureAndMessage(NullPointerException.class, "The callable returned a null value");
     }
 
     @Test
@@ -129,7 +128,7 @@ public class SingleFromCallableTest {
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
-            to.cancel();
+            to.dispose();
 
             int timeout = 10;
 
@@ -183,7 +182,7 @@ public class SingleFromCallableTest {
         observerLatch.await();
 
         // Unsubscribing before emission
-        outer.cancel();
+        outer.dispose();
 
         // Emitting result
         funcLatch.countDown();
@@ -239,7 +238,7 @@ public class SingleFromCallableTest {
         Single.fromCallable(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-                to.cancel();
+                to.dispose();
                 return 1;
             }
         })

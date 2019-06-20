@@ -24,12 +24,12 @@ import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -158,7 +158,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("one");
         processor.onNext("two");
 
-        ts.dispose();
+        ts.cancel();
 
         verify(subscriber, Mockito.never()).onNext(anyString());
         verify(subscriber, Mockito.never()).onError(any(Throwable.class));
@@ -391,13 +391,13 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void fusionLive() {
         AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC);
 
         ts.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -416,13 +416,13 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1);
     }
 
@@ -491,7 +491,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AsyncProcessor<Object> p = AsyncProcessor.create();
 
-            final TestSubscriber<Object> ts1 = p.test();
+            final TestSubscriberEx<Object> ts1 = p.to(TestHelper.<Object>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -511,7 +511,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errorCount() != 0) {
+            if (ts1.errors().size() != 0) {
                 ts1.assertFailure(TestException.class);
             } else {
                 ts1.assertEmpty();

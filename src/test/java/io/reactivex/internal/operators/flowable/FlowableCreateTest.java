@@ -16,9 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -29,7 +27,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableCreateTest {
 
@@ -702,8 +700,9 @@ public class FlowableCreateTest {
                     TestHelper.race(r1, r2);
                 }
             }, m)
-            .test()
-            .assertSubscribed().assertNotComplete()
+            .to(TestHelper.<Object>testConsumer())
+            .assertSubscribed()
+            .assertNotComplete()
             .assertError(TestException.class);
         }
     }
@@ -917,15 +916,18 @@ public class FlowableCreateTest {
                 }
             }, m)
             .take(TestHelper.RACE_DEFAULT_LOOPS)
-            .test()
-            .assertSubscribed().assertValueCount(TestHelper.RACE_DEFAULT_LOOPS).assertComplete().assertNoErrors();
+            .to(TestHelper.<Object>testConsumer())
+            .assertSubscribed()
+            .assertValueCount(TestHelper.RACE_DEFAULT_LOOPS)
+            .assertComplete()
+            .assertNoErrors();
         }
     }
 
     @Test
     public void serializedConcurrentOnNextOnComplete() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
+            TestSubscriberEx<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
                     final FlowableEmitter<Object> f = e.serialize();
@@ -952,11 +954,12 @@ public class FlowableCreateTest {
                     TestHelper.race(r1, r2);
                 }
             }, m)
-            .test()
-            .assertSubscribed().assertComplete()
+            .to(TestHelper.<Object>testConsumer())
+            .assertSubscribed()
+            .assertComplete()
             .assertNoErrors();
 
-            int c = ts.valueCount();
+            int c = ts.values().size();
             assertTrue("" + c, c >= 100);
         }
     }

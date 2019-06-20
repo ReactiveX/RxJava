@@ -35,6 +35,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableAmbTest {
 
@@ -179,7 +180,7 @@ public class ObservableAmbTest {
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.ambArray(o1, o2).subscribe(to);
-        to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(2, count.get());
     }
@@ -277,7 +278,7 @@ public class ObservableAmbTest {
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
             @SuppressWarnings("unchecked")
-            TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
+            TestObserverEx<Integer> to = Observable.ambArray(ps1, ps2).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -294,8 +295,10 @@ public class ObservableAmbTest {
 
             TestHelper.race(r1, r2);
 
-            to.assertSubscribed().assertNoErrors()
-            .assertNotComplete().assertValueCount(1);
+            to.assertSubscribed()
+            .assertNoErrors()
+            .assertNotComplete()
+            .assertValueCount(1);
         }
     }
 

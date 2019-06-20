@@ -30,6 +30,7 @@ import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableConcatMapSingleTest {
 
@@ -146,7 +147,7 @@ public class ObservableConcatMapSingleTest {
         .assertValues(1, 2, 3, 4, 5)
         .assertNoErrors()
         .assertNotComplete()
-        .cancel();
+        .dispose();
     }
 
     @Test
@@ -164,7 +165,7 @@ public class ObservableConcatMapSingleTest {
             .concatMapSingle(
                     Functions.justFunction(Single.error(new TestException("inner"))), 1
             )
-            .test()
+            .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -181,7 +182,7 @@ public class ObservableConcatMapSingleTest {
 
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestObserver<Integer> to = ps.concatMapSingle(
+            TestObserverEx<Integer> to = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
                         @Override
                         public SingleSource<Integer> apply(Integer v)
@@ -196,7 +197,7 @@ public class ObservableConcatMapSingleTest {
                             };
                         }
                     }
-            ).test();
+            ).to(TestHelper.<Integer>testConsumer());
 
             ps.onNext(1);
 
@@ -213,7 +214,7 @@ public class ObservableConcatMapSingleTest {
 
     @Test
     public void delayAllErrors() {
-        Observable.range(1, 5)
+        TestObserverEx<Object> to = Observable.range(1, 5)
         .concatMapSingleDelayError(new Function<Integer, SingleSource<? extends Object>>() {
             @Override
             public SingleSource<? extends Object> apply(Integer v)
@@ -221,15 +222,12 @@ public class ObservableConcatMapSingleTest {
                 return Single.error(new TestException());
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestObserver<Object>>() {
-            @Override
-            public void accept(TestObserver<Object> to) throws Exception {
-                CompositeException ce = (CompositeException)to.errors().get(0);
-                assertEquals(5, ce.getExceptions().size());
-            }
-        });
+        ;
+
+        CompositeException ce = (CompositeException)to.errors().get(0);
+        assertEquals(5, ce.getExceptions().size());
     }
 
     @Test
@@ -326,7 +324,7 @@ public class ObservableConcatMapSingleTest {
 
         operator.getAndIncrement();
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(operator.queue.isEmpty());
 

@@ -23,6 +23,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableFromArrayTest {
 

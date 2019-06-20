@@ -34,6 +34,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableFromCallableTest {
 
@@ -130,7 +131,7 @@ public class ObservableFromCallableTest {
         observerLatch.await();
 
         // Unsubscribing before emission
-        outer.cancel();
+        outer.dispose();
 
         // Emitting result
         funcLatch.countDown();
@@ -266,7 +267,7 @@ public class ObservableFromCallableTest {
         Observable.fromCallable(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-                to.cancel();
+                to.dispose();
                 return 1;
             }
         })
@@ -284,7 +285,7 @@ public class ObservableFromCallableTest {
             Observable.fromCallable(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
-                    to.cancel();
+                    to.dispose();
                     throw new TestException();
                 }
             })

@@ -21,6 +21,8 @@ import io.reactivex.internal.operators.flowable.FlowableInternalHelper;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 import org.reactivestreams.*;
 

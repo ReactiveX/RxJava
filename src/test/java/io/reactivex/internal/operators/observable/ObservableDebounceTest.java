@@ -35,6 +35,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableDebounceTest {
 
@@ -287,7 +288,8 @@ public class ObservableDebounceTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestObserver<Integer> observer = new TestObserver<Integer>();
+        TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+
         Observable.merge(
                 Observable.just(1),
                 Observable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
@@ -399,7 +401,7 @@ public class ObservableDebounceTest {
         .debounce(new Function<Integer, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> apply(Integer o) throws Exception {
-                to.cancel();
+                to.dispose();
                 return Observable.never();
             }
         })
@@ -417,7 +419,7 @@ public class ObservableDebounceTest {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onComplete();
             }
         }
@@ -474,7 +476,7 @@ public class ObservableDebounceTest {
             protected void subscribeActual(
                     Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onNext(1);
                 observer.onComplete();
             }

@@ -25,6 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeTakeUntilPublisherTest {
 

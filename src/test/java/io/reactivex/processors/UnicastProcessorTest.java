@@ -20,13 +20,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -39,13 +40,13 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void fusionLive() {
         UnicastProcessor<Integer> ap = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC);
 
         ts.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -64,13 +65,13 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1);
     }
 
@@ -95,7 +96,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onError(new RuntimeException());
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         ap.subscribe(ts);
         ts
@@ -263,11 +264,11 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void rejectSyncFusion() {
         UnicastProcessor<Object> p = UnicastProcessor.create();
 
-        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.SYNC);
 
         p.subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE);
+        ts.assertFusionMode(QueueFuseable.NONE);
     }
 
     @Test
@@ -297,7 +298,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Object> p = UnicastProcessor.create();
 
-            final TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+            final TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
 
             p.subscribe(ts);
 
@@ -324,8 +325,8 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Integer> us = UnicastProcessor.create();
 
-            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -343,10 +344,10 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errorCount() == 0) {
+            if (ts1.errors().size() == 0) {
                 ts2.assertFailure(IllegalStateException.class);
             } else
-            if (ts2.errorCount() == 0) {
+            if (ts2.errors().size() == 0) {
                 ts1.assertFailure(IllegalStateException.class);
             } else {
                 fail("Neither TestObserver failed");
@@ -373,7 +374,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void drainFusedFailFast() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = us.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
 
         us.done = true;
         us.drainFused(ts);
@@ -385,7 +386,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void drainFusedFailFastEmpty() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = us.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
 
         us.drainFused(ts);
 
@@ -396,7 +397,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void checkTerminatedFailFastEmpty() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
+        TestSubscriberEx<Integer> ts = us.to(TestHelper.<Integer>testSubscriber(1, QueueFuseable.ANY, false));
 
         us.checkTerminated(true, true, false, ts, us.queue);
 

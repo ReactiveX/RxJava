@@ -18,6 +18,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeMapTest {
 

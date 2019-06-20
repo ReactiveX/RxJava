@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableResumeNextTest {
 
@@ -26,7 +27,7 @@ public class CompletableResumeNextTest {
     public void resumeWithError() {
         Completable.error(new TestException())
         .onErrorResumeNext(Functions.justFunction(Completable.error(new TestException("second"))))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "second");
     }
 

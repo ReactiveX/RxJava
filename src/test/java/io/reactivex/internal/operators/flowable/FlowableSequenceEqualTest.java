@@ -32,6 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSequenceEqualTest {
 
@@ -320,7 +321,7 @@ public class FlowableSequenceEqualTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -474,7 +475,7 @@ public class FlowableSequenceEqualTest {
                 }
             }, 8)
             .toFlowable()
-            .test()
+            .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -537,7 +538,7 @@ public class FlowableSequenceEqualTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -574,7 +575,7 @@ public class FlowableSequenceEqualTest {
                     s.onError(new TestException("Second"));
                 }
             }, 8)
-            .test()
+            .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

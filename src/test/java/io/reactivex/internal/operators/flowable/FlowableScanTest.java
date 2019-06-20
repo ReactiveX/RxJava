@@ -14,17 +14,17 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowable.*;
 import io.reactivex.flowable.FlowableEventStream.Event;
@@ -32,6 +32,7 @@ import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableScanTest {
 
@@ -314,7 +315,7 @@ public class FlowableScanTest {
             }
 
         }).take(1);
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>();
         f.subscribe(subscriber);
         subscriber.assertValue(0);
         subscriber.assertTerminated();

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableWithLatestFromTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
@@ -89,7 +90,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         result.subscribe(ts);
 
@@ -115,7 +116,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         result.subscribe(ts);
 
@@ -151,7 +152,7 @@ public class FlowableWithLatestFromTest {
         other.onNext(1);
         source.onNext(1);
 
-        ts.dispose();
+        ts.cancel();
 
         ts.assertValue((1 << 8) + 1);
         ts.assertNoErrors();
@@ -168,7 +169,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         result.subscribe(ts);
 
@@ -196,7 +197,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         result.subscribe(ts);
 
@@ -224,7 +225,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER_ERROR);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         result.subscribe(ts);
 
@@ -297,7 +298,7 @@ public class FlowableWithLatestFromTest {
                 (6 << 8) + 1, (7 << 8) + 1
         );
 
-        ts.dispose();
+        ts.cancel();
 
         assertFalse("Other has observers!", other.hasSubscribers());
 
@@ -619,7 +620,7 @@ public class FlowableWithLatestFromTest {
                 return a;
             }
         })
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -654,7 +655,7 @@ public class FlowableWithLatestFromTest {
                     return a;
                 }
             })
-            .test()
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -681,7 +682,7 @@ public class FlowableWithLatestFromTest {
                     return a + b;
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -721,7 +722,7 @@ public class FlowableWithLatestFromTest {
     public void zeroOtherCombinerReturnsNull() {
         Flowable.just(1)
         .withLatestFrom(new Flowable[0], Functions.justFunction(null))
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 

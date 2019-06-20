@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeCountTest {
 
@@ -49,7 +50,7 @@ public class MaybeCountTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }

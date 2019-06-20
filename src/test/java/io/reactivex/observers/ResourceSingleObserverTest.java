@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

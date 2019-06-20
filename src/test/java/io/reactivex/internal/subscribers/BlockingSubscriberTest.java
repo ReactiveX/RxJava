@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.testsupport.TestHelper;
 
 public class BlockingSubscriberTest {
 

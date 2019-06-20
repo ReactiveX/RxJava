@@ -22,6 +22,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleMergeTest {
 
@@ -62,7 +63,7 @@ public class SingleMergeTest {
             Single<Integer> source2 = Single.error(new TestException("Second"));
 
             Single.merge(source1, source2)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());

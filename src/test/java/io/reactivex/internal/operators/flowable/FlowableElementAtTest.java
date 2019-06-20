@@ -29,6 +29,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableElementAtTest {
 
@@ -140,7 +141,7 @@ public class FlowableElementAtTest {
     public void elementAtOrErrorError() {
         Flowable.error(new RuntimeException("error"))
             .elementAtOrError(0)
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

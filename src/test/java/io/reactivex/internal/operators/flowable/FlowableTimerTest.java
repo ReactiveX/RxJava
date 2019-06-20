@@ -32,6 +32,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableTimerTest {
     @Mock
@@ -79,7 +80,7 @@ public class FlowableTimerTest {
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         ts.assertValues(0L, 1L, 2L, 3L);
 
-        ts.dispose();
+        ts.cancel();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         ts.assertValues(0L, 1L, 2L, 3L);
 
@@ -103,7 +104,7 @@ public class FlowableTimerTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
-        ts.dispose();
+        ts.cancel();
 
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
         ts.assertValues(0L, 1L);
@@ -134,8 +135,8 @@ public class FlowableTimerTest {
         ts2.assertNoErrors();
         ts2.assertNotComplete();
 
-        ts1.dispose();
-        ts2.dispose();
+        ts1.cancel();
+        ts2.cancel();
 
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
 
@@ -176,8 +177,8 @@ public class FlowableTimerTest {
 
         ts2.assertValues(0L, 1L);
 
-        ts1.dispose();
-        ts2.dispose();
+        ts1.cancel();
+        ts2.cancel();
 
         ts1.assertValues(0L, 1L, 2L, 3L);
         ts1.assertNoErrors();
@@ -216,8 +217,8 @@ public class FlowableTimerTest {
 
         ts2.assertValues(2L, 3L);
 
-        ts1.dispose();
-        ts2.dispose();
+        ts1.cancel();
+        ts2.cancel();
 
         ts1.assertValues(0L, 1L, 2L, 3L);
         ts1.assertNoErrors();

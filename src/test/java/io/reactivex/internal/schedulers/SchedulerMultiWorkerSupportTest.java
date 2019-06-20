@@ -21,10 +21,10 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallback;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class SchedulerMultiWorkerSupportTest {
 

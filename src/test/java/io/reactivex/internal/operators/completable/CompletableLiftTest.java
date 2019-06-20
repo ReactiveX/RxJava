@@ -20,6 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableLiftTest {
 

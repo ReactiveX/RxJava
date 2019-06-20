@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
@@ -27,10 +27,11 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableFlatMapCompletableTest {
 
@@ -134,14 +135,14 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void normalDelayErrorAllFlowable() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true, Integer.MAX_VALUE).<Integer>toFlowable()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -153,14 +154,14 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void normalDelayInnerErrorAllFlowable() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true, Integer.MAX_VALUE).<Integer>toFlowable()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -185,7 +186,7 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void fusedFlowable() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -197,8 +198,8 @@ public class FlowableFlatMapCompletableTest {
         .subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult();
     }
 
@@ -288,14 +289,14 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestObserver<Void> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestObserverEx<Void> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -307,14 +308,14 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void normalDelayInnerErrorAll() {
-        TestObserver<Void> to = Flowable.range(1, 10)
+        TestObserverEx<Void> to = Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return Completable.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -339,7 +340,7 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -352,8 +353,8 @@ public class FlowableFlatMapCompletableTest {
         .subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult();
     }
 

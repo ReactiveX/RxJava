@@ -25,6 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableThrottleLatestTest {
 

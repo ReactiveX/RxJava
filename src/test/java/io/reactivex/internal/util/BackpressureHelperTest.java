@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.*;
 
-import io.reactivex.TestHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class BackpressureHelperTest {
     @Ignore("BackpressureHelper is an enum")

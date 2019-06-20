@@ -20,6 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleEqualsTest {
 
@@ -28,7 +29,7 @@ public class SingleEqualsTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Single.equals(Single.error(new TestException("One")), Single.error(new TestException("Two")))
-            .test()
+            .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "One");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");

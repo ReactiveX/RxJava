@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -27,6 +28,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSkipLastTest {
 
@@ -98,9 +100,9 @@ public class ObservableSkipLastTest {
         Observable<Integer> o = Observable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
         TestObserver<Integer> to = new TestObserver<Integer>();
         o.observeOn(Schedulers.computation()).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals((Flowable.bufferSize()) - 10, to.valueCount());
+        assertEquals((Flowable.bufferSize()) - 10, to.values().size());
 
     }
 

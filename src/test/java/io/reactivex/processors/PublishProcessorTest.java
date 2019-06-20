@@ -30,6 +30,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -82,7 +83,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         inOrderA.verify(observerA).onNext(42);
         inOrderB.verify(observerB).onNext(42);
 
-        ts.dispose();
+        ts.cancel();
         inOrderA.verifyNoMoreInteractions();
 
         channel.onNext(4711);
@@ -183,7 +184,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("one");
         processor.onNext("two");
 
-        ts.dispose();
+        ts.cancel();
         assertObservedUntilTwo(subscriber);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
@@ -275,7 +276,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         inOrder1.verifyNoMoreInteractions();
 
         // unsubscribe
-        ts.dispose();
+        ts.cancel();
 
         // emit again but nothing will be there to receive it
         pp.onNext(2);
@@ -292,7 +293,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         inOrder2.verify(subscriber2, times(1)).onNext(3);
         inOrder2.verifyNoMoreInteractions();
 
-        ts2.dispose();
+        ts2.cancel();
     }
 
     private final Throwable testException = new Throwable();
@@ -704,7 +705,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() > 0) {
+            if (ts.values().size() > 0) {
                 ts.assertValuesOnly(0);
             } else {
                 ts.assertEmpty();

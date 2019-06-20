@@ -27,6 +27,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableThrottleFirstTest {
 

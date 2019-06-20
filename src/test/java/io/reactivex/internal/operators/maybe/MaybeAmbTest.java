@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeAmbTest {
 
@@ -131,7 +132,7 @@ public class MaybeAmbTest {
         }, Maybe.<Integer>never())
         .test();
 
-        to.cancel();
+        to.dispose();
 
         to.assertResult(1);
     }

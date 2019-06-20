@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableTimerTest {
 
@@ -53,7 +54,7 @@ public class CompletableTimerTest {
 
                 Thread.sleep(500);
 
-                to.cancel();
+                to.dispose();
 
                 Thread.sleep(500);
 

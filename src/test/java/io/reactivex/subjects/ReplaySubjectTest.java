@@ -32,6 +32,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.ReplaySubject.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ReplaySubjectTest extends SubjectTest<Integer> {
 
@@ -881,7 +882,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         assertTrue(rp.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(rp.hasObservers());
     }
@@ -999,7 +1000,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -1059,14 +1060,14 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to2.cancel();
+                    to2.dispose();
                 }
             };
 

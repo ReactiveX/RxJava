@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Action;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompositeDisposableTest {
 

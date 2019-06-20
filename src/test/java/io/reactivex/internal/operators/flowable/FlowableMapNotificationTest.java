@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -24,6 +24,7 @@ import io.reactivex.internal.operators.flowable.FlowableMapNotification.MapNotif
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableMapNotificationTest {
     @Test
@@ -179,7 +180,7 @@ public class FlowableMapNotificationTest {
 
     @Test
     public void onErrorCrash() {
-        TestSubscriber<Integer> ts = Flowable.<Integer>error(new TestException("Outer"))
+        TestSubscriberEx<Integer> ts = Flowable.<Integer>error(new TestException("Outer"))
         .flatMap(Functions.justFunction(Flowable.just(1)),
                 new Function<Throwable, Publisher<Integer>>() {
                     @Override
@@ -188,7 +189,7 @@ public class FlowableMapNotificationTest {
                     }
                 },
                 Functions.justSupplier(Flowable.just(3)))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertError(ts, 0, TestException.class, "Outer");

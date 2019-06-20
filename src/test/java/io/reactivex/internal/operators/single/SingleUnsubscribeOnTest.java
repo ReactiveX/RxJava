@@ -25,6 +25,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleUnsubscribeOnTest {
 

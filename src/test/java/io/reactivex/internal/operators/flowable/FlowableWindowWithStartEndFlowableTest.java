@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableWindowWithStartEndFlowableTest {
 
@@ -253,7 +254,7 @@ public class FlowableWindowWithStartEndFlowableTest {
         assertTrue(open.hasSubscribers());
         assertTrue(close.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         // Disposing the outer sequence stops the opening of new windows
         assertFalse(open.hasSubscribers());
@@ -455,11 +456,11 @@ public class FlowableWindowWithStartEndFlowableTest {
                 return flowableDisposed(closeDisposed);
             }
         })
-        .test()
+        .to(TestHelper.<Flowable<Integer>>testConsumer())
         .assertSubscribed()
         .assertNoErrors()
         .assertNotComplete()
-        .dispose();
+        .cancel();
 
         assertTrue(mainDisposed.get());
         assertTrue(openDisposed.get());

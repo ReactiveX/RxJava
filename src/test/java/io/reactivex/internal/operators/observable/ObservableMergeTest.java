@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -32,6 +33,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableMergeTest {
 
@@ -192,7 +194,7 @@ public class ObservableMergeTest {
         TestObserver<String> to = new TestObserver<String>(stringObserver);
         m.subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -339,7 +341,7 @@ public class ObservableMergeTest {
     @Test
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable<String> o1 = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -350,7 +352,7 @@ public class ObservableMergeTest {
         });
 
         Observable.merge(o1, o1).subscribe(to);
-        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        to.awaitDone(1000, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         System.out.println("Error: " + to.errors());
     }
@@ -425,7 +427,7 @@ public class ObservableMergeTest {
         AtomicBoolean os2 = new AtomicBoolean(false);
         Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<Long>();
         Observable.merge(o1, o2).subscribe(to);
 
         // we haven't incremented time so nothing should be received yet
@@ -540,10 +542,10 @@ public class ObservableMergeTest {
 
         for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o, o, o);
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             merge.subscribe(to);
 
-            to.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            to.awaitDone(3, TimeUnit.SECONDS);
             to.assertTerminated();
             to.assertNoErrors();
             to.assertComplete();
@@ -596,7 +598,7 @@ public class ObservableMergeTest {
             TestObserver<Integer> to = new TestObserver<Integer>();
             merge.subscribe(to);
 
-            to.awaitTerminalEvent();
+            to.awaitDone(5, TimeUnit.SECONDS);
             to.assertComplete();
             List<Integer> onNextEvents = to.values();
             assertEquals(300, onNextEvents.size());
@@ -643,7 +645,7 @@ public class ObservableMergeTest {
             TestObserver<Integer> to = new TestObserver<Integer>();
             merge.subscribe(to);
 
-            to.awaitTerminalEvent();
+            to.awaitDone(5, TimeUnit.SECONDS);
             to.assertNoErrors();
             to.assertComplete();
             List<Integer> onNextEvents = to.values();
@@ -659,7 +661,7 @@ public class ObservableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> testObserver = new TestObserver<Integer>() {
+        TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
@@ -668,7 +670,7 @@ public class ObservableMergeTest {
         };
 
         Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).subscribe(testObserver);
-        testObserver.awaitTerminalEvent();
+        testObserver.awaitDone(5, TimeUnit.SECONDS);
         if (testObserver.errors().size() > 0) {
             testObserver.errors().get(0).printStackTrace();
         }
@@ -697,7 +699,7 @@ public class ObservableMergeTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> testObserver = new TestObserver<Integer>() {
+        TestObserverEx<Integer> testObserver = new TestObserverEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -705,7 +707,7 @@ public class ObservableMergeTest {
         };
 
         Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(testObserver);
-        testObserver.awaitTerminalEvent();
+        testObserver.awaitDone(5, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testObserver.values();
 
@@ -734,7 +736,7 @@ public class ObservableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -751,7 +753,7 @@ public class ObservableMergeTest {
         };
 
         Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         if (to.errors().size() > 0) {
             to.errors().get(0).printStackTrace();
         }
@@ -788,7 +790,7 @@ public class ObservableMergeTest {
 
         });
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
             int i;
 
             @Override
@@ -807,7 +809,7 @@ public class ObservableMergeTest {
         };
 
         Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         if (to.errors().size() > 0) {
             to.errors().get(0).printStackTrace();
         }
@@ -825,7 +827,7 @@ public class ObservableMergeTest {
     @Ignore("Null values not permitted")
     public void mergeWithNullValues() {
         System.out.println("mergeWithNullValues");
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.merge(Observable.just(null, "one"), Observable.just("two", null)).subscribe(to);
         to.assertTerminated();
         to.assertNoErrors();
@@ -866,7 +868,7 @@ public class ObservableMergeTest {
     public void merge1AsyncStreamOf1() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(1, 1).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1, to.values().size());
     }
@@ -875,7 +877,7 @@ public class ObservableMergeTest {
     public void merge1AsyncStreamOf1000() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(1, 1000).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1000, to.values().size());
     }
@@ -884,7 +886,7 @@ public class ObservableMergeTest {
     public void merge10AsyncStreamOf1000() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(10, 1000).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(10000, to.values().size());
     }
@@ -893,7 +895,7 @@ public class ObservableMergeTest {
     public void merge1000AsyncStreamOf1000() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(1000, 1000).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1000000, to.values().size());
     }
@@ -902,7 +904,7 @@ public class ObservableMergeTest {
     public void merge2000AsyncStreamOf100() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(2000, 100).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(200000, to.values().size());
     }
@@ -911,7 +913,7 @@ public class ObservableMergeTest {
     public void merge100AsyncStreamOf1() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNAsyncStreamsOfN(100, 1).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(100, to.values().size());
     }
@@ -933,7 +935,7 @@ public class ObservableMergeTest {
     public void merge1SyncStreamOf1() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNSyncStreamsOfN(1, 1).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1, to.values().size());
     }
@@ -942,7 +944,7 @@ public class ObservableMergeTest {
     public void merge1SyncStreamOf1000000() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNSyncStreamsOfN(1, 1000000).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1000000, to.values().size());
     }
@@ -951,7 +953,7 @@ public class ObservableMergeTest {
     public void merge1000SyncStreamOf1000() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNSyncStreamsOfN(1000, 1000).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1000000, to.values().size());
     }
@@ -960,7 +962,7 @@ public class ObservableMergeTest {
     public void merge10000SyncStreamOf10() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNSyncStreamsOfN(10000, 10).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(100000, to.values().size());
     }
@@ -969,7 +971,7 @@ public class ObservableMergeTest {
     public void merge1000000SyncStreamOf1() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         mergeNSyncStreamsOfN(1000000, 1).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(1000000, to.values().size());
     }
@@ -1041,7 +1043,7 @@ public class ObservableMergeTest {
 
         });
         Observable.merge(os).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         assertEquals(10000, to.values().size());
     }
@@ -1061,7 +1063,7 @@ public class ObservableMergeTest {
     };
     ;
 
-    void runMerge(Function<Integer, Observable<Integer>> func, TestObserver<Integer> to) {
+    void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < 1000; i++) {
             list.add(i);
@@ -1080,18 +1082,18 @@ public class ObservableMergeTest {
 
     @Test
     public void testFastMergeFullScalar() {
-        runMerge(toScalar, new TestObserver<Integer>());
+        runMerge(toScalar, new TestObserverEx<Integer>());
     }
 
     @Test
     public void testFastMergeHiddenScalar() {
-        runMerge(toHiddenScalar, new TestObserver<Integer>());
+        runMerge(toHiddenScalar, new TestObserverEx<Integer>());
     }
 
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestObserver<Integer> to = new TestObserver<Integer>() {
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
                 int remaining = req;
 
                 @Override
@@ -1109,7 +1111,7 @@ public class ObservableMergeTest {
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestObserver<Integer> to = new TestObserver<Integer>() {
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>() {
                 int remaining = req;
                 @Override
                 public void onNext(Integer t) {
@@ -1139,7 +1141,7 @@ public class ObservableMergeTest {
             Observable<Integer> source2 = Observable.error(new TestException("Second"));
 
             Observable.merge(source1, source2)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());

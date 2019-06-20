@@ -80,7 +80,7 @@ public class ObservableConcatWithSingleTest {
 
         assertTrue(other.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(other.hasObservers());
     }

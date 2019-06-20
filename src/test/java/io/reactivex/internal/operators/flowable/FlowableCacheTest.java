@@ -23,13 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableCacheTest {
     @Test
@@ -38,7 +39,7 @@ public class FlowableCacheTest {
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts);
 
@@ -78,7 +79,7 @@ public class FlowableCacheTest {
             assertEquals((Integer)i, onNextEvents.get(i));
         }
 
-        ts.dispose();
+        ts.cancel();
         assertFalse("Subscribers retained!", source.hasSubscribers());
     }
 
@@ -165,7 +166,7 @@ public class FlowableCacheTest {
 
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
 
-            ts1.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            ts1.awaitDone(2, TimeUnit.SECONDS);
             ts1.assertNoErrors();
             ts1.assertComplete();
             assertEquals(10000, ts1.values().size());
@@ -173,7 +174,7 @@ public class FlowableCacheTest {
             TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
 
-            ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            ts2.awaitDone(2, TimeUnit.SECONDS);
             ts2.assertNoErrors();
             ts2.assertComplete();
             assertEquals(10000, ts2.values().size());
@@ -202,7 +203,7 @@ public class FlowableCacheTest {
         }
         int j = 0;
         for (TestSubscriber<Long> ts : list) {
-            ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            ts.awaitDone(3, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
 
@@ -233,7 +234,7 @@ public class FlowableCacheTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
 
-        ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        ts.awaitDone(3, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertComplete();
 
@@ -323,7 +324,7 @@ public class FlowableCacheTest {
 
             cache.test();
 
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -461,8 +462,8 @@ public class FlowableCacheTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Flowable<Integer> cache = Flowable.range(1, 500).cache();
 
-            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override

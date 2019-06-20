@@ -19,8 +19,8 @@ import java.util.concurrent.FutureTask;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.testsupport.TestHelper;
 
 public class AbstractDirectTaskTest {
 

@@ -13,17 +13,18 @@
 
 package io.reactivex.internal.observers;
 
-import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestObserverEx;
 
 public class BasicFuseableObserverTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(to) {
             @Nullable
             @Override

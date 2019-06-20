@@ -28,6 +28,7 @@ import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class FlowableOnBackpressureBufferTest {
 
@@ -83,7 +84,7 @@ public class FlowableOnBackpressureBufferTest {
         l2.await();
         assertEquals(150, ts.values().size());
         ts.request(350);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(500, ts.values().size());
         ts.assertNoErrors();
         assertEquals(0, ts.values().get(0).intValue());
@@ -138,7 +139,7 @@ public class FlowableOnBackpressureBufferTest {
         ts.request(50);
 
         assertTrue(backpressureCallback.await(500, TimeUnit.MILLISECONDS));
-        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        ts.awaitDone(1, TimeUnit.SECONDS);
         ts.assertError(MissingBackpressureException.class);
 
         int size = ts.values().size();
@@ -182,7 +183,7 @@ public class FlowableOnBackpressureBufferTest {
              })
            .onBackpressureBuffer(1, THROWS_NON_FATAL)
            .subscribe(ts);
-         ts.awaitTerminalEvent();
+         ts.awaitDone(5, TimeUnit.SECONDS);
          assertFalse(errorOccurred.get());
     }
 
@@ -249,23 +250,23 @@ public class FlowableOnBackpressureBufferTest {
 
     @Test
     public void fusedNormal() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.range(1, 10).onBackpressureBuffer().subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-          .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+          .assertFusionMode(QueueFuseable.ASYNC)
           .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void fusedError() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.<Integer>error(new TestException()).onBackpressureBuffer().subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-          .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+          .assertFusionMode(QueueFuseable.ASYNC)
           .assertFailure(TestException.class);
     }
 
@@ -300,11 +301,11 @@ public class FlowableOnBackpressureBufferTest {
 
     @Test
     public void fusionRejected() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.<Integer>never().onBackpressureBuffer().subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertEmpty();
     }
 }

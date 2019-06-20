@@ -25,6 +25,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeDoOnEventTest {
 
@@ -74,7 +75,7 @@ public class MaybeDoOnEventTest {
                     throw new TestException("First");
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

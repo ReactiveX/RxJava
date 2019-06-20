@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.internal.operators.observable.ObservableInterval.IntervalObserver;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableIntervalTest {
 

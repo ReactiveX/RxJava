@@ -30,6 +30,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.*;
 
 public class FlowableConcatMapCompletableTest {
 
@@ -83,7 +84,7 @@ public class FlowableConcatMapCompletableTest {
 
     @Test
     public void innerErrorDelayed() {
-        Flowable.range(1, 5)
+        TestObserverEx<Void> to = Flowable.range(1, 5)
         .concatMapCompletableDelayError(
                 new Function<Integer, CompletableSource>() {
                     @Override
@@ -92,14 +93,11 @@ public class FlowableConcatMapCompletableTest {
                     }
                 }
         )
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestObserver<Void>>() {
-            @Override
-            public void accept(TestObserver<Void> to) throws Exception {
-                assertEquals(5, ((CompositeException)to.errors().get(0)).getExceptions().size());
-            }
-        });
+        ;
+
+        assertEquals(5, ((CompositeException)to.errors().get(0)).getExceptions().size());
     }
 
     @Test
@@ -360,7 +358,7 @@ public class FlowableConcatMapCompletableTest {
                 @Override
                 public void run() {
                     cs.onComplete();
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

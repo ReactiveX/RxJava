@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,12 +29,12 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableConcatTest {
 
@@ -673,9 +674,9 @@ public class ObservableConcatTest {
 
         });
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.concat(o, o).subscribe(to);
-        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertNoErrors();
         to.assertValues("hello", "hello");
@@ -744,7 +745,8 @@ public class ObservableConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
             Observable.range(0, 1000)
             .concatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -752,12 +754,13 @@ public class ObservableConcatTest {
                     return Observable.fromIterable(Arrays.asList(t));
                 }
             })
-            .observeOn(Schedulers.computation()).subscribe(to);
+            .observeOn(Schedulers.computation())
+            .subscribe(to);
 
-            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            to.awaitDone(2500, TimeUnit.MILLISECONDS);
             to.assertTerminated();
             to.assertNoErrors();
-            assertEquals(1000, to.valueCount());
+            assertEquals(1000, to.values().size());
             assertEquals((Integer)999, to.values().get(999));
         }
     }

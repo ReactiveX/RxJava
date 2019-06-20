@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class MaybeFlatMapNotificationTest {
 
@@ -56,11 +56,11 @@ public class MaybeFlatMapNotificationTest {
 
     @Test
     public void onErrorNull() {
-        TestObserver<Integer> to = Maybe.<Integer>error(new TestException())
+        TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException())
         .flatMap(Functions.justFunction(Maybe.just(1)),
                 Functions.justFunction((Maybe<Integer>)null),
                 Functions.justSupplier(Maybe.just(1)))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> ce = TestHelper.compositeList(to.errors().get(0));

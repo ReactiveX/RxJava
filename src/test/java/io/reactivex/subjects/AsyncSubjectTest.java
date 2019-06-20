@@ -23,12 +23,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 import org.mockito.*;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueFuseable;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class AsyncSubjectTest extends SubjectTest<Integer> {
 
@@ -390,13 +391,10 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
 
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = ap.to(TestHelper.<Integer>testConsumer(false, QueueFuseable.ANY));
 
-        ap.subscribe(to);
-
-        to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC);
 
         to.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -415,13 +413,10 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = ap.to(TestHelper.<Integer>testConsumer(false, QueueFuseable.ANY));
 
-        ap.subscribe(to);
-
-        to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1);
     }
 
@@ -469,14 +464,14 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to2.cancel();
+                    to2.dispose();
                 }
             };
 
@@ -490,12 +485,12 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AsyncSubject<Object> p = AsyncSubject.create();
 
-            final TestObserver<Object> to1 = p.test();
+            final TestObserverEx<Object> to1 = p.to(TestHelper.testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
 
@@ -510,7 +505,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (to1.errorCount() != 0) {
+            if (to1.errors().size() != 0) {
                 to1.assertFailure(TestException.class);
             } else {
                 to1.assertEmpty();
@@ -526,7 +521,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onNext(Object t) {
-                to2.cancel();
+                to2.dispose();
                 super.onNext(t);
             }
         };
@@ -549,7 +544,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onError(Throwable t) {
-                to2.cancel();
+                to2.dispose();
                 super.onError(t);
             }
         };
@@ -571,7 +566,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onComplete() {
-                to2.cancel();
+                to2.dispose();
                 super.onComplete();
             }
         };

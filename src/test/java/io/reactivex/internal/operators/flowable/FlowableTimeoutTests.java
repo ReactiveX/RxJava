@@ -26,13 +26,14 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableTimeoutTests {
     private PublishProcessor<String> underlyingSubject;
@@ -78,12 +79,12 @@ public class FlowableTimeoutTests {
         verify(subscriber).onNext("Two");
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         verify(subscriber, never()).onError(any(Throwable.class));
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        TestSubscriber<String> subscriber = new TestSubscriber<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
 
         withTimeout.subscribe(subscriber);
 
@@ -93,7 +94,7 @@ public class FlowableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        TestSubscriber<String> subscriber = new TestSubscriber<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
         withTimeout.subscribe(subscriber);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -101,7 +102,7 @@ public class FlowableTimeoutTests {
         subscriber.assertValue("One");
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
         subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(TIMEOUT, TIME_UNIT), "One");
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -114,7 +115,7 @@ public class FlowableTimeoutTests {
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -126,7 +127,7 @@ public class FlowableTimeoutTests {
         underlyingSubject.onError(new UnsupportedOperationException());
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         verify(subscriber).onError(any(UnsupportedOperationException.class));
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -149,7 +150,7 @@ public class FlowableTimeoutTests {
         inOrder.verify(subscriber, times(1)).onNext("c");
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -172,7 +173,7 @@ public class FlowableTimeoutTests {
         inOrder.verify(subscriber, times(1)).onNext("c");
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -195,7 +196,7 @@ public class FlowableTimeoutTests {
         inOrder.verify(subscriber, times(1)).onNext("c");
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
-        ts.dispose();
+        ts.cancel();
     }
 
     @Test
@@ -214,7 +215,7 @@ public class FlowableTimeoutTests {
 
         other.onNext("a");
         other.onNext("b");
-        ts.dispose();
+        ts.cancel();
 
         // The following messages should not be delivered.
         other.onNext("c");
@@ -234,7 +235,7 @@ public class FlowableTimeoutTests {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final TestSubscriber<String> subscriber = new TestSubscriber<String>();
+        final TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
 
         new Thread(new Runnable() {
 
@@ -283,7 +284,7 @@ public class FlowableTimeoutTests {
         TestScheduler testScheduler = new TestScheduler();
         Flowable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        TestSubscriber<String> subscriber = new TestSubscriber<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
         observableWithTimeout.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -366,7 +367,7 @@ public class FlowableTimeoutTests {
 
         assertTrue(processor.hasSubscribers());
 
-        subscriber.dispose();
+        subscriber.cancel();
 
         assertFalse(processor.hasSubscribers());
     }
@@ -520,7 +521,7 @@ public class FlowableTimeoutTests {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).test();
+            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -538,8 +539,8 @@ public class FlowableTimeoutTests {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() != 0) {
-                if (ts.errorCount() != 0) {
+            if (ts.values().size() != 0) {
+                if (ts.errors().size() != 0) {
                     ts.assertFailure(TimeoutException.class, 1);
                     ts.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
                 } else {
@@ -559,7 +560,7 @@ public class FlowableTimeoutTests {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).test();
+            TestSubscriberEx<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -578,7 +579,7 @@ public class FlowableTimeoutTests {
             TestHelper.race(r1, r2);
 
             if (ts.isTerminated()) {
-                int c = ts.valueCount();
+                int c = ts.values().size();
                 if (c == 1) {
                     int v = ts.values().get(0);
                     assertTrue("" + v, v == 1 || v == 2);

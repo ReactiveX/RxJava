@@ -29,6 +29,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableFromCallableTest {
     @Test(expected = NullPointerException.class)
@@ -151,7 +152,7 @@ public class CompletableFromCallableTest {
         observerLatch.await();
 
         // Unsubscribing before emission
-        outer.cancel();
+        outer.dispose();
 
         // Emitting result
         funcLatch.countDown();

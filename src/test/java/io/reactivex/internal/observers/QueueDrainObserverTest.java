@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class QueueDrainObserverTest {
 

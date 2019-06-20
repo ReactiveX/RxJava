@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -21,7 +22,6 @@ import java.util.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
@@ -32,6 +32,7 @@ import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableWithLatestFromTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
@@ -89,7 +90,7 @@ public class ObservableWithLatestFromTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         result.subscribe(to);
 
@@ -115,7 +116,7 @@ public class ObservableWithLatestFromTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         result.subscribe(to);
 
@@ -168,7 +169,7 @@ public class ObservableWithLatestFromTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         result.subscribe(to);
 
@@ -196,7 +197,7 @@ public class ObservableWithLatestFromTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         result.subscribe(to);
 
@@ -224,7 +225,7 @@ public class ObservableWithLatestFromTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER_ERROR);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         result.subscribe(to);
 
@@ -577,7 +578,7 @@ public class ObservableWithLatestFromTest {
                 return a;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -612,7 +613,7 @@ public class ObservableWithLatestFromTest {
                     return a;
                 }
             })
-            .test()
+            .to(TestHelper.<Object>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -652,7 +653,7 @@ public class ObservableWithLatestFromTest {
     public void zeroOtherCombinerReturnsNull() {
         Observable.just(1)
         .withLatestFrom(new Observable[0], Functions.justFunction(null))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 }

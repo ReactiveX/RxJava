@@ -40,6 +40,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableBufferTest {
 
@@ -1564,7 +1565,7 @@ public class ObservableBufferTest {
                                 return Observable.just(a).delay(100, TimeUnit.MILLISECONDS);
                             }
                         })
-                .test()
+                .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1587,7 +1588,7 @@ public class ObservableBufferTest {
                                 return Observable.just(a).delay(200, TimeUnit.MILLISECONDS);
                             }
                         })
-                .test()
+                .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -1888,7 +1889,7 @@ public class ObservableBufferTest {
                     observer.onError(new TestException("second"));
                 }
             }))
-            .test()
+            .to(TestHelper.<List<Integer>>testConsumer())
             .assertError(TestException.class)
             .assertErrorMessage("first")
             .assertNotComplete();
@@ -2055,7 +2056,7 @@ public class ObservableBufferTest {
                     @Override
                     public List<Integer> get() throws Exception {
                         if (++calls == 2) {
-                            to.cancel();
+                            to.dispose();
                         }
                         return new ArrayList<Integer>();
                     }
@@ -2065,7 +2066,7 @@ public class ObservableBufferTest {
 
         sub.run();
 
-        assertTrue(to.isCancelled());
+        assertTrue(to.isDisposed());
     }
 
     @Test

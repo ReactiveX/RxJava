@@ -25,6 +25,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSkipTimedTest {
 

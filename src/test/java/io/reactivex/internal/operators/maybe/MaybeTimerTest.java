@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeTimerTest {
 
@@ -54,7 +55,7 @@ public class MaybeTimerTest {
 
                 Thread.sleep(500);
 
-                to.cancel();
+                to.dispose();
 
                 Thread.sleep(500);
 

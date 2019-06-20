@@ -24,6 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableTakeUntilTest {
 
@@ -189,7 +190,7 @@ public class ObservableTakeUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         source.takeUntil(until).subscribe(to);
 
@@ -216,7 +217,7 @@ public class ObservableTakeUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         source.takeUntil(until).subscribe(to);
 
@@ -241,7 +242,7 @@ public class ObservableTakeUntilTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         source.takeUntil(until).take(1).subscribe(to);
 

@@ -26,6 +26,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class MaybeUsingTest {
 
@@ -192,7 +193,7 @@ public class MaybeUsingTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
+        TestObserverEx<Integer> to = Maybe.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -208,7 +209,7 @@ public class MaybeUsingTest {
                 throw new TestException("Disposer");
             }
         }, true)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -237,7 +238,7 @@ public class MaybeUsingTest {
                     throw new TestException("Disposer");
                 }
             }, false)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "Main");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -268,7 +269,7 @@ public class MaybeUsingTest {
         }, false)
         .test();
 
-        to.cancel();
+        to.dispose();
 
         assertEquals(1, call[0]);
     }
@@ -295,7 +296,7 @@ public class MaybeUsingTest {
             }, false)
             .test();
 
-            to.cancel();
+            to.dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -369,7 +370,7 @@ public class MaybeUsingTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserver<Integer> to = Maybe.using(new Supplier<Object>() {
+        TestObserverEx<Integer> to = Maybe.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -385,7 +386,7 @@ public class MaybeUsingTest {
                 throw new TestException("Disposer");
             }
         }, true)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -463,7 +464,7 @@ public class MaybeUsingTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -506,7 +507,7 @@ public class MaybeUsingTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -548,7 +549,7 @@ public class MaybeUsingTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

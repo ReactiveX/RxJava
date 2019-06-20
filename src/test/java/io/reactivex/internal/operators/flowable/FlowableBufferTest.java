@@ -39,6 +39,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableBufferTest {
 
@@ -364,7 +365,7 @@ public class FlowableBufferTest {
 
         inOrder.verify(subscriber, times(5)).onNext(Arrays.<Integer> asList());
 
-        ts.dispose();
+        ts.cancel();
 
         scheduler.advanceTimeBy(999, TimeUnit.MILLISECONDS);
 
@@ -1445,7 +1446,7 @@ public class FlowableBufferTest {
 
         assertTrue(pp.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -2137,7 +2138,7 @@ public class FlowableBufferTest {
                                 return Flowable.just(a).delay(100, TimeUnit.MILLISECONDS);
                             }
                         })
-                .test()
+                .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -2160,7 +2161,7 @@ public class FlowableBufferTest {
                                 return Flowable.just(a).delay(200, TimeUnit.MILLISECONDS);
                             }
                         })
-                .test()
+                .to(TestHelper.<List<Integer>>testConsumer())
                 .assertSubscribed()
                 .awaitDone(3, TimeUnit.SECONDS)
                 .assertComplete();
@@ -2560,7 +2561,7 @@ public class FlowableBufferTest {
                     s.onError(new TestException("second"));
                 }
             }))
-            .test()
+            .to(TestHelper.<List<Integer>>testConsumer())
             .assertError(TestException.class)
             .assertErrorMessage("first")
             .assertNotComplete();

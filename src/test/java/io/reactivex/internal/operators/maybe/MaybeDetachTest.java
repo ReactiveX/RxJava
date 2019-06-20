@@ -26,6 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeDetachTest {
 
@@ -77,7 +78,7 @@ public class MaybeDetachTest {
 
         d = null;
 
-        to.cancel();
+        to.dispose();
 
         System.gc();
         Thread.sleep(200);

@@ -27,6 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class CompletableUsingTest {
 
@@ -193,7 +194,7 @@ public class CompletableUsingTest {
 
     @Test
     public void supplierAndDisposerCrashEager() {
-        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
+        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -209,7 +210,7 @@ public class CompletableUsingTest {
                 throw new TestException("Disposer");
             }
         }, true)
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -238,7 +239,7 @@ public class CompletableUsingTest {
                     throw new TestException("Disposer");
                 }
             }, false)
-            .test()
+            .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "Main");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -251,7 +252,7 @@ public class CompletableUsingTest {
     public void dispose() {
         final int[] call = {0 };
 
-        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
+        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -267,9 +268,9 @@ public class CompletableUsingTest {
                 call[0]++;
             }
         }, false)
-        .test();
+        .to(TestHelper.<Void>testConsumer());
 
-        to.cancel();
+        to.dispose();
 
         assertEquals(1, call[0]);
     }
@@ -296,7 +297,7 @@ public class CompletableUsingTest {
             }, false)
             .test();
 
-            to.cancel();
+            to.dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -370,7 +371,7 @@ public class CompletableUsingTest {
 
     @Test
     public void errorDisposerCrash() {
-        TestObserver<Void> to = Completable.using(new Supplier<Object>() {
+        TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -386,7 +387,7 @@ public class CompletableUsingTest {
                 throw new TestException("Disposer");
             }
         }, true)
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> list = TestHelper.compositeList(to.errors().get(0));
@@ -442,7 +443,7 @@ public class CompletableUsingTest {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Void> to = Completable.using(new Supplier<Object>() {
+            final TestObserverEx<Void> to = Completable.using(new Supplier<Object>() {
                 @Override
                 public Object get() throws Exception {
                     return 1;
@@ -457,14 +458,14 @@ public class CompletableUsingTest {
                 public void accept(Object d) throws Exception {
                 }
             }, true)
-            .test();
+            .to(TestHelper.<Void>testConsumer());
 
             ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -509,7 +510,7 @@ public class CompletableUsingTest {
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        to.cancel();
+                        to.dispose();
                     }
                 };
 
@@ -554,7 +555,7 @@ public class CompletableUsingTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

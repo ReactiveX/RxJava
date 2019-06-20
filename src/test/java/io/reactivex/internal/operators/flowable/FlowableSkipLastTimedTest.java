@@ -28,6 +28,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSkipLastTimedTest {
 
@@ -242,7 +243,7 @@ public class FlowableSkipLastTimedTest {
         Flowable.range(1, 1000)
         .skipLast(0, TimeUnit.SECONDS)
         .observeOn(Schedulers.single(), false, 16)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000)

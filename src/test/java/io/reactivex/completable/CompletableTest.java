@@ -40,6 +40,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 /**
  * Test Completable methods and operators.
@@ -3542,7 +3543,7 @@ public class CompletableTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Completable.using(new Supplier<Integer>() {
             @Override
@@ -3694,7 +3695,7 @@ public class CompletableTest {
 
     @Test
     public void andThenSubscribeOn() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>(0);
         TestScheduler scheduler = new TestScheduler();
         Completable.complete().andThen(Flowable.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
 
@@ -3711,7 +3712,7 @@ public class CompletableTest {
 
     @Test
     public void andThenSingleNever() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>(0);
         Completable.never().andThen(Single.just("foo")).toFlowable().subscribe(ts);
         ts.request(1);
         ts.assertNoValues();
@@ -3739,7 +3740,7 @@ public class CompletableTest {
 
     @Test
     public void andThenSingleSubscribeOn() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>(0);
         TestScheduler scheduler = new TestScheduler();
         Completable.complete().andThen(Single.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).toFlowable().subscribe(ts);
 
@@ -4055,7 +4056,7 @@ public class CompletableTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Completable.using(new Supplier<Integer>() {
             @Override
@@ -4265,7 +4266,7 @@ public class CompletableTest {
 
     @Test
     public void onErrorCompleteFunctionThrows() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
 
         error.completable.onErrorComplete(new Predicate<Throwable>() {
             @Override
@@ -4425,7 +4426,7 @@ public class CompletableTest {
 
     @Test
     public void andThenNever() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>(0);
         Completable.never().andThen(Flowable.just("foo")).subscribe(ts);
         ts.request(1);
         ts.assertNoValues();

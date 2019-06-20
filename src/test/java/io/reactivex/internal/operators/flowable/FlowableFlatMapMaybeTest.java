@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableFlatMapMaybeTest {
 
@@ -75,36 +76,40 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void normalAsync() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v).subscribeOn(Schedulers.computation());
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        .assertValueCount(10)
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void normalAsyncMaxConcurrency() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v).subscribeOn(Schedulers.computation());
             }
         }, false, 3)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        .assertValueCount(10)
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
      }
 
     @Test
@@ -167,14 +172,14 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -228,7 +233,7 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void takeAsync() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
@@ -236,13 +241,14 @@ public class FlowableFlatMapMaybeTest {
             }
         })
         .take(2)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(2)
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
@@ -298,7 +304,7 @@ public class FlowableFlatMapMaybeTest {
             }
         })
         .take(500)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -419,7 +425,7 @@ public class FlowableFlatMapMaybeTest {
                 }
             }
             .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -441,7 +447,7 @@ public class FlowableFlatMapMaybeTest {
                     observer.onError(new TestException("Second"));
                 }
             }))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -529,7 +535,7 @@ public class FlowableFlatMapMaybeTest {
 
                         assertFalse(((Disposable)observer).isDisposed());
 
-                        ts.dispose();
+                        ts.cancel();
 
                         assertTrue(((Disposable)observer).isDisposed());
                     }

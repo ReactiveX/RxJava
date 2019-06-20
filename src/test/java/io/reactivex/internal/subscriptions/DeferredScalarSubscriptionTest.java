@@ -17,9 +17,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class DeferredScalarSubscriptionTest {
 
@@ -99,7 +99,7 @@ public class DeferredScalarSubscriptionTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() >= 1) {
+            if (ts.values().size() >= 1) {
                 ts.assertValue(1);
             }
         }
@@ -130,7 +130,7 @@ public class DeferredScalarSubscriptionTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() >= 1) {
+            if (ts.values().size() >= 1) {
                 ts.assertValue(1);
             }
         }

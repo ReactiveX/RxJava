@@ -25,6 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableGenerateTest {
 
@@ -197,7 +198,7 @@ public class FlowableGenerateTest {
             }
         }, Functions.emptyConsumer())
         .rebatchRequests(1)
-        .test(5)
+        .to(TestHelper.<Object>testSubscriber(5L))
         .assertSubscribed()
         .assertValues(1, 1, 1, 1, 1)
         .assertNoErrors()

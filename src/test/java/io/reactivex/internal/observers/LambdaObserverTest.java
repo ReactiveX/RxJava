@@ -23,12 +23,12 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class LambdaObserverTest {
 

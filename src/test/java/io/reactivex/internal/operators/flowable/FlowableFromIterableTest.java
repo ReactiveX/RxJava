@@ -34,6 +34,7 @@ import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableFromIterableTest {
 
@@ -124,7 +125,7 @@ public class FlowableFromIterableTest {
         }
         Flowable<Integer> f = Flowable.fromIterable(list);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(1);
@@ -144,7 +145,7 @@ public class FlowableFromIterableTest {
     public void testNoBackpressure() {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -632,7 +633,7 @@ public class FlowableFromIterableTest {
     public void normalConditionalBackpressured2() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
         .filter(Functions.alwaysTrue())
-        .test(4L)
+        .to(TestHelper.<Integer>testSubscriber(4L))
         .assertSubscribed()
         .assertValues(1, 2, 3, 4)
         .assertNoErrors()
@@ -700,7 +701,7 @@ public class FlowableFromIterableTest {
         Flowable.fromIterable(new CrashingIterable(100, 10 * 1000 * 1000, 10 * 1000 * 1000))
         .filter(Functions.alwaysTrue())
         .take(1000 * 1000)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
         .assertNoErrors()
@@ -713,7 +714,7 @@ public class FlowableFromIterableTest {
         .filter(Functions.alwaysTrue())
         .rebatchRequests(128)
         .take(1000 * 1000)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
         .assertNoErrors()
@@ -868,12 +869,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void fusionRejected() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3);
     }
 
@@ -919,14 +920,14 @@ public class FlowableFromIterableTest {
     @Test
     public void iteratorThrows() {
         Flowable.fromIterable(new CrashingIterable(1, 100, 100))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
     public void hasNext2Throws() {
         Flowable.fromIterable(new CrashingIterable(100, 2, 100))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 

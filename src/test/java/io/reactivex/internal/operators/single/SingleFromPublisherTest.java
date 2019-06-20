@@ -26,6 +26,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleFromPublisherTest {
 
@@ -67,7 +68,7 @@ public class SingleFromPublisherTest {
 
         pp.onNext(1);
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }

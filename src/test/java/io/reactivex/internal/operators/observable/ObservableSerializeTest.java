@@ -24,6 +24,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.observers.DefaultObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSerializeTest {
 

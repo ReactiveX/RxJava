@@ -27,6 +27,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableIgnoreElementsTest {
 
@@ -60,7 +61,7 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testCompletedOkFlowable() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         Flowable.range(1, 10).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoErrors();
         ts.assertNoValues();
@@ -69,7 +70,7 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testErrorReceivedFlowable() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoValues();
@@ -172,7 +173,7 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testCompletedOk() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         Flowable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -181,7 +182,7 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testErrorReceived() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().subscribe(to);
         to.assertNoValues();
@@ -250,13 +251,13 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1).hide().ignoreElements().<Integer>toFlowable()
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult();
     }
 

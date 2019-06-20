@@ -27,33 +27,34 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.maybe.MaybeMergeArray.MergeMaybeObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class MaybeMergeArrayTest {
 
     @SuppressWarnings("unchecked")
     @Test
     public void normal() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Maybe.mergeArray(Maybe.just(1), Maybe.just(2))
         .subscribe(ts);
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void fusedPollMixed() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
         .subscribe(ts);
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
     }
 
@@ -119,13 +120,13 @@ public class MaybeMergeArrayTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Maybe.mergeArray(Maybe.<Integer>error(new TestException()), Maybe.just(2))
         .subscribe(ts);
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertFailure(TestException.class);
     }
 

@@ -35,7 +35,7 @@ public class ObservableRedoTest {
                     @Override
                     public Object apply(Object v) throws Exception {
                         if (++count == 1) {
-                            to.cancel();
+                            to.dispose();
                         }
                         return v;
                     }

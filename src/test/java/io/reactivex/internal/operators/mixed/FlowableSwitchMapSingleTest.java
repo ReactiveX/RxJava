@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableSwitchMapSingleTest {
 
@@ -338,7 +339,7 @@ public class FlowableSwitchMapSingleTest {
                     return Single.error(new TestException("inner"));
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -353,7 +354,7 @@ public class FlowableSwitchMapSingleTest {
         try {
             final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestSubscriber<Integer> ts = new Flowable<Integer>() {
+            TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -375,7 +376,7 @@ public class FlowableSwitchMapSingleTest {
                     };
                 }
             })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             ts.assertFailureAndMessage(TestException.class, "outer");
 
@@ -436,7 +437,7 @@ public class FlowableSwitchMapSingleTest {
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestSubscriber<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+                final TestSubscriberEx<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(Integer v)
                             throws Exception {
@@ -445,7 +446,7 @@ public class FlowableSwitchMapSingleTest {
                         }
                         return Single.never();
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 pp.onNext(1);
 
@@ -465,7 +466,7 @@ public class FlowableSwitchMapSingleTest {
 
                 TestHelper.race(r1, r2);
 
-                if (ts.errorCount() != 0) {
+                if (ts.errors().size() != 0) {
                     assertTrue(errors.isEmpty());
                     ts.assertFailure(TestException.class);
                 } else if (!errors.isEmpty()) {
