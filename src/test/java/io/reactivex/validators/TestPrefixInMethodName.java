@@ -33,10 +33,6 @@ public class TestPrefixInMethodName {
 
     @Test
     public void checkAndUpdateTestMethodNames() throws Exception {
-        if (System.getenv("CI") != null) {
-            // no point in changing the files in CI
-            return;
-        }
         File f = MaybeNo2Dot0Since.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
@@ -108,7 +104,7 @@ public class TestPrefixInMethodName {
                                 in.close();
                             }
 
-                            if (found) {
+                            if (found && System.getenv("CI") == null) {
                                 PrintWriter w = new PrintWriter(new FileWriter(u));
 
                                 try {
