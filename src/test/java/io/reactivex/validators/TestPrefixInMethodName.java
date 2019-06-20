@@ -83,27 +83,26 @@ public class TestPrefixInMethodName {
                                     }
                                     lineNum++;
 
-                                    if (!line.startsWith("//") && !line.startsWith("*")) {
-                                        Matcher matcher = p.matcher(line);
-                                        if (matcher.find()) {
-                                            found = true;
-                                            fail
-                                                    .append(fname)
-                                                    .append("#L").append(lineNum)
-                                                    .append("    ").append(line)
-                                                    .append("\n");
-                                            total++;
+                                    Matcher matcher = p.matcher(line);
+                                    if (!line.startsWith("//") && !line.startsWith("*") && matcher.find()) {
+                                        found = true;
+                                        fail
+                                                .append(fname)
+                                                .append("#L").append(lineNum)
+                                                .append("    ").append(line)
+                                                .append("\n");
+                                        total++;
 
-                                            int methodNameStartIndex = matcher.end() - 1;
-                                            char firstChar = Character.toLowerCase(line.charAt(methodNameStartIndex));
+                                        int methodNameStartIndex = matcher.end() - 1;
+                                        char firstChar = Character.toLowerCase(line.charAt(methodNameStartIndex));
 
-                                            String newLine = matcher.replaceAll(replacement + firstChar);
+                                        String newLine = matcher.replaceAll(replacement + firstChar);
 
-                                            lines.add(newLine);
-                                        } else {
-                                            lines.add(line);
-                                        }
+                                        lines.add(newLine);
+                                    } else {
+                                        lines.add(line);
                                     }
+
                                 }
                             } finally {
                                 in.close();
