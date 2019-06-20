@@ -15,11 +15,12 @@ package io.reactivex.validators;
 
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -28,9 +29,14 @@ import java.util.regex.Pattern;
 public class TestPrefixInMethodName {
 
     private static final String pattern = "void\\s+test[a-zA-Z0-9]";
+    private static final String replacement = "void ";
 
     @Test
-    public void findTestPrefixInMethodName() throws Exception {
+    public void checkAndUpdateTestMethodNames() throws Exception {
+        if (System.getenv("CI") != null) {
+            // no point in changing the files in CI
+            return;
+        }
         File f = MaybeNo2Dot0Since.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
@@ -41,6 +47,7 @@ public class TestPrefixInMethodName {
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ").append(pattern).append("\n");
+        fail.append("Refresh and re-run tests!\n\n");
 
         File parent = f.getParentFile();
 
@@ -65,31 +72,53 @@ public class TestPrefixInMethodName {
                         if (fname.endsWith(".java")) {
 
                             int lineNum = 0;
+                            List<String> lines = new ArrayList<String>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
+                            boolean found = false;
                             try {
                                 for (; ; ) {
                                     String line = in.readLine();
-                                    if (line != null) {
-                                        lineNum++;
-
-                                        line = line.trim();
-
-                                        if (!line.startsWith("//") && !line.startsWith("*")) {
-                                            if (p.matcher(line).find()) {
-                                                fail
-                                                        .append(fname)
-                                                        .append("#L").append(lineNum)
-                                                        .append("    ").append(line)
-                                                        .append("\n");
-                                                total++;
-                                            }
-                                        }
-                                    } else {
+                                    if (line == null) {
                                         break;
+                                    }
+                                    lineNum++;
+
+                                    if (!line.startsWith("//") && !line.startsWith("*")) {
+                                        Matcher matcher = p.matcher(line);
+                                        if (matcher.find()) {
+                                            found = true;
+                                            fail
+                                                    .append(fname)
+                                                    .append("#L").append(lineNum)
+                                                    .append("    ").append(line)
+                                                    .append("\n");
+                                            total++;
+
+                                            int methodNameStartIndex = matcher.end() - 1;
+                                            char firstChar = Character.toLowerCase(line.charAt(methodNameStartIndex));
+
+                                            String newLine = matcher.replaceAll(replacement + firstChar);
+
+                                            lines.add(newLine);
+                                        } else {
+                                            lines.add(line);
+                                        }
                                     }
                                 }
                             } finally {
                                 in.close();
+                            }
+
+                            if (found) {
+                                PrintWriter w = new PrintWriter(new FileWriter(u));
+
+                                try {
+                                    for (String s : lines) {
+                                        w.println(s);
+                                    }
+                                } finally {
+                                    w.close();
+                                }
                             }
                         }
                     }
