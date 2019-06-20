@@ -13,6 +13,7 @@
 
 package io.reactivex.validators;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -32,6 +33,7 @@ public class TestPrefixInMethodName {
     private static final String replacement = "void ";
 
     @Test
+    @Ignore
     public void checkAndUpdateTestMethodNames() throws Exception {
         File f = MaybeNo2Dot0Since.findSource("Flowable");
         if (f == null) {
