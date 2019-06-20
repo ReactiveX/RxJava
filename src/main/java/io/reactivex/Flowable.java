@@ -2087,6 +2087,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         the type of the item emitted by the Publisher
      * @return a Flowable whose {@link Subscriber}s' subscriptions trigger an invocation of the given function
      * @see #defer(Supplier)
+     * @see #fromSupplier(Supplier)
      * @since 2.0
      */
     @CheckReturnValue
@@ -2329,6 +2330,47 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source, "source is null");
 
         return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(source));
+    }
+
+    /**
+     * Returns a Flowable that, when a Subscriber subscribes to it, invokes a supplier function you specify and then
+     * emits the value returned from that function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <p>
+     * This allows you to defer the execution of the function you specify until a Subscriber subscribes to the
+     * Publisher. That is to say, it makes the function "lazy."
+     * <dl>
+     *   <dt><b>Backpressure:</b></dt>
+     *   <dd>The operator honors backpressure from downstream.</dd>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd> If the {@link Supplier} throws an exception, the respective {@link Throwable} is
+     *   delivered to the downstream via {@link Subscriber#onError(Throwable)},
+     *   except when the downstream has canceled this {@code Flowable} source.
+     *   In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   </dd>
+     * </dl>
+     *
+     * @param supplier
+     *         a function, the execution of which should be deferred; {@code fromSupplier} will invoke this
+     *         function only when a Subscriber subscribes to the Publisher that {@code fromSupplier} returns
+     * @param <T>
+     *         the type of the item emitted by the Publisher
+     * @return a Flowable whose {@link Subscriber}s' subscriptions trigger an invocation of the given function
+     * @see #defer(Supplier)
+     * @see #fromCallable(Callable)
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> fromSupplier(Supplier<? extends T> supplier) {
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromSupplier<T>(supplier));
     }
 
     /**

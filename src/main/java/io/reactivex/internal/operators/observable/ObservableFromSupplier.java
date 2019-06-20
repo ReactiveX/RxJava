@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Supplier;
@@ -25,13 +23,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Calls a Callable and emits its resulting single value or signals its exception.
  * @param <T> the value type
+ * @since 3.0.0
  */
-public final class ObservableFromCallable<T> extends Observable<T> implements Supplier<T> {
+public final class ObservableFromSupplier<T> extends Observable<T> implements Supplier<T> {
 
-    final Callable<? extends T> callable;
+    final Supplier<? extends T> supplier;
 
-    public ObservableFromCallable(Callable<? extends T> callable) {
-        this.callable = callable;
+    public ObservableFromSupplier(Supplier<? extends T> supplier) {
+        this.supplier = supplier;
     }
 
     @Override
@@ -43,7 +42,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
         }
         T value;
         try {
-            value = ObjectHelper.requireNonNull(callable.call(), "Callable returned null");
+            value = ObjectHelper.requireNonNull(supplier.get(), "Supplier returned null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
@@ -58,6 +57,6 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        return ObjectHelper.requireNonNull(supplier.get(), "The callable returned a null value");
     }
 }

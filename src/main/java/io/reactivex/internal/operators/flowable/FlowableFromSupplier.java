@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
@@ -24,10 +22,17 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableFromCallable<T> extends Flowable<T> implements Supplier<T> {
-    final Callable<? extends T> callable;
-    public FlowableFromCallable(Callable<? extends T> callable) {
-        this.callable = callable;
+/**
+ * Call a Supplier for each incoming Subscriber and signal the returned value or the thrown exception.
+ * @param <T> the value type and element type returned by the supplier and the flow
+ * @since 3.0.0
+ */
+public final class FlowableFromSupplier<T> extends Flowable<T> implements Supplier<T> {
+
+    final Supplier<? extends T> supplier;
+
+    public FlowableFromSupplier(Supplier<? extends T> supplier) {
+        this.supplier = supplier;
     }
 
     @Override
@@ -37,7 +42,7 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Suppli
 
         T t;
         try {
-            t = ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+            t = ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (deferred.isCancelled()) {
@@ -53,6 +58,6 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Suppli
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        return ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
     }
 }

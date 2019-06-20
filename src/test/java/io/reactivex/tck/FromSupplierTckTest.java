@@ -13,23 +13,22 @@
 
 package io.reactivex.tck;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Supplier;
 
 @Test
-public class FromCallableTckTest extends BaseTck<Long> {
+public class FromSupplierTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
         return
-                Flowable.fromCallable(new Callable<Long>() {
+                Flowable.fromSupplier(new Supplier<Long>() {
                     @Override
-                    public Long call() throws Exception {
+                    public Long get() throws Throwable {
                         return 1L;
                     }
                 }
@@ -40,9 +39,9 @@ public class FromCallableTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createFailedPublisher() {
         return
-                Flowable.fromCallable(new Callable<Long>() {
+                Flowable.fromSupplier(new Supplier<Long>() {
                     @Override
-                    public Long call() throws Exception {
+                    public Long get() throws Throwable {
                         throw new TestException();
                     }
                 }

@@ -1798,6 +1798,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the type of the item emitted by the ObservableSource
      * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Supplier)
+     * @see #fromSupplier(Supplier)
      * @since 2.0
      */
     @CheckReturnValue
@@ -2019,6 +2020,43 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> fromPublisher(Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
         return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(publisher));
+    }
+
+    /**
+     * Returns an Observable that, when an observer subscribes to it, invokes a supplier function you specify and then
+     * emits the value returned from that function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <p>
+     * This allows you to defer the execution of the function you specify until an observer subscribes to the
+     * ObservableSource. That is to say, it makes the function "lazy."
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd> If the {@link Supplier} throws an exception, the respective {@link Throwable} is
+     *   delivered to the downstream via {@link Observer#onError(Throwable)},
+     *   except when the downstream has disposed this {@code Observable} source.
+     *   In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   </dd>
+     * </dl>
+     * @param supplier
+     *         a function, the execution of which should be deferred; {@code fromSupplier} will invoke this
+     *         function only when an observer subscribes to the ObservableSource that {@code fromSupplier} returns
+     * @param <T>
+     *         the type of the item emitted by the ObservableSource
+     * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
+     * @see #defer(Supplier)
+     * @see #fromCallable(Callable)
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> fromSupplier(Supplier<? extends T> supplier) {
+        ObjectHelper.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromSupplier<T>(supplier));
     }
 
     /**

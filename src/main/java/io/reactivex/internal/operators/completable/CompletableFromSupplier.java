@@ -11,39 +11,32 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.observable;
-
-import java.util.concurrent.Callable;
+package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Supplier;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.observers.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Calls a Callable and emits its resulting single value or signals its exception.
- * @param <T> the value type
+ * Call a Supplier for each incoming CompletableObserver and signal completion or the thrown exception.
+ * @since 3.0.0
  */
-public final class ObservableFromCallable<T> extends Observable<T> implements Supplier<T> {
+public final class CompletableFromSupplier extends Completable {
 
-    final Callable<? extends T> callable;
+    final Supplier<?> supplier;
 
-    public ObservableFromCallable(Callable<? extends T> callable) {
-        this.callable = callable;
+    public CompletableFromSupplier(Supplier<?> supplier) {
+        this.supplier = supplier;
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> observer) {
-        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(observer);
+    protected void subscribeActual(CompletableObserver observer) {
+        Disposable d = Disposables.empty();
         observer.onSubscribe(d);
-        if (d.isDisposed()) {
-            return;
-        }
-        T value;
         try {
-            value = ObjectHelper.requireNonNull(callable.call(), "Callable returned null");
+            supplier.get();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
@@ -53,11 +46,8 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
             }
             return;
         }
-        d.complete(value);
-    }
-
-    @Override
-    public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        if (!d.isDisposed()) {
+            observer.onComplete();
+        }
     }
 }
