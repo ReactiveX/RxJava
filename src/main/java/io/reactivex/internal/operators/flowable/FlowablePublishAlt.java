@@ -133,9 +133,9 @@ implements HasUpstreamPublisher<T>, ResettableConnectable {
 
         Throwable ex = conn.error;
         if (ex != null) {
-            inner.downstream.onError(ex);
+            s.onError(ex);
         } else {
-            inner.downstream.onComplete();
+            s.onComplete();
         }
     }
 
@@ -266,12 +266,15 @@ implements HasUpstreamPublisher<T>, ResettableConnectable {
             int limit = this.bufferSize - (this.bufferSize >> 2);
             boolean async = this.sourceMode != QueueSubscription.SYNC;
 
+            outer:
             for (;;) {
                 if (queue != null) {
                     long minDemand = Long.MAX_VALUE;
                     boolean hasDemand = false;
 
-                    for (InnerSubscription<T> inner : subscribers.get()) {
+                    InnerSubscription<T>[] innerSubscriptions = subscribers.get();
+
+                    for (InnerSubscription<T> inner : innerSubscriptions) {
                         long request = inner.get();
                         if (request != Long.MIN_VALUE) {
                             hasDemand = true;
@@ -308,7 +311,7 @@ implements HasUpstreamPublisher<T>, ResettableConnectable {
                             break;
                         }
 
-                        for (InnerSubscription<T> inner : subscribers.get()) {
+                        for (InnerSubscription<T> inner : innerSubscriptions) {
                             if (!inner.isCancelled()) {
                                 inner.downstream.onNext(v);
                                 inner.emitted++;
@@ -320,6 +323,10 @@ implements HasUpstreamPublisher<T>, ResettableConnectable {
                             upstream.get().request(limit);
                         }
                         minDemand--;
+
+                        if (innerSubscriptions != subscribers.get()) {
+                            continue outer;
+                        }
                     }
 
                     if (checkTerminated(done, queue.isEmpty())) {

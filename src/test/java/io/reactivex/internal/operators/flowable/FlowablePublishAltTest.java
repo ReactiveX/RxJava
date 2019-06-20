@@ -1012,7 +1012,7 @@ public class FlowablePublishAltTest {
 
     @Test
     public void subscriberLiveSwap() {
-        final ConnectableFlowable<Integer> cf = Flowable.range(1, 5).publish();
+        final ConnectableFlowable<Integer> cf = new FlowablePublishAlt<Integer>(Flowable.range(1, 5), 128);
 
         final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
 
