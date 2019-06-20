@@ -104,7 +104,7 @@ public class TestPrefixInMethodName {
                                 in.close();
                             }
 
-                            if (found && System.getenv("CI") == null) {
+                            /*if (found && System.getenv("CI") == null) {
                                 PrintWriter w = new PrintWriter(new FileWriter(u));
 
                                 try {
@@ -114,7 +114,7 @@ public class TestPrefixInMethodName {
                                 } finally {
                                     w.close();
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
