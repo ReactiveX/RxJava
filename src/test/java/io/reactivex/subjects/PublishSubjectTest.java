@@ -39,7 +39,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         PublishSubject<String> subject = PublishSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -62,7 +62,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         PublishSubject<Object> channel = PublishSubject.create();
         Observer<Object> observerA = TestHelper.mockObserver();
         Observer<Object> observerB = TestHelper.mockObserver();
@@ -112,7 +112,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         PublishSubject<String> subject = PublishSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -143,7 +143,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeMidSequence() {
+    public void subscribeMidSequence() {
         PublishSubject<String> subject = PublishSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -173,7 +173,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testUnsubscribeFirstSubscriber() {
+    public void unsubscribeFirstSubscriber() {
         PublishSubject<String> subject = PublishSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -205,7 +205,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testNestedSubscribe() {
+    public void nestedSubscribe() {
         final PublishSubject<Integer> s = PublishSubject.create();
 
         final AtomicInteger countParent = new AtomicInteger();
@@ -259,7 +259,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
      * Should be able to unsubscribe all Subscribers, have it stop emitting, then subscribe new ones and it start emitting again.
      */
     @Test
-    public void testReSubscribe() {
+    public void reSubscribe() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         Observer<Integer> o1 = TestHelper.mockObserver();
@@ -298,7 +298,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     private final Throwable testException = new Throwable();
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         PublishSubject<String> src = PublishSubject.create();
 
         for (int i = 0; i < 10; i++) {
@@ -386,7 +386,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         PublishSubject<Object> as = PublishSubject.create();
 
         assertFalse(as.hasThrowable());
@@ -407,7 +407,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         PublishSubject<Object> as = PublishSubject.create();
 
         assertFalse(as.hasThrowable());
@@ -422,7 +422,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         PublishSubject<Object> as = PublishSubject.create();
 
         assertFalse(as.hasThrowable());

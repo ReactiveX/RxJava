@@ -30,7 +30,7 @@ import io.reactivex.testsupport.*;
 public class SerializedSubjectTest {
 
     @Test
-    public void testBasic() {
+    public void basic() {
         SerializedSubject<String> subject = new SerializedSubject<String>(PublishSubject.<String> create());
         TestObserver<String> to = new TestObserver<String>();
         subject.subscribe(to);
@@ -41,7 +41,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testAsyncSubjectValueRelay() {
+    public void asyncSubjectValueRelay() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onNext(1);
         async.onComplete();
@@ -56,7 +56,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testAsyncSubjectValueEmpty() {
+    public void asyncSubjectValueEmpty() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
@@ -70,7 +70,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testAsyncSubjectValueError() {
+    public void asyncSubjectValueError() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         TestException te = new TestException();
         async.onError(te);
@@ -85,7 +85,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testPublishSubjectValueRelay() {
+    public void publishSubjectValueRelay() {
         PublishSubject<Integer> async = PublishSubject.create();
         async.onNext(1);
         async.onComplete();
@@ -98,7 +98,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testPublishSubjectValueEmpty() {
+    public void publishSubjectValueEmpty() {
         PublishSubject<Integer> async = PublishSubject.create();
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
@@ -110,7 +110,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testPublishSubjectValueError() {
+    public void publishSubjectValueError() {
         PublishSubject<Integer> async = PublishSubject.create();
         TestException te = new TestException();
         async.onError(te);
@@ -123,7 +123,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testBehaviorSubjectValueRelay() {
+    public void behaviorSubjectValueRelay() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
         async.onComplete();
@@ -138,7 +138,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testBehaviorSubjectValueRelayIncomplete() {
+    public void behaviorSubjectValueRelayIncomplete() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
         Subject<Integer> serial = async.toSerialized();
@@ -152,7 +152,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testBehaviorSubjectIncompleteEmpty() {
+    public void behaviorSubjectIncompleteEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         Subject<Integer> serial = async.toSerialized();
 
@@ -165,7 +165,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testBehaviorSubjectEmpty() {
+    public void behaviorSubjectEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
@@ -179,7 +179,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testBehaviorSubjectError() {
+    public void behaviorSubjectError() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         TestException te = new TestException();
         async.onError(te);
@@ -194,7 +194,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelay() {
+    public void replaySubjectValueRelay() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onNext(1);
         async.onComplete();
@@ -213,7 +213,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayIncomplete() {
+    public void replaySubjectValueRelayIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onNext(1);
         Subject<Integer> serial = async.toSerialized();
@@ -231,7 +231,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBounded() {
+    public void replaySubjectValueRelayBounded() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
@@ -251,7 +251,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBoundedIncomplete() {
+    public void replaySubjectValueRelayBoundedIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
@@ -270,7 +270,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
+    public void replaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         Subject<Integer> serial = async.toSerialized();
 
@@ -287,7 +287,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectValueRelayEmptyIncomplete() {
+    public void replaySubjectValueRelayEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         Subject<Integer> serial = async.toSerialized();
 
@@ -304,7 +304,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectEmpty() {
+    public void replaySubjectEmpty() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
@@ -322,7 +322,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectError() {
+    public void replaySubjectError() {
         ReplaySubject<Integer> async = ReplaySubject.create();
         TestException te = new TestException();
         async.onError(te);
@@ -341,7 +341,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectBoundedEmpty() {
+    public void replaySubjectBoundedEmpty() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
@@ -359,7 +359,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testReplaySubjectBoundedError() {
+    public void replaySubjectBoundedError() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         TestException te = new TestException();
         async.onError(te);
@@ -378,7 +378,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testDontWrapSerializedSubjectAgain() {
+    public void dontWrapSerializedSubjectAgain() {
         PublishSubject<Object> s = PublishSubject.create();
         Subject<Object> s1 = s.toSerialized();
         Subject<Object> s2 = s1.toSerialized();

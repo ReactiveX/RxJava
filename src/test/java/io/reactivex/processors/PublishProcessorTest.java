@@ -40,7 +40,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -63,7 +63,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         PublishProcessor<Object> channel = PublishProcessor.create();
         Subscriber<Object> observerA = TestHelper.mockSubscriber();
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
@@ -113,7 +113,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -144,7 +144,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeMidSequence() {
+    public void subscribeMidSequence() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -174,7 +174,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testUnsubscribeFirstSubscriber() {
+    public void unsubscribeFirstSubscriber() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -206,7 +206,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testNestedSubscribe() {
+    public void nestedSubscribe() {
         final PublishProcessor<Integer> s = PublishProcessor.create();
 
         final AtomicInteger countParent = new AtomicInteger();
@@ -260,7 +260,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
      * Should be able to unsubscribe all Subscribers, have it stop emitting, then subscribe new ones and it start emitting again.
      */
     @Test
-    public void testReSubscribe() {
+    public void reSubscribe() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Subscriber<Integer> subscriber1 = TestHelper.mockSubscriber();
@@ -299,7 +299,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     private final Throwable testException = new Throwable();
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         PublishProcessor<String> src = PublishProcessor.create();
 
         for (int i = 0; i < 10; i++) {
@@ -386,7 +386,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         PublishProcessor<Object> as = PublishProcessor.create();
 
         assertFalse(as.hasThrowable());
@@ -407,7 +407,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         PublishProcessor<Object> as = PublishProcessor.create();
 
         assertFalse(as.hasThrowable());
@@ -422,7 +422,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         PublishProcessor<Object> as = PublishProcessor.create();
 
         assertFalse(as.hasThrowable());

@@ -53,7 +53,7 @@ public class FlowableReduceTest {
     };
 
     @Test
-    public void testAggregateAsIntSumFlowable() {
+    public void aggregateAsIntSumFlowable() {
 
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5).reduce(0, sum).toFlowable()
                 .map(new Function<Integer, Integer>() {
@@ -71,7 +71,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumSourceThrowsFlowable() {
+    public void aggregateAsIntSumSourceThrowsFlowable() {
         Flowable<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
                 .reduce(0, sum).toFlowable().map(new Function<Integer, Integer>() {
@@ -89,7 +89,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumAccumulatorThrowsFlowable() {
+    public void aggregateAsIntSumAccumulatorThrowsFlowable() {
         BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -113,7 +113,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumResultSelectorThrowsFlowable() {
+    public void aggregateAsIntSumResultSelectorThrowsFlowable() {
 
         Function<Integer, Integer> error = new Function<Integer, Integer>() {
 
@@ -134,7 +134,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithInitialValueFlowable() throws InterruptedException {
+    public void backpressureWithInitialValueFlowable() throws InterruptedException {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Flowable<Integer> reduced = source.reduce(0, sum).toFlowable();
 
@@ -143,7 +143,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSum() {
+    public void aggregateAsIntSum() {
 
         Single<Integer> result = Flowable.just(1, 2, 3, 4, 5).reduce(0, sum)
                 .map(new Function<Integer, Integer>() {
@@ -160,7 +160,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumSourceThrows() {
+    public void aggregateAsIntSumSourceThrows() {
         Single<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(new Function<Integer, Integer>() {
@@ -177,7 +177,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumAccumulatorThrows() {
+    public void aggregateAsIntSumAccumulatorThrows() {
         BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -200,7 +200,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumResultSelectorThrows() {
+    public void aggregateAsIntSumResultSelectorThrows() {
 
         Function<Integer, Integer> error = new Function<Integer, Integer>() {
 
@@ -220,7 +220,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithNoInitialValue() throws InterruptedException {
+    public void backpressureWithNoInitialValue() throws InterruptedException {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Maybe<Integer> reduced = source.reduce(sum);
 
@@ -229,7 +229,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithInitialValue() throws InterruptedException {
+    public void backpressureWithInitialValue() throws InterruptedException {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Single<Integer> reduced = source.reduce(0, sum);
 
@@ -291,7 +291,7 @@ public class FlowableReduceTest {
     }
 
     @Test
-    public void testBackpressureWithNoInitialValueObservable() throws InterruptedException {
+    public void backpressureWithNoInitialValueObservable() throws InterruptedException {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Flowable<Integer> reduced = source.reduce(sum).toFlowable();
 

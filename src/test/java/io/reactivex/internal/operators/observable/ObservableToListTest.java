@@ -32,7 +32,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableToListTest {
 
     @Test
-    public void testListObservable() {
+    public void listObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> observable = w.toList().toObservable();
 
@@ -44,7 +44,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListViaObservableObservable() {
+    public void listViaObservableObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> observable = w.toList().toObservable();
 
@@ -56,7 +56,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListMultipleSubscribersObservable() {
+    public void listMultipleSubscribersObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<List<String>> observable = w.toList().toObservable();
 
@@ -79,7 +79,7 @@ public class ObservableToListTest {
 
     @Test
     @Ignore("Null values are not allowed")
-    public void testListWithNullValueObservable() {
+    public void listWithNullValueObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
         Observable<List<String>> observable = w.toList().toObservable();
 
@@ -91,7 +91,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListWithBlockingFirstObservable() {
+    public void listWithBlockingFirstObservable() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = o.toList().toObservable().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
@@ -108,7 +108,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testList() {
+    public void list() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -119,7 +119,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListViaObservable() {
+    public void listViaObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -130,7 +130,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListMultipleSubscribers() {
+    public void listMultipleSubscribers() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> single = w.toList();
 
@@ -151,7 +151,7 @@ public class ObservableToListTest {
 
     @Test
     @Ignore("Null values are not allowed")
-    public void testListWithNullValue() {
+    public void listWithNullValue() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
         Single<List<String>> single = w.toList();
 
@@ -162,7 +162,7 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListWithBlockingFirst() {
+    public void listWithBlockingFirst() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = o.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);

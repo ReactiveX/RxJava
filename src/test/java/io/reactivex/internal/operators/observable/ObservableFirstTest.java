@@ -45,7 +45,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfNoneObservable() {
+    public void firstOrElseOfNoneObservable() {
         Observable<String> src = Observable.empty();
         src.first("default").toObservable().subscribe(w);
 
@@ -56,7 +56,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfSomeObservable() {
+    public void firstOrElseOfSomeObservable() {
         Observable<String> src = Observable.just("a", "b", "c");
         src.first("default").toObservable().subscribe(w);
 
@@ -67,7 +67,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfNoneMatchingThePredicateObservable() {
+    public void firstOrElseWithPredicateOfNoneMatchingThePredicateObservable() {
         Observable<String> src = Observable.just("a", "b", "c");
         src.filter(IS_D).first("default").toObservable().subscribe(w);
 
@@ -78,7 +78,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfSomeObservable() {
+    public void firstOrElseWithPredicateOfSomeObservable() {
         Observable<String> src = Observable.just("a", "b", "c", "d", "e", "f");
         src.filter(IS_D).first("default").toObservable().subscribe(w);
 
@@ -89,7 +89,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstObservable() {
+    public void firstObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3).firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -102,7 +102,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithOneElementObservable() {
+    public void firstWithOneElementObservable() {
         Observable<Integer> o = Observable.just(1).firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -115,7 +115,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithEmptyObservable() {
+    public void firstWithEmptyObservable() {
         Observable<Integer> o = Observable.<Integer> empty().firstElement().toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -128,7 +128,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateObservable() {
+    public void firstWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -148,7 +148,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndOneElementObservable() {
+    public void firstWithPredicateAndOneElementObservable() {
         Observable<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -168,7 +168,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndEmptyObservable() {
+    public void firstWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -188,7 +188,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultObservable() {
+    public void firstOrDefaultObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3)
                 .first(4).toObservable();
 
@@ -202,7 +202,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithOneElementObservable() {
+    public void firstOrDefaultWithOneElementObservable() {
         Observable<Integer> o = Observable.just(1).first(2).toObservable();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -215,7 +215,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithEmptyObservable() {
+    public void firstOrDefaultWithEmptyObservable() {
         Observable<Integer> o = Observable.<Integer> empty()
                 .first(1).toObservable();
 
@@ -229,7 +229,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateObservable() {
+    public void firstOrDefaultWithPredicateObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -249,7 +249,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndOneElementObservable() {
+    public void firstOrDefaultWithPredicateAndOneElementObservable() {
         Observable<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -269,7 +269,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndEmptyObservable() {
+    public void firstOrDefaultWithPredicateAndEmptyObservable() {
         Observable<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -289,7 +289,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfNone() {
+    public void firstOrElseOfNone() {
         Observable<String> src = Observable.empty();
         src.first("default").subscribe(wo);
 
@@ -299,7 +299,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseOfSome() {
+    public void firstOrElseOfSome() {
         Observable<String> src = Observable.just("a", "b", "c");
         src.first("default").subscribe(wo);
 
@@ -309,7 +309,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfNoneMatchingThePredicate() {
+    public void firstOrElseWithPredicateOfNoneMatchingThePredicate() {
         Observable<String> src = Observable.just("a", "b", "c");
         src.filter(IS_D).first("default").subscribe(wo);
 
@@ -319,7 +319,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrElseWithPredicateOfSome() {
+    public void firstOrElseWithPredicateOfSome() {
         Observable<String> src = Observable.just("a", "b", "c", "d", "e", "f");
         src.filter(IS_D).first("default").subscribe(wo);
 
@@ -329,7 +329,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirst() {
+    public void first() {
         Maybe<Integer> o = Observable.just(1, 2, 3).firstElement();
 
         o.subscribe(wm);
@@ -340,7 +340,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithOneElement() {
+    public void firstWithOneElement() {
         Maybe<Integer> o = Observable.just(1).firstElement();
 
         o.subscribe(wm);
@@ -351,7 +351,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithEmpty() {
+    public void firstWithEmpty() {
         Maybe<Integer> o = Observable.<Integer> empty().firstElement();
 
         o.subscribe(wm);
@@ -363,7 +363,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicate() {
+    public void firstWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -381,7 +381,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndOneElement() {
+    public void firstWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -399,7 +399,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndEmpty() {
+    public void firstWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -418,7 +418,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefault() {
+    public void firstOrDefault() {
         Single<Integer> o = Observable.just(1, 2, 3)
                 .first(4);
 
@@ -430,7 +430,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithOneElement() {
+    public void firstOrDefaultWithOneElement() {
         Single<Integer> o = Observable.just(1).first(2);
 
         o.subscribe(wo);
@@ -441,7 +441,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithEmpty() {
+    public void firstOrDefaultWithEmpty() {
         Single<Integer> o = Observable.<Integer> empty()
                 .first(1);
 
@@ -453,7 +453,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicate() {
+    public void firstOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -471,7 +471,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndOneElement() {
+    public void firstOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
                     @Override
@@ -489,7 +489,7 @@ public class ObservableFirstTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndEmpty() {
+    public void firstOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(new Predicate<Integer>() {
                     @Override

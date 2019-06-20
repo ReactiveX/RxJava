@@ -99,7 +99,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCreate() {
+    public void create() {
 
         Flowable<String> flowable = Flowable.just("one", "two", "three");
 
@@ -115,7 +115,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountAFewItemsFlowable() {
+    public void countAFewItemsFlowable() {
         Flowable<String> flowable = Flowable.just("a", "b", "c", "d");
 
         flowable.count().toFlowable().subscribe(w);
@@ -127,7 +127,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountZeroItemsFlowable() {
+    public void countZeroItemsFlowable() {
         Flowable<String> flowable = Flowable.empty();
         flowable.count().toFlowable().subscribe(w);
         // we should be called only once
@@ -137,7 +137,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountErrorFlowable() {
+    public void countErrorFlowable() {
         Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
@@ -152,7 +152,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountAFewItems() {
+    public void countAFewItems() {
         Flowable<String> flowable = Flowable.just("a", "b", "c", "d");
 
         flowable.count().subscribe(wo);
@@ -163,7 +163,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountZeroItems() {
+    public void countZeroItems() {
         Flowable<String> flowable = Flowable.empty();
         flowable.count().subscribe(wo);
         // we should be called only once
@@ -172,7 +172,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCountError() {
+    public void countError() {
         Flowable<String> f = Flowable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
@@ -186,7 +186,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testTakeFirstWithPredicateOfSome() {
+    public void takeFirstWithPredicateOfSome() {
         Flowable<Integer> flowable = Flowable.just(1, 3, 5, 4, 6, 3);
         flowable.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
@@ -196,7 +196,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void takeFirstWithPredicateOfNoneMatchingThePredicate() {
         Flowable<Integer> flowable = Flowable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         flowable.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -205,7 +205,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testTakeFirstOfSome() {
+    public void takeFirstOfSome() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
         flowable.take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
@@ -215,7 +215,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testTakeFirstOfNone() {
+    public void takeFirstOfNone() {
         Flowable<Integer> flowable = Flowable.empty();
         flowable.take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -224,7 +224,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testFirstOfNoneFlowable() {
+    public void firstOfNoneFlowable() {
         Flowable<Integer> flowable = Flowable.empty();
         flowable.firstElement().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -233,7 +233,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testFirstWithPredicateOfNoneMatchingThePredicateFlowable() {
+    public void firstWithPredicateOfNoneMatchingThePredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         flowable.filter(IS_EVEN).firstElement().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -242,7 +242,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testFirstOfNone() {
+    public void firstOfNone() {
         Flowable<Integer> flowable = Flowable.empty();
         flowable.firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
@@ -251,7 +251,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void firstWithPredicateOfNoneMatchingThePredicate() {
         Flowable<Integer> flowable = Flowable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         flowable.filter(IS_EVEN).firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
@@ -260,7 +260,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testReduce() {
+    public void reduce() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
         flowable.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -276,7 +276,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testReduceWithEmptyObservable() {
+    public void reduceWithEmptyObservable() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
         flowable.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -295,7 +295,7 @@ public class FlowableTests {
      * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
-    public void testReduceWithEmptyObservableAndSeed() {
+    public void reduceWithEmptyObservableAndSeed() {
         Flowable<Integer> flowable = Flowable.range(1, 0);
         int value = flowable.reduce(1, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -309,7 +309,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testReduceWithInitialValue() {
+    public void reduceWithInitialValue() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3, 4);
         flowable.reduce(50, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -325,7 +325,7 @@ public class FlowableTests {
 
     @Ignore("Throwing is not allowed from the unsafeCreate?!")
     @Test // FIXME throwing is not allowed from the create?!
-    public void testOnSubscribeFails() {
+    public void onSubscribeFails() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
@@ -342,7 +342,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testMaterializeDematerializeChaining() {
+    public void materializeDematerializeChaining() {
         Flowable<Integer> obs = Flowable.just(1);
         Flowable<Integer> chained = obs.materialize()
                 .dematerialize(Functions.<Notification<Integer>>identity());
@@ -365,7 +365,7 @@ public class FlowableTests {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
+    public void customObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
@@ -414,7 +414,7 @@ public class FlowableTests {
      * Result: Passes
      */
     @Test
-    public void testCustomObservableWithErrorInObserverSynchronous() {
+    public void customObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
@@ -456,7 +456,7 @@ public class FlowableTests {
      * Result: Passes
      */
     @Test
-    public void testCustomObservableWithErrorInObservableSynchronous() {
+    public void customObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
@@ -495,7 +495,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testPublishLast() throws InterruptedException {
+    public void publishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         ConnectableFlowable<String> connectable = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
@@ -533,7 +533,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testReplay() throws InterruptedException {
+    public void replay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         ConnectableFlowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
@@ -586,7 +586,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Flowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
@@ -631,7 +631,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCacheWithCapacity() throws InterruptedException {
+    public void cacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Flowable<String> f = Flowable.<String>unsafeCreate(new Publisher<String>() {
             @Override
@@ -686,7 +686,7 @@ public class FlowableTests {
      */
     @Test
     @Ignore("Subscribers can't throw")
-    public void testErrorThrownWithoutErrorHandlerSynchronous() {
+    public void errorThrownWithoutErrorHandlerSynchronous() {
         try {
             Flowable.error(new RuntimeException("failure"))
             .subscribe();
@@ -709,7 +709,7 @@ public class FlowableTests {
      */
     @Test
     @Ignore("Subscribers can't throw")
-    public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
+    public void errorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
         Flowable.unsafeCreate(new Publisher<Object>() {
@@ -737,7 +737,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testTakeWithErrorInObserver() {
+    public void takeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         Flowable.just("1", "2", "three", "4").take(3)
@@ -772,7 +772,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testOfType() {
+    public void ofType() {
         Flowable<String> flowable = Flowable.just(1, "abc", false, 2L).ofType(String.class);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -788,7 +788,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testOfTypeWithPolymorphism() {
+    public void ofTypeWithPolymorphism() {
         ArrayList<Integer> l1 = new ArrayList<Integer>();
         l1.add(1);
         LinkedList<Integer> l2 = new LinkedList<Integer>();
@@ -809,7 +809,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContainsFlowable() {
+    public void containsFlowable() {
         Flowable<Boolean> flowable = Flowable.just("a", "b", "c").contains("b").toFlowable();
 
         FlowableSubscriber<Boolean> subscriber = TestHelper.mockSubscriber();
@@ -823,7 +823,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContainsWithInexistenceFlowable() {
+    public void containsWithInexistenceFlowable() {
         Flowable<Boolean> flowable = Flowable.just("a", "b").contains("c").toFlowable();
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -838,7 +838,7 @@ public class FlowableTests {
 
     @Test
     @Ignore("null values are not allowed")
-    public void testContainsWithNullFlowable() {
+    public void containsWithNullFlowable() {
         Flowable<Boolean> flowable = Flowable.just("a", "b", null).contains(null).toFlowable();
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -852,7 +852,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContainsWithEmptyObservableFlowable() {
+    public void containsWithEmptyObservableFlowable() {
         Flowable<Boolean> flowable = Flowable.<String> empty().contains("a").toFlowable();
 
         FlowableSubscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -866,7 +866,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContains() {
+    public void contains() {
         Single<Boolean> single = Flowable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -880,7 +880,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContainsWithInexistence() {
+    public void containsWithInexistence() {
         Single<Boolean> single = Flowable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -895,7 +895,7 @@ public class FlowableTests {
 
     @Test
     @Ignore("null values are not allowed")
-    public void testContainsWithNull() {
+    public void containsWithNull() {
         Single<Boolean> single = Flowable.just("a", "b", null).contains(null);
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -909,7 +909,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testContainsWithEmptyObservable() {
+    public void containsWithEmptyObservable() {
         Single<Boolean> single = Flowable.<String> empty().contains("a");
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -923,7 +923,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testIgnoreElementsFlowable() {
+    public void ignoreElementsFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2, 3).ignoreElements().toFlowable();
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -936,7 +936,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testIgnoreElements() {
+    public void ignoreElements() {
         Completable completable = Flowable.just(1, 2, 3).ignoreElements();
 
         CompletableObserver observer = TestHelper.mockCompletableObserver();
@@ -948,7 +948,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testJustWithScheduler() {
+    public void justWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> flowable = Flowable.fromArray(1, 2).subscribeOn(scheduler);
 
@@ -966,7 +966,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testStartWithWithScheduler() {
+    public void startWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> flowable = Flowable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
@@ -986,7 +986,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testRangeWithScheduler() {
+    public void rangeWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> flowable = Flowable.range(3, 4).subscribeOn(scheduler);
 
@@ -1006,28 +1006,28 @@ public class FlowableTests {
     }
 
     @Test
-    public void testMergeWith() {
+    public void mergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).mergeWith(Flowable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
 
     @Test
-    public void testConcatWith() {
+    public void concatWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).concatWith(Flowable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
 
     @Test
-    public void testAmbWith() {
+    public void ambWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).ambWith(Flowable.just(2)).subscribe(ts);
         ts.assertValue(1);
     }
 
     @Test
-    public void testTakeWhileToList() {
+    public void takeWhileToList() {
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
         for (int i = 0; i < expectedCount; i++) {
@@ -1052,7 +1052,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testCompose() {
+    public void compose() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1, 2, 3).compose(new FlowableTransformer<Integer, String>() {
             @Override
@@ -1072,7 +1072,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testErrorThrownIssue1685() {
+    public void errorThrownIssue1685() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             FlowableProcessor<Object> processor = ReplayProcessor.create();
@@ -1095,12 +1095,12 @@ public class FlowableTests {
     }
 
     @Test
-    public void testEmptyIdentity() {
+    public void emptyIdentity() {
         assertEquals(Flowable.empty(), Flowable.empty());
     }
 
     @Test
-    public void testEmptyIsEmpty() {
+    public void emptyIsEmpty() {
         Flowable.<Integer>empty().subscribe(w);
 
         verify(w).onComplete();
@@ -1109,14 +1109,14 @@ public class FlowableTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testForEachWithNull() {
+    public void forEachWithNull() {
         Flowable.error(new Exception("boo"))
         //
         .forEach(null);
     }
 
     @Test
-    public void testExtend() {
+    public void extend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
         Object returned = Flowable.just(value).to(new FlowableConverter<Object, Object>() {
@@ -1133,7 +1133,7 @@ public class FlowableTests {
     }
 
     @Test
-    public void testAsExtend() {
+    public void asExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
         Object returned = Flowable.just(value).to(new FlowableConverter<Object, Object>() {

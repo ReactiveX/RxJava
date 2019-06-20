@@ -37,7 +37,7 @@ import io.reactivex.testsupport.*;
 public class FlowableWindowWithFlowableTest {
 
     @Test
-    public void testWindowViaFlowableNormal1() {
+    public void windowViaFlowableNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -94,7 +94,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testWindowViaFlowableBoundaryCompletes() {
+    public void windowViaFlowableBoundaryCompletes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -150,7 +150,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testWindowViaFlowableBoundaryThrows() {
+    public void windowViaFlowableBoundaryThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -200,7 +200,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testWindowViaFlowableThrows() {
+    public void windowViaFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -250,7 +250,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testWindowNoDuplication() {
+    public void windowNoDuplication() {
         final PublishProcessor<Integer> source = PublishProcessor.create();
         final TestSubscriber<Integer> tsw = new TestSubscriber<Integer>() {
             boolean once;
@@ -285,7 +285,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testWindowViaFlowableNoUnsubscribe() {
+    public void windowViaFlowableNoUnsubscribe() {
         Flowable<Integer> source = Flowable.range(1, 10);
         Supplier<Flowable<String>> boundary = new Supplier<Flowable<String>>() {
             @Override
@@ -301,7 +301,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testBoundaryUnsubscribedOnMainCompletion() {
+    public void boundaryUnsubscribedOnMainCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
         Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
@@ -328,7 +328,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testMainUnsubscribedOnBoundaryCompletion() {
+    public void mainUnsubscribedOnBoundaryCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
         Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
@@ -355,7 +355,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testChildUnsubscribed() {
+    public void childUnsubscribed() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
         Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {
@@ -387,7 +387,7 @@ public class FlowableWindowWithFlowableTest {
     }
 
     @Test
-    public void testInnerBackpressure() {
+    public void innerBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 10);
         final PublishProcessor<Integer> boundary = PublishProcessor.create();
         Supplier<Flowable<Integer>> boundaryFunc = new Supplier<Flowable<Integer>>() {

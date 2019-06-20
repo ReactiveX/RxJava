@@ -113,7 +113,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testRetryIndefinitely() {
+    public void retryIndefinitely() {
         Observer<String> observer = TestHelper.mockObserver();
         int numRetries = 20;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
@@ -132,7 +132,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testSchedulingNotificationHandler() {
+    public void schedulingNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         int numRetries = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
@@ -172,7 +172,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testOnNextFromNotificationHandler() {
+    public void onNextFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         int numRetries = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
@@ -202,7 +202,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testOnCompletedFromNotificationHandler() {
+    public void onCompletedFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         TestObserver<String> to = new TestObserver<String>(observer);
@@ -223,7 +223,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testOnErrorFromNotificationHandler() {
+    public void onErrorFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(2));
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
@@ -243,7 +243,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testSingleSubscriptionOnFirst() throws Exception {
+    public void singleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
         ObservableSource<Integer> onSubscribe = new ObservableSource<Integer>() {
             @Override
@@ -274,7 +274,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testOriginFails() {
+    public void originFails() {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         origin.subscribe(observer);
@@ -287,7 +287,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testRetryFail() {
+    public void retryFail() {
         int numRetries = 1;
         int numFailures = 2;
         Observer<String> observer = TestHelper.mockObserver();
@@ -306,7 +306,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testRetrySuccess() {
+    public void retrySuccess() {
         int numFailures = 1;
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numFailures));
@@ -325,7 +325,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testInfiniteRetry() {
+    public void infiniteRetry() {
         int numFailures = 20;
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numFailures));
@@ -350,7 +350,7 @@ public class ObservableRetryTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testRetrySubscribesAgainAfterError() throws Throwable {
+    public void retrySubscribesAgainAfterError() throws Throwable {
 
         // record emitted values with this action
         Consumer<Integer> record = mock(Consumer.class);
@@ -410,7 +410,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testUnsubscribeFromRetry() {
+    public void unsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
         Disposable sub = subject.retry().subscribe(new Consumer<Integer>() {
@@ -426,7 +426,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
+    public void retryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
@@ -452,7 +452,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
+    public void sourceObservableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestObserver<String> to = new TestObserver<String>();
@@ -483,7 +483,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testSourceObservableRetry1() throws InterruptedException {
+    public void sourceObservableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestObserver<String> to = new TestObserver<String>();
@@ -502,7 +502,7 @@ public class ObservableRetryTest {
     }
 
     @Test
-    public void testSourceObservableRetry0() throws InterruptedException {
+    public void sourceObservableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
         final TestObserver<String> to = new TestObserver<String>();
@@ -617,7 +617,7 @@ public class ObservableRetryTest {
     }
 
     @Test(timeout = 10000)
-    public void testUnsubscribeAfterError() {
+    public void unsubscribeAfterError() {
 
         Observer<Long> observer = TestHelper.mockObserver();
 
@@ -641,7 +641,7 @@ public class ObservableRetryTest {
     }
 
     @Test(timeout = 10000)
-    public void testTimeoutWithRetry() {
+    public void timeoutWithRetry() {
 
         Observer<Long> observer = TestHelper.mockObserver();
 
@@ -664,7 +664,7 @@ public class ObservableRetryTest {
     }
 
     @Test//(timeout = 15000)
-    public void testRetryWithBackpressure() throws InterruptedException {
+    public void retryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
         for (int j = 0; j < NUM_LOOPS; j++) {
             final int NUM_RETRIES = Flowable.bufferSize() * 2;
@@ -690,7 +690,7 @@ public class ObservableRetryTest {
     }
 
     @Test//(timeout = 15000)
-    public void testRetryWithBackpressureParallel() throws InterruptedException {
+    public void retryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
         final int NUM_RETRIES = Flowable.bufferSize() * 2;
         int ncpu = Runtime.getRuntime().availableProcessors();
@@ -790,7 +790,7 @@ public class ObservableRetryTest {
     }
 
     @Test//(timeout = 3000)
-    public void testIssue1900() throws InterruptedException {
+    public void issue1900() throws InterruptedException {
         Observer<String> observer = TestHelper.mockObserver();
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
@@ -831,7 +831,7 @@ public class ObservableRetryTest {
     }
 
     @Test//(timeout = 3000)
-    public void testIssue1900SourceNotSupportingBackpressure() {
+    public void issue1900SourceNotSupportingBackpressure() {
         Observer<String> observer = TestHelper.mockObserver();
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();

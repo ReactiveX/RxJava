@@ -3786,7 +3786,7 @@ public class CompletableTest {
     }
 
     @Test
-    public void testHookCreate() throws Throwable {
+    public void hookCreate() throws Throwable {
         CompletableSource subscriber = mock(CompletableSource.class);
         Completable create = Completable.unsafeCreate(subscriber);
 
@@ -4200,7 +4200,7 @@ public class CompletableTest {
     }
 
     @Test
-    public void testHookSubscribeStart() throws Throwable {
+    public void hookSubscribeStart() throws Throwable {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Completable completable = Completable.unsafeCreate(new CompletableSource() {
@@ -4215,7 +4215,7 @@ public class CompletableTest {
 
     @Ignore("No unsafeSubscribe")
     @Test
-    public void testHookUnsafeSubscribeStart() {
+    public void hookUnsafeSubscribeStart() {
         /*
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Completable completable = Completable.create(new CompletableOnSubscribe() {

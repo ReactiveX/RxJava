@@ -29,7 +29,7 @@ import io.reactivex.testsupport.*;
 public class FlowableTakeLastOneTest {
 
     @Test
-    public void testLastOfManyReturnsLast() {
+    public void lastOfManyReturnsLast() {
         TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
         Flowable.range(1, 10).takeLast(1).subscribe(s);
         s.assertValue(10);
@@ -40,7 +40,7 @@ public class FlowableTakeLastOneTest {
     }
 
     @Test
-    public void testLastOfEmptyReturnsEmpty() {
+    public void lastOfEmptyReturnsEmpty() {
         TestSubscriberEx<Object> s = new TestSubscriberEx<Object>();
         Flowable.empty().takeLast(1).subscribe(s);
         s.assertNoValues();
@@ -51,7 +51,7 @@ public class FlowableTakeLastOneTest {
     }
 
     @Test
-    public void testLastOfOneReturnsLast() {
+    public void lastOfOneReturnsLast() {
         TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
         Flowable.just(1).takeLast(1).subscribe(s);
         s.assertValue(1);
@@ -62,7 +62,7 @@ public class FlowableTakeLastOneTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstream() {
+    public void unsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = new Action() {
             @Override
@@ -80,7 +80,7 @@ public class FlowableTakeLastOneTest {
     }
 
     @Test
-    public void testLastWithBackpressure() {
+    public void lastWithBackpressure() {
         MySubscriber<Integer> s = new MySubscriber<Integer>(0);
         Flowable.just(1).takeLast(1).subscribe(s);
         assertEquals(0, s.list.size());
@@ -89,7 +89,7 @@ public class FlowableTakeLastOneTest {
     }
 
     @Test
-    public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
+    public void takeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
         long count = Flowable.range(1, num).doOnNext(new Consumer<Integer>() {

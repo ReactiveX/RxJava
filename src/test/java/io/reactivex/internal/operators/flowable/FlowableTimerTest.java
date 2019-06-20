@@ -52,7 +52,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testTimerOnce() {
+    public void timerOnce() {
         Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(subscriber);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
@@ -62,7 +62,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testTimerPeriodically() {
+    public void timerPeriodically() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
         Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
@@ -89,7 +89,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testInterval() {
+    public void interval() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
         w.subscribe(ts);
@@ -113,7 +113,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testWithMultipleSubscribersStartingAtSameTime() {
+    public void withMultipleSubscribersStartingAtSameTime() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
 
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
@@ -150,7 +150,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testWithMultipleStaggeredSubscribers() {
+    public void withMultipleStaggeredSubscribers() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
 
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
@@ -190,7 +190,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testWithMultipleStaggeredSubscribersAndPublish() {
+    public void withMultipleStaggeredSubscribersAndPublish() {
         ConnectableFlowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler).publish();
 
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
@@ -230,7 +230,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testOnceObserverThrows() {
+    public void onceObserverThrows() {
         Flowable<Long> source = Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler);
 
         source.safeSubscribe(new DefaultSubscriber<Long>() {
@@ -259,7 +259,7 @@ public class FlowableTimerTest {
     }
 
     @Test
-    public void testPeriodicObserverThrows() {
+    public void periodicObserverThrows() {
         Flowable<Long> source = Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
         InOrder inOrder = inOrder(subscriber);

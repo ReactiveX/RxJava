@@ -39,7 +39,7 @@ import io.reactivex.testsupport.*;
 public class ObservableConcatTest {
 
     @Test
-    public void testConcat() {
+    public void concat() {
         Observer<String> observer = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
@@ -55,7 +55,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testConcatWithList() {
+    public void concatWithList() {
         Observer<String> observer = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
@@ -73,7 +73,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testConcatObservableOfObservables() {
+    public void concatObservableOfObservables() {
         Observer<String> observer = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
@@ -105,7 +105,7 @@ public class ObservableConcatTest {
      * Simple concat of 2 asynchronous observables ensuring it emits in correct order.
      */
     @Test
-    public void testSimpleAsyncConcat() {
+    public void simpleAsyncConcat() {
         Observer<String> observer = TestHelper.mockObserver();
 
         TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
@@ -131,12 +131,12 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testNestedAsyncConcatLoop() throws Throwable {
+    public void nestedAsyncConcatLoop() throws Throwable {
         for (int i = 0; i < 500; i++) {
             if (i % 10 == 0) {
                 System.out.println("testNestedAsyncConcat >> " + i);
             }
-            testNestedAsyncConcat();
+            nestedAsyncConcat();
         }
     }
 
@@ -145,7 +145,7 @@ public class ObservableConcatTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testNestedAsyncConcat() throws InterruptedException {
+    public void nestedAsyncConcat() throws InterruptedException {
         Observer<String> observer = TestHelper.mockObserver();
 
         final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
@@ -262,7 +262,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testBlockedObservableOfObservables() {
+    public void blockedObservableOfObservables() {
         Observer<String> observer = TestHelper.mockObserver();
 
         final String[] o = { "1", "3", "5", "7" };
@@ -303,7 +303,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testConcatConcurrentWithInfinity() {
+    public void concatConcurrentWithInfinity() {
         final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
         //This Observable will send "hello" MAX_VALUE time.
         final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
@@ -334,7 +334,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testConcatNonBlockingObservables() {
+    public void concatNonBlockingObservables() {
 
         final CountDownLatch okToContinueW1 = new CountDownLatch(1);
         final CountDownLatch okToContinueW2 = new CountDownLatch(1);
@@ -387,7 +387,7 @@ public class ObservableConcatTest {
      * Test unsubscribing the concatenated Observable in a single thread.
      */
     @Test
-    public void testConcatUnsubscribe() {
+    public void concatUnsubscribe() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
         final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
@@ -429,7 +429,7 @@ public class ObservableConcatTest {
      * All observables will be running in different threads so subscribe() is unblocked. CountDownLatch is only used in order to call unsubscribe() in a predictable manner.
      */
     @Test
-    public void testConcatUnsubscribeConcurrent() {
+    public void concatUnsubscribeConcurrent() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
         final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
@@ -558,7 +558,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testMultipleObservers() {
+    public void multipleObservers() {
         Observer<Object> o1 = TestHelper.mockObserver();
         Observer<Object> o2 = TestHelper.mockObserver();
 
@@ -651,7 +651,7 @@ public class ObservableConcatTest {
     }
 
     @Test
-    public void testConcatOuterBackpressure() {
+    public void concatOuterBackpressure() {
         assertEquals(1,
                 (int) Observable.<Integer> empty()
                         .concatWith(Observable.just(1))
@@ -661,7 +661,7 @@ public class ObservableConcatTest {
 
     // https://github.com/ReactiveX/RxJava/issues/1818
     @Test
-    public void testConcatWithNonCompliantSourceDoubleOnComplete() {
+    public void concatWithNonCompliantSourceDoubleOnComplete() {
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -683,7 +683,7 @@ public class ObservableConcatTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue2890NoStackoverflow() throws InterruptedException {
+    public void issue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 

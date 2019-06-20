@@ -31,7 +31,7 @@ import io.reactivex.testsupport.*;
 public class FlowableMaterializeTest {
 
     @Test
-    public void testMaterialize1() {
+    public void materialize1() {
         // null will cause onError to be triggered before "three" can be
         // returned
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null,
@@ -62,7 +62,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testMaterialize2() {
+    public void materialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestNotificationSubscriber subscriber = new TestNotificationSubscriber();
@@ -91,7 +91,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
+    public void multipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
         Flowable<Notification<String>> m = Flowable.unsafeCreate(o).materialize();
@@ -101,7 +101,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testBackpressureOnEmptyStream() {
+    public void backpressureOnEmptyStream() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.<Integer> empty().materialize().subscribe(ts);
         ts.assertNoValues();
@@ -112,7 +112,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testBackpressureNoError() {
+    public void backpressureNoError() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.just(1, 2, 3).materialize().subscribe(ts);
         ts.assertNoValues();
@@ -126,7 +126,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testBackpressureNoErrorAsync() throws InterruptedException {
+    public void backpressureNoErrorAsync() throws InterruptedException {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.just(1, 2, 3)
             .materialize()
@@ -147,7 +147,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testBackpressureWithError() {
+    public void backpressureWithError() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.<Integer> error(new IllegalArgumentException()).materialize().subscribe(ts);
         ts.assertNoValues();
@@ -157,7 +157,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testBackpressureWithEmissionThenError() {
+    public void backpressureWithEmissionThenError() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         IllegalArgumentException ex = new IllegalArgumentException();
         Flowable.fromIterable(Arrays.asList(1)).concatWith(Flowable.<Integer> error(ex)).materialize()
@@ -174,7 +174,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testWithCompletionCausingError() {
+    public void withCompletionCausingError() {
         TestSubscriberEx<Notification<Integer>> ts = new TestSubscriberEx<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
@@ -189,7 +189,7 @@ public class FlowableMaterializeTest {
     }
 
     @Test
-    public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
+    public void unsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
 
         Flowable.<Integer>empty().materialize()

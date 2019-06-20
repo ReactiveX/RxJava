@@ -48,7 +48,7 @@ public class ObservableWithLatestFromTest {
         }
     };
     @Test
-    public void testSimple() {
+    public void simple() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -84,7 +84,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testEmptySource() {
+    public void emptySource() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -110,7 +110,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testEmptyOther() {
+    public void emptyOther() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -136,7 +136,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testUnsubscription() {
+    public void unsubscription() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -163,7 +163,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testSourceThrows() {
+    public void sourceThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -191,7 +191,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testOtherThrows() {
+    public void otherThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -219,7 +219,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testFunctionThrows() {
+    public void functionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 
@@ -245,7 +245,7 @@ public class ObservableWithLatestFromTest {
     }
 
     @Test
-    public void testNoDownstreamUnsubscribe() {
+    public void noDownstreamUnsubscribe() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> other = PublishSubject.create();
 

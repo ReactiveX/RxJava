@@ -33,7 +33,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableSkipLastTest {
 
     @Test
-    public void testSkipLastEmpty() {
+    public void skipLastEmpty() {
         Observable<String> o = Observable.<String> empty().skipLast(2);
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -44,7 +44,7 @@ public class ObservableSkipLastTest {
     }
 
     @Test
-    public void testSkipLast1() {
+    public void skipLast1() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three")).skipLast(2);
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -58,7 +58,7 @@ public class ObservableSkipLastTest {
     }
 
     @Test
-    public void testSkipLast2() {
+    public void skipLast2() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two")).skipLast(2);
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -69,7 +69,7 @@ public class ObservableSkipLastTest {
     }
 
     @Test
-    public void testSkipLastWithZeroCount() {
+    public void skipLastWithZeroCount() {
         Observable<String> w = Observable.just("one", "two");
         Observable<String> observable = w.skipLast(0);
 
@@ -83,7 +83,7 @@ public class ObservableSkipLastTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testSkipLastWithNull() {
+    public void skipLastWithNull() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -96,7 +96,7 @@ public class ObservableSkipLastTest {
     }
 
     @Test
-    public void testSkipLastWithBackpressure() {
+    public void skipLastWithBackpressure() {
         Observable<Integer> o = Observable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
         TestObserver<Integer> to = new TestObserver<Integer>();
         o.observeOn(Schedulers.computation()).subscribe(to);
@@ -107,7 +107,7 @@ public class ObservableSkipLastTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testSkipLastWithNegativeCount() {
+    public void skipLastWithNegativeCount() {
         Observable.just("one").skipLast(-1);
     }
 

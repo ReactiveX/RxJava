@@ -29,31 +29,31 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableLastTest {
 
     @Test
-    public void testLastWithElements() {
+    public void lastWithElements() {
         Maybe<Integer> last = Flowable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
     }
 
     @Test
-    public void testLastWithNoElements() {
+    public void lastWithNoElements() {
         Maybe<?> last = Flowable.empty().lastElement();
         assertNull(last.blockingGet());
     }
 
     @Test
-    public void testLastMultiSubscribe() {
+    public void lastMultiSubscribe() {
         Maybe<Integer> last = Flowable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
         assertEquals(3, last.blockingGet().intValue());
     }
 
     @Test
-    public void testLastViaFlowable() {
+    public void lastViaFlowable() {
         Flowable.just(1, 2, 3).lastElement();
     }
 
     @Test
-    public void testLast() {
+    public void last() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -66,7 +66,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastWithOneElement() {
+    public void lastWithOneElement() {
         Maybe<Integer> maybe = Flowable.just(1).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -79,7 +79,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastWithEmpty() {
+    public void lastWithEmpty() {
         Maybe<Integer> maybe = Flowable.<Integer> empty().lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -92,7 +92,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastWithPredicate() {
+    public void lastWithPredicate() {
         Maybe<Integer> maybe = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
@@ -113,7 +113,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastWithPredicateAndOneElement() {
+    public void lastWithPredicateAndOneElement() {
         Maybe<Integer> maybe = Flowable.just(1, 2)
             .filter(
                 new Predicate<Integer>() {
@@ -135,7 +135,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastWithPredicateAndEmpty() {
+    public void lastWithPredicateAndEmpty() {
         Maybe<Integer> maybe = Flowable.just(1)
             .filter(
                 new Predicate<Integer>() {
@@ -156,7 +156,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefault() {
+    public void lastOrDefault() {
         Single<Integer> single = Flowable.just(1, 2, 3)
                 .last(4);
 
@@ -170,7 +170,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithOneElement() {
+    public void lastOrDefaultWithOneElement() {
         Single<Integer> single = Flowable.just(1).last(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -183,7 +183,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithEmpty() {
+    public void lastOrDefaultWithEmpty() {
         Single<Integer> single = Flowable.<Integer> empty()
                 .last(1);
 
@@ -197,7 +197,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicate() {
+    public void lastOrDefaultWithPredicate() {
         Single<Integer> single = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
@@ -218,7 +218,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicateAndOneElement() {
+    public void lastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> single = Flowable.just(1, 2)
                 .filter(new Predicate<Integer>() {
 
@@ -239,7 +239,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicateAndEmpty() {
+    public void lastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> single = Flowable.just(1)
                 .filter(
                 new Predicate<Integer>() {

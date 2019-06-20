@@ -282,7 +282,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testSimple() {
+    public void simple() {
         Observable.range(1, 100).concatMapEager(toJust).subscribe(to);
 
         to.assertNoErrors();
@@ -291,7 +291,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testSimple2() {
+    public void simple2() {
         Observable.range(1, 100).concatMapEager(toRange).subscribe(to);
 
         to.assertNoErrors();
@@ -301,7 +301,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness2() {
+    public void eagerness2() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -321,7 +321,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness3() {
+    public void eagerness3() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -341,7 +341,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness4() {
+    public void eagerness4() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -361,7 +361,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness5() {
+    public void eagerness5() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -381,7 +381,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness6() {
+    public void eagerness6() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -401,7 +401,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness7() {
+    public void eagerness7() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -421,7 +421,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness8() {
+    public void eagerness8() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -441,7 +441,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEagerness9() {
+    public void eagerness9() {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override
@@ -460,7 +460,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testMainError() {
+    public void mainError() {
         Observable.<Integer>error(new TestException()).concatMapEager(toJust).subscribe(to);
 
         to.assertNoValues();
@@ -470,7 +470,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInnerError() {
+    public void innerError() {
         // TODO verify: concatMapEager subscribes first then consumes the sources is okay
 
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -487,7 +487,7 @@ public class ObservableConcatMapEagerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInnerEmpty() {
+    public void innerEmpty() {
         Observable.concatArrayEager(Observable.empty(), Observable.empty()).subscribe(to);
 
         to.assertNoValues();
@@ -496,7 +496,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testMapperThrows() {
+    public void mapperThrows() {
         Observable.just(1).concatMapEager(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
@@ -510,19 +510,19 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidMaxConcurrent() {
+    public void invalidMaxConcurrent() {
         Observable.just(1).concatMapEager(toJust, 0, Observable.bufferSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidCapacityHint() {
+    public void invalidCapacityHint() {
         Observable.just(1).concatMapEager(toJust, Observable.bufferSize(), 0);
     }
 
     @Test
 //    @SuppressWarnings("unchecked")
     @Ignore("Observable doesn't do backpressure")
-    public void testBackpressure() {
+    public void backpressure() {
 //        Observable.concatArrayEager(Observable.just(1), Observable.just(1)).subscribe(ts);
 //
 //        ts.assertNoErrors();
@@ -541,7 +541,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testAsynchronousRun() {
+    public void asynchronousRun() {
         Observable.range(1, 2).concatMapEager(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
@@ -555,7 +555,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void testReentrantWork() {
+    public void reentrantWork() {
         final PublishSubject<Integer> subject = PublishSubject.create();
 
         final AtomicBoolean once = new AtomicBoolean();
@@ -585,7 +585,7 @@ public class ObservableConcatMapEagerTest {
 
     @Test
     @Ignore("Observable doesn't do backpressure so it can't bound its input count")
-    public void testPrefetchIsBounded() {
+    public void prefetchIsBounded() {
         final AtomicInteger count = new AtomicInteger();
 
         TestObserver<Object> to = TestObserver.create();
@@ -611,7 +611,7 @@ public class ObservableConcatMapEagerTest {
 
     @Test
     @Ignore("Null values are not allowed in RS")
-    public void testInnerNull() {
+    public void innerNull() {
         Observable.just(1).concatMapEager(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
@@ -626,7 +626,7 @@ public class ObservableConcatMapEagerTest {
 
     @Test
     @Ignore("Observable doesn't do backpressure")
-    public void testMaxConcurrent5() {
+    public void maxConcurrent5() {
 //        final List<Long> requests = new ArrayList<Long>();
 //        Observable.range(1, 100).doOnRequest(new LongConsumer() {
 //            @Override
@@ -765,7 +765,7 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    public void innerError() {
+    public void innerError2() {
         Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer v) throws Exception {

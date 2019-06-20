@@ -27,7 +27,7 @@ import io.reactivex.subscribers.DefaultSubscriber;
 public class FlowableDoOnRequestTest {
 
     @Test
-    public void testUnsubscribeHappensAgainstParent() {
+    public void unsubscribeHappensAgainstParent() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Flowable.just(1).concatWith(Flowable.<Integer>never())
         //
@@ -50,7 +50,7 @@ public class FlowableDoOnRequestTest {
     }
 
     @Test
-    public void testDoRequest() {
+    public void doRequest() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.range(1, 5)
         //

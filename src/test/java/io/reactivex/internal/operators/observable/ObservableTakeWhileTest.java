@@ -31,7 +31,7 @@ import io.reactivex.testsupport.*;
 public class ObservableTakeWhileTest {
 
     @Test
-    public void testTakeWhile1() {
+    public void takeWhile1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Integer> take = w.takeWhile(new Predicate<Integer>() {
             @Override
@@ -50,7 +50,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileOnSubject1() {
+    public void takeWhileOnSubject1() {
         Subject<Integer> s = PublishSubject.create();
         Observable<Integer> take = s.takeWhile(new Predicate<Integer>() {
             @Override
@@ -79,7 +79,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhile2() {
+    public void takeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeWhile(new Predicate<String>() {
             int index;
@@ -100,7 +100,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileDoesntLeakErrors() {
+    public void takeWhileDoesntLeakErrors() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -119,7 +119,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testTakeWhileProtectsPredicateCall() {
+    public void takeWhileProtectsPredicateCall() {
         TestObservable source = new TestObservable(mock(Disposable.class), "one");
         final RuntimeException testException = new RuntimeException("test exception");
 
@@ -146,7 +146,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testUnsubscribeAfterTake() {
+    public void unsubscribeAfterTake() {
         Disposable upstream = mock(Disposable.class);
         TestObservable w = new TestObservable(upstream, "one", "two", "three");
 
@@ -216,7 +216,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testNoUnsubscribeDownstream() {
+    public void noUnsubscribeDownstream() {
         Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -235,7 +235,7 @@ public class ObservableTakeWhileTest {
     }
 
     @Test
-    public void testErrorCauseIncludesLastValue() {
+    public void errorCauseIncludesLastValue() {
         TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just("abc").takeWhile(new Predicate<String>() {
             @Override

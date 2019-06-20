@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableTakeLastTimedTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testTakeLastTimedWithNegativeCount() {
+    public void takeLastTimedWithNegativeCount() {
         Observable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
     }
 

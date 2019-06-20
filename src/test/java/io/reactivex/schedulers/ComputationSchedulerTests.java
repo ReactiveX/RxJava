@@ -35,7 +35,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
-    public void testThreadSafetyWhenSchedulerIsHoppingBetweenThreads() {
+    public void threadSafetyWhenSchedulerIsHoppingBetweenThreads() {
 
         final int NUM = 1000000;
         final CountDownLatch latch = new CountDownLatch(1);
@@ -90,7 +90,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
-    public final void testComputationThreadPool1() {
+    public final void computationThreadPool1() {
         Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
         Flowable<String> f = Flowable.<Integer> merge(f1, f2).map(new Function<Integer, String>() {
@@ -112,7 +112,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
-    public final void testMergeWithExecutorScheduler() {
+    public final void mergeWithExecutorScheduler() {
 
         final String currentThreadName = Thread.currentThread().getName();
 
@@ -139,26 +139,26 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     @Ignore("Unhandled errors are no longer thrown")
-    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    public final void unhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.unhandledErrorIsDeliveredToThreadHandler(getScheduler());
     }
 
     @Test
-    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    public final void handledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 
     @Test(timeout = 60000)
-    public void testCancelledTaskRetention() throws InterruptedException {
+    public void cancelledTaskRetention() throws InterruptedException {
         Worker w = Schedulers.computation().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, false);
+            ExecutorSchedulerTest.cancelledRetention(w, false);
         } finally {
             w.dispose();
         }
         w = Schedulers.computation().createWorker();
         try {
-            ExecutorSchedulerTest.testCancelledRetention(w, true);
+            ExecutorSchedulerTest.cancelledRetention(w, true);
         } finally {
             w.dispose();
         }

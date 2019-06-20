@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 public class ObservableRepeatTest {
 
     @Test(timeout = 2000)
-    public void testRepetition() {
+    public void repetition() {
         int num = 10;
         final AtomicInteger count = new AtomicInteger();
         int value = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -55,19 +55,19 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatTake() {
+    public void repeatTake() {
         Observable<Integer> xs = Observable.just(1, 2);
         Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().blockingGet().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
-    public void testNoStackOverFlow() {
+    public void noStackOverFlow() {
         Observable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).blockingLast();
     }
 
     @Test
-    public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
+    public void repeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
         Observable<Integer> oi = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -101,7 +101,7 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatAndTake() {
+    public void repeatAndTake() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.just(1).repeat().take(10).subscribe(o);
@@ -112,7 +112,7 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatLimited() {
+    public void repeatLimited() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.just(1).repeat(10).subscribe(o);
@@ -123,7 +123,7 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatError() {
+    public void repeatError() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.error(new TestException()).repeat(10).subscribe(o);
@@ -135,7 +135,7 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatZero() {
+    public void repeatZero() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.just(1).repeat(0).subscribe(o);
@@ -146,7 +146,7 @@ public class ObservableRepeatTest {
     }
 
     @Test(timeout = 2000)
-    public void testRepeatOne() {
+    public void repeatOne() {
         Observer<Object> o = TestHelper.mockObserver();
 
         Observable.just(1).repeat(1).subscribe(o);
@@ -158,7 +158,7 @@ public class ObservableRepeatTest {
 
     /** Issue #2587. */
     @Test
-    public void testRepeatAndDistinctUnbounded() {
+    public void repeatAndDistinctUnbounded() {
         Observable<Integer> src = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
                 .take(3)
                 .repeat(3)
@@ -175,7 +175,7 @@ public class ObservableRepeatTest {
 
     /** Issue #2844: wrong target of request. */
     @Test(timeout = 3000)
-    public void testRepeatRetarget() {
+    public void repeatRetarget() {
         final List<Integer> concatBase = new ArrayList<Integer>();
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.just(1, 2)
@@ -284,7 +284,7 @@ public class ObservableRepeatTest {
     }
 
     @Test
-    public void testRepeatWhen() {
+    public void repeatWhen() {
         Observable.error(new TestException())
         .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
             @Override

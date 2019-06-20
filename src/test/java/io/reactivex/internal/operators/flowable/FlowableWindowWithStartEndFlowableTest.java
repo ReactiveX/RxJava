@@ -45,7 +45,7 @@ public class FlowableWindowWithStartEndFlowableTest {
     }
 
     @Test
-    public void testFlowableBasedOpenerAndCloser() {
+    public void flowableBasedOpenerAndCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -96,7 +96,7 @@ public class FlowableWindowWithStartEndFlowableTest {
     }
 
     @Test
-    public void testFlowableBasedCloser() {
+    public void flowableBasedCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -197,7 +197,7 @@ public class FlowableWindowWithStartEndFlowableTest {
     }
 
     @Test
-    public void testNoUnsubscribeAndNoLeak() {
+    public void noUnsubscribeAndNoLeak() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         PublishProcessor<Integer> open = PublishProcessor.create();
@@ -234,7 +234,7 @@ public class FlowableWindowWithStartEndFlowableTest {
     }
 
     @Test
-    public void testUnsubscribeAll() {
+    public void unsubscribeAll() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         PublishProcessor<Integer> open = PublishProcessor.create();

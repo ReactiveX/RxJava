@@ -36,7 +36,7 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicScheduling() throws Throwable {
+    public final void periodicScheduling() throws Throwable {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -86,7 +86,7 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicSchedulingUnsubscription() throws Throwable {
+    public final void periodicSchedulingUnsubscription() throws Throwable {
         final Function<Long, Void> calledOp = mock(Function.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -134,7 +134,7 @@ public class TestSchedulerTest {
     }
 
     @Test
-    public final void testImmediateUnsubscribes() {
+    public final void immediateUnsubscribes() {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
@@ -158,7 +158,7 @@ public class TestSchedulerTest {
     }
 
     @Test
-    public final void testImmediateUnsubscribes2() {
+    public final void immediateUnsubscribes2() {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
         try {
@@ -182,7 +182,7 @@ public class TestSchedulerTest {
     }
 
     @Test
-    public final void testNestedSchedule() {
+    public final void nestedSchedule() {
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 

@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableThrottleLastTests {
 
     @Test
-    public void testThrottle() {
+    public void throttle() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         TestScheduler s = new TestScheduler();

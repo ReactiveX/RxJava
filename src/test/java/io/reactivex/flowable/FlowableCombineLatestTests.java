@@ -30,7 +30,7 @@ public class FlowableCombineLatestTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfCombineLatest() {
+    public void covarianceOfCombineLatest() {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<CoolRating> ratings = Flowable.just(new CoolRating());
 
@@ -66,7 +66,7 @@ public class FlowableCombineLatestTests {
 
     @Ignore("No longer allowed")
     @Test
-    public void testNullEmitting() throws Exception {
+    public void nullEmitting() throws Exception {
         // FIXME this is no longer allowed
         Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault((Boolean) null);
         Flowable<Boolean> nonNullObservable = BehaviorProcessor.createDefault(true);

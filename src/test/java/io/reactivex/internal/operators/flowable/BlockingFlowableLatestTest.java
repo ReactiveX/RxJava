@@ -30,7 +30,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class BlockingFlowableLatestTest {
     @Test(timeout = 1000)
-    public void testSimple() {
+    public void simple() {
         TestScheduler scheduler = new TestScheduler();
 
         Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
@@ -54,7 +54,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(timeout = 1000)
-    public void testSameSourceMultipleIterators() {
+    public void sameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
         Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
@@ -80,7 +80,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(timeout = 1000, expected = NoSuchElementException.class)
-    public void testEmpty() {
+    public void empty() {
         Flowable<Long> source = Flowable.<Long> empty();
 
         Iterable<Long> iter = source.blockingLatest();
@@ -93,7 +93,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(timeout = 1000, expected = NoSuchElementException.class)
-    public void testSimpleJustNext() {
+    public void simpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
         Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
@@ -112,7 +112,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(/* timeout = 1000, */expected = RuntimeException.class)
-    public void testHasNextThrows() {
+    public void hasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
         Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
@@ -127,7 +127,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(timeout = 1000, expected = RuntimeException.class)
-    public void testNextThrows() {
+    public void nextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
         Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
@@ -141,7 +141,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(timeout = 1000)
-    public void testFasterSource() {
+    public void fasterSource() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         Flowable<Integer> blocker = source;
 
@@ -195,7 +195,7 @@ public class BlockingFlowableLatestTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void empty() {
+    public void empty2() {
         Flowable.empty().blockingLatest().iterator().next();
     }
 

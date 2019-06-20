@@ -42,7 +42,7 @@ public class TestSubscriberExTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testAssert() {
+    public void assertTestSubscriberEx() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         oi.subscribe(ts);
@@ -53,7 +53,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testAssertNotMatchCount() {
+    public void assertNotMatchCount() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         oi.subscribe(ts);
@@ -66,7 +66,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testAssertNotMatchValue() {
+    public void assertNotMatchValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         oi.subscribe(ts);
@@ -137,7 +137,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testAssertTerminalEventNotReceived() {
+    public void assertTerminalEventNotReceived() {
         PublishProcessor<Integer> p = PublishProcessor.create();
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         p.subscribe(ts);
@@ -153,7 +153,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testWrappingMock() {
+    public void wrappingMock() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
 
@@ -167,7 +167,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testWrappingMockWhenUnsubscribeInvolved() {
+    public void wrappingMockWhenUnsubscribeInvolved() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
         oi.subscribe(new TestSubscriberEx<Integer>(mockSubscriber));
@@ -180,7 +180,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testAssertError() {
+    public void assertError() {
         RuntimeException e = new RuntimeException("Oops");
         TestSubscriberEx<Object> subscriber = new TestSubscriberEx<Object>();
         Flowable.error(e).subscribe(subscriber);
@@ -188,7 +188,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testAwaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
+    public void awaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Flowable.just(1)
@@ -207,25 +207,25 @@ public class TestSubscriberExTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNullDelegate1() {
+    public void nullDelegate1() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(null);
         ts.onComplete();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNullDelegate2() {
+    public void nullDelegate2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(null);
         ts.onComplete();
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNullDelegate3() {
+    public void nullDelegate3() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(null, 0L);
         ts.onComplete();
     }
 
     @Test
-    public void testDelegate1() {
+    public void delegate1() {
         TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>();
         ts0.onSubscribe(EmptySubscription.INSTANCE);
 
@@ -236,7 +236,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDelegate2() {
+    public void delegate2() {
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
         TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>(ts1);
         ts2.onComplete();
@@ -245,7 +245,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDelegate3() {
+    public void delegate3() {
         TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
         TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>(ts1, 0L);
         ts2.onComplete();
@@ -253,13 +253,13 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testUnsubscribed() {
+    public void unsubscribed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         assertFalse(ts.isCancelled());
     }
 
     @Test
-    public void testNoErrors() {
+    public void noErrors() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new TestException());
         try {
@@ -272,7 +272,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNotCompleted() {
+    public void notCompleted() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         try {
             ts.assertComplete();
@@ -284,7 +284,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleCompletions() {
+    public void multipleCompletions() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onComplete();
         ts.onComplete();
@@ -298,7 +298,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onComplete();
         try {
@@ -311,7 +311,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleCompletions2() {
+    public void multipleCompletions2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onComplete();
         ts.onComplete();
@@ -325,7 +325,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleErrors() {
+    public void multipleErrors() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
@@ -349,7 +349,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleErrors2() {
+    public void multipleErrors2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
@@ -370,7 +370,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleErrors3() {
+    public void multipleErrors3() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
@@ -391,7 +391,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testMultipleErrors4() {
+    public void multipleErrors4() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
         ts.onError(new TestException());
@@ -412,7 +412,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDifferentError() {
+    public void differentError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new TestException());
         try {
@@ -425,7 +425,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDifferentError2() {
+    public void differentError2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new RuntimeException());
         try {
@@ -438,7 +438,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDifferentError3() {
+    public void differentError3() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new RuntimeException());
         try {
@@ -452,7 +452,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testDifferentError4() {
+    public void differentError4() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new RuntimeException());
         try {
@@ -465,7 +465,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testErrorInPredicate() {
+    public void errorInPredicate() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onError(new RuntimeException());
         try {
@@ -483,7 +483,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoError() {
+    public void noError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         try {
             ts.assertError(TestException.class);
@@ -495,7 +495,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoError2() {
+    public void noError2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         try {
             ts.assertError(new TestException());
@@ -507,7 +507,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoError3() {
+    public void noError3() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         try {
             ts.assertError(Functions.<Throwable>alwaysTrue());
@@ -519,7 +519,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testInterruptTerminalEventAwait() {
+    public void interruptTerminalEventAwait() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         final Thread t0 = Thread.currentThread();
@@ -545,7 +545,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testInterruptTerminalEventAwaitTimed() {
+    public void interruptTerminalEventAwaitTimed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         final Thread t0 = Thread.currentThread();
@@ -572,7 +572,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testInterruptTerminalEventAwaitAndUnsubscribe() {
+    public void interruptTerminalEventAwaitAndUnsubscribe() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         final Thread t0 = Thread.currentThread();
@@ -601,7 +601,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoTerminalEventBut1Completed() {
+    public void noTerminalEventBut1Completed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         ts.onComplete();
@@ -615,7 +615,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoTerminalEventBut1Error() {
+    public void noTerminalEventBut1Error() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         ts.onError(new TestException());
@@ -629,7 +629,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoTerminalEventBut1Error1Completed() {
+    public void noTerminalEventBut1Error1Completed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         ts.onComplete();
@@ -644,7 +644,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoTerminalEventBut2Errors() {
+    public void noTerminalEventBut2Errors() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
 
@@ -666,7 +666,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testNoValues() {
+    public void noValues() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onNext(1);
 
@@ -679,7 +679,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void testValueCount() {
+    public void valueCount() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         ts.onNext(1);
         ts.onNext(2);
@@ -693,7 +693,7 @@ public class TestSubscriberExTest {
     }
 
     @Test(timeout = 1000)
-    public void testOnCompletedCrashCountsDownLatch() {
+    public void onCompletedCrashCountsDownLatch() {
         TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>() {
             @Override
             public void onComplete() {
@@ -712,7 +712,7 @@ public class TestSubscriberExTest {
     }
 
     @Test(timeout = 1000)
-    public void testOnErrorCrashCountsDownLatch() {
+    public void onErrorCrashCountsDownLatch() {
         TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>() {
             @Override
             public void onError(Throwable e) {
@@ -790,7 +790,7 @@ public class TestSubscriberExTest {
     }
 
     @Test
-    public void assertError() {
+    public void assertError2() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         try {

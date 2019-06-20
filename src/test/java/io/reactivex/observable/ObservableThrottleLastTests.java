@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableThrottleLastTests {
 
     @Test
-    public void testThrottle() {
+    public void throttle() {
         Observer<Integer> observer = TestHelper.mockObserver();
 
         TestScheduler s = new TestScheduler();

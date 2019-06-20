@@ -146,7 +146,7 @@ public class FlowableConversionTest {
     }
 
     @Test
-    public void testConversionBetweenObservableClasses() {
+    public void conversionBetweenObservableClasses() {
         final TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
 
             @Override
@@ -203,7 +203,7 @@ public class FlowableConversionTest {
     }
 
     @Test
-    public void testConvertToConcurrentQueue() {
+    public void convertToConcurrentQueue() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
         ConcurrentLinkedQueue<? extends Integer> queue = Flowable.range(0, 5)

@@ -35,7 +35,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableTakeLastTest {
 
     @Test
-    public void testTakeLastEmpty() {
+    public void takeLastEmpty() {
         Flowable<String> w = Flowable.empty();
         Flowable<String> take = w.takeLast(2);
 
@@ -48,7 +48,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testTakeLast1() {
+    public void takeLast1() {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> take = w.takeLast(2);
 
@@ -64,7 +64,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testTakeLast2() {
+    public void takeLast2() {
         Flowable<String> w = Flowable.just("one");
         Flowable<String> take = w.takeLast(10);
 
@@ -77,7 +77,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testTakeLastWithZeroCount() {
+    public void takeLastWithZeroCount() {
         Flowable<String> w = Flowable.just("one");
         Flowable<String> take = w.takeLast(0);
 
@@ -91,7 +91,7 @@ public class FlowableTakeLastTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testTakeLastWithNull() {
+    public void takeLastWithNull() {
         Flowable<String> w = Flowable.just("one", null, "three");
         Flowable<String> take = w.takeLast(2);
 
@@ -106,12 +106,12 @@ public class FlowableTakeLastTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testTakeLastWithNegativeCount() {
+    public void takeLastWithNegativeCount() {
         Flowable.just("one").takeLast(-1);
     }
 
     @Test
-    public void testBackpressure1() {
+    public void backpressure1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
@@ -122,7 +122,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testBackpressure2() {
+    public void backpressure2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
@@ -150,7 +150,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testIssue1522() {
+    public void issue1522() {
         // https://github.com/ReactiveX/RxJava/issues/1522
         assertEquals(0, Flowable
                 .empty()
@@ -167,7 +167,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testIgnoreRequest1() {
+    public void ignoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -193,7 +193,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testIgnoreRequest2() {
+    public void ignoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -218,7 +218,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test(timeout = 30000)
-    public void testIgnoreRequest3() {
+    public void ignoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -244,7 +244,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testIgnoreRequest4() {
+    public void ignoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -270,7 +270,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test
-    public void testUnsubscribeTakesEffectEarlyOnFastPath() {
+    public void unsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -298,7 +298,7 @@ public class FlowableTakeLastTest {
     }
 
     @Test(timeout = 10000)
-    public void testRequestOverflow() {
+    public void requestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
         Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
 

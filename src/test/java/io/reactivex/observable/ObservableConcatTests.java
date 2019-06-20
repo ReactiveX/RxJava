@@ -26,7 +26,7 @@ import io.reactivex.observable.ObservableCovarianceTest.*;
 public class ObservableConcatTests {
 
     @Test
-    public void testConcatSimple() {
+    public void concatSimple() {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
 
@@ -39,7 +39,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatWithObservableOfObservable() {
+    public void concatWithObservableOfObservable() {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
         Observable<String> o3 = Observable.just("five", "six");
@@ -57,7 +57,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatWithIterableOfObservable() {
+    public void concatWithIterableOfObservable() {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
         Observable<String> o3 = Observable.just("five", "six");
@@ -76,7 +76,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance() {
+    public void concatCovariance() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media = new Media();
@@ -97,7 +97,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance2() {
+    public void concatCovariance2() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media1 = new Media();
@@ -120,7 +120,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance3() {
+    public void concatCovariance3() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media = new Media();
@@ -139,7 +139,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance4() {
+    public void concatCovariance4() {
         final HorrorMovie horrorMovie1 = new HorrorMovie();
         final Movie movie = new Movie();
         Media media = new Media();

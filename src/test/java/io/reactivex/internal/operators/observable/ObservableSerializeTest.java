@@ -36,7 +36,7 @@ public class ObservableSerializeTest {
     }
 
     @Test
-    public void testSingleThreadedBasic() {
+    public void singleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -54,7 +54,7 @@ public class ObservableSerializeTest {
     }
 
     @Test
-    public void testMultiThreadedBasic() {
+    public void multiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -77,7 +77,7 @@ public class ObservableSerializeTest {
     }
 
     @Test
-    public void testMultiThreadedWithNPE() {
+    public void multiThreadedWithNPE() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
         Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
@@ -106,7 +106,7 @@ public class ObservableSerializeTest {
     }
 
     @Test
-    public void testMultiThreadedWithNPEinMiddle() {
+    public void multiThreadedWithNPEinMiddle() {
         boolean lessThan9 = false;
         for (int i = 0; i < 3; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");

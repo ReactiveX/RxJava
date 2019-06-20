@@ -25,7 +25,7 @@ import io.reactivex.functions.*;
 public class FlowableWindowTests {
 
     @Test
-    public void testWindow() {
+    public void window() {
         final ArrayList<List<Integer>> lists = new ArrayList<List<Integer>>();
 
         Flowable.concat(

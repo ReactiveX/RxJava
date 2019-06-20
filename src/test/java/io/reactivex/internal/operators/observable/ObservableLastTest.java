@@ -30,31 +30,31 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableLastTest {
 
     @Test
-    public void testLastWithElements() {
+    public void lastWithElements() {
         Maybe<Integer> last = Observable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
     }
 
     @Test
-    public void testLastWithNoElements() {
+    public void lastWithNoElements() {
         Maybe<?> last = Observable.empty().lastElement();
         assertNull(last.blockingGet());
     }
 
     @Test
-    public void testLastMultiSubscribe() {
+    public void lastMultiSubscribe() {
         Maybe<Integer> last = Observable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
         assertEquals(3, last.blockingGet().intValue());
     }
 
     @Test
-    public void testLastViaObservable() {
+    public void lastViaObservable() {
         Observable.just(1, 2, 3).lastElement();
     }
 
     @Test
-    public void testLast() {
+    public void last() {
         Maybe<Integer> o = Observable.just(1, 2, 3).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -67,7 +67,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastWithOneElement() {
+    public void lastWithOneElement() {
         Maybe<Integer> o = Observable.just(1).lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -80,7 +80,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastWithEmpty() {
+    public void lastWithEmpty() {
         Maybe<Integer> o = Observable.<Integer> empty().lastElement();
 
         MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
@@ -93,7 +93,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastWithPredicate() {
+    public void lastWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
@@ -114,7 +114,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastWithPredicateAndOneElement() {
+    public void lastWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
             .filter(
                 new Predicate<Integer>() {
@@ -136,7 +136,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastWithPredicateAndEmpty() {
+    public void lastWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
             .filter(
                 new Predicate<Integer>() {
@@ -157,7 +157,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefault() {
+    public void lastOrDefault() {
         Single<Integer> o = Observable.just(1, 2, 3)
                 .last(4);
 
@@ -171,7 +171,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithOneElement() {
+    public void lastOrDefaultWithOneElement() {
         Single<Integer> o = Observable.just(1).last(2);
 
         SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
@@ -184,7 +184,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithEmpty() {
+    public void lastOrDefaultWithEmpty() {
         Single<Integer> o = Observable.<Integer> empty()
                 .last(1);
 
@@ -198,7 +198,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicate() {
+    public void lastOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
@@ -219,7 +219,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicateAndOneElement() {
+    public void lastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
 
@@ -240,7 +240,7 @@ public class ObservableLastTest {
     }
 
     @Test
-    public void testLastOrDefaultWithPredicateAndEmpty() {
+    public void lastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(
                 new Predicate<Integer>() {

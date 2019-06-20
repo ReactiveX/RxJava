@@ -36,7 +36,7 @@ public class SafeSubscriberTest {
      * Ensure onNext can not be called after onError.
      */
     @Test
-    public void testOnNextAfterOnError() {
+    public void onNextAfterOnError() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
 
@@ -56,7 +56,7 @@ public class SafeSubscriberTest {
      * Ensure onComplete can not be called after onError.
      */
     @Test
-    public void testOnCompletedAfterOnError() {
+    public void onCompletedAfterOnError() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
 
@@ -77,7 +77,7 @@ public class SafeSubscriberTest {
      * Ensure onNext can not be called after onComplete.
      */
     @Test
-    public void testOnNextAfterOnCompleted() {
+    public void onNextAfterOnCompleted() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
 
@@ -98,7 +98,7 @@ public class SafeSubscriberTest {
      * Ensure onError can not be called after onComplete.
      */
     @Test
-    public void testOnErrorAfterOnCompleted() {
+    public void onErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
         Flowable<String> st = Flowable.unsafeCreate(t);
 
@@ -574,7 +574,7 @@ public class SafeSubscriberTest {
 
     @Test
     @Ignore("Observers can't throw")
-    public void testOnCompletedThrows() {
+    public void onCompletedThrows() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new DefaultSubscriber<Integer>() {
             @Override
@@ -602,7 +602,7 @@ public class SafeSubscriberTest {
     }
 
     @Test
-    public void testActual() {
+    public void actual() {
         Subscriber<Integer> actual = new DefaultSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {

@@ -41,7 +41,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public final void testUnSubscribeForScheduler() throws InterruptedException {
+    public final void unSubscribeForScheduler() throws InterruptedException {
         final AtomicInteger countReceived = new AtomicInteger();
         final AtomicInteger countGenerated = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -91,7 +91,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testUnsubscribeRecursiveScheduleFromOutside() throws InterruptedException {
+    public void unsubscribeRecursiveScheduleFromOutside() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
@@ -140,7 +140,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testUnsubscribeRecursiveScheduleFromInside() throws InterruptedException {
+    public void unsubscribeRecursiveScheduleFromInside() throws InterruptedException {
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
         final Worker inner = getScheduler().createWorker();
@@ -177,7 +177,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testUnsubscribeRecursiveScheduleWithDelay() throws InterruptedException {
+    public void unsubscribeRecursiveScheduleWithDelay() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
@@ -254,7 +254,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testRecursion() throws InterruptedException {
+    public void recursion() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
@@ -283,7 +283,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public void testRecursionAndOuterUnsubscribe() throws InterruptedException {
+    public void recursionAndOuterUnsubscribe() throws InterruptedException {
         // use latches instead of Thread.sleep
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
@@ -364,7 +364,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     }
 
     @Test
-    public final void testSubscribeWithScheduler() throws InterruptedException {
+    public final void subscribeWithScheduler() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
         final AtomicInteger count = new AtomicInteger();

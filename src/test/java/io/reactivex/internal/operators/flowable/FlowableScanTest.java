@@ -37,7 +37,7 @@ import io.reactivex.testsupport.*;
 public class FlowableScanTest {
 
     @Test
-    public void testScanIntegersWithInitialValue() {
+    public void scanIntegersWithInitialValue() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
@@ -63,7 +63,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanIntegersWithoutInitialValue() {
+    public void scanIntegersWithoutInitialValue() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> flowable = Flowable.just(1, 2, 3);
@@ -89,7 +89,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
+    public void scanIntegersWithoutInitialValueAndOnlyOneValue() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> flowable = Flowable.just(1);
@@ -136,7 +136,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testBackpressureWithInitialValue() {
+    public void backpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(0, new BiFunction<Integer, Integer, Integer>() {
@@ -177,7 +177,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testBackpressureWithoutInitialValue() {
+    public void backpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(new BiFunction<Integer, Integer, Integer>() {
@@ -218,7 +218,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testNoBackpressureWithInitialValue() {
+    public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
                 .scan(0, new BiFunction<Integer, Integer, Integer>() {
@@ -257,7 +257,7 @@ public class FlowableScanTest {
      * This uses the public API collect which uses scan under the covers.
      */
     @Test
-    public void testSeedFactory() {
+    public void seedFactory() {
         Single<List<Integer>> o = Flowable.range(1, 10)
                 .collect(new Supplier<List<Integer>>() {
 
@@ -283,7 +283,7 @@ public class FlowableScanTest {
      * This uses the public API collect which uses scan under the covers.
      */
     @Test
-    public void testSeedFactoryFlowable() {
+    public void seedFactoryFlowable() {
         Flowable<List<Integer>> f = Flowable.range(1, 10)
                 .collect(new Supplier<List<Integer>>() {
 
@@ -306,7 +306,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithRequestOne() {
+    public void scanWithRequestOne() {
         Flowable<Integer> f = Flowable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -323,7 +323,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanShouldNotRequestZero() {
+    public void scanShouldNotRequestZero() {
         final AtomicReference<Subscription> producer = new AtomicReference<Subscription>();
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
@@ -371,7 +371,7 @@ public class FlowableScanTest {
 
     @Test
     @Ignore("scanSeed no longer emits without upstream signal")
-    public void testInitialValueEmittedNoProducer() {
+    public void initialValueEmittedNoProducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -390,7 +390,7 @@ public class FlowableScanTest {
 
     @Test
     @Ignore("scanSeed no longer emits without upstream signal")
-    public void testInitialValueEmittedWithProducer() {
+    public void initialValueEmittedWithProducer() {
         Flowable<Integer> source = Flowable.never();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -480,7 +480,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testUnsubscribeScan() {
+    public void unsubscribeScan() {
 
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
@@ -500,7 +500,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
+    public void scanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
         Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
             @Override
@@ -526,7 +526,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
+    public void scanWithSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         Burst.item(1).create()
           .scan(0, throwingBiFunction(e))
@@ -536,7 +536,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
+    public void scanWithSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
         Burst.items(1, 2).create().scan(0, new BiFunction<Integer, Integer, Integer>() {
@@ -553,7 +553,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithSeedCompletesNormally() {
+    public void scanWithSeedCompletesNormally() {
         Flowable.just(1, 2, 3).scan(0, SUM)
           .test()
           .assertValues(0, 1, 3, 6)
@@ -561,7 +561,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanWithSeedWhenScanSeedProviderThrows() {
+    public void scanWithSeedWhenScanSeedProviderThrows() {
         final RuntimeException e = new RuntimeException();
         Flowable.just(1, 2, 3).scanWith(throwingSupplier(e),
             SUM)
@@ -571,7 +571,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanNoSeed() {
+    public void scanNoSeed() {
         Flowable.just(1, 2, 3)
            .scan(SUM)
            .test()
@@ -580,7 +580,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
+    public void scanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
         Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
             @Override
@@ -606,7 +606,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanNoSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
+    public void scanNoSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()
           .scan(throwingBiFunction(e))
@@ -616,7 +616,7 @@ public class FlowableScanTest {
     }
 
     @Test
-    public void testScanNoSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
+    public void scanNoSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
         Burst.items(1, 2, 3).create().scan(new BiFunction<Integer, Integer, Integer>() {

@@ -35,7 +35,7 @@ import io.reactivex.testsupport.*;
 
 public class ObservableCacheTest {
     @Test
-    public void testColdReplayNoBackpressure() {
+    public void coldReplayNoBackpressure() {
         ObservableCache<Integer> source = new ObservableCache<Integer>(Observable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
@@ -58,7 +58,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
@@ -108,7 +108,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Throwable {
+    public void unsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
         o.subscribe();
@@ -118,7 +118,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testTake() {
+    public void take() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
         ObservableCache<Integer> cached = new ObservableCache<Integer>(Observable.range(1, 1000), 16);
@@ -132,7 +132,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testAsync() {
+    public void async() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestObserver<Integer> to1 = new TestObserver<Integer>();
@@ -157,7 +157,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testAsyncComeAndGo() {
+    public void asyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
@@ -193,7 +193,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testNoMissingBackpressureException() {
+    public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
@@ -217,7 +217,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testValuesAndThenError() {
+    public void valuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .cache();
@@ -310,7 +310,7 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void take() {
+    public void take2() {
         Observable<Integer> cache = Observable.range(1, 5).cache();
 
         cache.take(2).test().assertResult(1, 2);

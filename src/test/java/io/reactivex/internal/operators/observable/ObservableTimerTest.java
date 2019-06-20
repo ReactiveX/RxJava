@@ -53,7 +53,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testTimerOnce() {
+    public void timerOnce() {
         Observable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
@@ -63,7 +63,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testTimerPeriodically() {
+    public void timerPeriodically() {
         TestObserver<Long> to = new TestObserver<Long>();
 
         Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(to);
@@ -90,7 +90,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testInterval() {
+    public void interval() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         TestObserver<Long> to = new TestObserver<Long>();
         w.subscribe(to);
@@ -114,7 +114,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testWithMultipleSubscribersStartingAtSameTime() {
+    public void withMultipleSubscribersStartingAtSameTime() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
 
         TestObserver<Long> to1 = new TestObserver<Long>();
@@ -151,7 +151,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testWithMultipleStaggeredSubscribers() {
+    public void withMultipleStaggeredSubscribers() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
 
         TestObserver<Long> to1 = new TestObserver<Long>();
@@ -191,7 +191,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testWithMultipleStaggeredSubscribersAndPublish() {
+    public void withMultipleStaggeredSubscribersAndPublish() {
         ConnectableObservable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler).publish();
 
         TestObserver<Long> to1 = new TestObserver<Long>();
@@ -231,7 +231,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testOnceObserverThrows() {
+    public void onceObserverThrows() {
         Observable<Long> source = Observable.timer(100, TimeUnit.MILLISECONDS, scheduler);
 
         source.safeSubscribe(new DefaultObserver<Long>() {
@@ -260,7 +260,7 @@ public class ObservableTimerTest {
     }
 
     @Test
-    public void testPeriodicObserverThrows() {
+    public void periodicObserverThrows() {
         Observable<Long> source = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
         InOrder inOrder = inOrder(observer);

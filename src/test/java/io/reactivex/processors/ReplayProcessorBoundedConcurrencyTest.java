@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestSubscriberEx;
 public class ReplayProcessorBoundedConcurrencyTest {
 
     @Test(timeout = 4000)
-    public void testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
+    public void replaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplayProcessor<Long> replay = ReplayProcessor.createUnbounded();
         Thread source = new Thread(new Runnable() {
 
@@ -140,7 +140,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     @Test
-    public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
+    public void replaySubjectConcurrentSubscriptions() throws InterruptedException {
         final ReplayProcessor<Long> replay = ReplayProcessor.createUnbounded();
         Thread source = new Thread(new Runnable() {
 
@@ -226,7 +226,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
     @Test(timeout = 10000)
-    public void testSubscribeCompletionRaceCondition() {
+    public void subscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplayProcessor<String> processor = ReplayProcessor.createUnbounded();
             final AtomicReference<String> value1 = new AtomicReference<String>();
@@ -289,7 +289,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
      * https://github.com/ReactiveX/RxJava/issues/1147
      */
     @Test
-    public void testRaceForTerminalState() {
+    public void raceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
             TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
@@ -322,7 +322,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     @Test
-    public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
+    public void replaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {
@@ -408,7 +408,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     @Test(timeout = 5000)
-    public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
+    public void concurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
         final CyclicBarrier cb = new CyclicBarrier(2);
 
@@ -463,7 +463,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     @Test(timeout = 5000)
-    public void testConcurrentSizeAndHasAnyValueBounded() throws InterruptedException {
+    public void concurrentSizeAndHasAnyValueBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithSize(3);
         final CyclicBarrier cb = new CyclicBarrier(2);
 
@@ -507,7 +507,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     @Test(timeout = 10000)
-    public void testConcurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
+    public void concurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
         final CyclicBarrier cb = new CyclicBarrier(2);
 

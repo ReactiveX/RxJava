@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableThrottleWithTimeoutTests {
 
     @Test
-    public void testThrottle() {
+    public void throttle() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         TestScheduler s = new TestScheduler();

@@ -30,7 +30,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableDoOnSubscribeTest {
 
     @Test
-    public void testDoOnSubscribe() throws Exception {
+    public void doOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
@@ -46,7 +46,7 @@ public class ObservableDoOnSubscribeTest {
     }
 
     @Test
-    public void testDoOnSubscribe2() throws Exception {
+    public void doOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
@@ -65,7 +65,7 @@ public class ObservableDoOnSubscribeTest {
     }
 
     @Test
-    public void testDoOnUnSubscribeWorksWithRefCount() throws Exception {
+    public void doOnUnSubscribeWorksWithRefCount() throws Exception {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();

@@ -30,7 +30,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableDoOnUnsubscribeTest {
 
     @Test
-    public void testDoOnUnsubscribe() throws Exception {
+    public void doOnUnsubscribe() throws Exception {
         int subCount = 3;
         final CountDownLatch upperLatch = new CountDownLatch(subCount);
         final CountDownLatch lowerLatch = new CountDownLatch(subCount);
@@ -90,7 +90,7 @@ public class FlowableDoOnUnsubscribeTest {
     }
 
     @Test
-    public void testDoOnUnSubscribeWorksWithRefCount() throws Exception {
+    public void doOnUnSubscribeWorksWithRefCount() throws Exception {
         int subCount = 3;
         final CountDownLatch upperLatch = new CountDownLatch(1);
         final CountDownLatch lowerLatch = new CountDownLatch(1);

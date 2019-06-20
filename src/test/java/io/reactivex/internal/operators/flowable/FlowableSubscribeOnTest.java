@@ -35,7 +35,7 @@ import io.reactivex.testsupport.*;
 public class FlowableSubscribeOnTest {
 
     @Test(timeout = 2000)
-    public void testIssue813() throws InterruptedException {
+    public void issue813() throws InterruptedException {
         // https://github.com/ReactiveX/RxJava/issues/813
         final CountDownLatch scheduled = new CountDownLatch(1);
         final CountDownLatch latch = new CountDownLatch(1);
@@ -79,7 +79,7 @@ public class FlowableSubscribeOnTest {
 
     @Test
     @Ignore("Publisher.subscribe can't throw")
-    public void testThrownErrorHandling() {
+    public void thrownErrorHandling() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -94,7 +94,7 @@ public class FlowableSubscribeOnTest {
     }
 
     @Test
-    public void testOnError() {
+    public void onError() {
         TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -167,7 +167,7 @@ public class FlowableSubscribeOnTest {
     }
 
     @Test(timeout = 5000)
-    public void testUnsubscribeInfiniteStream() throws InterruptedException {
+    public void unsubscribeInfiniteStream() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -192,7 +192,7 @@ public class FlowableSubscribeOnTest {
     }
 
     @Test
-    public void testBackpressureReschedulesCorrectly() throws InterruptedException {
+    public void backpressureReschedulesCorrectly() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(10);
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(new DefaultSubscriber<Integer>() {
 
@@ -223,7 +223,7 @@ public class FlowableSubscribeOnTest {
     }
 
     @Test
-    public void testSetProducerSynchronousRequest() {
+    public void setProducerSynchronousRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1, 2, 3).lift(new FlowableOperator<Integer, Integer>() {
 

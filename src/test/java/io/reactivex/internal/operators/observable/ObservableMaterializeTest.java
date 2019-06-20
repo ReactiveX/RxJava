@@ -31,7 +31,7 @@ import io.reactivex.testsupport.*;
 public class ObservableMaterializeTest {
 
     @Test
-    public void testMaterialize1() {
+    public void materialize1() {
         // null will cause onError to be triggered before "three" can be
         // returned
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null,
@@ -62,7 +62,7 @@ public class ObservableMaterializeTest {
     }
 
     @Test
-    public void testMaterialize2() {
+    public void materialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestLocalObserver observer = new TestLocalObserver();
@@ -91,7 +91,7 @@ public class ObservableMaterializeTest {
     }
 
     @Test
-    public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
+    public void multipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
         Observable<Notification<String>> m = Observable.unsafeCreate(o).materialize();
@@ -101,7 +101,7 @@ public class ObservableMaterializeTest {
     }
 
     @Test
-    public void testWithCompletionCausingError() {
+    public void withCompletionCausingError() {
         TestObserverEx<Notification<Integer>> to = new TestObserverEx<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {

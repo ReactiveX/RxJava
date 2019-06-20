@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 
 public class ObservableDelaySubscriptionOtherTest {
     @Test
-    public void testNoPrematureSubscription() {
+    public void noPrematureSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();
@@ -62,7 +62,7 @@ public class ObservableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoMultipleSubscriptions() {
+    public void noMultipleSubscriptions() {
         PublishSubject<Object> other = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();
@@ -96,7 +96,7 @@ public class ObservableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testCompleteTriggersSubscription() {
+    public void completeTriggersSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();
@@ -129,7 +129,7 @@ public class ObservableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoPrematureSubscriptionToError() {
+    public void noPrematureSubscriptionToError() {
         PublishSubject<Object> other = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();
@@ -162,7 +162,7 @@ public class ObservableDelaySubscriptionOtherTest {
     }
 
     @Test
-    public void testNoSubscriptionIfOtherErrors() {
+    public void noSubscriptionIfOtherErrors() {
         PublishSubject<Object> other = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();

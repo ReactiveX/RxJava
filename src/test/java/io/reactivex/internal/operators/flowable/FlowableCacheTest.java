@@ -34,7 +34,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableCacheTest {
     @Test
-    public void testColdReplayNoBackpressure() {
+    public void coldReplayNoBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
@@ -57,7 +57,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testColdReplayBackpressure() {
+    public void coldReplayBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
@@ -84,7 +84,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
@@ -134,7 +134,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Throwable {
+    public void unsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).cache();
         f.subscribe();
@@ -144,7 +144,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testTake() {
+    public void take() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         FlowableCache<Integer> cached = new FlowableCache<Integer>(Flowable.range(1, 100), 16);
@@ -157,7 +157,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testAsync() {
+    public void async() {
         Flowable<Integer> source = Flowable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
@@ -182,7 +182,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testAsyncComeAndGo() {
+    public void asyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
@@ -218,7 +218,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testNoMissingBackpressureException() {
+    public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
         Flowable<Integer> firehose = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
@@ -242,7 +242,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testValuesAndThenError() {
+    public void valuesAndThenError() {
         Flowable<Integer> source = Flowable.range(1, 10)
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .cache();
@@ -293,7 +293,7 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void take() {
+    public void take2() {
         Flowable<Integer> cache = Flowable.range(1, 5).cache();
 
         cache.take(2).test().assertResult(1, 2);

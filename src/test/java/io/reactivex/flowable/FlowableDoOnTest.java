@@ -26,7 +26,7 @@ import io.reactivex.functions.*;
 public class FlowableDoOnTest {
 
     @Test
-    public void testDoOnEach() {
+    public void doOnEach() {
         final AtomicReference<String> r = new AtomicReference<String>();
         String output = Flowable.just("one").doOnNext(new Consumer<String>() {
             @Override
@@ -40,7 +40,7 @@ public class FlowableDoOnTest {
     }
 
     @Test
-    public void testDoOnError() {
+    public void doOnError() {
         final AtomicReference<Throwable> r = new AtomicReference<Throwable>();
         Throwable t = null;
         try {
@@ -61,7 +61,7 @@ public class FlowableDoOnTest {
     }
 
     @Test
-    public void testDoOnCompleted() {
+    public void doOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
         String output = Flowable.just("one").doOnComplete(new Action() {
             @Override

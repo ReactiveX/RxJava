@@ -32,7 +32,7 @@ import io.reactivex.testsupport.*;
 public class FlowableSkipTest {
 
     @Test
-    public void testSkipNegativeElements() {
+    public void skipNegativeElements() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(-99);
 
@@ -46,7 +46,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipZeroElements() {
+    public void skipZeroElements() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(0);
 
@@ -60,7 +60,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipOneElement() {
+    public void skipOneElement() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(1);
 
@@ -74,7 +74,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipTwoElements() {
+    public void skipTwoElements() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(2);
 
@@ -88,7 +88,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipEmptyStream() {
+    public void skipEmptyStream() {
 
         Flowable<String> w = Flowable.empty();
         Flowable<String> skip = w.skip(1);
@@ -101,7 +101,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipMultipleObservers() {
+    public void skipMultipleObservers() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three")
                 .skip(2);
@@ -122,7 +122,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testSkipError() {
+    public void skipError() {
 
         Exception e = new Exception();
 
@@ -141,7 +141,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testBackpressureMultipleSmallAsyncRequests() throws InterruptedException {
+    public void backpressureMultipleSmallAsyncRequests() throws InterruptedException {
         final AtomicLong requests = new AtomicLong(0);
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
@@ -161,7 +161,7 @@ public class FlowableSkipTest {
     }
 
     @Test
-    public void testRequestOverflowDoesNotOccur() {
+    public void requestOverflowDoesNotOccur() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(Long.MAX_VALUE - 1);
         Flowable.range(1, 10).skip(5).subscribe(ts);
         ts.assertTerminated();

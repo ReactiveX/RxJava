@@ -37,7 +37,7 @@ import io.reactivex.testsupport.*;
 public class ObservableScanTest {
 
     @Test
-    public void testScanIntegersWithInitialValue() {
+    public void scanIntegersWithInitialValue() {
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
@@ -63,7 +63,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanIntegersWithoutInitialValue() {
+    public void scanIntegersWithoutInitialValue() {
         Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
@@ -89,7 +89,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
+    public void scanIntegersWithoutInitialValueAndOnlyOneValue() {
         Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1);
@@ -136,7 +136,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testNoBackpressureWithInitialValue() {
+    public void noBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
                 .scan(0, new BiFunction<Integer, Integer, Integer>() {
@@ -175,7 +175,7 @@ public class ObservableScanTest {
      * This uses the public API collect which uses scan under the covers.
      */
     @Test
-    public void testSeedFactory() {
+    public void seedFactory() {
         Observable<List<Integer>> o = Observable.range(1, 10)
                 .collect(new Supplier<List<Integer>>() {
 
@@ -198,7 +198,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanWithRequestOne() {
+    public void scanWithRequestOne() {
         Observable<Integer> o = Observable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -217,7 +217,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testInitialValueEmittedNoProducer() {
+    public void initialValueEmittedNoProducer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();
@@ -307,7 +307,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanFunctionThrowsAndUpstreamErrorsDoesNotResultInTwoTerminalEvents() {
+    public void scanFunctionThrowsAndUpstreamErrorsDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
         final RuntimeException err2 = new RuntimeException();
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
@@ -341,7 +341,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanFunctionThrowsAndUpstreamCompletesDoesNotResultInTwoTerminalEvents() {
+    public void scanFunctionThrowsAndUpstreamCompletesDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
@@ -363,7 +363,7 @@ public class ObservableScanTest {
     }
 
     @Test
-    public void testScanFunctionThrowsAndUpstreamEmitsOnNextResultsInScanFunctionBeingCalledOnlyOnce() {
+    public void scanFunctionThrowsAndUpstreamEmitsOnNextResultsInScanFunctionBeingCalledOnlyOnce() {
         final RuntimeException err = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
         Observable.unsafeCreate(new ObservableSource<Integer>() {

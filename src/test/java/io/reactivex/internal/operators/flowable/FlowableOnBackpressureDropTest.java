@@ -31,7 +31,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableOnBackpressureDropTest {
 
     @Test
-    public void testNoBackpressureSupport() {
+    public void noBackpressureSupport() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         // this will be ignored
         ts.request(100);
@@ -43,14 +43,14 @@ public class FlowableOnBackpressureDropTest {
     }
 
     @Test(timeout = 500)
-    public void testWithObserveOn() throws InterruptedException {
+    public void withObserveOn() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
     @Test(timeout = 5000)
-    public void testFixBackpressureWithBuffer() throws InterruptedException {
+    public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
         TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
@@ -92,7 +92,7 @@ public class FlowableOnBackpressureDropTest {
     }
 
     @Test
-    public void testRequestOverflow() throws InterruptedException {
+    public void requestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
         range(n).onBackpressureDrop().subscribe(new DefaultSubscriber<Long>() {
@@ -161,7 +161,7 @@ public class FlowableOnBackpressureDropTest {
     };
 
     @Test
-    public void testNonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
+    public void nonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         //request 0
         TestSubscriber<Long> ts = TestSubscriber.create(0);

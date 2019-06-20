@@ -23,7 +23,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableCastTest {
 
     @Test
-    public void testCast() {
+    public void cast() {
         Observable<?> source = Observable.just(1, 2);
         Observable<Integer> observable = source.cast(Integer.class);
 
@@ -39,7 +39,7 @@ public class ObservableCastTest {
     }
 
     @Test
-    public void testCastWithWrongType() {
+    public void castWithWrongType() {
         Observable<?> source = Observable.just(1, 2);
         Observable<Boolean> observable = source.cast(Boolean.class);
 

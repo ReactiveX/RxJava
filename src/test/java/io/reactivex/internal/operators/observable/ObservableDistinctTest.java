@@ -54,7 +54,7 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    public void testDistinctOfNone() {
+    public void distinctOfNone() {
         Observable<String> src = Observable.empty();
         src.distinct().subscribe(w);
 
@@ -64,7 +64,7 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    public void testDistinctOfNoneWithKeySelector() {
+    public void distinctOfNoneWithKeySelector() {
         Observable<String> src = Observable.empty();
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -74,7 +74,7 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    public void testDistinctOfNormalSource() {
+    public void distinctOfNormalSource() {
         Observable<String> src = Observable.just("a", "b", "c", "c", "c", "b", "b", "a", "e");
         src.distinct().subscribe(w);
 
@@ -89,7 +89,7 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    public void testDistinctOfNormalSourceWithKeySelector() {
+    public void distinctOfNormalSourceWithKeySelector() {
         Observable<String> src = Observable.just("a", "B", "c", "C", "c", "B", "b", "a", "E");
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
@@ -105,7 +105,7 @@ public class ObservableDistinctTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctOfSourceWithNulls() {
+    public void distinctOfSourceWithNulls() {
         Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null);
         src.distinct().subscribe(w);
 
@@ -120,7 +120,7 @@ public class ObservableDistinctTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testDistinctOfSourceWithExceptionsFromKeySelector() {
+    public void distinctOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 

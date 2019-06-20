@@ -32,17 +32,17 @@ import io.reactivex.testsupport.*;
 public class FlowableIgnoreElementsTest {
 
     @Test
-    public void testWithEmptyFlowable() {
+    public void withEmptyFlowable() {
         assertTrue(Flowable.empty().ignoreElements().toFlowable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testWithNonEmptyFlowable() {
+    public void withNonEmptyFlowable() {
         assertTrue(Flowable.just(1, 2, 3).ignoreElements().toFlowable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnoredFlowable() {
+    public void upstreamIsProcessedButIgnoredFlowable() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Flowable.range(1, num)
@@ -60,7 +60,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testCompletedOkFlowable() {
+    public void completedOkFlowable() {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         Flowable.range(1, 10).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoErrors();
@@ -69,7 +69,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testErrorReceivedFlowable() {
+    public void errorReceivedFlowable() {
         TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().toFlowable().subscribe(ts);
@@ -80,7 +80,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstreamFlowable() {
+    public void unsubscribesFromUpstreamFlowable() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
@@ -96,7 +96,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test(timeout = 10000)
-    public void testDoesNotHangAndProcessesAllUsingBackpressureFlowable() {
+    public void doesNotHangAndProcessesAllUsingBackpressureFlowable() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final AtomicInteger count = new AtomicInteger(0);
         int num = 10;
@@ -146,17 +146,17 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test(timeout = 5000)
-    public void testWithEmpty() {
+    public void withEmpty() {
         Flowable.empty().ignoreElements().blockingAwait();
     }
 
     @Test(timeout = 5000)
-    public void testWithNonEmpty() {
+    public void withNonEmpty() {
         Flowable.just(1, 2, 3).ignoreElements().blockingAwait();
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnored() {
+    public void upstreamIsProcessedButIgnored() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         Flowable.range(1, num)
@@ -172,7 +172,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testCompletedOk() {
+    public void completedOk() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         Flowable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
@@ -181,7 +181,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testErrorReceived() {
+    public void errorReceived() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().subscribe(to);
@@ -192,7 +192,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstream() {
+    public void unsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
@@ -207,7 +207,7 @@ public class FlowableIgnoreElementsTest {
     }
 
     @Test(timeout = 10000)
-    public void testDoesNotHangAndProcessesAllUsingBackpressure() {
+    public void doesNotHangAndProcessesAllUsingBackpressure() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final AtomicInteger count = new AtomicInteger(0);
         int num = 10;

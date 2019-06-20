@@ -40,7 +40,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testWhenMaxConcurrentIsOne() {
+    public void whenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
             List<Observable<String>> os = new ArrayList<Observable<String>>();
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
@@ -58,7 +58,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMaxConcurrent() {
+    public void maxConcurrent() {
         for (int times = 0; times < 100; times++) {
             int observableCount = 100;
             // Test maxConcurrent from 2 to 12
@@ -124,7 +124,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMergeALotOfSourcesOneByOneSynchronously() {
+    public void mergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
         List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
         for (int i = 0; i < n; i++) {
@@ -140,7 +140,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testMergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
+    public void mergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
         List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
         for (int i = 0; i < n; i++) {
@@ -156,7 +156,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testSimple() {
+    public void simple() {
         for (int i = 1; i < 100; i++) {
             TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
@@ -175,7 +175,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test
-    public void testSimpleOneLess() {
+    public void simpleOneLess() {
         for (int i = 2; i < 100; i++) {
             TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
@@ -194,11 +194,11 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test//(timeout = 20000)
-    public void testSimpleAsyncLoop() {
+    public void simpleAsyncLoop() {
         IoScheduler ios = (IoScheduler)Schedulers.io();
         int c = ios.size();
         for (int i = 0; i < 200; i++) {
-            testSimpleAsync();
+            simpleAsync();
             int c1 = ios.size();
             if (c + 60 < c1) {
                 throw new AssertionError("Worker leak: " + c + " - " + c1);
@@ -207,7 +207,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 30000)
-    public void testSimpleAsync() {
+    public void simpleAsync() {
         for (int i = 1; i < 50; i++) {
             TestObserver<Integer> to = new TestObserver<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
@@ -228,14 +228,14 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 30000)
-    public void testSimpleOneLessAsyncLoop() {
+    public void simpleOneLessAsyncLoop() {
         for (int i = 0; i < 200; i++) {
-            testSimpleOneLessAsync();
+            simpleOneLessAsync();
         }
     }
 
     @Test(timeout = 30000)
-    public void testSimpleOneLessAsync() {
+    public void simpleOneLessAsync() {
         long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
@@ -260,7 +260,7 @@ public class ObservableMergeMaxConcurrentTest {
     }
 
     @Test(timeout = 5000)
-    public void testTake() throws Exception {
+    public void take() throws Exception {
         List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
 
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));

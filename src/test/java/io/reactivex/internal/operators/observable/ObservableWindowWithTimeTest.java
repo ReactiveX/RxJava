@@ -45,7 +45,7 @@ public class ObservableWindowWithTimeTest {
     }
 
     @Test
-    public void testTimedAndCount() {
+    public void timedAndCount() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -79,7 +79,7 @@ public class ObservableWindowWithTimeTest {
     }
 
     @Test
-    public void testTimed() {
+    public void timed() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -160,7 +160,7 @@ public class ObservableWindowWithTimeTest {
     }
 
     @Test
-    public void testExactWindowSize() {
+    public void exactWindowSize() {
         Observable<Observable<Integer>> source = Observable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
 
@@ -181,7 +181,7 @@ public class ObservableWindowWithTimeTest {
     }
 
     @Test
-    public void testTakeFlatMapCompletes() {
+    public void takeFlatMapCompletes() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger wip = new AtomicInteger();

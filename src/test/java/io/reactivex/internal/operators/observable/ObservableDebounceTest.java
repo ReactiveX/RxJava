@@ -51,7 +51,7 @@ public class ObservableDebounceTest {
     }
 
     @Test
-    public void testDebounceWithCompleted() {
+    public void debounceWithCompleted() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -77,7 +77,7 @@ public class ObservableDebounceTest {
     }
 
     @Test
-    public void testDebounceNeverEmits() {
+    public void debounceNeverEmits() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -107,7 +107,7 @@ public class ObservableDebounceTest {
     }
 
     @Test
-    public void testDebounceWithError() {
+    public void debounceWithError() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {

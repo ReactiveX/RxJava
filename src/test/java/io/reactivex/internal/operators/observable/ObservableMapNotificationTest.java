@@ -26,7 +26,7 @@ import io.reactivex.testsupport.*;
 
 public class ObservableMapNotificationTest {
     @Test
-    public void testJust() {
+    public void just() {
         TestObserver<Object> to = new TestObserver<Object>();
         Observable.just(1)
         .flatMap(

@@ -44,7 +44,7 @@ public class TestObserverTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testAssert() {
+    public void assertTestObserver() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         oi.subscribe(subscriber);
@@ -55,7 +55,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testAssertNotMatchCount() {
+    public void assertNotMatchCount() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         oi.subscribe(subscriber);
@@ -70,7 +70,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testAssertNotMatchValue() {
+    public void assertNotMatchValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         oi.subscribe(subscriber);
@@ -85,7 +85,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testAssertTerminalEventNotReceived() {
+    public void assertTerminalEventNotReceived() {
         PublishProcessor<Integer> p = PublishProcessor.create();
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         p.subscribe(subscriber);
@@ -103,7 +103,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testWrappingMock() {
+    public void wrappingMock() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
 
         Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
@@ -118,7 +118,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testWrappingMockWhenUnsubscribeInvolved() {
+    public void wrappingMockWhenUnsubscribeInvolved() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
         Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
         oi.subscribe(new TestSubscriber<Integer>(mockSubscriber));
@@ -131,12 +131,12 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testErrorSwallowed() {
+    public void errorSwallowed() {
         Flowable.error(new RuntimeException()).subscribe(new TestSubscriber<Object>());
     }
 
     @Test
-    public void testNullExpected() {
+    public void nullExpected() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(1);
 
@@ -150,7 +150,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testNullActual() {
+    public void nullActual() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(null);
 
@@ -710,7 +710,7 @@ public class TestObserverTest {
     }
 
     @Test
-    public void testErrorInPredicate() {
+    public void errorInPredicate() {
         TestObserver<Object> to = new TestObserver<Object>();
         to.onError(new RuntimeException());
         try {

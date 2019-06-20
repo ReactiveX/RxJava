@@ -29,7 +29,7 @@ public class ObservableCombineLatestTests {
      * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
-    public void testCovarianceOfCombineLatest() {
+    public void covarianceOfCombineLatest() {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.just(new CoolRating());
 
@@ -65,7 +65,7 @@ public class ObservableCombineLatestTests {
 
     @Ignore("No longer allowed")
     @Test
-    public void testNullEmitting() throws Exception {
+    public void nullEmitting() throws Exception {
         // FIXME this is no longer allowed
         Observable<Boolean> nullObservable = BehaviorSubject.createDefault((Boolean) null);
         Observable<Boolean> nonNullObservable = BehaviorSubject.createDefault(true);

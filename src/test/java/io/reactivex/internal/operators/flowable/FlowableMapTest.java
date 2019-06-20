@@ -54,7 +54,7 @@ public class FlowableMapTest {
     }
 
     @Test
-    public void testMap() {
+    public void map() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
         Flowable<Map<String, String>> flowable = Flowable.just(m1, m2);
@@ -75,7 +75,7 @@ public class FlowableMapTest {
     }
 
     @Test
-    public void testMapMany() {
+    public void mapMany() {
         /* simulate a top-level async call which returns IDs */
         Flowable<Integer> ids = Flowable.just(1, 2);
 
@@ -117,7 +117,7 @@ public class FlowableMapTest {
     }
 
     @Test
-    public void testMapMany2() {
+    public void mapMany2() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
         Flowable<Map<String, String>> flowable1 = Flowable.just(m1, m2);
@@ -154,7 +154,7 @@ public class FlowableMapTest {
     }
 
     @Test
-    public void testMapWithError() {
+    public void mapWithError() {
         final List<Throwable> errors = new ArrayList<Throwable>();
 
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
@@ -186,7 +186,7 @@ public class FlowableMapTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMapWithIssue417() {
+    public void mapWithIssue417() {
         Flowable.just(1).observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     @Override
@@ -197,7 +197,7 @@ public class FlowableMapTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
+    public void mapWithErrorInFuncAndThreadPoolScheduler() throws InterruptedException {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
@@ -218,7 +218,7 @@ public class FlowableMapTest {
      * While mapping over range(1,0).last() we expect NoSuchElementException since the sequence is empty.
      */
     @Test
-    public void testErrorPassesThruMap() {
+    public void errorPassesThruMap() {
         assertNull(Flowable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
@@ -233,7 +233,7 @@ public class FlowableMapTest {
      * We expect IllegalStateException to pass thru map.
      */
     @Test(expected = IllegalStateException.class)
-    public void testErrorPassesThruMap2() {
+    public void errorPassesThruMap2() {
         Flowable.error(new IllegalStateException()).map(new Function<Object, Object>() {
 
             @Override
@@ -249,7 +249,7 @@ public class FlowableMapTest {
      * but then we divide by 0.
      */
     @Test(expected = ArithmeticException.class)
-    public void testMapWithErrorInFunc() {
+    public void mapWithErrorInFunc() {
         Flowable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
@@ -269,7 +269,7 @@ public class FlowableMapTest {
 
     @Test//(expected = OnErrorNotImplementedException.class)
     @Ignore("RS subscribers can't throw")
-    public void testShouldNotSwallowOnErrorNotImplementedException() {
+    public void shouldNotSwallowOnErrorNotImplementedException() {
 //        Flowable.just("a", "b").flatMap(new Function<String, Flowable<String>>() {
 //            @Override
 //            public Flowable<String> apply(String s) {

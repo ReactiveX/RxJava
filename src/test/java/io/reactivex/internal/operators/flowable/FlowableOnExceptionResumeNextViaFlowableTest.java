@@ -35,7 +35,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableOnExceptionResumeNextViaFlowableTest {
 
     @Test
-    public void testResumeNextWithException() {
+    public void resumeNextWithException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
@@ -63,7 +63,7 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testResumeNextWithRuntimeException() {
+    public void resumeNextWithRuntimeException() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
@@ -91,7 +91,7 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testThrowablePassesThru() {
+    public void throwablePassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
@@ -119,7 +119,7 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testErrorPassesThru() {
+    public void errorPassesThru() {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
@@ -147,7 +147,7 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testMapResumeAsyncNext() {
+    public void mapResumeAsyncNext() {
         // Trigger multiple failures
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
@@ -191,7 +191,7 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
                 .onExceptionResumeNext(Flowable.just(1))

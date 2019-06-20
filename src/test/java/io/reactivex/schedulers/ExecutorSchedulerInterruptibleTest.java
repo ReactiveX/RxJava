@@ -42,16 +42,16 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     @Test
     @Ignore("Unhandled errors are no longer thrown")
-    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    public final void unhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.unhandledErrorIsDeliveredToThreadHandler(getScheduler());
     }
 
     @Test
-    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    public final void handledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 
-    public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
+    public static void cancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
         System.out.println("Wait before GC");
         Thread.sleep(1000);
 
@@ -133,20 +133,20 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     }
 
     @Test(timeout = 60000)
-    public void testCancelledTaskRetention() throws InterruptedException {
+    public void cancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         Scheduler s = Schedulers.from(exec, true);
         try {
             Scheduler.Worker w = s.createWorker();
             try {
-                testCancelledRetention(w, false);
+                cancelledRetention(w, false);
             } finally {
                 w.dispose();
             }
 
             w = s.createWorker();
             try {
-                testCancelledRetention(w, true);
+                cancelledRetention(w, true);
             } finally {
                 w.dispose();
             }
@@ -177,7 +177,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     }
 
     @Test
-    public void testCancelledTasksDontRun() {
+    public void cancelledTasksDontRun() {
         final AtomicInteger calls = new AtomicInteger();
         Runnable task = new Runnable() {
             @Override
@@ -206,7 +206,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     }
 
     @Test
-    public void testCancelledWorkerDoesntRunTasks() {
+    public void cancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();
         Runnable task = new Runnable() {
             @Override

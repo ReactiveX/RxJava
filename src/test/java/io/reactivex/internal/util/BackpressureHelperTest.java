@@ -33,7 +33,7 @@ public class BackpressureHelperTest {
     }
 
     @Test
-    public void testAddCap() {
+    public void addCap() {
         assertEquals(2L, BackpressureHelper.addCap(1, 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCap(1, Long.MAX_VALUE - 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCap(1, Long.MAX_VALUE));
@@ -42,7 +42,7 @@ public class BackpressureHelperTest {
     }
 
     @Test
-    public void testMultiplyCap() {
+    public void multiplyCap() {
         assertEquals(6, BackpressureHelper.multiplyCap(2, 3));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(2, Long.MAX_VALUE));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(Long.MAX_VALUE, Long.MAX_VALUE));
@@ -157,7 +157,7 @@ public class BackpressureHelperTest {
     }
 
     @Test
-    public void multiplyCap() {
+    public void multiplyCap2() {
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(3, Long.MAX_VALUE >> 1));
 
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(1, Long.MAX_VALUE));

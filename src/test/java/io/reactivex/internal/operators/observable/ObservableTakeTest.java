@@ -39,7 +39,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableTakeTest {
 
     @Test
-    public void testTake1() {
+    public void take1() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<String> take = w.take(2);
 
@@ -53,7 +53,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testTake2() {
+    public void take2() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
         Observable<String> take = w.take(1);
 
@@ -67,7 +67,7 @@ public class ObservableTakeTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTakeWithError() {
+    public void takeWithError() {
         Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
         .map(new Function<Integer, Integer>() {
             @Override
@@ -78,7 +78,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testTakeWithErrorHappeningInOnNext() {
+    public void takeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3))
                 .take(2).map(new Function<Integer, Integer>() {
             @Override
@@ -95,7 +95,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testTakeWithErrorHappeningInTheLastOnNext() {
+    public void takeWithErrorHappeningInTheLastOnNext() {
         Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
             @Override
             public Integer apply(Integer t1) {
@@ -111,7 +111,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testTakeDoesntLeakErrors() {
+    public void takeDoesntLeakErrors() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
@@ -135,7 +135,7 @@ public class ObservableTakeTest {
 
     @Test
     @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
-    public void testTakeZeroDoesntLeakError() {
+    public void takeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Disposable bs = Disposables.empty();
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
@@ -161,7 +161,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testUnsubscribeAfterTake() {
+    public void unsubscribeAfterTake() {
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
 
@@ -190,7 +190,7 @@ public class ObservableTakeTest {
     }
 
     @Test(timeout = 2000)
-    public void testUnsubscribeFromSynchronousInfiniteObservable() {
+    public void unsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
         INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
 
@@ -204,7 +204,7 @@ public class ObservableTakeTest {
     }
 
     @Test(timeout = 2000)
-    public void testMultiTake() {
+    public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
@@ -284,7 +284,7 @@ public class ObservableTakeTest {
     });
 
     @Test(timeout = 2000)
-    public void testTakeObserveOn() {
+    public void takeObserveOn() {
         Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> to = new TestObserver<Object>(o);
 
@@ -300,7 +300,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testInterrupt() throws InterruptedException {
+    public void interrupt() throws InterruptedException {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.just(1).subscribeOn(Schedulers.computation()).take(1)
@@ -343,7 +343,7 @@ public class ObservableTakeTest {
     }
 
     @Test
-    public void testReentrantTake() {
+    public void reentrantTake() {
         final PublishSubject<Integer> source = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>();

@@ -49,7 +49,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelay() {
+    public void delay() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(subscriber);
@@ -89,7 +89,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testLongDelay() {
+    public void longDelay() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(5L, TimeUnit.SECONDS, scheduler);
         delayed.subscribe(subscriber);
@@ -118,7 +118,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithError() {
+    public void delayWithError() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler)
         .map(new Function<Long, Long>() {
             @Override
@@ -151,7 +151,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithMultipleSubscriptions() {
+    public void delayWithMultipleSubscriptions() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed.subscribe(subscriber);
@@ -192,7 +192,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySubscription() {
+    public void delaySubscription() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -214,7 +214,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySubscriptionCancelBeforeTime() {
+    public void delaySubscriptionCancelBeforeTime() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -230,7 +230,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableNormal1() {
+    public void delayWithFlowableNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final List<PublishProcessor<Integer>> delays = new ArrayList<PublishProcessor<Integer>>();
         final int n = 10;
@@ -265,7 +265,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSingleSend1() {
+    public void delayWithFlowableSingleSend1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -291,7 +291,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSourceThrows() {
+    public void delayWithFlowableSourceThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -317,7 +317,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableDelayFunctionThrows() {
+    public void delayWithFlowableDelayFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -340,7 +340,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableDelayThrows() {
+    public void delayWithFlowableDelayThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -365,7 +365,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSubscriptionNormal() {
+    public void delayWithFlowableSubscriptionNormal() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -394,7 +394,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSubscriptionFunctionThrows() {
+    public void delayWithFlowableSubscriptionFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
@@ -428,7 +428,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSubscriptionThrows() {
+    public void delayWithFlowableSubscriptionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Supplier<Flowable<Integer>> subFunc = new Supplier<Flowable<Integer>>() {
@@ -462,7 +462,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableEmptyDelayer() {
+    public void delayWithFlowableEmptyDelayer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -487,7 +487,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableSubscriptionRunCompletion() {
+    public void delayWithFlowableSubscriptionRunCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> sdelay = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
@@ -523,7 +523,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableAsTimed() {
+    public void delayWithFlowableAsTimed() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
 
         final Flowable<Long> delayer = Flowable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
@@ -573,7 +573,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithFlowableReorder() {
+    public void delayWithFlowableReorder() {
         int n = 3;
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -614,7 +614,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayEmitsEverything() {
+    public void delayEmitsEverything() {
         Flowable<Integer> source = Flowable.range(1, 5);
         Flowable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
         delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
@@ -633,7 +633,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithTimedDelay() {
+    public void backpressureWithTimedDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -661,7 +661,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSubscriptionTimedDelay() {
+    public void backpressureWithSubscriptionTimedDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
@@ -690,7 +690,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSelectorDelay() {
+    public void backpressureWithSelectorDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(new Function<Integer, Flowable<Long>>() {
@@ -725,7 +725,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
+    public void backpressureWithSelectorDelayAndSubscriptionDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(Flowable.defer(new Supplier<Flowable<Long>>() {
@@ -766,7 +766,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testErrorRunsBeforeOnNext() {
+    public void errorRunsBeforeOnNext() {
         TestScheduler test = new TestScheduler();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -789,7 +789,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierSimple() {
+    public void delaySupplierSimple() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
@@ -815,7 +815,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierCompletes() {
+    public void delaySupplierCompletes() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
@@ -842,7 +842,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySupplierErrors() {
+    public void delaySupplierErrors() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
@@ -900,7 +900,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelaySubscriptionDisposeBeforeTime() {
+    public void delaySubscriptionDisposeBeforeTime() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -916,7 +916,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testOnErrorCalledOnScheduler() throws Exception {
+    public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Thread> thread = new AtomicReference<Thread>();
 

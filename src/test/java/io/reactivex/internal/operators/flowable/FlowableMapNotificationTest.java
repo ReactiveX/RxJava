@@ -28,7 +28,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableMapNotificationTest {
     @Test
-    public void testJust() {
+    public void just() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         Flowable.just(1)
         .flatMap(

@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestSubscriberEx;
 public class FlowableToCompletableTest {
 
     @Test
-    public void testJustSingleItemObservable() {
+    public void justSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.just("Hello World!").ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
@@ -40,7 +40,7 @@ public class FlowableToCompletableTest {
     }
 
     @Test
-    public void testErrorObservable() {
+    public void errorObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
         Completable cmp = Flowable.<String>error(error).ignoreElements();
@@ -51,7 +51,7 @@ public class FlowableToCompletableTest {
     }
 
     @Test
-    public void testJustTwoEmissionsObservableThrowsError() {
+    public void justTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.just("First", "Second").ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
@@ -61,7 +61,7 @@ public class FlowableToCompletableTest {
     }
 
     @Test
-    public void testEmptyObservable() {
+    public void emptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.<String>empty().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
@@ -72,7 +72,7 @@ public class FlowableToCompletableTest {
     }
 
     @Test
-    public void testNeverObservable() {
+    public void neverObservable() {
         TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
         Completable cmp = Flowable.<String>never().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
@@ -82,7 +82,7 @@ public class FlowableToCompletableTest {
     }
 
     @Test
-    public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
+    public void shouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Completable cmp = Flowable.just("Hello World!").doOnCancel(new Action() {

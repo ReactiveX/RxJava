@@ -53,7 +53,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testNonOverlappingWindows() {
+    public void nonOverlappingWindows() {
         Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3);
 
@@ -65,7 +65,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testSkipAndCountGaplessWindows() {
+    public void skipAndCountGaplessWindows() {
         Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3, 3);
 
@@ -77,7 +77,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testOverlappingWindows() {
+    public void overlappingWindows() {
         Observable<String> subject = Observable.fromArray(new String[] { "zero", "one", "two", "three", "four", "five" });
         Observable<Observable<String>> windowed = subject.window(3, 1);
 
@@ -93,7 +93,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testSkipAndCountWindowsWithGaps() {
+    public void skipAndCountWindowsWithGaps() {
         Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(2, 3);
 
@@ -105,7 +105,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeNonOverlapping() {
+    public void windowUnsubscribeNonOverlapping() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         final AtomicInteger count = new AtomicInteger();
@@ -127,7 +127,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeNonOverlappingAsyncSource() {
+    public void windowUnsubscribeNonOverlappingAsyncSource() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         final AtomicInteger count = new AtomicInteger();
@@ -160,7 +160,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeOverlapping() {
+    public void windowUnsubscribeOverlapping() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         final AtomicInteger count = new AtomicInteger();
@@ -182,7 +182,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testWindowUnsubscribeOverlappingAsyncSource() {
+    public void windowUnsubscribeOverlappingAsyncSource() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         final AtomicInteger count = new AtomicInteger();
@@ -240,7 +240,7 @@ public class ObservableWindowWithSizeTest {
     }
 
     @Test
-    public void testTakeFlatMapCompletes() {
+    public void takeFlatMapCompletes() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
         final int indicator = 999999999;

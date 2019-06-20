@@ -446,7 +446,7 @@ public class SafeObserverTest {
 
     @Test
     @Ignore("Observers can't throw")
-    public void testOnCompletedThrows() {
+    public void onCompletedThrows() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         SafeObserver<Integer> observer = new SafeObserver<Integer>(new DefaultObserver<Integer>() {
             @Override
@@ -474,7 +474,7 @@ public class SafeObserverTest {
     }
 
     @Test
-    public void testActual() {
+    public void actual() {
         Observer<Integer> actual = new DefaultObserver<Integer>() {
             @Override
             public void onNext(Integer t) {

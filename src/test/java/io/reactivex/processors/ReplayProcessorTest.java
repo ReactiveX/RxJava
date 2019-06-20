@@ -46,7 +46,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompleted() {
+    public void completed() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber1 = TestHelper.mockSubscriber();
@@ -70,7 +70,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         ReplayProcessor<Integer> channel = ReplayProcessor.create();
         Subscriber<Object> observerA = TestHelper.mockSubscriber();
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
@@ -139,7 +139,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCompletedAfterError() {
+    public void completedAfterError() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -169,7 +169,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -200,7 +200,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscribeMidSequence() {
+    public void subscribeMidSequence() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -223,7 +223,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testUnsubscribeFirstSubscriber() {
+    public void unsubscribeFirstSubscriber() {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -256,7 +256,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test(timeout = 2000)
-    public void testNewSubscriberDoesntBlockExisting() throws InterruptedException {
+    public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
         Subscriber<String> subscriber1 = new DefaultSubscriber<String>() {
@@ -354,7 +354,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSubscriptionLeak() {
+    public void subscriptionLeak() {
         ReplayProcessor<Object> replaySubject = ReplayProcessor.create();
 
         Disposable connection = replaySubject.subscribe();
@@ -367,7 +367,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         ReplayProcessor<String> src = ReplayProcessor.create();
 
         for (int i = 0; i < 10; i++) {
@@ -408,7 +408,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testTerminateOnce() {
+    public void terminateOnce() {
         ReplayProcessor<Integer> source = ReplayProcessor.create();
         source.onNext(1);
         source.onNext(2);
@@ -441,7 +441,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testReplay1AfterTermination() {
+    public void replay1AfterTermination() {
         ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(1);
 
         source.onNext(1);
@@ -461,7 +461,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testReplay1Directly() {
+    public void replay1Directly() {
         ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(1);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -482,7 +482,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testReplayTimestampedAfterTermination() {
+    public void replayTimestampedAfterTermination() {
         TestScheduler scheduler = new TestScheduler();
         ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(1, TimeUnit.SECONDS, scheduler);
 
@@ -511,7 +511,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testReplayTimestampedDirectly() {
+    public void replayTimestampedDirectly() {
         TestScheduler scheduler = new TestScheduler();
         ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(1, TimeUnit.SECONDS, scheduler);
 
@@ -589,7 +589,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 //    }
 
     @Test
-    public void testCurrentStateMethodsNormal() {
+    public void currentStateMethodsNormal() {
         ReplayProcessor<Object> as = ReplayProcessor.create();
 
         assertFalse(as.hasThrowable());
@@ -610,7 +610,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         ReplayProcessor<Object> as = ReplayProcessor.create();
 
         assertFalse(as.hasThrowable());
@@ -625,7 +625,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         ReplayProcessor<Object> as = ReplayProcessor.create();
 
         assertFalse(as.hasThrowable());
@@ -640,7 +640,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnbounded() {
+    public void sizeAndHasAnyValueUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
 
         assertEquals(0, rs.size());
@@ -663,7 +663,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnbounded() {
+    public void sizeAndHasAnyValueEffectivelyUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
 
         assertEquals(0, rs.size());
@@ -686,7 +686,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedError() {
+    public void sizeAndHasAnyValueUnboundedError() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
 
         assertEquals(0, rs.size());
@@ -709,7 +709,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedError() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedError() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
 
         assertEquals(0, rs.size());
@@ -732,7 +732,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedEmptyError() {
+    public void sizeAndHasAnyValueUnboundedEmptyError() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
 
         rs.onError(new TestException());
@@ -742,7 +742,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
 
         rs.onError(new TestException());
@@ -752,7 +752,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueUnboundedEmptyCompleted() {
+    public void sizeAndHasAnyValueUnboundedEmptyCompleted() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
 
         rs.onComplete();
@@ -762,7 +762,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
+    public void sizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
 
         rs.onComplete();
@@ -772,7 +772,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueSizeBounded() {
+    public void sizeAndHasAnyValueSizeBounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.createWithSize(1);
 
         assertEquals(0, rs.size());
@@ -792,7 +792,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testSizeAndHasAnyValueTimeBounded() {
+    public void sizeAndHasAnyValueTimeBounded() {
         TestScheduler ts = new TestScheduler();
         ReplayProcessor<Object> rs = ReplayProcessor.createWithTime(1, TimeUnit.SECONDS, ts);
 
@@ -815,7 +815,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testGetValues() {
+    public void getValues() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
         Object[] expected = new Object[10];
         for (int i = 0; i < expected.length; i++) {
@@ -830,7 +830,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testGetValuesUnbounded() {
+    public void getValuesUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
         Object[] expected = new Object[10];
         for (int i = 0; i < expected.length; i++) {
@@ -845,7 +845,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testBackpressureHonored() {
+    public void backpressureHonored() {
         ReplayProcessor<Integer> rs = ReplayProcessor.create();
         rs.onNext(1);
         rs.onNext(2);
@@ -873,7 +873,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testBackpressureHonoredSizeBound() {
+    public void backpressureHonoredSizeBound() {
         ReplayProcessor<Integer> rs = ReplayProcessor.createWithSize(100);
         rs.onNext(1);
         rs.onNext(2);
@@ -901,7 +901,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    public void testBackpressureHonoredTimeBound() {
+    public void backpressureHonoredTimeBound() {
         ReplayProcessor<Integer> rs = ReplayProcessor.createWithTime(1, TimeUnit.DAYS, Schedulers.trampoline());
         rs.onNext(1);
         rs.onNext(2);

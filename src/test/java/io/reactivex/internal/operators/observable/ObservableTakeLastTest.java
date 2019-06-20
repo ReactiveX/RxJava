@@ -33,7 +33,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableTakeLastTest {
 
     @Test
-    public void testTakeLastEmpty() {
+    public void takeLastEmpty() {
         Observable<String> w = Observable.empty();
         Observable<String> take = w.takeLast(2);
 
@@ -45,7 +45,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testTakeLast1() {
+    public void takeLast1() {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeLast(2);
 
@@ -60,7 +60,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testTakeLast2() {
+    public void takeLast2() {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(10);
 
@@ -72,7 +72,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testTakeLastWithZeroCount() {
+    public void takeLastWithZeroCount() {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(0);
 
@@ -85,7 +85,7 @@ public class ObservableTakeLastTest {
 
     @Test
     @Ignore("Null values no longer allowed")
-    public void testTakeLastWithNull() {
+    public void takeLastWithNull() {
         Observable<String> w = Observable.just("one", null, "three");
         Observable<String> take = w.takeLast(2);
 
@@ -99,12 +99,12 @@ public class ObservableTakeLastTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testTakeLastWithNegativeCount() {
+    public void takeLastWithNegativeCount() {
         Observable.just("one").takeLast(-1);
     }
 
     @Test
-    public void testBackpressure1() {
+    public void backpressure1() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
@@ -115,7 +115,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testBackpressure2() {
+    public void backpressure2() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(to);
@@ -143,7 +143,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testIssue1522() {
+    public void issue1522() {
         // https://github.com/ReactiveX/RxJava/issues/1522
         assertNull(Observable
                 .empty()
@@ -158,7 +158,7 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    public void testUnsubscribeTakesEffectEarlyOnFastPath() {
+    public void unsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(0, 100000).takeLast(100000).subscribe(new DefaultObserver<Integer>() {
 

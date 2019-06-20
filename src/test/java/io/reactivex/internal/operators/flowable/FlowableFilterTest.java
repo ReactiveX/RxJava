@@ -38,7 +38,7 @@ import io.reactivex.testsupport.*;
 public class FlowableFilterTest {
 
     @Test
-    public void testFilter() {
+    public void filter() {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> flowable = w.filter(new Predicate<String>() {
 
@@ -65,7 +65,7 @@ public class FlowableFilterTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 500)
-    public void testWithBackpressure() throws InterruptedException {
+    public void withBackpressure() throws InterruptedException {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> f = w.filter(new Predicate<String>() {
 
@@ -112,7 +112,7 @@ public class FlowableFilterTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 500000)
-    public void testWithBackpressure2() throws InterruptedException {
+    public void withBackpressure2() throws InterruptedException {
         Flowable<Integer> w = Flowable.range(1, Flowable.bufferSize() * 2);
         Flowable<Integer> f = w.filter(new Predicate<Integer>() {
 
@@ -155,7 +155,7 @@ public class FlowableFilterTest {
 
     @Test
     @Ignore("subscribers are not allowed to throw")
-    public void testFatalError() {
+    public void fatalError() {
 //        try {
 //            Flowable.just(1)
 //            .filter(new Predicate<Integer>() {

@@ -41,7 +41,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableTimeoutWithSelectorTest {
     @Test(timeout = 2000)
-    public void testTimeoutSelectorNormal1() {
+    public void timeoutSelectorNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -74,7 +74,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorTimeoutFirst() throws InterruptedException {
+    public void timeoutSelectorTimeoutFirst() throws InterruptedException {
         Flowable<Integer> source = Flowable.<Integer>never();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -101,7 +101,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorFirstThrows() {
+    public void timeoutSelectorFirstThrows() {
         Flowable<Integer> source = Flowable.<Integer>never();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -132,7 +132,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorSubsequentThrows() {
+    public void timeoutSelectorSubsequentThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -159,7 +159,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorFirstFlowableThrows() {
+    public void timeoutSelectorFirstFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -183,7 +183,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorSubsequentFlowableThrows() {
+    public void timeoutSelectorSubsequentFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -210,7 +210,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithFirstTimeoutFirstAndNoOtherFlowable() {
+    public void timeoutSelectorWithFirstTimeoutFirstAndNoOtherFlowable() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -232,7 +232,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithTimeoutFirstAndNoOtherFlowable() {
+    public void timeoutSelectorWithTimeoutFirstAndNoOtherFlowable() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -256,7 +256,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithTimeoutAndOnNextRaceCondition() throws InterruptedException {
+    public void timeoutSelectorWithTimeoutAndOnNextRaceCondition() throws InterruptedException {
         // Thread 1                                    Thread 2
         //
         // observer.onNext(1)

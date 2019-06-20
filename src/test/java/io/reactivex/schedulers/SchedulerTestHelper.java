@@ -32,7 +32,7 @@ final class SchedulerTestHelper {
      * Schedulers which execute on a separate thread from their calling thread should exhibit this behavior. Schedulers
      * which execute on their calling thread may not.
      */
-    static void testUnhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    static void unhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
@@ -66,7 +66,7 @@ final class SchedulerTestHelper {
      * This is a companion test to {@link #testUnhandledErrorIsDeliveredToThreadHandler}, and is needed only for the
      * same Schedulers.
      */
-    static void testHandledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
+    static void handledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();

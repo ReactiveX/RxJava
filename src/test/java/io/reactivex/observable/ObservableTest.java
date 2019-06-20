@@ -94,7 +94,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCreate() {
+    public void create() {
 
         Observable<String> o = Observable.just("one", "two", "three");
 
@@ -110,7 +110,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountAFewItemsObservable() {
+    public void countAFewItemsObservable() {
         Observable<String> o = Observable.just("a", "b", "c", "d");
 
         o.count().toObservable().subscribe(w);
@@ -123,7 +123,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountZeroItemsObservable() {
+    public void countZeroItemsObservable() {
         Observable<String> o = Observable.empty();
         o.count().toObservable().subscribe(w);
         // we should be called only once
@@ -134,7 +134,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountErrorObservable() {
+    public void countErrorObservable() {
         Observable<String> o = Observable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
@@ -149,7 +149,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountAFewItems() {
+    public void countAFewItems() {
         Observable<String> o = Observable.just("a", "b", "c", "d");
 
         o.count().subscribe(wo);
@@ -161,7 +161,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountZeroItems() {
+    public void countZeroItems() {
         Observable<String> o = Observable.empty();
         o.count().subscribe(wo);
         // we should be called only once
@@ -171,7 +171,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountError() {
+    public void countError() {
         Observable<String> o = Observable.error(new Supplier<Throwable>() {
             @Override
             public Throwable get() {
@@ -185,7 +185,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeFirstWithPredicateOfSome() {
+    public void takeFirstWithPredicateOfSome() {
         Observable<Integer> o = Observable.just(1, 3, 5, 4, 6, 3);
         o.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
@@ -195,7 +195,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void takeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         o.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -204,7 +204,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeFirstOfSome() {
+    public void takeFirstOfSome() {
         Observable<Integer> o = Observable.just(1, 2, 3);
         o.take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
@@ -214,7 +214,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeFirstOfNone() {
+    public void takeFirstOfNone() {
         Observable<Integer> o = Observable.empty();
         o.take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -223,7 +223,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testFirstOfNone() {
+    public void firstOfNone() {
         Observable<Integer> o = Observable.empty();
         o.firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
@@ -232,7 +232,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testFirstWithPredicateOfNoneMatchingThePredicate() {
+    public void firstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         o.filter(IS_EVEN).firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
@@ -241,7 +241,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReduce() {
+    public void reduce() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
         o.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -258,7 +258,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReduceObservable() {
+    public void reduceObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
         o.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -276,7 +276,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReduceWithEmptyObservable() {
+    public void reduceWithEmptyObservable() {
         Observable<Integer> o = Observable.range(1, 0);
         o.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -295,7 +295,7 @@ public class ObservableTest {
      * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
-    public void testReduceWithEmptyObservableAndSeed() {
+    public void reduceWithEmptyObservableAndSeed() {
         Observable<Integer> o = Observable.range(1, 0);
         int value = o.reduce(1, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -309,7 +309,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReduceWithInitialValue() {
+    public void reduceWithInitialValue() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
         o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -325,7 +325,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReduceWithInitialValueObservable() {
+    public void reduceWithInitialValueObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
         o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -342,7 +342,7 @@ public class ObservableTest {
 
     @Ignore("Throwing is not allowed from the unsafeCreate?!")
     @Test // FIXME throwing is not allowed from the create?!
-    public void testOnSubscribeFails() {
+    public void onSubscribeFails() {
         Observer<String> observer = TestHelper.mockObserver();
 
         final RuntimeException re = new RuntimeException("bad impl");
@@ -358,7 +358,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testMaterializeDematerializeChaining() {
+    public void materializeDematerializeChaining() {
         Observable<Integer> obs = Observable.just(1);
         Observable<Integer> chained = obs.materialize()
                 .dematerialize(Functions.<Notification<Integer>>identity());
@@ -381,7 +381,7 @@ public class ObservableTest {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
+    public void customObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
@@ -430,7 +430,7 @@ public class ObservableTest {
      * Result: Passes
      */
     @Test
-    public void testCustomObservableWithErrorInObserverSynchronous() {
+    public void customObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
@@ -473,7 +473,7 @@ public class ObservableTest {
      * Result: Passes
      */
     @Test
-    public void testCustomObservableWithErrorInObservableSynchronous() {
+    public void customObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
@@ -512,7 +512,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testPublishLast() throws InterruptedException {
+    public void publishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         ConnectableObservable<String> connectable = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
@@ -550,7 +550,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testReplay() throws InterruptedException {
+    public void replay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         ConnectableObservable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
@@ -603,7 +603,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
@@ -648,7 +648,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCacheWithCapacity() throws InterruptedException {
+    public void cacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
@@ -703,7 +703,7 @@ public class ObservableTest {
      */
     @Test
     @Ignore("Subscribers can't throw")
-    public void testErrorThrownWithoutErrorHandlerSynchronous() {
+    public void errorThrownWithoutErrorHandlerSynchronous() {
         try {
             Observable.error(new RuntimeException("failure"))
             .subscribe();
@@ -726,7 +726,7 @@ public class ObservableTest {
      */
     @Test
     @Ignore("Subscribers can't throw")
-    public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
+    public void errorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
         Observable.unsafeCreate(new ObservableSource<Object>() {
@@ -753,7 +753,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeWithErrorInObserver() {
+    public void takeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         Observable.just("1", "2", "three", "4").take(3)
@@ -788,7 +788,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testOfType() {
+    public void ofType() {
         Observable<String> o = Observable.just(1, "abc", false, 2L).ofType(String.class);
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -805,7 +805,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testOfTypeWithPolymorphism() {
+    public void ofTypeWithPolymorphism() {
         ArrayList<Integer> l1 = new ArrayList<Integer>();
         l1.add(1);
         LinkedList<Integer> l2 = new LinkedList<Integer>();
@@ -827,7 +827,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsObservable() {
+    public void containsObservable() {
         Observable<Boolean> o = Observable.just("a", "b", "c").contains("b").toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
@@ -842,7 +842,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithInexistenceObservable() {
+    public void containsWithInexistenceObservable() {
         Observable<Boolean> o = Observable.just("a", "b").contains("c").toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -858,7 +858,7 @@ public class ObservableTest {
 
     @Test
     @Ignore("null values are not allowed")
-    public void testContainsWithNullObservable() {
+    public void containsWithNullObservable() {
         Observable<Boolean> o = Observable.just("a", "b", null).contains(null).toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -873,7 +873,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithEmptyObservableObservable() {
+    public void containsWithEmptyObservableObservable() {
         Observable<Boolean> o = Observable.<String> empty().contains("a").toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -888,7 +888,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContains() {
+    public void contains() {
         Single<Boolean> o = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -902,7 +902,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithInexistence() {
+    public void containsWithInexistence() {
         Single<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
@@ -917,7 +917,7 @@ public class ObservableTest {
 
     @Test
     @Ignore("null values are not allowed")
-    public void testContainsWithNull() {
+    public void containsWithNull() {
         Single<Boolean> o = Observable.just("a", "b", null).contains(null);
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
@@ -931,7 +931,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithEmptyObservable() {
+    public void containsWithEmptyObservable() {
         Single<Boolean> o = Observable.<String> empty().contains("a");
 
         SingleObserver<Object> observer = TestHelper.mockSingleObserver();
@@ -945,7 +945,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testIgnoreElements() {
+    public void ignoreElements() {
         Completable o = Observable.just(1, 2, 3).ignoreElements();
 
         CompletableObserver observer = TestHelper.mockCompletableObserver();
@@ -957,7 +957,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testIgnoreElementsObservable() {
+    public void ignoreElementsObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3).ignoreElements().toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -970,7 +970,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testJustWithScheduler() {
+    public void justWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> o = Observable.fromArray(1, 2).subscribeOn(scheduler);
 
@@ -988,7 +988,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testStartWithWithScheduler() {
+    public void startWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> o = Observable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
@@ -1008,7 +1008,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testRangeWithScheduler() {
+    public void rangeWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
         Observable<Integer> o = Observable.range(3, 4).subscribeOn(scheduler);
 
@@ -1028,28 +1028,28 @@ public class ObservableTest {
     }
 
     @Test
-    public void testMergeWith() {
+    public void mergeWith() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(to);
         to.assertValues(1, 2);
     }
 
     @Test
-    public void testConcatWith() {
+    public void concatWith() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(to);
         to.assertValues(1, 2);
     }
 
     @Test
-    public void testAmbWith() {
+    public void ambWith() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.just(1).ambWith(Observable.just(2)).subscribe(to);
         to.assertValue(1);
     }
 
     @Test
-    public void testTakeWhileToList() {
+    public void takeWhileToList() {
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
         for (int i = 0; i < expectedCount; i++) {
@@ -1074,7 +1074,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCompose() {
+    public void compose() {
         TestObserverEx<String> to = new TestObserverEx<String>();
 
         Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
@@ -1096,7 +1096,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testErrorThrownIssue1685() {
+    public void errorThrownIssue1685() {
         Subject<Object> subject = ReplaySubject.create();
 
         Observable.error(new RuntimeException("oops"))
@@ -1112,12 +1112,12 @@ public class ObservableTest {
     }
 
     @Test
-    public void testEmptyIdentity() {
+    public void emptyIdentity() {
         assertEquals(Observable.empty(), Observable.empty());
     }
 
     @Test
-    public void testEmptyIsEmpty() {
+    public void emptyIsEmpty() {
         Observable.<Integer>empty().subscribe(w);
 
         verify(w).onComplete();
@@ -1148,14 +1148,14 @@ public class ObservableTest {
 //    }
 
     @Test(expected = NullPointerException.class)
-    public void testForEachWithNull() {
+    public void forEachWithNull() {
         Observable.error(new Exception("boo"))
         //
         .forEach(null);
     }
 
     @Test
-    public void testExtend() {
+    public void extend() {
         final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
         Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
@@ -1172,7 +1172,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testAsExtend() {
+    public void asExtend() {
         final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
         Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
@@ -1201,7 +1201,7 @@ public class ObservableTest {
     }
 
     @Test
-    public void testFlatMap() {
+    public void flatMap() {
         List<Integer> list = Observable.range(1, 5).flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {

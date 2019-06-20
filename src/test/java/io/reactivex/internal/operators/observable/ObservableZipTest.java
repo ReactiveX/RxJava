@@ -66,7 +66,7 @@ public class ObservableZipTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCollectionSizeDifferentThanFunction() {
+    public void collectionSizeDifferentThanFunction() {
         Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
@@ -84,7 +84,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartpingDifferentLengthObservableSequences1() {
+    public void startpingDifferentLengthObservableSequences1() {
         Observer<String> w = TestHelper.mockObserver();
 
         TestObservable w1 = new TestObservable();
@@ -119,7 +119,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartpingDifferentLengthObservableSequences2() {
+    public void startpingDifferentLengthObservableSequences2() {
         Observer<String> w = TestHelper.mockObserver();
 
         TestObservable w1 = new TestObservable();
@@ -173,7 +173,7 @@ public class ObservableZipTest {
      * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
      */
     @Test
-    public void testAggregatorSimple() {
+    public void aggregatorSimple() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -206,7 +206,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregatorDifferentSizedResultsWithOnComplete() {
+    public void aggregatorDifferentSizedResultsWithOnComplete() {
         /* create the aggregator which will execute the zip function when all Observables provide values */
         /* define an Observer to receive aggregated events */
         PublishSubject<String> r1 = PublishSubject.create();
@@ -235,7 +235,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregateMultipleTypes() {
+    public void aggregateMultipleTypes() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -263,7 +263,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregate3Types() {
+    public void aggregate3Types() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
@@ -283,7 +283,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregatorsWithDifferentSizesAndTiming() {
+    public void aggregatorsWithDifferentSizesAndTiming() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -318,7 +318,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregatorError() {
+    public void aggregatorError() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -345,7 +345,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregatorUnsubscribe() {
+    public void aggregatorUnsubscribe() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -373,7 +373,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testAggregatorEarlyCompletion() {
+    public void aggregatorEarlyCompletion() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
@@ -401,7 +401,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStart2Types() {
+    public void start2Types() {
         BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define an Observer to receive aggregated events */
@@ -418,7 +418,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStart3Types() {
+    public void start3Types() {
         Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define an Observer to receive aggregated events */
@@ -434,7 +434,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testOnNextExceptionInvokesOnError() {
+    public void onNextExceptionInvokesOnError() {
         BiFunction<Integer, Integer, Integer> zipr = getDivideZipr();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -446,7 +446,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testOnFirstCompletion() {
+    public void onFirstCompletion() {
         PublishSubject<String> oA = PublishSubject.create();
         PublishSubject<String> oB = PublishSubject.create();
 
@@ -496,7 +496,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testOnErrorTermination() {
+    public void onErrorTermination() {
         PublishSubject<String> oA = PublishSubject.create();
         PublishSubject<String> oB = PublishSubject.create();
 
@@ -630,7 +630,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testFirstCompletesThenSecondInfinite() {
+    public void firstCompletesThenSecondInfinite() {
         s1.onNext("a");
         s1.onNext("b");
         s1.onComplete();
@@ -643,7 +643,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testSecondInfiniteThenFirstCompletes() {
+    public void secondInfiniteThenFirstCompletes() {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
@@ -656,7 +656,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testSecondCompletesThenFirstInfinite() {
+    public void secondCompletesThenFirstInfinite() {
         s2.onNext("1");
         s2.onNext("2");
         s2.onComplete();
@@ -669,7 +669,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testFirstInfiniteThenSecondCompletes() {
+    public void firstInfiniteThenSecondCompletes() {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");
@@ -682,7 +682,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testFirstFails() {
+    public void firstFails() {
         s2.onNext("a");
         s1.onError(new RuntimeException("Forced failure"));
 
@@ -698,7 +698,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testSecondFails() {
+    public void secondFails() {
         s1.onNext("a");
         s1.onNext("b");
         s2.onError(new RuntimeException("Forced failure"));
@@ -714,7 +714,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartWithOnCompletedTwice() {
+    public void startWithOnCompletedTwice() {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
         // an internal observer with a SafeSubscriber. However, in the "zip",
@@ -758,7 +758,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStart() {
+    public void start() {
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
                 .zipWith(OBSERVABLE_OF_5_INTEGERS, new BiFunction<Integer, Integer, String>() {
 
@@ -785,7 +785,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartAsync() throws InterruptedException {
+    public void startAsync() throws InterruptedException {
         Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1))
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)), new BiFunction<Integer, Integer, String>() {
 
@@ -808,7 +808,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartInfiniteAndFinite() throws InterruptedException {
+    public void startInfiniteAndFinite() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteObservable = new CountDownLatch(1);
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
@@ -854,7 +854,7 @@ public class ObservableZipTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testEmitNull() {
+    public void emitNull() {
         Observable<Integer> oi = Observable.just(1, null, 3);
         Observable<String> os = Observable.just("a", "b", null);
         Observable<String> o = Observable.zip(oi, os, new BiFunction<Integer, String, String>() {
@@ -902,7 +902,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testEmitMaterializedNotifications() {
+    public void emitMaterializedNotifications() {
         Observable<Notification<Integer>> oi = Observable.just(1, 2, 3).materialize();
         Observable<Notification<String>> os = Observable.just("a", "b", "c").materialize();
         Observable<String> o = Observable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
@@ -932,7 +932,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartEmptyObservables() {
+    public void startEmptyObservables() {
 
         Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), new BiFunction<Integer, String, String>() {
 
@@ -957,7 +957,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testStartEmptyList() {
+    public void startEmptyList() {
 
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
@@ -981,7 +981,7 @@ public class ObservableZipTest {
      * and last() expects at least a single response.
      */
     @Test(expected = NoSuchElementException.class)
-    public void testStartEmptyListBlocking() {
+    public void startEmptyListBlocking() {
 
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
@@ -998,7 +998,7 @@ public class ObservableZipTest {
     }
 
     @Test
-    public void testDownstreamBackpressureRequestsWithFiniteSyncObservables() {
+    public void downstreamBackpressureRequestsWithFiniteSyncObservables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2);
@@ -1101,7 +1101,7 @@ public class ObservableZipTest {
     }
 
     @Test(timeout = 30000)
-    public void testIssue1812() {
+    public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026),
                 new BiFunction<Integer, Integer, Integer>() {
@@ -1127,7 +1127,7 @@ public class ObservableZipTest {
     }
 
     @Test(timeout = 10000)
-    public void testZipRace() {
+    public void zipRace() {
         long startTime = System.currentTimeMillis();
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
 

@@ -45,7 +45,7 @@ import io.reactivex.testsupport.*;
 
 public class ObservableReplayTest {
     @Test
-    public void testBufferedReplay() {
+    public void bufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ConnectableObservable<Integer> co = source.replay(3);
@@ -90,7 +90,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testBufferedWindowReplay() {
+    public void bufferedWindowReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
         TestScheduler scheduler = new TestScheduler();
         ConnectableObservable<Integer> co = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
@@ -140,7 +140,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testWindowedReplay() {
+    public void windowedReplay() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -186,7 +186,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testReplaySelector() {
+    public void replaySelector() {
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
             @Override
@@ -247,7 +247,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testBufferedReplaySelector() {
+    public void bufferedReplaySelector() {
 
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
@@ -307,7 +307,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testWindowedReplaySelector() {
+    public void windowedReplaySelector() {
 
         final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
 
@@ -370,7 +370,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testBufferedReplayError() {
+    public void bufferedReplayError() {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ConnectableObservable<Integer> co = source.replay(3);
@@ -416,7 +416,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testWindowedReplayError() {
+    public void windowedReplayError() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -462,7 +462,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testSynchronousDisconnect() {
+    public void synchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         Observable<Integer> source = Observable.just(1, 2, 3, 4)
         .doOnNext(new Consumer<Integer>() {
@@ -513,7 +513,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_UnsubscribeSource() throws Throwable {
+    public void issue2191_UnsubscribeSource() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -563,7 +563,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribe() throws Throwable {
+    public void issue2191_SchedulerUnsubscribe() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -616,7 +616,7 @@ public class ObservableReplayTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testIssue2191_SchedulerUnsubscribeOnError() throws Throwable {
+    public void issue2191_SchedulerUnsubscribeOnError() throws Throwable {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
@@ -715,7 +715,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testBoundedReplayBuffer() {
+    public void boundedReplayBuffer() {
         BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>() {
             private static final long serialVersionUID = -5182053207244406872L;
 
@@ -751,7 +751,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testTimedAndSizedTruncation() {
+    public void timedAndSizedTruncation() {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
         List<Integer> values = new ArrayList<Integer>();
@@ -790,7 +790,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testTimedAndSizedTruncationError() {
+    public void timedAndSizedTruncationError() {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
 
@@ -834,7 +834,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testSizedTruncation() {
+    public void sizedTruncation() {
         SizeBoundReplayBuffer<Integer> buf = new SizeBoundReplayBuffer<Integer>(2);
         List<Integer> values = new ArrayList<Integer>();
 
@@ -868,7 +868,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testColdReplayNoBackpressure() {
+    public void coldReplayNoBackpressure() {
         Observable<Integer> source = Observable.range(0, 1000).replay().autoConnect();
 
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
@@ -886,7 +886,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testCache() throws InterruptedException {
+    public void cache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
@@ -938,7 +938,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() throws Throwable {
+    public void unsubscribeSource() throws Throwable {
         Action unsubscribe = mock(Action.class);
         Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).replay().autoConnect();
         o.subscribe();
@@ -948,7 +948,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testTake() {
+    public void take() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         Observable<Integer> cached = Observable.range(1, 100).replay().autoConnect();
@@ -962,7 +962,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testAsync() {
+    public void async() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
@@ -987,7 +987,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testAsyncComeAndGo() {
+    public void asyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
@@ -1023,7 +1023,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testNoMissingBackpressureException() {
+    public void noMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
@@ -1047,7 +1047,7 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testValuesAndThenError() {
+    public void valuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .replay().autoConnect();

@@ -45,7 +45,7 @@ import io.reactivex.testsupport.*;
 public class FlowableRefCountTest {
 
     @Test
-    public void testRefCountAsync() {
+    public void refCountAsync() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 20, TimeUnit.MILLISECONDS)
@@ -107,7 +107,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testRefCountSynchronous() {
+    public void refCountSynchronous() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -154,7 +154,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testRefCountSynchronousTake() {
+    public void refCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
                 .doOnNext(new Consumer<Integer>() {
@@ -182,7 +182,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testRepeat() {
+    public void repeat() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 1, TimeUnit.MILLISECONDS)
@@ -226,7 +226,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testConnectUnsubscribe() throws InterruptedException {
+    public void connectUnsubscribe() throws InterruptedException {
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
 
@@ -267,14 +267,14 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testConnectUnsubscribeRaceConditionLoop() throws InterruptedException {
+    public void connectUnsubscribeRaceConditionLoop() throws InterruptedException {
         for (int i = 0; i < 100; i++) {
-            testConnectUnsubscribeRaceCondition();
+            connectUnsubscribeRaceCondition();
         }
     }
 
     @Test
-    public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
+    public void connectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Flowable<Long> f = synchronousInterval()
                 .doOnCancel(new Action() {
@@ -381,7 +381,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testRefCount() {
+    public void refCount() {
         TestScheduler s = new TestScheduler();
         Flowable<Long> interval = Flowable.interval(100, TimeUnit.MILLISECONDS, s).publish().refCount();
 
@@ -463,7 +463,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testAlreadyUnsubscribedClient() {
+    public void alreadyUnsubscribedClient() {
         Subscriber<Integer> done = CancelledSubscriber.INSTANCE;
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
@@ -480,7 +480,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testAlreadyUnsubscribedInterleavesWithClient() {
+    public void alreadyUnsubscribedInterleavesWithClient() {
         ReplayProcessor<Integer> source = ReplayProcessor.create();
 
         Subscriber<Integer> done = CancelledSubscriber.INSTANCE;
@@ -506,7 +506,7 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    public void testConnectDisconnectConnectAndSubjectState() {
+    public void connectDisconnectConnectAndSubjectState() {
         Flowable<Integer> f1 = Flowable.just(10);
         Flowable<Integer> f2 = Flowable.just(20);
         Flowable<Integer> combined = Flowable.combineLatest(f1, f2, new BiFunction<Integer, Integer, Integer>() {
@@ -533,7 +533,7 @@ public class FlowableRefCountTest {
     }
 
     @Test(timeout = 10000)
-    public void testUpstreamErrorAllowsRetry() throws InterruptedException {
+    public void upstreamErrorAllowsRetry() throws InterruptedException {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicInteger intervalSubscribed = new AtomicInteger();

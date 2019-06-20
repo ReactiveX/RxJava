@@ -26,7 +26,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableCastTest {
 
     @Test
-    public void testCast() {
+    public void cast() {
         Flowable<?> source = Flowable.just(1, 2);
         Flowable<Integer> flowable = source.cast(Integer.class);
 
@@ -41,7 +41,7 @@ public class FlowableCastTest {
     }
 
     @Test
-    public void testCastWithWrongType() {
+    public void castWithWrongType() {
         Flowable<?> source = Flowable.just(1, 2);
         Flowable<Boolean> flowable = source.cast(Boolean.class);
 

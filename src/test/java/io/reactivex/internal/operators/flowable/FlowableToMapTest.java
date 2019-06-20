@@ -49,7 +49,7 @@ public class FlowableToMapTest {
     };
 
     @Test
-    public void testToMapFlowable() {
+    public void toMapFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc).toFlowable();
@@ -68,7 +68,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelectorFlowable() {
+    public void toMapWithValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate).toFlowable();
@@ -87,7 +87,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorFlowable() {
+    public void toMapWithErrorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -116,7 +116,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelectorFlowable() {
+    public void toMapWithErrorInValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -146,7 +146,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactoryFlowable() {
+    public void toMapWithFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -190,7 +190,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactoryFlowable() {
+    public void toMapWithErrorThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -226,7 +226,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMap() {
+    public void toMap() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
@@ -244,7 +244,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelector() {
+    public void toMapWithValueSelector() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
@@ -262,7 +262,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithError() {
+    public void toMapWithError() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -290,7 +290,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelector() {
+    public void toMapWithErrorInValueSelector() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -319,7 +319,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactory() {
+    public void toMapWithFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {
@@ -362,7 +362,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactory() {
+    public void toMapWithErrorThrowingFactory() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Supplier<Map<Integer, String>> mapFactory = new Supplier<Map<Integer, String>>() {

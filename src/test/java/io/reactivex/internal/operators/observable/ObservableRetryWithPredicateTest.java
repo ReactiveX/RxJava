@@ -56,7 +56,7 @@ public class ObservableRetryWithPredicateTest {
         }
     };
     @Test
-    public void testWithNothingToRetry() {
+    public void withNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
 
         Observer<Integer> o = TestHelper.mockObserver();
@@ -72,7 +72,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryTwice() {
+    public void retryTwice() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             int count;
             @Override
@@ -108,7 +108,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryTwiceAndGiveUp() {
+    public void retryTwiceAndGiveUp() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
@@ -136,7 +136,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryOnSpecificException() {
+    public void retryOnSpecificException() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             int count;
             @Override
@@ -171,7 +171,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testRetryOnSpecificExceptionAndNotOther() {
+    public void retryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -209,7 +209,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testUnsubscribeFromRetry() {
+    public void unsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
         Disposable sub = subject.retry(retryTwice).subscribe(new Consumer<Integer>() {
@@ -225,7 +225,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test(timeout = 10000)
-    public void testUnsubscribeAfterError() {
+    public void unsubscribeAfterError() {
 
         Observer<Long> observer = TestHelper.mockObserver();
 
@@ -251,7 +251,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test(timeout = 10000)
-    public void testTimeoutWithRetry() {
+    public void timeoutWithRetry() {
 
         Observer<Long> observer = TestHelper.mockObserver();
 
@@ -277,7 +277,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue2826() {
+    public void issue2826() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
@@ -295,7 +295,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testJustAndRetry() throws Exception {
+    public void justAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);
         int value = Observable.just(1).map(new Function<Integer, Integer>() {
             @Override
@@ -311,7 +311,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue3008RetryWithPredicate() {
+    public void issue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
@@ -339,7 +339,7 @@ public class ObservableRetryWithPredicateTest {
     }
 
     @Test
-    public void testIssue3008RetryInfinite() {
+    public void issue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {

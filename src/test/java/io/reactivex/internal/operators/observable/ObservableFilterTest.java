@@ -30,7 +30,7 @@ import io.reactivex.testsupport.*;
 public class ObservableFilterTest {
 
     @Test
-    public void testFilter() {
+    public void filter() {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> observable = w.filter(new Predicate<String>() {
 

@@ -30,7 +30,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableTakeTimedTest {
 
     @Test
-    public void testTakeTimed() {
+    public void takeTimed() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -61,7 +61,7 @@ public class FlowableTakeTimedTest {
     }
 
     @Test
-    public void testTakeTimedErrorBeforeTime() {
+    public void takeTimedErrorBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -93,7 +93,7 @@ public class FlowableTakeTimedTest {
     }
 
     @Test
-    public void testTakeTimedErrorAfterTime() {
+    public void takeTimedErrorAfterTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishProcessor<Integer> source = PublishProcessor.create();

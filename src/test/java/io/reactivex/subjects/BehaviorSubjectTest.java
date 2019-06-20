@@ -44,7 +44,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
+    public void thatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -63,7 +63,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testThatSubscriberReceivesLatestAndThenSubsequentEvents() {
+    public void thatSubscriberReceivesLatestAndThenSubsequentEvents() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         subject.onNext("one");
@@ -83,7 +83,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeThenOnComplete() {
+    public void subscribeThenOnComplete() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -99,7 +99,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeToCompletedOnlyEmitsOnComplete() {
+    public void subscribeToCompletedOnlyEmitsOnComplete() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
         subject.onNext("one");
         subject.onComplete();
@@ -114,7 +114,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testSubscribeToErrorOnlyEmitsOnError() {
+    public void subscribeToErrorOnlyEmitsOnError() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
         subject.onNext("one");
         RuntimeException re = new RuntimeException("test error");
@@ -130,7 +130,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedStopsEmittingData() {
+    public void completedStopsEmittingData() {
         BehaviorSubject<Integer> channel = BehaviorSubject.createDefault(2013);
         Observer<Object> observerA = TestHelper.mockObserver();
         Observer<Object> observerB = TestHelper.mockObserver();
@@ -175,7 +175,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent() {
+    public void completedAfterErrorIsNotSent() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -194,7 +194,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent2() {
+    public void completedAfterErrorIsNotSent2() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -219,7 +219,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCompletedAfterErrorIsNotSent3() {
+    public void completedAfterErrorIsNotSent3() {
         BehaviorSubject<String> subject = BehaviorSubject.createDefault("default");
 
         Observer<String> observer = TestHelper.mockObserver();
@@ -244,7 +244,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test(timeout = 1000)
-    public void testUnsubscriptionCase() {
+    public void unsubscriptionCase() {
         BehaviorSubject<String> src = BehaviorSubject.createDefault("null"); // FIXME was plain null which is not allowed
 
         for (int i = 0; i < 10; i++) {
@@ -285,7 +285,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testStartEmpty() {
+    public void startEmpty() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
         final Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -309,7 +309,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testStartEmptyThenAddOne() {
+    public void startEmptyThenAddOne() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
         final Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -332,7 +332,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testStartEmptyCompleteWithOne() {
+    public void startEmptyCompleteWithOne() {
         BehaviorSubject<Integer> source = BehaviorSubject.create();
         final Observer<Object> o = TestHelper.mockObserver();
 
@@ -349,7 +349,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testTakeOneSubscriber() {
+    public void takeOneSubscriber() {
         BehaviorSubject<Integer> source = BehaviorSubject.createDefault(1);
         final Observer<Object> o = TestHelper.mockObserver();
 
@@ -410,7 +410,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 //    }
 
     @Test
-    public void testEmissionSubscriptionRace() throws Exception {
+    public void emissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {
@@ -483,7 +483,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsNormalEmptyStart() {
+    public void currentStateMethodsNormalEmptyStart() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
 
         assertFalse(as.hasValue());
@@ -510,7 +510,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsNormalSomeStart() {
+    public void currentStateMethodsNormalSomeStart() {
         BehaviorSubject<Object> as = BehaviorSubject.createDefault((Object)1);
 
         assertTrue(as.hasValue());
@@ -536,7 +536,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsEmpty() {
+    public void currentStateMethodsEmpty() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
 
         assertFalse(as.hasValue());
@@ -555,7 +555,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    public void testCurrentStateMethodsError() {
+    public void currentStateMethodsError() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
 
         assertFalse(as.hasValue());

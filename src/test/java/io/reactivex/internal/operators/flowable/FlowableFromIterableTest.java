@@ -39,12 +39,12 @@ import io.reactivex.testsupport.*;
 public class FlowableFromIterableTest {
 
     @Test(expected = NullPointerException.class)
-    public void testNull() {
+    public void nullValue() {
         Flowable.fromIterable(null);
     }
 
     @Test
-    public void testListIterable() {
+    public void listIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -62,7 +62,7 @@ public class FlowableFromIterableTest {
      * This tests the path that can not optimize based on size so must use setProducer.
      */
     @Test
-    public void testRawIterable() {
+    public void rawIterable() {
         Iterable<String> it = new Iterable<String>() {
 
             @Override
@@ -103,7 +103,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testObservableFromIterable() {
+    public void observableFromIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -118,7 +118,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testBackpressureViaRequest() {
+    public void backpressureViaRequest() {
         ArrayList<Integer> list = new ArrayList<Integer>(Flowable.bufferSize());
         for (int i = 1; i <= Flowable.bufferSize() + 1; i++) {
             list.add(i);
@@ -142,7 +142,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testNoBackpressure() {
+    public void noBackpressure() {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -157,7 +157,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testSubscribeMultipleTimes() {
+    public void subscribeMultipleTimes() {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
@@ -172,7 +172,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testFromIterableRequestOverflow() throws InterruptedException {
+    public void fromIterableRequestOverflow() throws InterruptedException {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4));
 
         final int expectedCount = 4;
@@ -205,7 +205,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testFromEmptyIterableWhenZeroRequestedShouldStillEmitOnCompletedEagerly() {
+    public void fromEmptyIterableWhenZeroRequestedShouldStillEmitOnCompletedEagerly() {
 
         final AtomicBoolean completed = new AtomicBoolean(false);
 
@@ -234,7 +234,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
+    public void doesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
         Iterable<Integer> iterable = new Iterable<Integer>() {
 
@@ -271,7 +271,7 @@ public class FlowableFromIterableTest {
     }
 
     @Test
-    public void testDoesNotCallIteratorHasNextMoreThanRequiredFastPath() {
+    public void doesNotCallIteratorHasNextMoreThanRequiredFastPath() {
         final AtomicBoolean called = new AtomicBoolean(false);
         Iterable<Integer> iterable = new Iterable<Integer>() {
 

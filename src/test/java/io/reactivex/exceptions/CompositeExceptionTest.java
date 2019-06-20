@@ -39,7 +39,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testMultipleWithSameCause() {
+    public void multipleWithSameCause() {
         Throwable rootCause = new Throwable("RootCause");
         Throwable e1 = new Throwable("1", rootCause);
         Throwable e2 = new Throwable("2", rootCause);
@@ -57,7 +57,7 @@ public class CompositeExceptionTest {
     }
 
     @Test
-    public void testEmptyErrors() {
+    public void emptyErrors() {
         try {
             new CompositeException();
             fail("CompositeException should fail if errors is empty");
@@ -73,7 +73,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionFromParentThenChild() {
+    public void compositeExceptionFromParentThenChild() {
         CompositeException cex = new CompositeException(ex1, ex2);
 
         System.err.println("----------------------------- print composite stacktrace");
@@ -88,7 +88,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionFromChildThenParent() {
+    public void compositeExceptionFromChildThenParent() {
         CompositeException cex = new CompositeException(ex2, ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
@@ -103,7 +103,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionFromChildAndComposite() {
+    public void compositeExceptionFromChildAndComposite() {
         CompositeException cex = new CompositeException(ex1, getNewCompositeExceptionWithEx123());
 
         System.err.println("----------------------------- print composite stacktrace");
@@ -118,7 +118,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionFromCompositeAndChild() {
+    public void compositeExceptionFromCompositeAndChild() {
         CompositeException cex = new CompositeException(getNewCompositeExceptionWithEx123(), ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
@@ -133,7 +133,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionFromTwoDuplicateComposites() {
+    public void compositeExceptionFromTwoDuplicateComposites() {
         List<Throwable> exs = new ArrayList<Throwable>();
         exs.add(getNewCompositeExceptionWithEx123());
         exs.add(getNewCompositeExceptionWithEx123());
@@ -177,21 +177,21 @@ public class CompositeExceptionTest {
     }
 
     @Test
-    public void testNullCollection() {
+    public void nullCollection() {
         CompositeException composite = new CompositeException((List<Throwable>)null);
         composite.getCause();
         composite.printStackTrace();
     }
 
     @Test
-    public void testNullElement() {
+    public void nullElement() {
         CompositeException composite = new CompositeException(Collections.singletonList((Throwable) null));
         composite.getCause();
         composite.printStackTrace();
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionWithUnsupportedInitCause() {
+    public void compositeExceptionWithUnsupportedInitCause() {
         Throwable t = new Throwable() {
 
             private static final long serialVersionUID = -3282577447436848385L;
@@ -215,7 +215,7 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
-    public void testCompositeExceptionWithNullInitCause() {
+    public void compositeExceptionWithNullInitCause() {
         Throwable t = new Throwable("ThrowableWithNullInitCause") {
 
             private static final long serialVersionUID = -7984762607894527888L;

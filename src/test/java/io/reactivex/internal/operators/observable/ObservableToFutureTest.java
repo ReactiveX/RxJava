@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableToFutureTest {
 
     @Test
-    public void testSuccess() throws Exception {
+    public void success() throws Exception {
         @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         Object value = new Object();
@@ -49,7 +49,7 @@ public class ObservableToFutureTest {
     }
 
     @Test
-    public void testSuccessOperatesOnSuppliedScheduler() throws Exception {
+    public void successOperatesOnSuppliedScheduler() throws Exception {
         @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         Object value = new Object();
@@ -70,7 +70,7 @@ public class ObservableToFutureTest {
     }
 
     @Test
-    public void testFailure() throws Exception {
+    public void failure() throws Exception {
         @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         RuntimeException e = new RuntimeException();
@@ -91,7 +91,7 @@ public class ObservableToFutureTest {
     }
 
     @Test
-    public void testCancelledBeforeSubscribe() throws Exception {
+    public void cancelledBeforeSubscribe() throws Exception {
         @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         CancellationException e = new CancellationException("unit test synthetic cancellation");
@@ -109,7 +109,7 @@ public class ObservableToFutureTest {
     }
 
     @Test
-    public void testCancellationDuringFutureGet() throws Exception {
+    public void cancellationDuringFutureGet() throws Exception {
         Future<Object> future = new Future<Object>() {
             private AtomicBoolean isCancelled = new AtomicBoolean(false);
             private AtomicBoolean isDone = new AtomicBoolean(false);

@@ -34,7 +34,7 @@ import io.reactivex.testsupport.TestHelper;
 public class FlowableSkipLastTest {
 
     @Test
-    public void testSkipLastEmpty() {
+    public void skipLastEmpty() {
         Flowable<String> flowable = Flowable.<String> empty().skipLast(2);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -46,7 +46,7 @@ public class FlowableSkipLastTest {
     }
 
     @Test
-    public void testSkipLast1() {
+    public void skipLast1() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two", "three")).skipLast(2);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -61,7 +61,7 @@ public class FlowableSkipLastTest {
     }
 
     @Test
-    public void testSkipLast2() {
+    public void skipLast2() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two")).skipLast(2);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -73,7 +73,7 @@ public class FlowableSkipLastTest {
     }
 
     @Test
-    public void testSkipLastWithZeroCount() {
+    public void skipLastWithZeroCount() {
         Flowable<String> w = Flowable.just("one", "two");
         Flowable<String> flowable = w.skipLast(0);
 
@@ -88,7 +88,7 @@ public class FlowableSkipLastTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testSkipLastWithNull() {
+    public void skipLastWithNull() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -102,7 +102,7 @@ public class FlowableSkipLastTest {
     }
 
     @Test
-    public void testSkipLastWithBackpressure() {
+    public void skipLastWithBackpressure() {
         Flowable<Integer> f = Flowable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         f.observeOn(Schedulers.computation()).subscribe(ts);
@@ -113,7 +113,7 @@ public class FlowableSkipLastTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testSkipLastWithNegativeCount() {
+    public void skipLastWithNegativeCount() {
         Flowable.just("one").skipLast(-1);
     }
 

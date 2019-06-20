@@ -32,54 +32,54 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableElementAtTest {
 
     @Test
-    public void testElementAtObservable() {
+    public void elementAtObservable() {
         assertEquals(2, Observable.fromArray(1, 2).elementAt(1).toObservable().blockingSingle()
                 .intValue());
     }
 
     @Test
-    public void testElementAtWithIndexOutOfBoundsObservable() {
+    public void elementAtWithIndexOutOfBoundsObservable() {
         assertEquals(-99, Observable.fromArray(1, 2).elementAt(2).toObservable().blockingSingle(-99).intValue());
     }
 
     @Test
-    public void testElementAtOrDefaultObservable() {
+    public void elementAtOrDefaultObservable() {
         assertEquals(2, Observable.fromArray(1, 2).elementAt(1, 0).toObservable().blockingSingle().intValue());
     }
 
     @Test
-    public void testElementAtOrDefaultWithIndexOutOfBoundsObservable() {
+    public void elementAtOrDefaultWithIndexOutOfBoundsObservable() {
         assertEquals(0, Observable.fromArray(1, 2).elementAt(2, 0).toObservable().blockingSingle().intValue());
     }
 
     @Test
-    public void testElementAt() {
+    public void elementAt() {
         assertEquals(2, Observable.fromArray(1, 2).elementAt(1).blockingGet()
                 .intValue());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testElementAtWithMinusIndex() {
+    public void elementAtWithMinusIndex() {
         Observable.fromArray(1, 2).elementAt(-1);
     }
 
     @Test
-    public void testElementAtWithIndexOutOfBounds() {
+    public void elementAtWithIndexOutOfBounds() {
         assertNull(Observable.fromArray(1, 2).elementAt(2).blockingGet());
     }
 
     @Test
-    public void testElementAtOrDefault() {
+    public void elementAtOrDefault() {
         assertEquals(2, Observable.fromArray(1, 2).elementAt(1, 0).blockingGet().intValue());
     }
 
     @Test
-    public void testElementAtOrDefaultWithIndexOutOfBounds() {
+    public void elementAtOrDefaultWithIndexOutOfBounds() {
         assertEquals(0, Observable.fromArray(1, 2).elementAt(2, 0).blockingGet().intValue());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testElementAtOrDefaultWithMinusIndex() {
+    public void elementAtOrDefaultWithMinusIndex() {
         Observable.fromArray(1, 2).elementAt(-1, 0);
     }
 

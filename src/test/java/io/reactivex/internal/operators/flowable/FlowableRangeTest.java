@@ -33,7 +33,7 @@ import io.reactivex.testsupport.*;
 public class FlowableRangeTest {
 
     @Test
-    public void testRangeStartAt2Count3() {
+    public void rangeStartAt2Count3() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.range(2, 3).subscribe(subscriber);
@@ -47,7 +47,7 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testRangeUnsubscribe() {
+    public void rangeUnsubscribe() {
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         final AtomicInteger count = new AtomicInteger();
@@ -70,32 +70,32 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testRangeWithZero() {
+    public void rangeWithZero() {
         Flowable.range(1, 0);
     }
 
     @Test
-    public void testRangeWithOverflow2() {
+    public void rangeWithOverflow2() {
         Flowable.range(Integer.MAX_VALUE, 0);
     }
 
     @Test
-    public void testRangeWithOverflow3() {
+    public void rangeWithOverflow3() {
         Flowable.range(1, Integer.MAX_VALUE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRangeWithOverflow4() {
+    public void rangeWithOverflow4() {
         Flowable.range(2, Integer.MAX_VALUE);
     }
 
     @Test
-    public void testRangeWithOverflow5() {
+    public void rangeWithOverflow5() {
         assertFalse(Flowable.range(Integer.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
     }
 
     @Test
-    public void testBackpressureViaRequest() {
+    public void backpressureViaRequest() {
         Flowable<Integer> f = Flowable.range(1, Flowable.bufferSize());
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -118,7 +118,7 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testNoBackpressure() {
+    public void noBackpressure() {
         ArrayList<Integer> list = new ArrayList<Integer>(Flowable.bufferSize() * 2);
         for (int i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
@@ -136,7 +136,7 @@ public class FlowableRangeTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
-    void testWithBackpressureOneByOne(int start) {
+    void withBackpressureOneByOne(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -151,7 +151,7 @@ public class FlowableRangeTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
-    void testWithBackpressureAllAtOnce(int start) {
+    void withBackpressureAllAtOnce(int start) {
         Flowable<Integer> source = Flowable.range(start, 100);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -167,21 +167,21 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testWithBackpressure1() {
+    public void withBackpressure1() {
         for (int i = 0; i < 100; i++) {
-            testWithBackpressureOneByOne(i);
+            withBackpressureOneByOne(i);
         }
     }
 
     @Test
-    public void testWithBackpressureAllAtOnce() {
+    public void withBackpressureAllAtOnce() {
         for (int i = 0; i < 100; i++) {
-            testWithBackpressureAllAtOnce(i);
+            withBackpressureAllAtOnce(i);
         }
     }
 
     @Test
-    public void testWithBackpressureRequestWayMore() {
+    public void withBackpressureRequestWayMore() {
         Flowable<Integer> source = Flowable.range(50, 100);
 
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
@@ -200,7 +200,7 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testRequestOverflow() {
+    public void requestOverflow() {
         final AtomicInteger count = new AtomicInteger();
         int n = 10;
         Flowable.range(1, n).subscribe(new DefaultSubscriber<Integer>() {
@@ -229,7 +229,7 @@ public class FlowableRangeTest {
     }
 
     @Test
-    public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
+    public void emptyRangeSendsOnCompleteEagerlyWithRequestZero() {
         final AtomicBoolean completed = new AtomicBoolean(false);
         Flowable.range(1, 0).subscribe(new DefaultSubscriber<Integer>() {
 
@@ -256,7 +256,7 @@ public class FlowableRangeTest {
     }
 
     @Test(timeout = 1000)
-    public void testNearMaxValueWithoutBackpressure() {
+    public void nearMaxValueWithoutBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
 
@@ -266,7 +266,7 @@ public class FlowableRangeTest {
     }
 
     @Test(timeout = 1000)
-    public void testNearMaxValueWithBackpressure() {
+    public void nearMaxValueWithBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         Flowable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
 

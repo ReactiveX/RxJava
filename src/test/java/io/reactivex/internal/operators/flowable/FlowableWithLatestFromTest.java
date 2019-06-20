@@ -48,7 +48,7 @@ public class FlowableWithLatestFromTest {
         }
     };
     @Test
-    public void testSimple() {
+    public void simple() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -84,7 +84,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testEmptySource() {
+    public void emptySource() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -110,7 +110,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testEmptyOther() {
+    public void emptyOther() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -136,7 +136,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testUnsubscription() {
+    public void unsubscription() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -163,7 +163,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testSourceThrows() {
+    public void sourceThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -191,7 +191,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testOtherThrows() {
+    public void otherThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -219,7 +219,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testFunctionThrows() {
+    public void functionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -245,7 +245,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testNoDownstreamUnsubscribe() {
+    public void noDownstreamUnsubscribe() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -261,7 +261,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testBackpressure() {
+    public void backpressure() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 

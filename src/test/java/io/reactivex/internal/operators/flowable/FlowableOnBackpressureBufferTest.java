@@ -33,7 +33,7 @@ import io.reactivex.testsupport.TestSubscriberEx;
 public class FlowableOnBackpressureBufferTest {
 
     @Test
-    public void testNoBackpressureSupport() {
+    public void noBackpressureSupport() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         // this will be ignored
         ts.request(100);
@@ -45,7 +45,7 @@ public class FlowableOnBackpressureBufferTest {
     }
 
     @Test(timeout = 2000)
-    public void testFixBackpressureWithBuffer() throws InterruptedException {
+    public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
         TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
@@ -92,17 +92,17 @@ public class FlowableOnBackpressureBufferTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFixBackpressureBufferNegativeCapacity() throws InterruptedException {
+    public void fixBackpressureBufferNegativeCapacity() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFixBackpressureBufferZeroCapacity() throws InterruptedException {
+    public void fixBackpressureBufferZeroCapacity() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(0);
     }
 
     @Test
-    public void testFixBackpressureBoundedBuffer() throws InterruptedException {
+    public void fixBackpressureBoundedBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch backpressureCallback = new CountDownLatch(1);
         TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
@@ -199,12 +199,12 @@ public class FlowableOnBackpressureBufferTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void fixBackpressureBufferNegativeCapacity() throws InterruptedException {
+    public void fixBackpressureBufferNegativeCapacity2() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void fixBackpressureBufferZeroCapacity() throws InterruptedException {
+    public void fixBackpressureBufferZeroCapacity2() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(0);
     }
 

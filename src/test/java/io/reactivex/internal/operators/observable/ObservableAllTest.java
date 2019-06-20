@@ -33,7 +33,7 @@ import io.reactivex.testsupport.*;
 public class ObservableAllTest {
 
     @Test
-    public void testAllObservable() {
+    public void allObservable() {
         Observable<String> obs = Observable.just("one", "two", "six");
 
         Observer <Boolean> observer = TestHelper.mockObserver();
@@ -53,7 +53,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testNotAllObservable() {
+    public void notAllObservable() {
         Observable<String> obs = Observable.just("one", "two", "three", "six");
 
         Observer <Boolean> observer = TestHelper.mockObserver();
@@ -73,7 +73,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testEmptyObservable() {
+    public void emptyObservable() {
         Observable<String> obs = Observable.empty();
 
         Observer <Boolean> observer = TestHelper.mockObserver();
@@ -93,7 +93,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testErrorObservable() {
+    public void errorObservable() {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
@@ -113,7 +113,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testFollowingFirstObservable() {
+    public void followingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
         Observable<Boolean> allOdd = o.all(new Predicate<Integer>() {
             @Override
@@ -126,7 +126,7 @@ public class ObservableAllTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstreamObservable() {
+    public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1)
             .all(new Predicate<Integer>() {
                 @Override
@@ -145,7 +145,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
+    public void predicateThrowsExceptionAndValueInCauseMessageObservable() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
@@ -167,7 +167,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testAll() {
+    public void all() {
         Observable<String> obs = Observable.just("one", "two", "six");
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
@@ -186,7 +186,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testNotAll() {
+    public void notAll() {
         Observable<String> obs = Observable.just("one", "two", "three", "six");
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
@@ -205,7 +205,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         Observable<String> obs = Observable.empty();
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
@@ -224,7 +224,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testError() {
+    public void error() {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
@@ -244,7 +244,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testFollowingFirst() {
+    public void followingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
         Single<Boolean> allOdd = o.all(new Predicate<Integer>() {
             @Override
@@ -257,7 +257,7 @@ public class ObservableAllTest {
     }
 
     @Test(timeout = 5000)
-    public void testIssue1935NoUnsubscribeDownstream() {
+    public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1)
             .all(new Predicate<Integer>() {
                 @Override
@@ -276,7 +276,7 @@ public class ObservableAllTest {
     }
 
     @Test
-    public void testPredicateThrowsExceptionAndValueInCauseMessage() {
+    public void predicateThrowsExceptionAndValueInCauseMessage() {
         TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();

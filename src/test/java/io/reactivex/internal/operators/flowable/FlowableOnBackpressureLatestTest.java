@@ -29,7 +29,7 @@ import io.reactivex.testsupport.*;
 
 public class FlowableOnBackpressureLatestTest {
     @Test
-    public void testSimple() {
+    public void simple() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5).onBackpressureLatest().subscribe(ts);
@@ -40,7 +40,7 @@ public class FlowableOnBackpressureLatestTest {
     }
 
     @Test
-    public void testSimpleError() {
+    public void simpleError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
@@ -52,7 +52,7 @@ public class FlowableOnBackpressureLatestTest {
     }
 
     @Test
-    public void testSimpleBackpressure() {
+    public void simpleBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
 
         Flowable.range(1, 5).onBackpressureLatest().subscribe(ts);
@@ -63,7 +63,7 @@ public class FlowableOnBackpressureLatestTest {
     }
 
     @Test
-    public void testSynchronousDrop() {
+    public void synchronousDrop() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
 
@@ -105,7 +105,7 @@ public class FlowableOnBackpressureLatestTest {
     }
 
     @Test
-    public void testAsynchronousDrop() throws InterruptedException {
+    public void asynchronousDrop() throws InterruptedException {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(1L) {
             final Random rnd = new Random();
             @Override

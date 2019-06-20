@@ -25,7 +25,7 @@ import io.reactivex.flowable.FlowableCovarianceTest.*;
 public class FlowableConcatTests {
 
     @Test
-    public void testConcatSimple() {
+    public void concatSimple() {
         Flowable<String> f1 = Flowable.just("one", "two");
         Flowable<String> f2 = Flowable.just("three", "four");
 
@@ -38,7 +38,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatWithFlowableOfFlowable() {
+    public void concatWithFlowableOfFlowable() {
         Flowable<String> f1 = Flowable.just("one", "two");
         Flowable<String> f2 = Flowable.just("three", "four");
         Flowable<String> f3 = Flowable.just("five", "six");
@@ -56,7 +56,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatWithIterableOfFlowable() {
+    public void concatWithIterableOfFlowable() {
         Flowable<String> f1 = Flowable.just("one", "two");
         Flowable<String> f2 = Flowable.just("three", "four");
         Flowable<String> f3 = Flowable.just("five", "six");
@@ -75,7 +75,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance() {
+    public void concatCovariance() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media = new Media();
@@ -96,7 +96,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance2() {
+    public void concatCovariance2() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media1 = new Media();
@@ -119,7 +119,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance3() {
+    public void concatCovariance3() {
         HorrorMovie horrorMovie1 = new HorrorMovie();
         Movie movie = new Movie();
         Media media = new Media();
@@ -138,7 +138,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatCovariance4() {
+    public void concatCovariance4() {
         final HorrorMovie horrorMovie1 = new HorrorMovie();
         final Movie movie = new Movie();
         Media media = new Media();

@@ -49,7 +49,7 @@ public class ObservableSkipWhileTest {
     };
 
     @Test
-    public void testSkipWithIndex() {
+    public void skipWithIndex() {
         Observable<Integer> src = Observable.just(1, 2, 3, 4, 5);
         src.skipWhile(INDEX_LESS_THAN_THREE).subscribe(w);
 
@@ -61,7 +61,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipEmpty() {
+    public void skipEmpty() {
         Observable<Integer> src = Observable.empty();
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -70,7 +70,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipEverything() {
+    public void skipEverything() {
         Observable<Integer> src = Observable.just(1, 2, 3, 4, 3, 2, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -79,7 +79,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipNothing() {
+    public void skipNothing() {
         Observable<Integer> src = Observable.just(5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -92,7 +92,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipSome() {
+    public void skipSome() {
         Observable<Integer> src = Observable.just(1, 2, 3, 4, 5, 3, 1, 5);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -106,7 +106,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipError() {
+    public void skipError() {
         Observable<Integer> src = Observable.just(1, 2, 42, 5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -117,7 +117,7 @@ public class ObservableSkipWhileTest {
     }
 
     @Test
-    public void testSkipManySubscribers() {
+    public void skipManySubscribers() {
         Observable<Integer> src = Observable.range(1, 10).skipWhile(LESS_THAN_FIVE);
         int n = 5;
         for (int i = 0; i < n; i++) {

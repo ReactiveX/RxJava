@@ -79,7 +79,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testObserveOn() {
+    public void observeOn() {
         int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -92,7 +92,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testObserveOnWithSlowConsumer() {
+    public void observeOnWithSlowConsumer() {
         int num = (int) (Flowable.bufferSize() * 0.2);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -117,7 +117,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testMergeSync() {
+    public void mergeSync() {
         int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
@@ -138,7 +138,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testMergeAsync() {
+    public void mergeAsync() {
         int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
@@ -161,7 +161,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testMergeAsyncThenObserveOnLoop() {
+    public void mergeAsyncThenObserveOnLoop() {
         for (int i = 0; i < 500; i++) {
             if (i % 10 == 0) {
                 System.out.println("testMergeAsyncThenObserveOnLoop >> " + i);
@@ -190,7 +190,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testMergeAsyncThenObserveOn() {
+    public void mergeAsyncThenObserveOn() {
         int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
@@ -213,7 +213,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testFlatMapSync() {
+    public void flatMapSync() {
         int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -237,7 +237,7 @@ public class FlowableBackpressureTests {
 
     @Test
     @Ignore("The test is non-deterministic and can't be made deterministic")
-    public void testFlatMapAsync() {
+    public void flatMapAsync() {
         int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -266,7 +266,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testZipSync() {
+    public void zipSync() {
         int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
@@ -294,7 +294,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testZipAsync() {
+    public void zipAsync() {
         int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
@@ -320,7 +320,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testSubscribeOnScheduling() {
+    public void subscribeOnScheduling() {
         // in a loop for repeating the concurrency in this to increase chance of failure
         for (int i = 0; i < 100; i++) {
             int num = (int) (Flowable.bufferSize() * 2.1);
@@ -352,7 +352,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testTakeFilterSkipChainAsync() {
+    public void takeFilterSkipChainAsync() {
         int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -380,7 +380,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testUserSubscriberUsingRequestSync() {
+    public void userSubscriberUsingRequestSync() {
         AtomicInteger c = new AtomicInteger();
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
@@ -425,7 +425,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testUserSubscriberUsingRequestAsync() throws InterruptedException {
+    public void userSubscriberUsingRequestAsync() throws InterruptedException {
         AtomicInteger c = new AtomicInteger();
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
@@ -480,7 +480,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test(timeout = 2000)
-    public void testFirehoseFailsAsExpected() {
+    public void firehoseFailsAsExpected() {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -509,14 +509,14 @@ public class FlowableBackpressureTests {
     }
 
     @Test
-    public void testFirehoseFailsAsExpectedLoop() {
+    public void firehoseFailsAsExpectedLoop() {
         for (int i = 0; i < 100; i++) {
-            testFirehoseFailsAsExpected();
+            firehoseFailsAsExpected();
         }
     }
 
     @Test(timeout = 10000)
-    public void testOnBackpressureDrop() {
+    public void onBackpressureDrop() {
         long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
             // stop the test if we are getting close to the timeout because slow machines
@@ -545,7 +545,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test(timeout = 20000)
-    public void testOnBackpressureDropWithAction() {
+    public void onBackpressureDropWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger emitCount = new AtomicInteger();
             final AtomicInteger dropCount = new AtomicInteger();
@@ -587,7 +587,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test(timeout = 10000)
-    public void testOnBackpressureDropSynchronous() {
+    public void onBackpressureDropSynchronous() {
         for (int i = 0; i < 100; i++) {
             int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
@@ -609,7 +609,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test(timeout = 10000)
-    public void testOnBackpressureDropSynchronousWithAction() {
+    public void onBackpressureDropSynchronousWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger dropCount = new AtomicInteger();
             int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
@@ -640,7 +640,7 @@ public class FlowableBackpressureTests {
     }
 
     @Test(timeout = 2000)
-    public void testOnBackpressureBuffer() {
+    public void onBackpressureBuffer() {
         int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

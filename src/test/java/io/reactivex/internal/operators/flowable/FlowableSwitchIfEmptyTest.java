@@ -32,7 +32,7 @@ import io.reactivex.subscribers.*;
 public class FlowableSwitchIfEmptyTest {
 
     @Test
-    public void testSwitchWhenNotEmpty() throws Exception {
+    public void switchWhenNotEmpty() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Flowable<Integer> flowable = Flowable.just(4)
                 .switchIfEmpty(Flowable.just(2)
@@ -48,7 +48,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchWhenEmpty() throws Exception {
+    public void switchWhenEmpty() throws Exception {
         final Flowable<Integer> flowable = Flowable.<Integer>empty()
                 .switchIfEmpty(Flowable.fromIterable(Arrays.asList(42)));
 
@@ -56,7 +56,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchWithProducer() throws Exception {
+    public void switchWithProducer() throws Exception {
         final AtomicBoolean emitted = new AtomicBoolean(false);
         Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
@@ -84,7 +84,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchTriggerUnsubscribe() throws Exception {
+    public void switchTriggerUnsubscribe() throws Exception {
 
         final BooleanSubscription bs = new BooleanSubscription();
 
@@ -127,7 +127,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchShouldNotTriggerUnsubscribe() {
+    public void switchShouldNotTriggerUnsubscribe() {
         final BooleanSubscription bs = new BooleanSubscription();
 
         Flowable.unsafeCreate(new Publisher<Long>() {
@@ -141,7 +141,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testSwitchRequestAlternativeObservableWithBackpressure() {
+    public void switchRequestAlternativeObservableWithBackpressure() {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
 
@@ -156,7 +156,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testBackpressureNoRequest() {
+    public void backpressureNoRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
         ts.assertNoValues();
@@ -164,7 +164,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test
-    public void testBackpressureOnFirstObservable() {
+    public void backpressureOnFirstObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         Flowable.just(1, 2, 3).switchIfEmpty(Flowable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotComplete();
@@ -173,7 +173,7 @@ public class FlowableSwitchIfEmptyTest {
     }
 
     @Test(timeout = 10000)
-    public void testRequestsNotLost() throws InterruptedException {
+    public void requestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.unsafeCreate(new Publisher<Long>() {
 

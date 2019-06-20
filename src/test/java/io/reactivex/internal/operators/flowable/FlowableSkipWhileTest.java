@@ -50,7 +50,7 @@ public class FlowableSkipWhileTest {
     };
 
     @Test
-    public void testSkipWithIndex() {
+    public void skipWithIndex() {
         Flowable<Integer> src = Flowable.just(1, 2, 3, 4, 5);
         src.skipWhile(INDEX_LESS_THAN_THREE).subscribe(w);
 
@@ -62,7 +62,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipEmpty() {
+    public void skipEmpty() {
         Flowable<Integer> src = Flowable.empty();
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -71,7 +71,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipEverything() {
+    public void skipEverything() {
         Flowable<Integer> src = Flowable.just(1, 2, 3, 4, 3, 2, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
@@ -80,7 +80,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipNothing() {
+    public void skipNothing() {
         Flowable<Integer> src = Flowable.just(5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -93,7 +93,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipSome() {
+    public void skipSome() {
         Flowable<Integer> src = Flowable.just(1, 2, 3, 4, 5, 3, 1, 5);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -107,7 +107,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipError() {
+    public void skipError() {
         Flowable<Integer> src = Flowable.just(1, 2, 42, 5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
@@ -118,7 +118,7 @@ public class FlowableSkipWhileTest {
     }
 
     @Test
-    public void testSkipManySubscribers() {
+    public void skipManySubscribers() {
         Flowable<Integer> src = Flowable.range(1, 10).skipWhile(LESS_THAN_FIVE);
         int n = 5;
         for (int i = 0; i < n; i++) {

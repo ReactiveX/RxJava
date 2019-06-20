@@ -27,7 +27,7 @@ import io.reactivex.testsupport.*;
 public class ObservableTakeLastOneTest {
 
     @Test
-    public void testLastOfManyReturnsLast() {
+    public void lastOfManyReturnsLast() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.range(1, 10).takeLast(1).subscribe(to);
         to.assertValue(10);
@@ -38,7 +38,7 @@ public class ObservableTakeLastOneTest {
     }
 
     @Test
-    public void testLastOfEmptyReturnsEmpty() {
+    public void lastOfEmptyReturnsEmpty() {
         TestObserverEx<Object> to = new TestObserverEx<Object>();
         Observable.empty().takeLast(1).subscribe(to);
         to.assertNoValues();
@@ -49,7 +49,7 @@ public class ObservableTakeLastOneTest {
     }
 
     @Test
-    public void testLastOfOneReturnsLast() {
+    public void lastOfOneReturnsLast() {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.just(1).takeLast(1).subscribe(to);
         to.assertValue(1);
@@ -60,7 +60,7 @@ public class ObservableTakeLastOneTest {
     }
 
     @Test
-    public void testUnsubscribesFromUpstream() {
+    public void unsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = new Action() {
             @Override
@@ -79,7 +79,7 @@ public class ObservableTakeLastOneTest {
     }
 
     @Test
-    public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
+    public void takeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
         long count = Observable.range(1, num).doOnNext(new Consumer<Integer>() {

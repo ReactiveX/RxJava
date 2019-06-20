@@ -39,7 +39,7 @@ import io.reactivex.testsupport.*;
 public class ObservablePublishTest {
 
     @Test
-    public void testPublish() throws InterruptedException {
+    public void publish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         ConnectableObservable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
@@ -92,7 +92,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testBackpressureFastSlow() {
+    public void backpressureFastSlow() {
         ConnectableObservable<Integer> is = Observable.range(1, Flowable.bufferSize() * 2).publish();
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
@@ -136,7 +136,7 @@ public class ObservablePublishTest {
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
     @Test
-    public void testTakeUntilWithPublishedStreamUsingSelector() {
+    public void takeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
         Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
 
@@ -171,7 +171,7 @@ public class ObservablePublishTest {
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
     @Test
-    public void testTakeUntilWithPublishedStream() {
+    public void takeUntilWithPublishedStream() {
         Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2);
         TestObserver<Integer> to = new TestObserver<Integer>();
         ConnectableObservable<Integer> xsp = xs.publish();
@@ -188,7 +188,7 @@ public class ObservablePublishTest {
     }
 
     @Test(timeout = 10000)
-    public void testBackpressureTwoConsumers() {
+    public void backpressureTwoConsumers() {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Observable<Integer> source = Observable.range(1, 100)
@@ -251,7 +251,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testConnectWithNoSubscriber() {
+    public void connectWithNoSubscriber() {
         TestScheduler scheduler = new TestScheduler();
         ConnectableObservable<Long> co = Observable.interval(10, 10, TimeUnit.MILLISECONDS, scheduler).take(3).publish();
         co.connect();
@@ -267,7 +267,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testSubscribeAfterDisconnectThenConnect() {
+    public void subscribeAfterDisconnectThenConnect() {
         ConnectableObservable<Integer> source = Observable.just(1).publish();
 
         TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
@@ -297,7 +297,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testNoSubscriberRetentionOnCompleted() {
+    public void noSubscriberRetentionOnCompleted() {
         ObservablePublish<Integer> source = (ObservablePublish<Integer>)Observable.just(1).publish();
 
         TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
@@ -318,7 +318,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testNonNullConnection() {
+    public void nonNullConnection() {
         ConnectableObservable<Object> source = Observable.never().publish();
 
         assertNotNull(source.connect());
@@ -326,7 +326,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testNoDisconnectSomeoneElse() {
+    public void noDisconnectSomeoneElse() {
         ConnectableObservable<Object> source = Observable.never().publish();
 
         Disposable connection1 = source.connect();
@@ -349,7 +349,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testConnectIsIdempotent() {
+    public void connectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
@@ -377,7 +377,7 @@ public class ObservablePublishTest {
     }
 
     @Test
-    public void testObserveOn() {
+    public void observeOn() {
         ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {

@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableTakeTimedTest {
 
     @Test
-    public void testTakeTimed() {
+    public void takeTimed() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -60,7 +60,7 @@ public class ObservableTakeTimedTest {
     }
 
     @Test
-    public void testTakeTimedErrorBeforeTime() {
+    public void takeTimedErrorBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();
@@ -92,7 +92,7 @@ public class ObservableTakeTimedTest {
     }
 
     @Test
-    public void testTakeTimedErrorAfterTime() {
+    public void takeTimedErrorAfterTime() {
         TestScheduler scheduler = new TestScheduler();
 
         PublishSubject<Integer> source = PublishSubject.create();

@@ -29,7 +29,7 @@ import io.reactivex.testsupport.TestHelper;
 public class ObservableSequenceEqualTest {
 
     @Test
-    public void test1Observable() {
+    public void observable1() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.just("one", "two", "three")).toObservable();
@@ -37,7 +37,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void test2Observable() {
+    public void observable2() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.just("one", "two", "three", "four")).toObservable();
@@ -45,7 +45,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void test3Observable() {
+    public void observable3() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three", "four"),
                 Observable.just("one", "two", "three")).toObservable();
@@ -53,7 +53,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError1Observable() {
+    public void withError1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
@@ -62,7 +62,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError2Observable() {
+    public void withError2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.concat(Observable.just("one"),
@@ -71,7 +71,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError3Observable() {
+    public void withError3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
@@ -81,7 +81,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty1Observable() {
+    public void withEmpty1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(),
                 Observable.just("one", "two", "three")).toObservable();
@@ -89,7 +89,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty2Observable() {
+    public void withEmpty2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.<String> empty()).toObservable();
@@ -97,7 +97,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty3Observable() {
+    public void withEmpty3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(), Observable.<String> empty()).toObservable();
         verifyResult(o, true);
@@ -105,7 +105,7 @@ public class ObservableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull1Observable() {
+    public void withNull1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just("one")).toObservable();
         verifyResult(o, false);
@@ -113,14 +113,14 @@ public class ObservableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull2Observable() {
+    public void withNull2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just((String) null)).toObservable();
         verifyResult(o, true);
     }
 
     @Test
-    public void testWithEqualityErrorObservable() {
+    public void withEqualityErrorObservable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
                 new BiPredicate<String, String>() {
@@ -174,7 +174,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void test1() {
+    public void one() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.just("one", "two", "three"));
@@ -182,7 +182,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void test2() {
+    public void two() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.just("one", "two", "three", "four"));
@@ -190,7 +190,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void test3() {
+    public void three() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three", "four"),
                 Observable.just("one", "two", "three"));
@@ -198,7 +198,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError1() {
+    public void withError1() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
@@ -207,7 +207,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError2() {
+    public void withError2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.concat(Observable.just("one"),
@@ -216,7 +216,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithError3() {
+    public void withError3() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
@@ -226,7 +226,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty1() {
+    public void withEmpty1() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(),
                 Observable.just("one", "two", "three"));
@@ -234,7 +234,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty2() {
+    public void withEmpty2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one", "two", "three"),
                 Observable.<String> empty());
@@ -242,7 +242,7 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    public void testWithEmpty3() {
+    public void withEmpty3() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(), Observable.<String> empty());
         verifyResult(o, true);
@@ -250,7 +250,7 @@ public class ObservableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull1() {
+    public void withNull1() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just("one"));
         verifyResult(o, false);
@@ -258,14 +258,14 @@ public class ObservableSequenceEqualTest {
 
     @Test
     @Ignore("Null values not allowed")
-    public void testWithNull2() {
+    public void withNull2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just((String) null));
         verifyResult(o, true);
     }
 
     @Test
-    public void testWithEqualityError() {
+    public void withEqualityError() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
                 new BiPredicate<String, String>() {
