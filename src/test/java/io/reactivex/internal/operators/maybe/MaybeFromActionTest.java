@@ -27,6 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeFromActionTest {
     @Test(expected = NullPointerException.class)
@@ -142,7 +143,7 @@ public class MaybeFromActionTest {
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
-            to.cancel();
+            to.dispose();
 
             int timeout = 10;
 

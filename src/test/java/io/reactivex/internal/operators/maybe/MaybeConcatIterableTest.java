@@ -25,6 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeConcatIterableTest {
 
@@ -45,7 +46,7 @@ public class MaybeConcatIterableTest {
                 throw new TestException("iterator()");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -95,7 +96,7 @@ public class MaybeConcatIterableTest {
                 return Maybe.just(1);
             }
         }))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -107,7 +108,7 @@ public class MaybeConcatIterableTest {
                 return Maybe.just(1);
             }
         }))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

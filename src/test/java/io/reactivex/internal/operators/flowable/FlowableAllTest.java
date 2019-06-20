@@ -32,6 +32,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableAllTest {
 
@@ -162,7 +163,7 @@ public class FlowableAllTest {
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -180,7 +181,7 @@ public class FlowableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -339,7 +340,7 @@ public class FlowableAllTest {
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>(1L);
 
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -359,7 +360,7 @@ public class FlowableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageFlowable() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 

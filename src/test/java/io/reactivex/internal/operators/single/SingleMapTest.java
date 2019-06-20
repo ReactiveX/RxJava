@@ -18,6 +18,7 @@ import org.junit.Test;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleMapTest {
 
@@ -50,7 +51,7 @@ public class SingleMapTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<SingleSource<Integer>>testConsumer())
         .assertNoValues()
         .assertError(NullPointerException.class)
         .assertErrorMessage("The mapper function returned a null value.");
@@ -64,7 +65,7 @@ public class SingleMapTest {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
-        .test()
+        .to(TestHelper.<SingleSource<Integer>>testConsumer())
         .assertNoValues()
         .assertError(RuntimeException.class)
         .assertErrorMessage("something went terribly wrong!");

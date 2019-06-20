@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeSwitchIfEmptySingleTest {
 
@@ -56,7 +57,7 @@ public class MaybeSwitchIfEmptySingleTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -95,7 +96,7 @@ public class MaybeSwitchIfEmptySingleTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

@@ -31,6 +31,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableWindowWithTimeTest {
 
@@ -217,9 +218,9 @@ public class ObservableWindowWithTimeTest {
         })
         .subscribe(to);
 
-        to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertComplete();
-        Assert.assertTrue(to.valueCount() != 0);
+        Assert.assertTrue(to.values().size() != 0);
     }
 
     @Test
@@ -434,7 +435,7 @@ public class ObservableWindowWithTimeTest {
     public void exactBoundaryError() {
         Observable.error(new TestException())
         .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
-        .test()
+        .to(TestHelper.<Observable<Object>>testConsumer())
         .assertSubscribed()
         .assertError(TestException.class)
         .assertNotComplete();
@@ -446,7 +447,7 @@ public class ObservableWindowWithTimeTest {
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
         .flatMap(Functions.<Observable<Long>>identity())
         .take(500)
-        .test()
+        .to(TestHelper.<Long>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)

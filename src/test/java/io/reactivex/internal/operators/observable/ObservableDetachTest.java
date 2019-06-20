@@ -23,6 +23,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableDetachTest {
 
@@ -120,7 +121,7 @@ public class ObservableDetachTest {
         TestObserver<Long> to = Observable.just(o).count().toObservable().onTerminateDetach().test();
 
         o = null;
-        to.cancel();
+        to.dispose();
 
         System.gc();
         Thread.sleep(200);

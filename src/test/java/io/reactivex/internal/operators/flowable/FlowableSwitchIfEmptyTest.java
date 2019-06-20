@@ -210,6 +210,6 @@ public class FlowableSwitchIfEmptyTest {
         ts.assertNotComplete();
         ts.assertNoErrors();
         ts.assertValueCount(2);
-        ts.dispose();
+        ts.cancel();
     }
 }

@@ -27,8 +27,8 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
-import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class SingleFlatMapIterableObservableTest {
 
@@ -86,7 +86,7 @@ public class SingleFlatMapIterableObservableTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -96,15 +96,15 @@ public class SingleFlatMapIterableObservableTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
         ;
     }
 
     @Test
     public void fusedNoSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -114,8 +114,8 @@ public class SingleFlatMapIterableObservableTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
         ;
     }
@@ -129,7 +129,7 @@ public class SingleFlatMapIterableObservableTest {
                 return new CrashingIterable(1, 100, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -142,7 +142,7 @@ public class SingleFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 1, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -155,7 +155,7 @@ public class SingleFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 100, 1);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -168,7 +168,7 @@ public class SingleFlatMapIterableObservableTest {
                 return new CrashingIterable(100, 2, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -210,7 +210,7 @@ public class SingleFlatMapIterableObservableTest {
                 })
         .hide()
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -230,7 +230,7 @@ public class SingleFlatMapIterableObservableTest {
                     }
                 })
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -251,7 +251,7 @@ public class SingleFlatMapIterableObservableTest {
                 })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -272,7 +272,7 @@ public class SingleFlatMapIterableObservableTest {
                 })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)

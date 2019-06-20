@@ -26,6 +26,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.*;
 
 public class MaybeDelayOtherTest {
 
@@ -69,8 +70,8 @@ public class MaybeDelayOtherTest {
     public void justWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.just(1)
-        .delay(pp).test();
+        TestObserverEx<Integer> to = Maybe.just(1)
+        .delay(pp).to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 
@@ -123,8 +124,8 @@ public class MaybeDelayOtherTest {
     public void emptyWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.<Integer>empty()
-        .delay(pp).test();
+        TestObserverEx<Integer> to = Maybe.<Integer>empty()
+        .delay(pp).to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 
@@ -141,8 +142,8 @@ public class MaybeDelayOtherTest {
     public void errorWithOnNext() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).test();
+        TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
+        .delay(pp).to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 
@@ -159,8 +160,8 @@ public class MaybeDelayOtherTest {
     public void errorWithOnComplete() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).test();
+        TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
+        .delay(pp).to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 
@@ -177,8 +178,8 @@ public class MaybeDelayOtherTest {
     public void errorWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestObserver<Integer> to = Maybe.<Integer>error(new TestException("Main"))
-        .delay(pp).test();
+        TestObserverEx<Integer> to = Maybe.<Integer>error(new TestException("Main"))
+        .delay(pp).to(TestHelper.<Integer>testConsumer());
 
         to.assertEmpty();
 

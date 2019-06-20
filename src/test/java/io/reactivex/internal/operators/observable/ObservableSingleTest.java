@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSingleTest {
 
@@ -517,7 +518,7 @@ public class ObservableSingleTest {
     public void singleOrErrorError() {
         Observable.error(new RuntimeException("error"))
             .singleOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

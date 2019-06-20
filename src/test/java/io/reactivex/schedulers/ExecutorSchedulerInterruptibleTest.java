@@ -29,6 +29,7 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurrencyTests {
 

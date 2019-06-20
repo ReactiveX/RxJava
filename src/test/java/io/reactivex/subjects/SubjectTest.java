@@ -32,7 +32,7 @@ public abstract class SubjectTest<T> {
             assertEquals("onNext called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
         }
 
-        p.test().assertEmpty().cancel();
+        p.test().assertEmpty().dispose();
     }
 
     @Test
@@ -46,6 +46,6 @@ public abstract class SubjectTest<T> {
             assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
         }
 
-        p.test().assertEmpty().cancel();
+        p.test().assertEmpty().dispose();
     }
 }

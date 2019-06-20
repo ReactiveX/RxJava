@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableFlatMapTest {
     @Test
@@ -346,12 +347,12 @@ public class FlowableFlatMapTest {
 
         source.subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
-        Assert.assertEquals(expected.size(), ts.valueCount());
+        Assert.assertEquals(expected.size(), ts.values().size());
         Assert.assertTrue(expected.containsAll(ts.values()));
     }
 
@@ -377,13 +378,13 @@ public class FlowableFlatMapTest {
 
         source.subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
-        Assert.assertEquals(expected.size(), ts.valueCount());
+        Assert.assertEquals(expected.size(), ts.values().size());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.values());
         Assert.assertTrue(expected.containsAll(ts.values()));
     }
@@ -419,14 +420,14 @@ public class FlowableFlatMapTest {
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>(subscriber);
 
         Function<Integer, Flowable<Integer>> just = just(onNext);
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
         Supplier<Flowable<Integer>> just0 = just0(onComplete);
         source.flatMap(just, just2, just0, m).subscribe(ts);
 
-        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        ts.awaitDone(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertTerminated();
 
@@ -447,7 +448,7 @@ public class FlowableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             Flowable.range(0, 1000)
             .flatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override
@@ -458,9 +459,9 @@ public class FlowableFlatMapTest {
             .observeOn(Schedulers.computation())
             .subscribe(ts);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            ts.awaitDone(2500, TimeUnit.MILLISECONDS);
             if (ts.completions() == 0) {
-                System.out.println(ts.valueCount());
+                System.out.println(ts.values().size());
             }
             ts.assertTerminated();
             ts.assertNoErrors();
@@ -485,7 +486,7 @@ public class FlowableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             Flowable.range(0, 1000)
             .flatMap(new Function<Integer, Flowable<Integer>>() {
                 final Random rnd = new Random();
@@ -501,9 +502,9 @@ public class FlowableFlatMapTest {
             .observeOn(Schedulers.computation())
             .subscribe(ts);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            ts.awaitDone(2500, TimeUnit.MILLISECONDS);
             if (ts.completions() == 0) {
-                System.out.println(ts.valueCount());
+                System.out.println(ts.values().size());
             }
             ts.assertTerminated();
             ts.assertNoErrors();
@@ -532,7 +533,7 @@ public class FlowableFlatMapTest {
                 }
             }).subscribe(ts);
 
-            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
             ts.assertValueCount(1000);
@@ -878,7 +879,7 @@ public class FlowableFlatMapTest {
 
     @Test
     public void fusedInnerThrows2() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 2).hide()
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 2).hide()
         .flatMap(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
@@ -890,7 +891,7 @@ public class FlowableFlatMapTest {
                 });
             }
         }, true)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.errorList(ts);
@@ -1020,7 +1021,7 @@ public class FlowableFlatMapTest {
                 return v;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
     }
 
@@ -1038,7 +1039,7 @@ public class FlowableFlatMapTest {
                 return v;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Publisher");
     }
 
@@ -1119,7 +1120,7 @@ public class FlowableFlatMapTest {
         assertTrue(pp3.hasSubscribers());
         assertTrue(pp4.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         assertFalse(pp3.hasSubscribers());
         assertFalse(pp4.hasSubscribers());

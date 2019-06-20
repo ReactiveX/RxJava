@@ -31,6 +31,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableZipIterableTest {
     BiFunction<String, String, String> concat2Strings;
@@ -396,7 +397,7 @@ public class FlowableZipIterableTest {
                 return a + b;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 

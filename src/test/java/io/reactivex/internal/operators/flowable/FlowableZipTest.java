@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableZipTest {
     BiFunction<String, String, String> concat2Strings;
@@ -363,7 +364,7 @@ public class FlowableZipTest {
         verify(subscriber, never()).onComplete();
         verify(subscriber, times(1)).onNext("helloworld");
 
-        ts.dispose();
+        ts.cancel();
         r1.onNext("hello");
         r2.onNext("again");
 
@@ -799,10 +800,10 @@ public class FlowableZipTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         os.subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
 
-        assertEquals(5, ts.valueCount());
+        assertEquals(5, ts.values().size());
         assertEquals("1-1", ts.values().get(0));
         assertEquals("2-2", ts.values().get(1));
         assertEquals("5-5", ts.values().get(4));
@@ -973,7 +974,7 @@ public class FlowableZipTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         f.subscribe(ts);
-        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.awaitDone(200, TimeUnit.MILLISECONDS);
         ts.assertNoValues();
     }
 
@@ -1015,9 +1016,9 @@ public class FlowableZipTest {
 
         }).take(Flowable.bufferSize() * 2).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
         assertTrue(generatedA.get() < (Flowable.bufferSize() * 3));
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 3));
     }
@@ -1039,9 +1040,9 @@ public class FlowableZipTest {
 
         }).take(Flowable.bufferSize() * 2).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
         assertTrue(generatedA.get() < (Flowable.bufferSize() * 3));
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 3));
     }
@@ -1063,9 +1064,9 @@ public class FlowableZipTest {
 
         }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
         System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
         assertTrue(generatedA.get() < (Flowable.bufferSize() * 3));
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 3));
@@ -1088,9 +1089,9 @@ public class FlowableZipTest {
 
         }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
         System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
         assertTrue(generatedA.get() < (Flowable.bufferSize() * 4));
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 4));
@@ -1113,9 +1114,9 @@ public class FlowableZipTest {
 
         }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
         System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
         assertTrue(generatedA.get() < (Flowable.bufferSize() * 4));
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 4));
@@ -1234,7 +1235,7 @@ public class FlowableZipTest {
             }
         });
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -1285,7 +1286,7 @@ public class FlowableZipTest {
             }
         }).subscribe(ts);
 
-        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        ts.awaitDone(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValue(11);
     }
@@ -1397,13 +1398,13 @@ public class FlowableZipTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
                 return "" + a + b;
             }
         }, true)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -1420,13 +1421,13 @@ public class FlowableZipTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+        TestSubscriberEx<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
                 return "" + a + b;
             }
         }, true, 1)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class, "11", "22");
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -1637,7 +1638,7 @@ public class FlowableZipTest {
 
             @SuppressWarnings("rawtypes")
             final Subscriber[] sub = { null };
-            TestSubscriber<Object> ts = Flowable.zip(pp, new Flowable<Object>() {
+            TestSubscriberEx<Object> ts = Flowable.zip(pp, new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     sub[0] = s;
@@ -1648,7 +1649,7 @@ public class FlowableZipTest {
                     return a;
                 }
             })
-            .test();
+            .to(TestHelper.<Object>testConsumer());
 
             pp.onError(new TestException("First"));
 
@@ -1668,13 +1669,13 @@ public class FlowableZipTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
             @Override
             public Object apply(Object a, Object b) throws Exception {
                 return a;
             }
         }, true)
-        .test();
+        .to(TestHelper.<Object>testConsumer());
 
         pp1.onError(new TestException("First"));
         pp2.onComplete();
@@ -1688,13 +1689,13 @@ public class FlowableZipTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+        TestSubscriberEx<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
             @Override
             public Object apply(Object a, Object b) throws Exception {
                 return a;
             }
         })
-        .test(0L);
+        .to(TestHelper.<Object>testSubscriber(0L));
 
         pp1.onError(new TestException("First"));
         pp2.onComplete();

@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeSubjectTest {
 
@@ -265,7 +266,7 @@ public class MaybeSubjectTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
             TestHelper.race(r1, r2);

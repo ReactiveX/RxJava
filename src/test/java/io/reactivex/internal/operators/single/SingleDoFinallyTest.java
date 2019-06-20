@@ -24,6 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleDoFinallyTest implements Action {
 
@@ -82,7 +83,7 @@ public class SingleDoFinallyTest implements Action {
             })
             .test()
             .assertResult(1)
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {

@@ -21,9 +21,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.TestHelper;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableThrottleLastTests {
 

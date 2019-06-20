@@ -22,6 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeOnErrorXTest {
 
@@ -75,7 +76,7 @@ public class MaybeOnErrorXTest {
                 throw new IOException();
             }
         })
-        .test(), TestException.class, IOException.class);
+        .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -88,7 +89,7 @@ public class MaybeOnErrorXTest {
                 throw new IOException();
             }
         })
-        .test(), TestException.class, IOException.class);
+        .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class MaybeOnErrorXTest {
                 throw new IOException();
             }
         })
-        .test(), TestException.class, IOException.class);
+        .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
 
     @Test
@@ -209,7 +210,7 @@ public class MaybeOnErrorXTest {
     public void onErrorNextIsAlsoError() {
         Maybe.error(new TestException("Main"))
         .onErrorResumeNext(Maybe.error(new TestException("Secondary")))
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Secondary");
     }
 }

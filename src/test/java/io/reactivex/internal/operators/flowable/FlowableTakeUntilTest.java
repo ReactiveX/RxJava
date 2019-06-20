@@ -19,11 +19,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableTakeUntilTest {
 
@@ -189,7 +190,7 @@ public class FlowableTakeUntilTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.takeUntil(until).subscribe(ts);
 
@@ -215,7 +216,7 @@ public class FlowableTakeUntilTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.takeUntil(until).subscribe(ts);
 
@@ -239,7 +240,7 @@ public class FlowableTakeUntilTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.takeUntil(until).take(1).subscribe(ts);
 
@@ -417,7 +418,7 @@ public class FlowableTakeUntilTest {
         assertTrue("Main no subscribers?", main.hasSubscribers());
         assertTrue("Other no subscribers?", other.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         assertFalse("Main has subscribers?", main.hasSubscribers());
         assertFalse("Other has subscribers?", other.hasSubscribers());

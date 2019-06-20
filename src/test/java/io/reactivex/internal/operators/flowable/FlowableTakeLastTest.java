@@ -14,21 +14,23 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableTakeLastTest {
 
@@ -114,7 +116,7 @@ public class FlowableTakeLastTest {
         Flowable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValue(100000);
     }
@@ -124,9 +126,9 @@ public class FlowableTakeLastTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 4, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 4, ts.values().size());
     }
 
     private Function<Integer, Integer> newSlowProcessor() {

@@ -22,6 +22,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.ObservableMapNotification.MapNotificationObserver;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class ObservableMapNotificationTest {
     @Test
@@ -87,7 +88,7 @@ public class ObservableMapNotificationTest {
 
     @Test
     public void onErrorCrash() {
-        TestObserver<Integer> to = Observable.<Integer>error(new TestException("Outer"))
+        TestObserverEx<Integer> to = Observable.<Integer>error(new TestException("Outer"))
         .flatMap(Functions.justFunction(Observable.just(1)),
                 new Function<Throwable, Observable<Integer>>() {
                     @Override
@@ -96,7 +97,7 @@ public class ObservableMapNotificationTest {
                     }
                 },
                 Functions.justSupplier(Observable.just(3)))
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertError(to, 0, TestException.class, "Outer");

@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableToSortedListTest {
 

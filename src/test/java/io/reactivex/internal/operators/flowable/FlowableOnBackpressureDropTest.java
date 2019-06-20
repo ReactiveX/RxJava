@@ -15,17 +15,18 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableOnBackpressureDropTest {
 
@@ -45,7 +46,7 @@ public class FlowableOnBackpressureDropTest {
     public void testWithObserveOn() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
     @Test(timeout = 5000)
@@ -84,7 +85,7 @@ public class FlowableOnBackpressureDropTest {
         l2.await();
         assertEquals(150, ts.values().size());
         ts.request(350);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(500, ts.values().size());
         ts.assertNoErrors();
         assertEquals(0, ts.values().get(0).intValue());

@@ -19,9 +19,9 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class BlockingHelperTest {
 

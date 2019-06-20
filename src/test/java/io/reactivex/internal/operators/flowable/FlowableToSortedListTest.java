@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,6 +29,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableToSortedListTest {
 
@@ -107,7 +109,7 @@ public class FlowableToSortedListTest {
                 Flowable<List<Integer>> sorted = source.toSortedList().toFlowable();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
+                final TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<List<Integer>>(0L);
                 sorted.subscribe(ts);
                 w.schedule(new Runnable() {
                     @Override
@@ -119,7 +121,7 @@ public class FlowableToSortedListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                ts.awaitDone(1, TimeUnit.SECONDS);
                 ts.assertTerminated();
                 ts.assertNoErrors();
                 ts.assertValue(Arrays.asList(1));
@@ -242,7 +244,7 @@ public class FlowableToSortedListTest {
                 Single<List<Integer>> sorted = source.toSortedList();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+                final TestObserverEx<List<Integer>> to = new TestObserverEx<List<Integer>>();
                 sorted.subscribe(to);
                 w.schedule(new Runnable() {
                     @Override
@@ -254,7 +256,7 @@ public class FlowableToSortedListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                to.awaitDone(1, TimeUnit.SECONDS);
                 to.assertTerminated();
                 to.assertNoErrors();
                 to.assertValue(Arrays.asList(1));

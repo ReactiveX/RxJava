@@ -18,13 +18,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableWindowWithFlowableTest {
 
@@ -370,7 +371,7 @@ public class FlowableWindowWithFlowableTest {
         assertTrue(source.hasSubscribers());
         assertTrue(boundary.hasSubscribers());
 
-        ts.dispose();
+        ts.cancel();
 
         assertTrue(source.hasSubscribers());
 
@@ -473,10 +474,10 @@ public class FlowableWindowWithFlowableTest {
 
     @Test
     public void boundaryOnError() {
-        TestSubscriber<Object> ts = Flowable.error(new TestException())
+        TestSubscriberEx<Object> ts = Flowable.error(new TestException())
         .window(Flowable.never())
         .flatMap(Functions.<Flowable<Object>>identity(), true)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -776,7 +777,7 @@ public class FlowableWindowWithFlowableTest {
         try {
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-            TestSubscriber<Flowable<Object>> ts = Flowable.error(new TestException("main"))
+            TestSubscriberEx<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
@@ -784,7 +785,7 @@ public class FlowableWindowWithFlowableTest {
                     ref.set(subscriber);
                 }
             })
-            .test();
+            .to(TestHelper.<Flowable<Object>>testConsumer());
 
             ts
             .assertValueCount(1)
@@ -810,7 +811,7 @@ public class FlowableWindowWithFlowableTest {
                 final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
                 final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-                TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
+                TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
                     protected void subscribeActual(Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
@@ -824,7 +825,7 @@ public class FlowableWindowWithFlowableTest {
                         ref.set(subscriber);
                     }
                 })
-                .test();
+                .to(TestHelper.<Flowable<Object>>testConsumer());
 
                 Runnable r1 = new Runnable() {
                     @Override
@@ -903,7 +904,7 @@ public class FlowableWindowWithFlowableTest {
         final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
         final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-        TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
+        TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -917,7 +918,7 @@ public class FlowableWindowWithFlowableTest {
                 ref.set(subscriber);
             }
         })
-        .test();
+        .to(TestHelper.<Flowable<Object>>testConsumer());
 
         ts.assertValueCount(1)
         .assertNotTerminated()
@@ -1082,7 +1083,7 @@ public class FlowableWindowWithFlowableTest {
         try {
             final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-            TestSubscriber<Flowable<Object>> ts = Flowable.error(new TestException("main"))
+            TestSubscriberEx<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(Functions.justSupplier(new Flowable<Object>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
@@ -1090,7 +1091,7 @@ public class FlowableWindowWithFlowableTest {
                     ref.set(subscriber);
                 }
             }))
-            .test();
+            .to(TestHelper.<Flowable<Object>>testConsumer());
 
             ts
             .assertValueCount(1)
@@ -1116,7 +1117,7 @@ public class FlowableWindowWithFlowableTest {
                 final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
                 final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-                TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
+                TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
                     protected void subscribeActual(Subscriber<? super Object> subscriber) {
                         subscriber.onSubscribe(new BooleanSubscription());
@@ -1130,7 +1131,7 @@ public class FlowableWindowWithFlowableTest {
                         ref.set(subscriber);
                     }
                 }))
-                .test();
+                .to(TestHelper.<Flowable<Object>>testConsumer());
 
                 Runnable r1 = new Runnable() {
                     @Override
@@ -1209,7 +1210,7 @@ public class FlowableWindowWithFlowableTest {
         final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
         final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
 
-        TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
+        TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
             protected void subscribeActual(Subscriber<? super Object> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
@@ -1223,7 +1224,7 @@ public class FlowableWindowWithFlowableTest {
                 ref.set(subscriber);
             }
         }))
-        .test();
+        .to(TestHelper.<Flowable<Object>>testConsumer());
 
         ts.assertValueCount(1)
         .assertNotTerminated()

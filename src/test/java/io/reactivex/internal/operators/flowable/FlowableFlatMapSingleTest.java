@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableFlatMapSingleTest {
 
@@ -62,36 +63,39 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void normalAsync() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 return Single.just(v).subscribeOn(Schedulers.computation());
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        .assertValueCount(10)
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void normalAsyncMaxConcurrency() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 return Single.just(v).subscribeOn(Schedulers.computation());
             }
         }, false, 3)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
      }
 
     @Test
@@ -154,14 +158,14 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 return Single.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -215,7 +219,7 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void takeAsync() {
-        Flowable.range(1, 10)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
@@ -223,13 +227,14 @@ public class FlowableFlatMapSingleTest {
             }
         })
         .take(2)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(2)
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
@@ -275,7 +280,7 @@ public class FlowableFlatMapSingleTest {
             }
         })
         .take(500)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -339,7 +344,7 @@ public class FlowableFlatMapSingleTest {
                 }
             }
             .flatMapSingle(Functions.justFunction(Single.just(2)))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -361,7 +366,7 @@ public class FlowableFlatMapSingleTest {
                     observer.onError(new TestException("Second"));
                 }
             }))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -415,7 +420,7 @@ public class FlowableFlatMapSingleTest {
 
                         assertFalse(((Disposable)observer).isDisposed());
 
-                        ts.dispose();
+                        ts.cancel();
 
                         assertTrue(((Disposable)observer).isDisposed());
                     }

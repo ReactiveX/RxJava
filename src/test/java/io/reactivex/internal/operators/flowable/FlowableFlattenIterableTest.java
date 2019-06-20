@@ -32,7 +32,8 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableFlattenIterableTest {
 
@@ -672,7 +673,7 @@ public class FlowableFlattenIterableTest {
 
     @Test
     public void mixedInnerSource() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3)
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -686,13 +687,13 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
+        ts.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 1, 2);
     }
 
     @Test
     public void mixedInnerSource2() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3)
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -706,13 +707,13 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
+        ts.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2);
     }
 
     @Test
     public void fusionRejected() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3).hide()
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -723,7 +724,7 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
+        ts.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 1, 2, 1, 2);
     }
 
@@ -1030,7 +1031,7 @@ public class FlowableFlattenIterableTest {
     public void onErrorLate() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
                     Functions.justFunction(Collections.<Integer>emptyList()), 128);
 

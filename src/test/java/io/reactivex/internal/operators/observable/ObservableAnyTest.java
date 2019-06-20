@@ -28,8 +28,8 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class ObservableAnyTest {
 
@@ -247,7 +247,7 @@ public class ObservableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {
@@ -469,7 +469,7 @@ public class ObservableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {
@@ -557,7 +557,7 @@ public class ObservableAnyTest {
                 }
             }
             .any(Functions.alwaysTrue())
-            .test()
+            .to(TestHelper.<Boolean>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

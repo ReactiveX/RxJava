@@ -13,18 +13,19 @@
 
 package io.reactivex.internal.operators.completable;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class CompletableDoOnTest {
 
@@ -42,13 +43,13 @@ public class CompletableDoOnTest {
 
     @Test
     public void errorAcceptThrows() {
-        TestObserver<Void> to = Completable.error(new TestException("Outer")).doOnEvent(new Consumer<Throwable>() {
+        TestObserverEx<Void> to = Completable.error(new TestException("Outer")).doOnEvent(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -97,7 +98,7 @@ public class CompletableDoOnTest {
                     throw new TestException("First");
                 }
             })
-            .test()
+            .to(TestHelper.<Void>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

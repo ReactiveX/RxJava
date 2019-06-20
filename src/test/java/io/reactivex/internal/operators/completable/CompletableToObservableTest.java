@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.operators.completable.CompletableToObservable.ObserverCompletableObserver;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableToObservableTest {
 

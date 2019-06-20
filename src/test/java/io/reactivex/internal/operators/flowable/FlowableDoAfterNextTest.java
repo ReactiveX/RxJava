@@ -19,13 +19,14 @@ import java.util.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.processors.UnicastProcessor;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableDoAfterNextTest {
 
@@ -88,13 +89,13 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void syncFused() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
         .doAfterNext(afterNext)
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.SYNC)
+        ts0.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -102,13 +103,13 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void asyncFusedRejected() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.range(1, 5)
         .doAfterNext(afterNext)
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.NONE)
+        ts0.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -116,7 +117,7 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void asyncFused() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -126,7 +127,7 @@ public class FlowableDoAfterNextTest {
         .doAfterNext(afterNext)
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.ASYNC)
+        ts0.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -183,14 +184,14 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void syncFusedConditional() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
         .doAfterNext(afterNext)
         .filter(Functions.alwaysTrue())
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.SYNC)
+        ts0.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -198,14 +199,14 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void asyncFusedRejectedConditional() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.range(1, 5)
         .doAfterNext(afterNext)
         .filter(Functions.alwaysTrue())
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.NONE)
+        ts0.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -213,7 +214,7 @@ public class FlowableDoAfterNextTest {
 
     @Test
     public void asyncFusedConditional() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts0 = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -224,7 +225,7 @@ public class FlowableDoAfterNextTest {
         .filter(Functions.alwaysTrue())
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueFuseable.ASYNC)
+        ts0.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);

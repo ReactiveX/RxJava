@@ -13,14 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableDefaultIfEmptyTest {
 
@@ -84,7 +86,7 @@ public class FlowableDefaultIfEmptyTest {
 
     @Test
     public void testBackpressureEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();
@@ -96,7 +98,7 @@ public class FlowableDefaultIfEmptyTest {
 
     @Test
     public void testBackpressureNonEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
         Flowable.just(1, 2, 3).defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();

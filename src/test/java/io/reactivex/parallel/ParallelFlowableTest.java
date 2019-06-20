@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class ParallelFlowableTest {
 
@@ -48,7 +49,7 @@ public class ParallelFlowableTest {
             .sequential()
             ;
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
             result.subscribe(ts);
 
@@ -76,7 +77,7 @@ public class ParallelFlowableTest {
             .sequential()
             ;
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
             result.subscribe(ts);
 
@@ -112,7 +113,7 @@ public class ParallelFlowableTest {
                 .sequential()
                 ;
 
-                TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
                 result.subscribe(ts);
 
@@ -153,7 +154,7 @@ public class ParallelFlowableTest {
                 .sequential()
                 ;
 
-                TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
                 result.subscribe(ts);
 
@@ -281,7 +282,7 @@ public class ParallelFlowableTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         Flowable.range(1, 10)
         .parallel()
         .collect(as, new BiConsumer<List<Integer>, Integer>() {
@@ -299,28 +300,32 @@ public class ParallelFlowableTest {
         })
         .subscribe(ts);
 
-        ts.assertValueSet(new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)))
+        ts
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void from() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         ParallelFlowable.fromArray(Flowable.range(1, 5), Flowable.range(6, 5))
         .sequential()
         .subscribe(ts);
 
-        ts.assertValueSet(new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)))
+        ts
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void concatMapUnordered() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5)
         .parallel()
@@ -333,15 +338,16 @@ public class ParallelFlowableTest {
         .sequential()
         .subscribe(ts);
 
-        ts.assertValueSet(new HashSet<Integer>(Arrays.asList(11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53)))
+        ts
         .assertNoErrors()
         .assertComplete();
 
+        TestHelper.assertValueSet(ts, 11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53);
     }
 
     @Test
     public void flatMapUnordered() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.range(1, 5)
         .parallel()
@@ -354,10 +360,11 @@ public class ParallelFlowableTest {
         .sequential()
         .subscribe(ts);
 
-        ts.assertValueSet(new HashSet<Integer>(Arrays.asList(11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53)))
+        ts
         .assertNoErrors()
         .assertComplete();
 
+        TestHelper.assertValueSet(ts, 11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53);
     }
 
     @Test
@@ -721,7 +728,7 @@ public class ParallelFlowableTest {
                 .parallel(parallelism, prefetch)
                 .map(Functions.<Integer>identity())
                 .sequential()
-                .test()
+                .to(TestHelper.<Integer>testConsumer())
                 .assertSubscribed()
                 .assertValueCount(1024 * 1024)
                 .assertNoErrors()
@@ -741,7 +748,7 @@ public class ParallelFlowableTest {
                 .runOn(Schedulers.computation())
                 .map(Functions.<Integer>identity())
                 .sequential(prefetch)
-                .test()
+                .to(TestHelper.<Integer>testConsumer())
                 .withTag("parallelism = " + parallelism + ", prefetch = " + prefetch)
                 .awaitDone(30, TimeUnit.SECONDS)
                 .assertSubscribed()
@@ -782,7 +789,7 @@ public class ParallelFlowableTest {
 
     @Test
     public void filter() {
-        Flowable.range(1, 20)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 20)
         .parallel()
         .runOn(Schedulers.computation())
         .filter(new Predicate<Integer>() {
@@ -792,11 +799,12 @@ public class ParallelFlowableTest {
             }
         })
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertValueSet(Arrays.asList(2, 4, 6, 8, 10, 12, 14, 16, 18, 20))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(ts, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20);
     }
 
     @Test
@@ -953,7 +961,7 @@ public class ParallelFlowableTest {
 
     @Test
     public void doOnErrorThrows() {
-        TestSubscriber<Integer> ts = Flowable.range(1, 5)
+        TestSubscriberEx<Integer> ts = Flowable.range(1, 5)
         .parallel(2)
         .map(new Function<Integer, Integer>() {
             @Override
@@ -973,7 +981,7 @@ public class ParallelFlowableTest {
             }
         })
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertError(CompositeException.class)
         .assertNotComplete();
 

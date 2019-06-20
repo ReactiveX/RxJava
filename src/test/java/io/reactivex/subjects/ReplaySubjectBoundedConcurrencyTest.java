@@ -26,8 +26,9 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
-import io.reactivex.observers.*;
+import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestObserverEx;
 
 public class ReplaySubjectBoundedConcurrencyTest {
 
@@ -295,9 +296,9 @@ public class ReplaySubjectBoundedConcurrencyTest {
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(to);
-            to.awaitTerminalEvent();
+            to.awaitDone(5, TimeUnit.SECONDS);
             to.assertValueSequence(expected);
             to.assertTerminated();
         }

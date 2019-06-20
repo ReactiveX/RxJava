@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
@@ -28,8 +29,9 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class ObservableOnErrorResumeNextViaFunctionTest {
 
@@ -150,7 +152,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("Failed operator may leave the child Observer in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
             @Override
@@ -183,7 +185,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just(1).lift(new ObservableOperator<String, Integer>() {
 
             @Override
@@ -262,7 +264,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
         TestObserver<String> to = new TestObserver<String>(observer);
         o.subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
@@ -341,7 +343,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
                 })
                 .subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 

@@ -15,8 +15,9 @@ package io.reactivex.internal.functions;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 import static org.junit.Assert.*;
-import io.reactivex.TestHelper;
 
 public class ObjectHelperTest {
 

@@ -33,6 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableDelayTest {
     private Observer<Long> observer;
@@ -661,9 +662,9 @@ public class ObservableDelayTest {
 
                 }).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, to.values().size());
     }
 
     @Test
@@ -690,9 +691,9 @@ public class ObservableDelayTest {
 
                 }).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, to.values().size());
     }
 
     @Test
@@ -725,9 +726,9 @@ public class ObservableDelayTest {
 
                 }).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, to.values().size());
     }
 
     @Test
@@ -761,9 +762,9 @@ public class ObservableDelayTest {
 
                 }).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, to.values().size());
     }
 
     @Test
@@ -974,7 +975,7 @@ public class ObservableDelayTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null ObservableSource");
     }
 }

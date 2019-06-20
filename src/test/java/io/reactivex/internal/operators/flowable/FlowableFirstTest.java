@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 
 import io.reactivex.*;
 import io.reactivex.functions.Predicate;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableFirstTest {
 
@@ -539,7 +540,7 @@ public class FlowableFirstTest {
     public void firstOrErrorError() {
         Flowable.error(new RuntimeException("error"))
             .firstOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
@@ -580,7 +581,7 @@ public class FlowableFirstTest {
         Flowable.error(new RuntimeException("error"))
             .firstOrError()
             .toFlowable()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

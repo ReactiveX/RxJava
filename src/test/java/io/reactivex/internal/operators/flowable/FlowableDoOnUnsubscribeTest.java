@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.subscribers.TestSubscriber;
@@ -72,7 +72,7 @@ public class FlowableDoOnUnsubscribeTest {
 
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
-            subscriptions.add(subscriber);
+            subscriptions.add(Disposables.fromSubscription(subscriber));
             longs.subscribe(subscriber);
             subscribers.add(subscriber);
         }
@@ -134,7 +134,7 @@ public class FlowableDoOnUnsubscribeTest {
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
             longs.subscribe(subscriber);
-            subscriptions.add(subscriber);
+            subscriptions.add(Disposables.fromSubscription(subscriber));
             subscribers.add(subscriber);
         }
 

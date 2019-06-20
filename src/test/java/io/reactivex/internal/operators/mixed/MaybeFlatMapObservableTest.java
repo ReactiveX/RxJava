@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeFlatMapObservableTest {
 
@@ -37,7 +38,7 @@ public class MaybeFlatMapObservableTest {
         assertTrue(ms.hasObservers());
         assertFalse(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ms.hasObservers());
         assertFalse(ps.hasObservers());
@@ -59,7 +60,7 @@ public class MaybeFlatMapObservableTest {
         assertFalse(ms.hasObservers());
         assertTrue(ps.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ms.hasObservers());
         assertFalse(ps.hasObservers());

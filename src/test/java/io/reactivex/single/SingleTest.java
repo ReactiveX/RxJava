@@ -29,6 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.operators.single.SingleInternalHelper;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class SingleTest {
 
@@ -142,7 +143,7 @@ public class SingleTest {
 
     @Test
     public void testCreateError() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> observer) {
@@ -176,13 +177,13 @@ public class SingleTest {
                     }
                 })
                 .toFlowable().subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValueSequence(Arrays.asList("Hello"));
     }
 
     @Test
-    public void testFlatMap() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+    public void testFlatMap() throws InterruptedException {
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Single.just("Hello").flatMap(new Function<String, Single<String>>() {
             @Override
             public Single<String> apply(String s) {
@@ -190,7 +191,7 @@ public class SingleTest {
             }
         }
         ).toFlowable().subscribe(ts);
-        if (!ts.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
+        if (!ts.await(5, TimeUnit.SECONDS)) {
             ts.cancel();
             Assert.fail("TestSubscriber timed out.");
         }
@@ -215,7 +216,7 @@ public class SingleTest {
 
         s1.timeout(100, TimeUnit.MILLISECONDS).toFlowable().subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertError(TimeoutException.class);
     }
 
@@ -237,7 +238,7 @@ public class SingleTest {
 
         s1.timeout(100, TimeUnit.MILLISECONDS, Single.just("hello")).toFlowable().subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValue("hello");
     }
@@ -284,7 +285,7 @@ public class SingleTest {
 
         Thread.sleep(100);
 
-        ts.dispose();
+        ts.cancel();
 
         if (latch.await(1000, TimeUnit.MILLISECONDS)) {
             assertTrue(unsubscribed.get());
@@ -560,7 +561,7 @@ public class SingleTest {
     @Test
     public void fromObservableMoreThan1Elements() {
         Single.fromObservable(Observable.just(1, 2))
-            .test()
+        .to(TestHelper.<Integer>testConsumer())
             .assertFailure(IllegalArgumentException.class)
             .assertErrorMessage("Sequence contains more than one element!");
     }
@@ -575,7 +576,7 @@ public class SingleTest {
     @Test
     public void fromObservableError() {
         Single.fromObservable(Observable.error(new RuntimeException("some error")))
-            .test()
+        .to(TestHelper.testConsumer())
             .assertFailure(RuntimeException.class)
             .assertErrorMessage("some error");
     }

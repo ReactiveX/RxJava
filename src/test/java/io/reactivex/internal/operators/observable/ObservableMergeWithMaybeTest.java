@@ -28,6 +28,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableMergeWithMaybeTest {
 
@@ -75,7 +76,7 @@ public class ObservableMergeWithMaybeTest {
         assertTrue(ps.hasObservers());
         assertTrue(cs.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());

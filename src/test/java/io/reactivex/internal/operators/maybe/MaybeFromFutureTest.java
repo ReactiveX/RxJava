@@ -71,7 +71,7 @@ public class MaybeFromFutureTest {
         FutureTask<Object> ft = new FutureTask<Object>(new Runnable() {
             @Override
             public void run() {
-                to.cancel();
+                to.dispose();
             }
         }, null);
 
@@ -91,7 +91,7 @@ public class MaybeFromFutureTest {
         FutureTask<Object> ft = new FutureTask<Object>(new Runnable() {
             @Override
             public void run() {
-                to.cancel();
+                to.dispose();
                 throw new TestException();
             }
         }, null);

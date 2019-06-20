@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamCompletableSource;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

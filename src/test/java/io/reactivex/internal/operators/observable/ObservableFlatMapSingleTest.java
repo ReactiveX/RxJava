@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -31,6 +31,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableFlatMapSingleTest {
 
@@ -62,19 +63,20 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void normalAsync() {
-        Observable.range(1, 10)
+        TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 return Single.just(v).subscribeOn(Schedulers.computation());
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(to, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
@@ -123,14 +125,14 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void normalDelayErrorAll() {
-        TestObserver<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
+        TestObserverEx<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 return Single.error(new TestException());
             }
         }, true)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -142,7 +144,7 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void takeAsync() {
-        Observable.range(1, 10)
+        TestObserverEx<Integer> to = Observable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
@@ -150,13 +152,14 @@ public class ObservableFlatMapSingleTest {
             }
         })
         .take(2)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(2)
-        .assertValueSet(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         .assertNoErrors()
         .assertComplete();
+
+        TestHelper.assertValueSet(to, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
@@ -201,7 +204,7 @@ public class ObservableFlatMapSingleTest {
             }
         })
         .take(500)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500)
@@ -279,7 +282,7 @@ public class ObservableFlatMapSingleTest {
                 }
             }
             .flatMapSingle(Functions.justFunction(Single.just(2)))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -301,7 +304,7 @@ public class ObservableFlatMapSingleTest {
                     observer.onError(new TestException("Second"));
                 }
             }))
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

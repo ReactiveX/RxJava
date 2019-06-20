@@ -20,13 +20,13 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.UnicastSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableDoAfterNextTest {
 
@@ -100,13 +100,13 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void syncFused() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doAfterNext(afterNext)
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.SYNC)
+        to0.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -114,13 +114,13 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFusedRejected() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         Observable.range(1, 5)
         .doAfterNext(afterNext)
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.NONE)
+        to0.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -128,7 +128,7 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFused() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
 
@@ -138,7 +138,7 @@ public class ObservableDoAfterNextTest {
         .doAfterNext(afterNext)
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.ASYNC)
+        to0.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -195,14 +195,14 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void syncFusedConditional() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doAfterNext(afterNext)
         .filter(Functions.alwaysTrue())
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.SYNC)
+        to0.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -210,14 +210,14 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFusedRejectedConditional() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         Observable.range(1, 5)
         .doAfterNext(afterNext)
         .filter(Functions.alwaysTrue())
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.NONE)
+        to0.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -225,7 +225,7 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFusedConditional() {
-        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to0 = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
 
@@ -236,7 +236,7 @@ public class ObservableDoAfterNextTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to0);
 
-        ObserverFusion.assertFusion(to0, QueueFuseable.ASYNC)
+        to0.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);

@@ -119,22 +119,22 @@ public class CheckLocalVariablesInTests {
 
     @Test
     public void testSubscriberAsTo() throws Exception {
-        findPattern("TestSubscriber<.*>\\s+to");
+        findPattern("TestSubscriber(Ex)?<.*>\\s+to");
     }
 
     @Test
     public void testObserverAsTs() throws Exception {
-        findPattern("TestObserver<.*>\\s+ts");
+        findPattern("TestObserver(Ex)?<.*>\\s+ts");
     }
 
     @Test
     public void testSubscriberNoArgAsTo() throws Exception {
-        findPattern("TestSubscriber\\s+to");
+        findPattern("TestSubscriber(Ex)?\\s+to");
     }
 
     @Test
     public void testObserverNoArgAsTs() throws Exception {
-        findPattern("TestObserver\\s+ts");
+        findPattern("TestObserver(Ex)?\\s+ts");
     }
 
     @Test

@@ -24,6 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableSequenceEqualTest {
 
@@ -324,7 +325,7 @@ public class ObservableSequenceEqualTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -351,7 +352,7 @@ public class ObservableSequenceEqualTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

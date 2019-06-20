@@ -96,7 +96,7 @@ public class ObservableConcatWithCompletableTest {
 
         assertTrue(other.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(other.hasObservers());
     }

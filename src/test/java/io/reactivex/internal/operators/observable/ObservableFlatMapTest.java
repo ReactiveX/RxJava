@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
@@ -34,6 +34,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableFlatMapTest {
     @Test
@@ -341,12 +342,12 @@ public class ObservableFlatMapTest {
 
         source.subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
-        Assert.assertEquals(expected.size(), to.valueCount());
+        Assert.assertEquals(expected.size(), to.values().size());
         Assert.assertTrue(expected.containsAll(to.values()));
     }
 
@@ -372,13 +373,13 @@ public class ObservableFlatMapTest {
 
         source.subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
-        Assert.assertEquals(expected.size(), to.valueCount());
+        Assert.assertEquals(expected.size(), to.values().size());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + to.values());
         Assert.assertTrue(expected.containsAll(to.values()));
     }
@@ -414,12 +415,12 @@ public class ObservableFlatMapTest {
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserverEx<Object> to = new TestObserverEx<Object>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
         source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(to);
 
-        to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        to.awaitDone(1, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertTerminated();
 
@@ -440,7 +441,7 @@ public class ObservableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             Observable.range(0, 1000)
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -451,9 +452,9 @@ public class ObservableFlatMapTest {
             .observeOn(Schedulers.computation())
             .subscribe(to);
 
-            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            to.awaitDone(2500, TimeUnit.MILLISECONDS);
             if (to.completions() == 0) {
-                System.out.println(to.valueCount());
+                System.out.println(to.values().size());
             }
             to.assertTerminated();
             to.assertNoErrors();
@@ -478,7 +479,7 @@ public class ObservableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
             Observable.range(0, 1000)
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 final Random rnd = new Random();
@@ -494,9 +495,9 @@ public class ObservableFlatMapTest {
             .observeOn(Schedulers.computation())
             .subscribe(to);
 
-            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            to.awaitDone(2500, TimeUnit.MILLISECONDS);
             if (to.completions() == 0) {
-                System.out.println(to.valueCount());
+                System.out.println(to.values().size());
             }
             to.assertTerminated();
             to.assertNoErrors();
@@ -525,7 +526,7 @@ public class ObservableFlatMapTest {
                 }
             }).subscribe(to);
 
-            to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            to.awaitDone(5, TimeUnit.SECONDS);
             to.assertNoErrors();
             to.assertComplete();
             to.assertValueCount(1000);
@@ -711,7 +712,7 @@ public class ObservableFlatMapTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -739,7 +740,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void fusedInnerThrows2() {
-        TestObserver<Integer> to = Observable.range(1, 2).hide()
+        TestObserverEx<Integer> to = Observable.range(1, 2).hide()
         .flatMap(new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer v) throws Exception {
@@ -751,7 +752,7 @@ public class ObservableFlatMapTest {
                 });
             }
         }, true)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.errorList(to);
@@ -802,7 +803,7 @@ public class ObservableFlatMapTest {
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        to.cancel();
+                        to.dispose();
                     }
                 };
                 Runnable r2 = new Runnable() {
@@ -841,7 +842,7 @@ public class ObservableFlatMapTest {
                         @Override
                         public void run() {
                             just2.onNext(1);
-                            to.cancel();
+                            to.dispose();
                         }
                     };
                     Runnable r2 = new Runnable() {
@@ -875,7 +876,7 @@ public class ObservableFlatMapTest {
                 return v;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
     }
 
@@ -893,7 +894,7 @@ public class ObservableFlatMapTest {
                 return v;
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
 

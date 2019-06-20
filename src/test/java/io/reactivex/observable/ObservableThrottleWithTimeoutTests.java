@@ -23,6 +23,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableThrottleWithTimeoutTests {
 

@@ -19,12 +19,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class ParallelDoOnNextTryTest implements Consumer<Object> {
 
@@ -192,7 +192,7 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     @SuppressWarnings("unchecked")
     @Test
     public void doOnNextFailHandlerThrows() {
-        TestSubscriber<Integer> ts = Flowable.range(0, 2)
+        TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
@@ -208,7 +208,7 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
             }
         })
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);
@@ -339,7 +339,7 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     @SuppressWarnings("unchecked")
     @Test
     public void doOnNextFailHandlerThrowsConditional() {
-        TestSubscriber<Integer> ts = Flowable.range(0, 2)
+        TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
@@ -356,7 +356,7 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
         })
         .filter(Functions.alwaysTrue())
         .sequential()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         TestHelper.assertCompositeExceptions(ts, ArithmeticException.class, TestException.class);

@@ -25,6 +25,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableLastTest {
 
@@ -291,7 +292,7 @@ public class ObservableLastTest {
     public void lastOrErrorError() {
         Observable.error(new RuntimeException("error"))
             .lastOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

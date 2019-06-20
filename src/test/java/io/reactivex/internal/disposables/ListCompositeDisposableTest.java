@@ -19,9 +19,9 @@ import java.util.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ListCompositeDisposableTest {
 

@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import java.util.List;
 
 import org.junit.*;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
@@ -24,6 +24,7 @@ import io.reactivex.functions.Cancellable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableFromSourceTest {
 
@@ -31,13 +32,13 @@ public class FlowableFromSourceTest {
 
     PublishAsyncEmitterNoCancel sourceNoCancel;
 
-    TestSubscriber<Integer> ts;
+    TestSubscriberEx<Integer> ts;
 
     @Before
     public void before() {
         source = new PublishAsyncEmitter();
         sourceNoCancel = new PublishAsyncEmitterNoCancel();
-        ts = new TestSubscriber<Integer>(0L);
+        ts = new TestSubscriberEx<Integer>(0L);
     }
 
     @Test

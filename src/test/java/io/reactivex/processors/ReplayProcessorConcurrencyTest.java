@@ -25,7 +25,8 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class ReplayProcessorConcurrencyTest {
 
@@ -291,9 +292,9 @@ public class ReplayProcessorConcurrencyTest {
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             Flowable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
-            ts.awaitTerminalEvent();
+            ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertValueSequence(expected);
             ts.assertTerminated();
         }

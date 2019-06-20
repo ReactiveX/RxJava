@@ -14,7 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,6 +27,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableOnExceptionResumeNextViaObservableTest {
 
@@ -207,7 +211,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
 
                 })
                 .subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
     }
 

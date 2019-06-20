@@ -23,11 +23,10 @@ import java.util.*;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.Flowable;
-import io.reactivex.FlowableTransformer;
+import io.reactivex.*;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 /**
  * Test super/extends of generics.
@@ -67,7 +66,7 @@ public class FlowableCovarianceTest {
     @Test
     public void testGroupByCompose() {
         Flowable<Movie> movies = Flowable.just(new HorrorMovie(), new ActionMovie(), new Movie());
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
 
         movies
         .groupBy(new Function<Movie, Object>() {
@@ -111,7 +110,7 @@ public class FlowableCovarianceTest {
         ts.assertTerminated();
         ts.assertNoErrors();
         //        System.out.println(ts.getOnNextEvents());
-        assertEquals(6, ts.valueCount());
+        assertEquals(6, ts.values().size());
     }
 
     @SuppressWarnings("unused")

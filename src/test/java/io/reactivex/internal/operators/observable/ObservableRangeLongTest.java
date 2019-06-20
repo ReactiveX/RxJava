@@ -24,8 +24,9 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableRangeLongTest {
     @Test
@@ -99,7 +100,7 @@ public class ObservableRangeLongTest {
 
         Observable<Long> o = Observable.rangeLong(1, list.size());
 
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<Long>();
 
         o.subscribe(to);
 
@@ -170,21 +171,21 @@ public class ObservableRangeLongTest {
 
     @Test
     public void fused() {
-        TestObserver<Long> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Long> to = new TestObserverEx<Long>(QueueFuseable.ANY);
 
         Observable.rangeLong(1, 2).subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
+        to.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1L, 2L);
     }
 
     @Test
     public void fusedReject() {
-        TestObserver<Long> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Long> to = new TestObserverEx<Long>(QueueFuseable.ASYNC);
 
         Observable.rangeLong(1, 2).subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1L, 2L);
     }
 

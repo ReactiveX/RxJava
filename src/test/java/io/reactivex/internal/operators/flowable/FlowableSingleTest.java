@@ -29,6 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSingleTest {
 
@@ -680,7 +681,7 @@ public class FlowableSingleTest {
     public void singleOrErrorError() {
         Flowable.error(new RuntimeException("error"))
             .singleOrError()
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

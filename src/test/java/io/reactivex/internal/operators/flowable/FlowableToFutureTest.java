@@ -24,6 +24,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableToFutureTest {
 
@@ -40,7 +41,7 @@ public class FlowableToFutureTest {
 
         Flowable.fromFuture(future).subscribe(ts);
 
-        ts.dispose();
+        ts.cancel();
 
         verify(subscriber, times(1)).onNext(value);
         verify(subscriber, times(1)).onComplete();
@@ -82,7 +83,7 @@ public class FlowableToFutureTest {
 
         Flowable.fromFuture(future).subscribe(ts);
 
-        ts.dispose();
+        ts.cancel();
 
         verify(subscriber, never()).onNext(null);
         verify(subscriber, never()).onComplete();
@@ -100,7 +101,7 @@ public class FlowableToFutureTest {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
-        ts.dispose();
+        ts.cancel();
 
         Flowable.fromFuture(future).subscribe(ts);
 
@@ -152,7 +153,7 @@ public class FlowableToFutureTest {
 
         Thread.sleep(100);
 
-        ts.dispose();
+        ts.cancel();
 
         ts.assertNoErrors();
         ts.assertNoValues();
@@ -236,7 +237,7 @@ public class FlowableToFutureTest {
 
         task.run();
 
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();

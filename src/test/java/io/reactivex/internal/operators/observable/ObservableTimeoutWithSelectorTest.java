@@ -26,8 +26,8 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
@@ -37,6 +37,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableTimeoutWithSelectorTest {
     @Test(timeout = 2000)
@@ -431,7 +432,7 @@ public class ObservableTimeoutWithSelectorTest {
         try {
             PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps
+            TestObserverEx<Integer> to = ps
             .timeout(Functions.justFunction(new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
@@ -442,7 +443,7 @@ public class ObservableTimeoutWithSelectorTest {
                     observer.onComplete();
                 }
             }))
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             ps.onNext(1);
 
@@ -460,7 +461,7 @@ public class ObservableTimeoutWithSelectorTest {
         try {
             PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps
+            TestObserverEx<Integer> to = ps
             .timeout(Functions.justFunction(new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
@@ -471,7 +472,7 @@ public class ObservableTimeoutWithSelectorTest {
                     observer.onComplete();
                 }
             }), Observable.just(2))
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             ps.onNext(1);
 

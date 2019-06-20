@@ -25,8 +25,8 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 @SuppressWarnings("deprecation")
 public class ObservableDematerializeTest {
@@ -141,7 +141,7 @@ public class ObservableDematerializeTest {
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
-        TestObserver<Integer> to = new TestObserver<Integer>(observer);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(observer);
         dematerialize.subscribe(to);
 
         System.out.println(to.errors());

@@ -13,18 +13,17 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.Maybe;
-import io.reactivex.TestHelper;
-import io.reactivex.exceptions.CompositeException;
-import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Action;
-import io.reactivex.observers.TestObserver;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import io.reactivex.Maybe;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.Action;
+import io.reactivex.testsupport.*;
 
 public class MaybeDoOnTerminateTest {
 
@@ -92,14 +91,14 @@ public class MaybeDoOnTerminateTest {
 
     @Test
     public void doOnTerminateErrorCrash() {
-        TestObserver<Object> to = Maybe.error(new TestException("Outer"))
+        TestObserverEx<Object> to = Maybe.error(new TestException("Outer"))
         .doOnTerminate(new Action() {
             @Override
             public void run() {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));

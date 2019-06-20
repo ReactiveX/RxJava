@@ -17,6 +17,7 @@ import static io.reactivex.BackpressureOverflowStrategy.*;
 import static io.reactivex.internal.functions.Functions.EMPTY_ACTION;
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -28,6 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableOnBackpressureBufferStrategyTest {
 
@@ -46,7 +48,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
                 .subscribe(ts);
         // we request 10 but only 3 should come from the buffer
         ts.request(10);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(bufferSize, ts.values().size());
         ts.assertNoErrors();
         assertEquals(497, ts.values().get(0).intValue());
@@ -92,7 +94,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
                 .subscribe(ts);
         // we request 10 but only 3 should come from the buffer
         ts.request(10);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(bufferSize, ts.values().size());
         ts.assertNoErrors();
         assertEquals(0, ts.values().get(0).intValue());

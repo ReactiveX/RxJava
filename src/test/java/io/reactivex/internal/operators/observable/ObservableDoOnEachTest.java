@@ -29,9 +29,10 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueFuseable;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableDoOnEachTest {
 
@@ -201,7 +202,7 @@ public class ObservableDoOnEachTest {
 
     @Test
     public void onErrorThrows() {
-        TestObserver<Object> to = TestObserver.create();
+        TestObserverEx<Object> to = new TestObserverEx<Object>();
 
         Observable.error(new TestException())
         .doOnError(new Consumer<Throwable>() {
@@ -451,7 +452,7 @@ public class ObservableDoOnEachTest {
 
     @Test
     public void onErrorOnErrorCrashConditional() {
-        TestObserver<Object> to = Observable.error(new TestException("Outer"))
+        TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
         .doOnError(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) throws Exception {
@@ -459,7 +460,7 @@ public class ObservableDoOnEachTest {
             }
         })
         .filter(Functions.alwaysTrue())
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -471,7 +472,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -490,8 +491,8 @@ public class ObservableDoOnEachTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -501,7 +502,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrash() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -520,8 +521,8 @@ public class ObservableDoOnEachTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -530,7 +531,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -550,8 +551,8 @@ public class ObservableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -561,7 +562,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrashConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -581,8 +582,8 @@ public class ObservableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -591,7 +592,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -614,8 +615,8 @@ public class ObservableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -625,7 +626,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -649,8 +650,8 @@ public class ObservableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -660,7 +661,7 @@ public class ObservableDoOnEachTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional2() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -684,8 +685,8 @@ public class ObservableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);

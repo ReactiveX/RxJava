@@ -31,6 +31,7 @@ import io.reactivex.functions.Supplier;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeFromCallableTest {
     @Test(expected = NullPointerException.class)
@@ -151,7 +152,7 @@ public class MaybeFromCallableTest {
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
-            to.cancel();
+            to.dispose();
 
             int timeout = 10;
 
@@ -205,7 +206,7 @@ public class MaybeFromCallableTest {
         observerLatch.await();
 
         // Unsubscribing before emission
-        outer.cancel();
+        outer.dispose();
 
         // Emitting result
         funcLatch.countDown();

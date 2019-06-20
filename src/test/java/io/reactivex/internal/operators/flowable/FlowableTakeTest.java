@@ -33,6 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableTakeTest {
 
@@ -300,7 +301,7 @@ public class FlowableTakeTest {
 
         INFINITE_OBSERVABLE.onBackpressureDrop()
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
 
         verify(subscriber).onNext(1L);
@@ -407,7 +408,7 @@ public class FlowableTakeTest {
         ts.request(1);
         ts.request(1);
         ts.request(1);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertNoErrors();
         assertEquals(3, requests.get());

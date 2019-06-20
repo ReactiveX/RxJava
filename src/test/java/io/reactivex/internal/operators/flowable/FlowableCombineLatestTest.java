@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableCombineLatestTest {
 
@@ -761,7 +762,7 @@ public class FlowableCombineLatestTest {
         .observeOn(Schedulers.computation())
         .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         List<String> events = ts.values();
         assertEquals("two2", events.get(0));
@@ -1271,12 +1272,12 @@ public class FlowableCombineLatestTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> ts = Flowable.combineLatest(pp1, pp2, new BiFunction<Integer, Integer, Integer>() {
+                TestSubscriberEx<Integer> ts = Flowable.combineLatest(pp1, pp2, new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a;
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
@@ -1296,7 +1297,7 @@ public class FlowableCombineLatestTest {
 
                 TestHelper.race(r1, r2);
 
-                if (ts.errorCount() != 0) {
+                if (ts.errors().size() != 0) {
                     if (ts.errors().get(0) instanceof CompositeException) {
                         ts.assertSubscribed()
                         .assertNotComplete()
@@ -1512,7 +1513,7 @@ public class FlowableCombineLatestTest {
 
             testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-            testObserver.awaitTerminalEvent();
+            testObserver.awaitDone(5, TimeUnit.SECONDS);
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -1556,7 +1557,7 @@ public class FlowableCombineLatestTest {
 
     @Test
     public void fusedNullCheck() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ASYNC);
 
         Flowable.combineLatest(Flowable.just(1), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -1567,7 +1568,7 @@ public class FlowableCombineLatestTest {
         .subscribe(ts);
 
         ts
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 

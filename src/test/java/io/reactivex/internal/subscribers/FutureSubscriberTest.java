@@ -21,12 +21,12 @@ import java.util.concurrent.*;
 
 import org.junit.*;
 
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscribers.FutureSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class FutureSubscriberTest {
 

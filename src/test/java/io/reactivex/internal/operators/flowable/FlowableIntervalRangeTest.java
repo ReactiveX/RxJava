@@ -25,6 +25,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableIntervalRangeTest {
     @Test

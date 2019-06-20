@@ -24,7 +24,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.mixed.FlowableConcatMapSingle.ConcatMapSingleSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -33,6 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableConcatMapSingleTest {
 
@@ -210,7 +211,7 @@ public class FlowableConcatMapSingleTest {
 
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestSubscriber<Integer> ts = pp.concatMapSingle(
+            TestSubscriberEx<Integer> ts = pp.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
                         @Override
                         public SingleSource<Integer> apply(Integer v)
@@ -225,7 +226,7 @@ public class FlowableConcatMapSingleTest {
                             };
                         }
                     }
-            ).test();
+            ).to(TestHelper.<Integer>testConsumer());
 
             pp.onNext(1);
 
@@ -242,7 +243,7 @@ public class FlowableConcatMapSingleTest {
 
     @Test
     public void delayAllErrors() {
-        Flowable.range(1, 5)
+        TestSubscriberEx<Object> ts = Flowable.range(1, 5)
         .concatMapSingleDelayError(new Function<Integer, SingleSource<? extends Object>>() {
             @Override
             public SingleSource<? extends Object> apply(Integer v)
@@ -250,15 +251,12 @@ public class FlowableConcatMapSingleTest {
                 return Single.error(new TestException());
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestSubscriber<Object>>() {
-            @Override
-            public void accept(TestSubscriber<Object> ts) throws Exception {
-                CompositeException ce = (CompositeException)ts.errors().get(0);
-                assertEquals(5, ce.getExceptions().size());
-            }
-        });
+        ;
+
+        CompositeException ce = (CompositeException)ts.errors().get(0);
+        assertEquals(5, ce.getExceptions().size());
     }
 
     @Test
@@ -330,7 +328,7 @@ public class FlowableConcatMapSingleTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.dispose();
+                    ts.cancel();
                 }
             };
 

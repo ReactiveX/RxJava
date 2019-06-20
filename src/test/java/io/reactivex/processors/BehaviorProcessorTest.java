@@ -33,6 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.BehaviorProcessor.BehaviorSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -153,7 +154,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         inOrderA.verify(observerA).onNext(42);
         inOrderB.verify(observerB).onNext(42);
 
-        ts.dispose();
+        ts.cancel();
         inOrderA.verifyNoMoreInteractions();
 
         channel.onNext(4711);
@@ -681,7 +682,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts[0].valueCount() == 1) {
+            if (ts[0].values().size() == 1) {
                 ts[0].assertValue(2).assertNoErrors().assertNotComplete();
             } else {
                 ts[0].assertValues(1, 2).assertNoErrors().assertNotComplete();
@@ -836,7 +837,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() > 0) {
+            if (ts.values().size() > 0) {
                 ts.assertValuesOnly(0);
             } else {
                 ts.assertEmpty();

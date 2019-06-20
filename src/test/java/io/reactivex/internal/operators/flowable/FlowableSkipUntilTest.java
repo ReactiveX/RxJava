@@ -21,6 +21,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableSkipUntilTest {
     Subscriber<Object> subscriber;

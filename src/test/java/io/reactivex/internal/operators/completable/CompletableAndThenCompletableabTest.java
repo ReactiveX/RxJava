@@ -23,6 +23,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +46,7 @@ public class CompletableAndThenCompletableabTest {
     public void andThenCompletableCompleteError() {
         Completable.complete()
                 .andThen(Completable.error(new TestException("test")))
-                .test()
+                .to(TestHelper.testConsumer())
                 .assertNotComplete()
                 .assertNoValues()
                 .assertError(TestException.class)
@@ -66,7 +67,7 @@ public class CompletableAndThenCompletableabTest {
     public void andThenCompletableErrorComplete() {
         Completable.error(new TestException("bla"))
                 .andThen(Completable.complete())
-                .test()
+                .to(TestHelper.testConsumer())
                 .assertNotComplete()
                 .assertNoValues()
                 .assertError(TestException.class)
@@ -77,7 +78,7 @@ public class CompletableAndThenCompletableabTest {
     public void andThenCompletableErrorNever() {
         Completable.error(new TestException("bla"))
                 .andThen(Completable.never())
-                .test()
+                .to(TestHelper.testConsumer())
                 .assertNotComplete()
                 .assertNoValues()
                 .assertError(TestException.class)
@@ -88,7 +89,7 @@ public class CompletableAndThenCompletableabTest {
     public void andThenCompletableErrorError() {
         Completable.error(new TestException("error1"))
                 .andThen(Completable.error(new TestException("error2")))
-                .test()
+                .to(TestHelper.testConsumer())
                 .assertNotComplete()
                 .assertNoValues()
                 .assertError(TestException.class)
@@ -116,7 +117,7 @@ public class CompletableAndThenCompletableabTest {
         Completable.fromRunnable(new Runnable() {
             @Override
             public void run() {
-                to.cancel();
+                to.dispose();
             }
         })
                 .andThen(Completable.complete())
@@ -133,7 +134,7 @@ public class CompletableAndThenCompletableabTest {
                 .andThen(Completable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        to.cancel();
+                        to.dispose();
                     }
                 }))
                 .subscribe(to);

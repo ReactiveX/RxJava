@@ -14,6 +14,7 @@
 package io.reactivex.subscribers;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class SafeSubscriberTest {
 
@@ -674,7 +676,7 @@ public class SafeSubscriberTest {
 
     @Test
     public void onNextWithoutOnSubscribe() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
@@ -685,7 +687,7 @@ public class SafeSubscriberTest {
 
     @Test
     public void onErrorWithoutOnSubscribe() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
@@ -699,7 +701,7 @@ public class SafeSubscriberTest {
 
     @Test
     public void onCompleteWithoutOnSubscribe() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 

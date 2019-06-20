@@ -32,6 +32,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject.BehaviorDisposable;
+import io.reactivex.testsupport.TestHelper;
 
 public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
@@ -649,7 +650,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -681,7 +682,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (to[0].valueCount() == 1) {
+            if (to[0].values().size() == 1) {
                 to[0].assertValue(2).assertNoErrors().assertNotComplete();
             } else {
                 to[0].assertValues(1, 2).assertNoErrors().assertNotComplete();

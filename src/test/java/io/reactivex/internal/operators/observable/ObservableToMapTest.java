@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.functions.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;

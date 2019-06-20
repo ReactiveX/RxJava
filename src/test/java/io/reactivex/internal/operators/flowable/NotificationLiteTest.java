@@ -17,11 +17,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.testsupport.TestHelper;
 
 public class NotificationLiteTest {
 

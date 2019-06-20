@@ -31,6 +31,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class SchedulerWhenTest {
     @Test

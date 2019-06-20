@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -33,6 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableRepeatTest {
 
@@ -163,7 +164,7 @@ public class FlowableRepeatTest {
                 .repeat(3)
                 .distinct();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         src.subscribe(ts);
 
@@ -190,7 +191,7 @@ public class FlowableRepeatTest {
         })
         .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertNoValues();
 
@@ -204,7 +205,7 @@ public class FlowableRepeatTest {
 
         Flowable.just(1).subscribeOn(Schedulers.computation()).repeat(5).subscribe(ts);
 
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValues(1, 1, 1, 1, 1);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -481,7 +482,7 @@ public class FlowableRepeatTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.dispose();
+                ts.cancel();
             }
 
             if (!errors.isEmpty()) {

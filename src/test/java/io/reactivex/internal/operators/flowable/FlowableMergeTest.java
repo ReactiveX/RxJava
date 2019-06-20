@@ -37,6 +37,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableMergeTest {
 
@@ -204,7 +205,7 @@ public class FlowableMergeTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(stringSubscriber);
         m.subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
 
         verify(stringSubscriber, never()).onError(any(Throwable.class));
@@ -357,7 +358,7 @@ public class FlowableMergeTest {
     @Test
     @Ignore("Subscribe should not throw")
     public void testThrownErrorHandling() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable<String> f1 = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -368,7 +369,7 @@ public class FlowableMergeTest {
         });
 
         Flowable.merge(f1, f1).subscribe(ts);
-        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         System.out.println("Error: " + ts.errors());
     }
@@ -443,7 +444,7 @@ public class FlowableMergeTest {
         AtomicBoolean os2 = new AtomicBoolean(false);
         Flowable<Long> f2 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>();
         Flowable.merge(f1, f2).subscribe(ts);
 
         // we haven't incremented time so nothing should be received yet
@@ -500,7 +501,7 @@ public class FlowableMergeTest {
             assertFalse(os2.get());
 
             // early unsubscribe
-            ts.dispose();
+            ts.cancel();
 
             assertTrue(os1.get());
             assertTrue(os2.get());
@@ -561,10 +562,10 @@ public class FlowableMergeTest {
 
         for (int i = 0; i < 10; i++) {
             Flowable<Integer> merge = Flowable.merge(f.onBackpressureBuffer(), f.onBackpressureBuffer(), f.onBackpressureBuffer());
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             merge.subscribe(ts);
 
-            ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            ts.awaitDone(3, TimeUnit.SECONDS);
             ts.assertTerminated();
             ts.assertNoErrors();
             ts.assertComplete();
@@ -617,7 +618,7 @@ public class FlowableMergeTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
-            ts.awaitTerminalEvent();
+            ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
             assertEquals(300, onNextEvents.size());
@@ -664,7 +665,7 @@ public class FlowableMergeTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
-            ts.awaitTerminalEvent();
+            ts.awaitDone(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
@@ -680,7 +681,7 @@ public class FlowableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Flowable<Integer> f2 = createInfiniteFlowable(generated2).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
@@ -689,7 +690,7 @@ public class FlowableMergeTest {
         };
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -717,7 +718,7 @@ public class FlowableMergeTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -725,7 +726,7 @@ public class FlowableMergeTest {
         };
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), Flowable.just(-99)).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
 
         List<Integer> onNextEvents = testSubscriber.values();
 
@@ -754,7 +755,7 @@ public class FlowableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Flowable<Integer> f2 = createInfiniteFlowable(generated2).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -771,7 +772,7 @@ public class FlowableMergeTest {
         };
 
         Flowable.merge(f1.take(Flowable.bufferSize() * 2), f2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -797,7 +798,7 @@ public class FlowableMergeTest {
 
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t < 100) {
@@ -814,7 +815,7 @@ public class FlowableMergeTest {
         };
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -850,7 +851,7 @@ public class FlowableMergeTest {
 
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>() {
             int i;
 
             @Override
@@ -869,7 +870,7 @@ public class FlowableMergeTest {
         };
 
         Flowable.merge(f1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitDone(5, TimeUnit.SECONDS);
         if (testSubscriber.errors().size() > 0) {
             testSubscriber.errors().get(0).printStackTrace();
         }
@@ -887,7 +888,7 @@ public class FlowableMergeTest {
     @Ignore("Null values not permitted")
     public void mergeWithNullValues() {
         System.out.println("mergeWithNullValues");
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.merge(Flowable.just(null, "one"), Flowable.just("two", null)).subscribe(ts);
         ts.assertTerminated();
         ts.assertNoErrors();
@@ -928,7 +929,7 @@ public class FlowableMergeTest {
     public void merge1AsyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(1, 1).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1, ts.values().size());
     }
@@ -937,7 +938,7 @@ public class FlowableMergeTest {
     public void merge1AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(1, 1000).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000, ts.values().size());
     }
@@ -946,7 +947,7 @@ public class FlowableMergeTest {
     public void merge10AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(10, 1000).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(10000, ts.values().size());
     }
@@ -955,7 +956,7 @@ public class FlowableMergeTest {
     public void merge1000AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(1000, 1000).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -964,7 +965,7 @@ public class FlowableMergeTest {
     public void merge2000AsyncStreamOf100() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(2000, 100).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(200000, ts.values().size());
     }
@@ -973,7 +974,7 @@ public class FlowableMergeTest {
     public void merge100AsyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNAsyncStreamsOfN(100, 1).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(100, ts.values().size());
     }
@@ -995,7 +996,7 @@ public class FlowableMergeTest {
     public void merge1SyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNSyncStreamsOfN(1, 1).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1, ts.values().size());
     }
@@ -1004,7 +1005,7 @@ public class FlowableMergeTest {
     public void merge1SyncStreamOf1000000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNSyncStreamsOfN(1, 1000000).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -1013,7 +1014,7 @@ public class FlowableMergeTest {
     public void merge1000SyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNSyncStreamsOfN(1000, 1000).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -1022,7 +1023,7 @@ public class FlowableMergeTest {
     public void merge10000SyncStreamOf10() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNSyncStreamsOfN(10000, 10).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(100000, ts.values().size());
     }
@@ -1031,7 +1032,7 @@ public class FlowableMergeTest {
     public void merge1000000SyncStreamOf1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         mergeNSyncStreamsOfN(1000000, 1).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(1000000, ts.values().size());
     }
@@ -1103,7 +1104,7 @@ public class FlowableMergeTest {
 
         });
         Flowable.merge(os).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(10000, ts.values().size());
     }
@@ -1111,7 +1112,7 @@ public class FlowableMergeTest {
     @Test
     public void shouldCompleteAfterApplyingBackpressure_NormalPath() {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.range(1, 2)));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <complete> - with request(2) we get the 1 and 2 but not the <complete>
         subscriber.assertValues(1, 2);
@@ -1121,7 +1122,7 @@ public class FlowableMergeTest {
     @Test
     public void shouldCompleteAfterApplyingBackpressure_FastPath() {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(Flowable.just(1)));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <complete> - should work as per .._NormalPath above
         subscriber.assertValue(1);
@@ -1132,7 +1133,7 @@ public class FlowableMergeTest {
     public void shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Long> source = Flowable.mergeDelayError(Flowable.just(1L), Flowable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
-        TestSubscriber<Long> subscriber = new TestSubscriber<Long>(0L);
+        TestSubscriberEx<Long> subscriber = new TestSubscriberEx<Long>(0L);
         source.subscribe(subscriber);
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         subscriber.assertNoValues();
@@ -1149,7 +1150,7 @@ public class FlowableMergeTest {
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(3); // 1, 2, <error>
         subscriber.assertValues(1, 2);
@@ -1161,7 +1162,7 @@ public class FlowableMergeTest {
     public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         source.subscribe(subscriber);
         subscriber.request(2); // 1, <error>
         subscriber.assertValue(1);
@@ -1183,7 +1184,7 @@ public class FlowableMergeTest {
     public void shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(1), Flowable.just(2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         subscriber.request(1);
         source.subscribe(subscriber);
         subscriber.assertValue(1);
@@ -1197,7 +1198,7 @@ public class FlowableMergeTest {
     public void shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue() {
         Throwable exception = new Throwable();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.range(1, 2), Flowable.range(3, 2), Flowable.<Integer>error(exception));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>(0L);
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>(0L);
         subscriber.request(3);
         source.subscribe(subscriber);
         subscriber.assertValues(1, 2, 3);
@@ -1339,7 +1340,7 @@ public class FlowableMergeTest {
     };
     ;
 
-    void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriber<Integer> ts) {
+    void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriberEx<Integer> ts) {
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < 1000; i++) {
             list.add(i);
@@ -1358,18 +1359,18 @@ public class FlowableMergeTest {
 
     @Test
     public void testFastMergeFullScalar() {
-        runMerge(toScalar, new TestSubscriber<Integer>());
+        runMerge(toScalar, new TestSubscriberEx<Integer>());
     }
 
     @Test
     public void testFastMergeHiddenScalar() {
-        runMerge(toHiddenScalar, new TestSubscriber<Integer>());
+        runMerge(toHiddenScalar, new TestSubscriberEx<Integer>());
     }
 
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(req) {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) {
                 int remaining = req;
 
                 @Override
@@ -1388,7 +1389,7 @@ public class FlowableMergeTest {
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(req) {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(req) {
                 int remaining = req;
                 @Override
                 public void onNext(Integer t) {
@@ -1640,7 +1641,7 @@ public class FlowableMergeTest {
             Flowable<Integer> source2 = Flowable.error(new TestException("Second"));
 
             Flowable.merge(source1, source2)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(errors.toString(), errors.isEmpty());

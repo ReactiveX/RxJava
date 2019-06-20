@@ -24,7 +24,7 @@ import org.junit.*;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableJoinTest {
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -401,7 +402,7 @@ public class FlowableJoinTest {
                             return a + b;
                         }
                 })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -417,7 +418,7 @@ public class FlowableJoinTest {
             @SuppressWarnings("rawtypes")
             final Subscriber[] o = { null };
 
-            TestSubscriber<Integer> ts = Flowable.just(1)
+            TestSubscriberEx<Integer> ts = Flowable.just(1)
             .join(Flowable.just(2),
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(new Flowable<Integer>() {
@@ -434,7 +435,7 @@ public class FlowableJoinTest {
                             return a + b;
                         }
                 })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             o[0].onError(new TestException("Second"));
 

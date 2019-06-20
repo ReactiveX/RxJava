@@ -33,7 +33,8 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableDoOnEachTest {
 
@@ -203,7 +204,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void onErrorThrows() {
-        TestSubscriber<Object> ts = TestSubscriber.create();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
 
         Flowable.error(new TestException())
         .doOnError(new Consumer<Throwable>() {
@@ -485,7 +486,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void onErrorOnErrorCrashConditional() {
-        TestSubscriber<Object> ts = Flowable.error(new TestException("Outer"))
+        TestSubscriberEx<Object> ts = Flowable.error(new TestException("Outer"))
         .doOnError(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) throws Exception {
@@ -493,7 +494,7 @@ public class FlowableDoOnEachTest {
             }
         })
         .filter(Functions.alwaysTrue())
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
@@ -504,7 +505,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -523,8 +524,8 @@ public class FlowableDoOnEachTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -533,7 +534,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedOnErrorCrash() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -552,8 +553,8 @@ public class FlowableDoOnEachTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -561,7 +562,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -581,8 +582,8 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -591,7 +592,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedOnErrorCrashConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -611,8 +612,8 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -620,7 +621,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -643,8 +644,8 @@ public class FlowableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -653,7 +654,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsyncConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -677,8 +678,8 @@ public class FlowableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -687,7 +688,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsyncConditional2() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -711,8 +712,8 @@ public class FlowableDoOnEachTest {
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -751,7 +752,7 @@ public class FlowableDoOnEachTest {
         })
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -787,7 +788,7 @@ public class FlowableDoOnEachTest {
                 })
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -819,7 +820,7 @@ public class FlowableDoOnEachTest {
         })
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -847,7 +848,7 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -880,7 +881,7 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);
@@ -918,7 +919,7 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = cf.test();
+        TestSubscriberEx<Integer> ts = cf.to(TestHelper.<Integer>testConsumer());
         cf.connect();
 
         ts.assertFailure(CompositeException.class);

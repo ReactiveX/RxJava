@@ -25,7 +25,8 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.*;
-import io.reactivex.observers.*;
+import io.reactivex.observers.DefaultObserver;
+import io.reactivex.testsupport.*;
 
 public class ObservableMaterializeTest {
 
@@ -101,7 +102,7 @@ public class ObservableMaterializeTest {
 
     @Test
     public void testWithCompletionCausingError() {
-        TestObserver<Notification<Integer>> to = new TestObserver<Notification<Integer>>();
+        TestObserverEx<Notification<Integer>> to = new TestObserverEx<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override

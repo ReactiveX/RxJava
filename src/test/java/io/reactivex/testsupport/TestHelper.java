@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex;
+package io.reactivex.testsupport;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +27,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -37,7 +40,7 @@ import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.internal.operators.single.SingleToFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.observers.BaseTestConsumer;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -46,7 +49,7 @@ import io.reactivex.subjects.Subject;
 import io.reactivex.subscribers.TestSubscriber;
 
 /**
- * Common methods for helping with tests from 1.x mostly.
+ * Common methods for helping with tests.
  */
 public enum TestHelper {
     ;
@@ -217,7 +220,7 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestObserver<?> to, int index, Class<? extends Throwable> clazz) {
+    public static void assertError(TestObserverEx<?> to, int index, Class<? extends Throwable> clazz) {
         Throwable ex = to.errors().get(0);
         try {
             if (ex instanceof CompositeException) {
@@ -233,7 +236,7 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestSubscriber<?> ts, int index, Class<? extends Throwable> clazz) {
+    public static void assertError(TestSubscriberEx<?> ts, int index, Class<? extends Throwable> clazz) {
         Throwable ex = ts.errors().get(0);
         if (ex instanceof CompositeException) {
             CompositeException ce = (CompositeException) ex;
@@ -244,7 +247,7 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestObserver<?> to, int index, Class<? extends Throwable> clazz, String message) {
+    public static void assertError(TestObserverEx<?> to, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = to.errors().get(0);
         if (ex instanceof CompositeException) {
             CompositeException ce = (CompositeException) ex;
@@ -256,7 +259,7 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestSubscriber<?> ts, int index, Class<? extends Throwable> clazz, String message) {
+    public static void assertError(TestSubscriberEx<?> ts, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = ts.errors().get(0);
         if (ex instanceof CompositeException) {
             CompositeException ce = (CompositeException) ex;
@@ -479,52 +482,6 @@ public enum TestHelper {
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
-    }
-
-    /**
-     * Returns an Consumer that asserts the TestSubscriber has exactly one value + completed
-     * normally and that single value is not the value specified.
-     * @param <T> the value type
-     * @param value the value not expected
-     * @return the consumer
-     */
-    public static <T> Consumer<TestSubscriber<T>> subscriberSingleNot(final T value) {
-        return new Consumer<TestSubscriber<T>>() {
-            @Override
-            public void accept(TestSubscriber<T> ts) throws Exception {
-                ts
-                .assertSubscribed()
-                .assertValueCount(1)
-                .assertNoErrors()
-                .assertComplete();
-
-                T v = ts.values().get(0);
-                assertNotEquals(value, v);
-            }
-        };
-    }
-
-    /**
-     * Returns an Consumer that asserts the TestObserver has exactly one value + completed
-     * normally and that single value is not the value specified.
-     * @param <T> the value type
-     * @param value the value not expected
-     * @return the consumer
-     */
-    public static <T> Consumer<TestObserver<T>> observerSingleNot(final T value) {
-        return new Consumer<TestObserver<T>>() {
-            @Override
-            public void accept(TestObserver<T> to) throws Exception {
-                to
-                .assertSubscribed()
-                .assertValueCount(1)
-                .assertNoErrors()
-                .assertComplete();
-
-                T v = to.values().get(0);
-                assertNotEquals(value, v);
-            }
-        };
     }
 
     /**
@@ -2230,7 +2187,7 @@ public enum TestHelper {
      * @param ts the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
-    public static void assertCompositeExceptions(TestSubscriber<?> ts, Class<? extends Throwable>... classes) {
+    public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Class<? extends Throwable>... classes) {
         ts
         .assertSubscribed()
         .assertError(CompositeException.class)
@@ -2253,7 +2210,7 @@ public enum TestHelper {
      * expected Throwable class and the expected error message
      */
     @SuppressWarnings("unchecked")
-    public static void assertCompositeExceptions(TestSubscriber<?> ts, Object... classes) {
+    public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Object... classes) {
         ts
         .assertSubscribed()
         .assertError(CompositeException.class)
@@ -2274,7 +2231,7 @@ public enum TestHelper {
      * @param to the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
-    public static void assertCompositeExceptions(TestObserver<?> to, Class<? extends Throwable>... classes) {
+    public static void assertCompositeExceptions(TestObserverEx<?> to, Class<? extends Throwable>... classes) {
         to
         .assertSubscribed()
         .assertError(CompositeException.class)
@@ -2297,7 +2254,7 @@ public enum TestHelper {
      * expected Throwable class and the expected error message
      */
     @SuppressWarnings("unchecked")
-    public static void assertCompositeExceptions(TestObserver<?> to, Object... classes) {
+    public static void assertCompositeExceptions(TestObserverEx<?> to, Object... classes) {
         to
         .assertSubscribed()
         .assertError(CompositeException.class)
@@ -2475,7 +2432,7 @@ public enum TestHelper {
      * @param to the test consumer instance
      * @return the list
      */
-    public static List<Throwable> errorList(TestObserver<?> to) {
+    public static List<Throwable> errorList(TestObserverEx<?> to) {
         return compositeList(to.errors().get(0));
     }
 
@@ -2484,7 +2441,7 @@ public enum TestHelper {
      * @param ts the test consumer instance
      * @return the list
      */
-    public static List<Throwable> errorList(TestSubscriber<?> ts) {
+    public static List<Throwable> errorList(TestSubscriberEx<?> ts) {
         return compositeList(ts.errors().get(0));
     }
 
@@ -2535,7 +2492,7 @@ public enum TestHelper {
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2557,7 +2514,7 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriber<Object> ts = new TestSubscriber<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
 
                 os.subscribe(ts);
 
@@ -2579,7 +2536,7 @@ public enum TestHelper {
 
             if (o instanceof SingleSource) {
                 SingleSource<?> os = (SingleSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2601,7 +2558,7 @@ public enum TestHelper {
 
             if (o instanceof MaybeSource) {
                 MaybeSource<?> os = (MaybeSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2623,7 +2580,7 @@ public enum TestHelper {
 
             if (o instanceof CompletableSource) {
                 CompletableSource os = (CompletableSource) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2694,7 +2651,7 @@ public enum TestHelper {
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2716,7 +2673,7 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriber<Object> ts = new TestSubscriber<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
 
                 os.subscribe(ts);
 
@@ -2738,7 +2695,7 @@ public enum TestHelper {
 
             if (o instanceof SingleSource) {
                 SingleSource<?> os = (SingleSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2760,7 +2717,7 @@ public enum TestHelper {
 
             if (o instanceof MaybeSource) {
                 MaybeSource<?> os = (MaybeSource<?>) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -2782,7 +2739,7 @@ public enum TestHelper {
 
             if (o instanceof CompletableSource) {
                 CompletableSource os = (CompletableSource) o;
-                TestObserver<Object> to = new TestObserver<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
 
                 os.subscribe(to);
 
@@ -3131,5 +3088,134 @@ public enum TestHelper {
 
     public static <T> ObservableTransformer<T, T> observableStripBoundary() {
         return new ObservableStripBoundary<T>(null);
+    }
+
+    public static <T> TestConsumerExConverters<T> testConsumer() {
+        return new TestConsumerExConverters<T>(false, 0);
+    }
+
+    public static <T> TestConsumerExConverters<T> testConsumer(boolean cancelled) {
+        return new TestConsumerExConverters<T>(cancelled, 0);
+    }
+
+    public static <T> TestConsumerExConverters<T> testConsumer(final int fusionMode, final boolean cancelled) {
+        return new TestConsumerExConverters<T>(cancelled, fusionMode);
+    }
+
+    public static <T> TestConsumerExConverters<T> testConsumer(final boolean cancelled, final int fusionMode) {
+        return new TestConsumerExConverters<T>(cancelled, fusionMode);
+    }
+
+    public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest) {
+        return testSubscriber(initialRequest, false, 0);
+    }
+
+    public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest, final boolean cancelled) {
+        return testSubscriber(initialRequest, cancelled, 0);
+    }
+
+    public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest, final int fusionMode, final boolean cancelled) {
+        return testSubscriber(initialRequest, cancelled, fusionMode);
+    }
+
+    public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest, final boolean cancelled, final int fusionMode) {
+        return new FlowableConverter<T, TestSubscriberEx<T>>() {
+            @Override
+            public TestSubscriberEx<T> apply(Flowable<T> f) {
+                TestSubscriberEx<T> tse = new TestSubscriberEx<T>(initialRequest);
+                if (cancelled) {
+                    tse.cancel();
+                }
+                tse.setInitialFusionMode(fusionMode);
+                return f.subscribeWith(tse);
+            }
+        };
+    }
+
+    public static final class TestConsumerExConverters<T> implements
+            ObservableConverter<T, TestObserverEx<T>>,
+            SingleConverter<T, TestObserverEx<T>>,
+            MaybeConverter<T, TestObserverEx<T>>,
+            CompletableConverter<TestObserverEx<Void>>,
+            FlowableConverter<T, TestSubscriberEx<T>> {
+
+        final boolean cancelled;
+
+        final int fusionMode;
+
+        TestConsumerExConverters(boolean cancelled, int fusionMode) {
+            this.cancelled = cancelled;
+            this.fusionMode = fusionMode;
+        }
+
+        @Override
+        public TestObserverEx<Void> apply(Completable upstream) {
+            TestObserverEx<Void> toe = new TestObserverEx<Void>();
+            if (cancelled) {
+                toe.dispose();
+            }
+            toe.setInitialFusionMode(fusionMode);
+            return upstream.subscribeWith(toe);
+        }
+
+        @Override
+        public TestObserverEx<T> apply(Maybe<T> upstream) {
+            TestObserverEx<T> toe = new TestObserverEx<T>();
+            if (cancelled) {
+                toe.dispose();
+            }
+            toe.setInitialFusionMode(fusionMode);
+            return upstream.subscribeWith(toe);
+        }
+
+        @Override
+        public TestObserverEx<T> apply(Single<T> upstream) {
+            TestObserverEx<T> toe = new TestObserverEx<T>();
+            if (cancelled) {
+                toe.dispose();
+            }
+            toe.setInitialFusionMode(fusionMode);
+            return upstream.subscribeWith(toe);
+        }
+
+        @Override
+        public TestObserverEx<T> apply(Observable<T> upstream) {
+            TestObserverEx<T> toe = new TestObserverEx<T>();
+            if (cancelled) {
+                toe.dispose();
+            }
+            toe.setInitialFusionMode(fusionMode);
+            return upstream.subscribeWith(toe);
+        }
+
+        @Override
+        public TestSubscriberEx<T> apply(Flowable<T> upstream) {
+            TestSubscriberEx<T> tse = new TestSubscriberEx<T>();
+            if (cancelled) {
+                tse.dispose();
+            }
+            tse.setInitialFusionMode(fusionMode);
+            return upstream.subscribeWith(tse);
+        }
+    }
+
+    public static <T> TestSubscriberEx<T> assertValueSet(TestSubscriberEx<T> ts, T... values) {
+        Set<T> expectedSet = new HashSet<T>(Arrays.asList(values));
+        for (T t : ts.values()) {
+            if (!expectedSet.contains(t)) {
+                throw ts.failWith("Item not in the set: " + BaseTestConsumer.valueAndClass(t));
+            }
+        }
+        return ts;
+    }
+
+    public static <T> TestObserverEx<T> assertValueSet(TestObserverEx<T> to, T... values) {
+        Set<T> expectedSet = new HashSet<T>(Arrays.asList(values));
+        for (T t : to.values()) {
+            if (!expectedSet.contains(t)) {
+                throw to.failWith("Item not in the set: " + BaseTestConsumer.valueAndClass(t));
+            }
+        }
+        return to;
     }
 }

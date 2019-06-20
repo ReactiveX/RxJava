@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableDebounceTest {
 
@@ -288,7 +289,7 @@ public class FlowableDebounceTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>();
         Flowable.merge(
                 Flowable.just(1),
                 Flowable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
@@ -308,7 +309,7 @@ public class FlowableDebounceTest {
 
         Flowable.range(1, 1000).debounce(1, TimeUnit.SECONDS).subscribe(ts);
 
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValue(1000);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -438,7 +439,7 @@ public class FlowableDebounceTest {
         .subscribeWith(ts)
         .assertEmpty();
 
-        assertTrue(ts.isDisposed());
+        assertTrue(ts.isCancelled());
     }
 
     @Test

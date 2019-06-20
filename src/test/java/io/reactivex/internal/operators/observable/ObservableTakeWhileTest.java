@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
@@ -25,6 +26,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableTakeWhileTest {
 
@@ -234,7 +236,7 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testErrorCauseIncludesLastValue() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         Observable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {

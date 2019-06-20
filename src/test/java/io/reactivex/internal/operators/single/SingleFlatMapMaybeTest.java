@@ -18,6 +18,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleFlatMapMaybeTest {
     @Test(expected = NullPointerException.class)
@@ -63,7 +64,7 @@ public class SingleFlatMapMaybeTest {
                 return null;
             }
         })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("The mapper returned a null MaybeSource");
@@ -76,7 +77,7 @@ public class SingleFlatMapMaybeTest {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertNoValues()
             .assertError(RuntimeException.class)
             .assertErrorMessage("something went terribly wrong!");

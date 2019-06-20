@@ -19,10 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.*;
 
 public class HalfSerializerObserverTest {
 
@@ -228,7 +229,7 @@ public class HalfSerializerObserverTest {
 
             to.assertComplete().assertNoErrors();
 
-            assertTrue(to.valueCount() <= 1);
+            assertTrue(to.values().size() <= 1);
         }
     }
 
@@ -239,7 +240,7 @@ public class HalfSerializerObserverTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
             to.onSubscribe(Disposables.empty());
 

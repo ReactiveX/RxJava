@@ -25,6 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableDelaySubscriptionOtherTest {
     @Test
@@ -221,7 +222,7 @@ public class ObservableDelaySubscriptionOtherTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS, s)
                 .subscribe(observer);
 
-                observer.awaitTerminalEvent();
+                observer.awaitDone(5, TimeUnit.SECONDS);
                 observer.assertValue(false);
             }
         } finally {

@@ -24,6 +24,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestSubscriberEx;
 
 public class FlowableConcatDelayErrorTest {
 
@@ -231,7 +232,7 @@ public class FlowableConcatDelayErrorTest {
 
     @Test
     public void concatDelayErrorFlowableError() {
-        TestSubscriber<Integer> ts = TestSubscriber.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.concatDelayError(
                 withError(Flowable.just(withError(Flowable.just(1)), withError(Flowable.just(2)))))
@@ -268,7 +269,7 @@ public class FlowableConcatDelayErrorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void concatDelayErrorIterableError() {
-        TestSubscriber<Integer> ts = TestSubscriber.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         Flowable.concatDelayError(
                 Arrays.asList(withError(Flowable.just(1)), withError(Flowable.just(2))))

@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableSwitchMapMaybeTest {
 
@@ -390,7 +391,7 @@ public class FlowableSwitchMapMaybeTest {
                     return Maybe.error(new TestException("inner"));
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -405,7 +406,7 @@ public class FlowableSwitchMapMaybeTest {
         try {
             final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<MaybeObserver<? super Integer>>();
 
-            TestSubscriber<Integer> ts = new Flowable<Integer>() {
+            TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {
                     s.onSubscribe(new BooleanSubscription());
@@ -427,7 +428,7 @@ public class FlowableSwitchMapMaybeTest {
                     };
                 }
             })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             ts.assertFailureAndMessage(TestException.class, "outer");
 
@@ -489,7 +490,7 @@ public class FlowableSwitchMapMaybeTest {
 
                 final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-                final TestSubscriber<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+                final TestSubscriberEx<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
                     @Override
                     public MaybeSource<Integer> apply(Integer v)
                             throws Exception {
@@ -498,7 +499,7 @@ public class FlowableSwitchMapMaybeTest {
                         }
                         return Maybe.never();
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 pp.onNext(1);
 
@@ -518,7 +519,7 @@ public class FlowableSwitchMapMaybeTest {
 
                 TestHelper.race(r1, r2);
 
-                if (ts.errorCount() != 0) {
+                if (ts.errors().size() != 0) {
                     assertTrue(errors.isEmpty());
                     ts.assertFailure(TestException.class);
                 } else if (!errors.isEmpty()) {

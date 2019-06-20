@@ -107,7 +107,7 @@ public class ObservableConcatWithMaybeTest {
 
         assertTrue(other.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(other.hasObservers());
     }

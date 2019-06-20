@@ -13,13 +13,13 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableSource;
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

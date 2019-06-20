@@ -2690,7 +2690,7 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Creates a TestObserver optionally in cancelled state, then subscribes it to this Completable.
-     * @param cancelled if true, the TestObserver will be cancelled before subscribing to this
+     * @param dispose if true, the TestObserver will be cancelled before subscribing to this
      * Completable.
      * <p>
      * <img width="640" height="499" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.test.b.png" alt="">
@@ -2703,11 +2703,11 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestObserver<Void> test(boolean cancelled) {
+    public final TestObserver<Void> test(boolean dispose) {
         TestObserver<Void> to = new TestObserver<Void>();
 
-        if (cancelled) {
-            to.cancel();
+        if (dispose) {
+            to.dispose();
         }
         subscribe(to);
         return to;

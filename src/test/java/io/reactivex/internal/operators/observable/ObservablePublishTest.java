@@ -34,6 +34,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservablePublishTest {
 
@@ -128,9 +129,9 @@ public class ObservablePublishTest {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.merge(fast, slow).subscribe(to);
         is.connect();
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 4, to.valueCount());
+        assertEquals(Flowable.bufferSize() * 4, to.values().size());
     }
 
     // use case from https://github.com/ReactiveX/RxJava/issues/1732
@@ -161,7 +162,7 @@ public class ObservablePublishTest {
             }
 
         }).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
         to.assertValues(0, 1, 2, 3);
         assertEquals(5, emitted.get());
@@ -213,7 +214,7 @@ public class ObservablePublishTest {
         final TestObserver<Integer> to1 = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (valueCount() == 2) {
+                if (values().size() == 2) {
                     source.doOnDispose(new Action() {
                         @Override
                         public void run() {
@@ -233,8 +234,8 @@ public class ObservablePublishTest {
         }).take(5)
         .subscribe(to1);
 
-        to1.awaitTerminalEvent();
-        to2.awaitTerminalEvent();
+        to1.awaitDone(5, TimeUnit.SECONDS);
+        to2.awaitDone(5, TimeUnit.SECONDS);
 
         to1.assertNoErrors();
         to2.assertNoErrors();
@@ -256,7 +257,7 @@ public class ObservablePublishTest {
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<Long>();
         co.subscribe(to);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
@@ -269,7 +270,7 @@ public class ObservablePublishTest {
     public void testSubscribeAfterDisconnectThenConnect() {
         ConnectableObservable<Integer> source = Observable.just(1).publish();
 
-        TestObserver<Integer> to1 = new TestObserver<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
 
         source.subscribe(to1);
 
@@ -280,8 +281,8 @@ public class ObservablePublishTest {
         to1.assertTerminated();
 
         source.reset();
-        
-        TestObserver<Integer> to2 = new TestObserver<Integer>();
+
+        TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
 
         source.subscribe(to2);
 
@@ -299,7 +300,7 @@ public class ObservablePublishTest {
     public void testNoSubscriberRetentionOnCompleted() {
         ObservablePublish<Integer> source = (ObservablePublish<Integer>)Observable.just(1).publish();
 
-        TestObserver<Integer> to1 = new TestObserver<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
 
         source.subscribe(to1);
 
@@ -381,20 +382,20 @@ public class ObservablePublishTest {
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestObserver<Integer>> tos = new ArrayList<TestObserver<Integer>>();
+                List<TestObserverEx<Integer>> tos = new ArrayList<TestObserverEx<Integer>>();
                 for (int k = 1; k < j; k++) {
-                    TestObserver<Integer> to = new TestObserver<Integer>();
+                    TestObserverEx<Integer> to = new TestObserverEx<Integer>();
                     tos.add(to);
                     obs.subscribe(to);
                 }
 
                 Disposable connection = co.connect();
 
-                for (TestObserver<Integer> to : tos) {
-                    to.awaitTerminalEvent(2, TimeUnit.SECONDS);
+                for (TestObserverEx<Integer> to : tos) {
+                    to.awaitDone(2, TimeUnit.SECONDS);
                     to.assertTerminated();
                     to.assertNoErrors();
-                    assertEquals(1000, to.valueCount());
+                    assertEquals(1000, to.values().size());
                 }
                 connection.dispose();
             }
@@ -491,7 +492,7 @@ public class ObservablePublishTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -573,7 +574,7 @@ public class ObservablePublishTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

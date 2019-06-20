@@ -28,6 +28,7 @@ import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableConcatMapCompletableTest {
 
@@ -81,7 +82,7 @@ public class ObservableConcatMapCompletableTest {
 
     @Test
     public void innerErrorDelayed() {
-        Observable.range(1, 5)
+        TestObserverEx<Void> to = Observable.range(1, 5)
         .concatMapCompletableDelayError(
                 new Function<Integer, CompletableSource>() {
                     @Override
@@ -90,14 +91,11 @@ public class ObservableConcatMapCompletableTest {
                     }
                 }
         )
-        .test()
+        .to(TestHelper.<Void>testConsumer())
         .assertFailure(CompositeException.class)
-        .assertOf(new Consumer<TestObserver<Void>>() {
-            @Override
-            public void accept(TestObserver<Void> to) throws Exception {
-                assertEquals(5, ((CompositeException)to.errors().get(0)).getExceptions().size());
-            }
-        });
+        ;
+
+        assertEquals(5, ((CompositeException)to.errors().get(0)).getExceptions().size());
     }
 
     @Test
@@ -345,7 +343,7 @@ public class ObservableConcatMapCompletableTest {
                 @Override
                 public void run() {
                     cs.onComplete();
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

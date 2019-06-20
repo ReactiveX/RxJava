@@ -25,9 +25,9 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 ;
 
 public class ObservableTakeUntilPredicateTest {
@@ -141,7 +141,7 @@ public class ObservableTakeUntilPredicateTest {
 
     @Test
     public void testErrorIncludesLastValueAsCause() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = (new Predicate<String>() {
             @Override

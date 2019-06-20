@@ -37,6 +37,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableRetryTest {
 
@@ -90,7 +91,7 @@ public class ObservableRetryTest {
                     }}).cast(Object.class);
             }
         }).subscribe(to);
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
 
         InOrder inOrder = inOrder(consumer);
@@ -157,7 +158,7 @@ public class ObservableRetryTest {
         })
         .subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(1 + numRetries)).onNext("beginningEveryTime");
@@ -672,7 +673,7 @@ public class ObservableRetryTest {
                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                 TestObserver<String> to = new TestObserver<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(to);
-                to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                to.awaitDone(5, TimeUnit.SECONDS);
 
                 InOrder inOrder = inOrder(observer);
                 // should have no errors
@@ -713,10 +714,10 @@ public class ObservableRetryTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-                                TestObserver<String> to = new TestObserver<String>();
+                                TestObserverEx<String> to = new TestObserverEx<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).subscribe(to);
-                                to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+                                to.awaitDone(2500, TimeUnit.MILLISECONDS);
                                 List<String> onNextEvents = new ArrayList<String>(to.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
                                     for (Throwable t : to.errors()) {

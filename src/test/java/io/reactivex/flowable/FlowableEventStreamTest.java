@@ -18,7 +18,7 @@ package io.reactivex.flowable;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableEventStreamTest {
     @Test

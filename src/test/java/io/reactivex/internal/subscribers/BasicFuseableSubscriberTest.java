@@ -18,9 +18,9 @@ import static org.junit.Assert.*;
 import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class BasicFuseableSubscriberTest {
 

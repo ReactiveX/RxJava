@@ -16,15 +16,16 @@ package io.reactivex.subjects;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class SerializedSubjectTest {
 
@@ -35,7 +36,7 @@ public class SerializedSubjectTest {
         subject.subscribe(to);
         subject.onNext("hello");
         subject.onComplete();
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertValue("hello");
     }
 
@@ -415,10 +416,12 @@ public class SerializedSubjectTest {
 
     @Test
     public void onNextOnNextRace() {
+        Set<Integer> expectedSet = new HashSet<Integer>(Arrays.asList(1, 2));
+
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
-            TestObserver<Integer> to = s.test();
+            TestObserverEx<Integer> to = s.to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -436,8 +439,14 @@ public class SerializedSubjectTest {
 
             TestHelper.race(r1, r2);
 
-            to.assertSubscribed().assertNoErrors().assertNotComplete()
-            .assertValueSet(Arrays.asList(1, 2));
+            to.assertSubscribed()
+            .assertNoErrors()
+            .assertNotComplete()
+            .assertValueCount(2)
+            ;
+
+            Set<Integer> actualSet = new HashSet<Integer>(to.values());
+            assertEquals("" + actualSet, expectedSet, actualSet);
         }
     }
 
@@ -468,7 +477,7 @@ public class SerializedSubjectTest {
 
             to.assertError(ex).assertNotComplete();
 
-            if (to.valueCount() != 0) {
+            if (to.values().size() != 0) {
                 to.assertValue(1);
             }
         }
@@ -499,7 +508,7 @@ public class SerializedSubjectTest {
 
             to.assertComplete().assertNoErrors();
 
-            if (to.valueCount() != 0) {
+            if (to.values().size() != 0) {
                 to.assertValue(1);
             }
         }

@@ -27,7 +27,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 @SuppressWarnings("deprecation")
 public class FlowableDematerializeTest {
@@ -142,7 +142,7 @@ public class FlowableDematerializeTest {
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(subscriber);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());

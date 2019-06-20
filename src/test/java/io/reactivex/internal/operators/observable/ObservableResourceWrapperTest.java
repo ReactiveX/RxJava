@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableResourceWrapperTest {
 

@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
@@ -30,6 +30,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableWindowWithSizeTest {
 
@@ -105,7 +106,8 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlapping() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -114,8 +116,10 @@ public class ObservableWindowWithSizeTest {
                 count.incrementAndGet();
             }
 
-        }).window(5).take(2)).subscribe(to);
-        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        }).window(5).take(2))
+        .subscribe(to);
+
+        to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         //        System.out.println(ts.getOnNextEvents());
@@ -124,7 +128,8 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlappingAsyncSource() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -146,7 +151,8 @@ public class ObservableWindowWithSizeTest {
                 .window(5)
                 .take(2))
                 .subscribe(to);
-        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+
+        to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // make sure we don't emit all values ... the unsubscribe should propagate
@@ -155,7 +161,8 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlapping() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -164,8 +171,10 @@ public class ObservableWindowWithSizeTest {
                 count.incrementAndGet();
             }
 
-        }).window(5, 4).take(2)).subscribe(to);
-        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        }).window(5, 4).take(2))
+        .subscribe(to);
+
+        to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         //        System.out.println(ts.getOnNextEvents());
         to.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
@@ -174,7 +183,8 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlappingAsyncSource() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -189,7 +199,8 @@ public class ObservableWindowWithSizeTest {
                 .window(5, 4)
                 .take(2), 128)
                 .subscribe(to);
-        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+
+        to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
         to.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
         // make sure we don't emit all values ... the unsubscribe should propagate
@@ -244,7 +255,7 @@ public class ObservableWindowWithSizeTest {
             }
         }).subscribe(to);
 
-        to.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        to.awaitDone(2, TimeUnit.SECONDS);
         to.assertComplete();
         to.assertValueCount(22);
     }

@@ -31,6 +31,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableJoinTest {
     Observer<Object> observer = TestHelper.mockObserver();
@@ -400,7 +401,7 @@ public class ObservableJoinTest {
                             return a + b;
                         }
                 })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
@@ -416,7 +417,7 @@ public class ObservableJoinTest {
             @SuppressWarnings("rawtypes")
             final Observer[] o = { null };
 
-            TestObserver<Integer> to = Observable.just(1)
+            TestObserverEx<Integer> to = Observable.just(1)
             .join(Observable.just(2),
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(new Observable<Integer>() {
@@ -433,7 +434,7 @@ public class ObservableJoinTest {
                             return a + b;
                         }
                 })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             o[0].onError(new TestException("Second"));
 

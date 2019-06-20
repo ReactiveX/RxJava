@@ -34,6 +34,7 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableTest {
 
@@ -1074,7 +1075,8 @@ public class ObservableTest {
 
     @Test
     public void testCompose() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
+
         Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
             @Override
             public Observable<String> apply(Observable<Integer> t1) {
@@ -1087,6 +1089,7 @@ public class ObservableTest {
             }
         })
         .subscribe(to);
+
         to.assertTerminated();
         to.assertNoErrors();
         to.assertValues("1", "2", "3");

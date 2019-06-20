@@ -40,6 +40,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableRefCountTest {
 
@@ -201,8 +202,8 @@ public class ObservableRefCountTest {
             to2.dispose();
             to1.assertNoErrors();
             to2.assertNoErrors();
-            assertTrue(to1.valueCount() > 0);
-            assertTrue(to2.valueCount() > 0);
+            assertTrue(to1.values().size() > 0);
+            assertTrue(to2.values().size() > 0);
         }
 
         assertEquals(10, subscribeCount.get());
@@ -232,7 +233,7 @@ public class ObservableRefCountTest {
                     }
                 });
 
-        TestObserver<Long> observer = new TestObserver<Long>();
+        TestObserverEx<Long> observer = new TestObserverEx<Long>();
         o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(observer);
         System.out.println("send unsubscribe");
         // wait until connected
@@ -277,7 +278,7 @@ public class ObservableRefCountTest {
                     }
                 });
 
-        TestObserver<Long> observer = new TestObserver<Long>();
+        TestObserverEx<Long> observer = new TestObserverEx<Long>();
 
         o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(observer);
         System.out.println("send unsubscribe");
@@ -497,8 +498,8 @@ public class ObservableRefCountTest {
         })
         .publish().refCount();
 
-        TestObserver<Integer> to1 = new TestObserver<Integer>();
-        TestObserver<Integer> to2 = new TestObserver<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
 
         combined.subscribe(to1);
         combined.subscribe(to2);
@@ -865,7 +866,7 @@ public class ObservableRefCountTest {
         try {
             bo.refCount()
             .test()
-            .cancel();
+            .dispose();
             fail("Should have thrown");
         } catch (TestException expected) {
         }
@@ -1047,7 +1048,7 @@ public class ObservableRefCountTest {
 
         assertEquals(1, subscriptions[0]);
 
-        to1.cancel();
+        to1.dispose();
 
         Thread.sleep(100);
 
@@ -1090,7 +1091,7 @@ public class ObservableRefCountTest {
 
         assertEquals(1, subscriptions[0]);
 
-        to1.cancel();
+        to1.dispose();
 
         assertTrue(ps.hasObservers());
 
@@ -1122,11 +1123,11 @@ public class ObservableRefCountTest {
 
         for (int i = 0; i < 3; i++) {
             TestObserver<Integer> to2 = source.test();
-            to1.cancel();
+            to1.dispose();
             to1 = to2;
         }
 
-        to1.cancel();
+        to1.dispose();
 
         assertFalse(ps.hasObservers());
     }
@@ -1147,7 +1148,7 @@ public class ObservableRefCountTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
 

@@ -27,6 +27,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableElementAtTest {
 
@@ -128,7 +129,7 @@ public class ObservableElementAtTest {
     public void elementAtOrErrorError() {
         Observable.error(new RuntimeException("error"))
             .elementAtOrError(0)
-            .test()
+            .to(TestHelper.testConsumer())
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);

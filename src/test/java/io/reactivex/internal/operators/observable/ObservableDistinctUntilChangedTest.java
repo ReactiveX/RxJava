@@ -26,10 +26,11 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableDistinctUntilChangedTest {
 
@@ -178,7 +179,7 @@ public class ObservableDistinctUntilChangedTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
@@ -189,15 +190,15 @@ public class ObservableDistinctUntilChangedTest {
         })
         .subscribe(to);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
 
     @Test
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
 
@@ -212,8 +213,8 @@ public class ObservableDistinctUntilChangedTest {
 
         TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        to.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5)
         ;
     }

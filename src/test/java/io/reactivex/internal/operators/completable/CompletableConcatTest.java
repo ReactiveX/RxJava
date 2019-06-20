@@ -30,6 +30,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableConcatTest {
 
@@ -172,7 +173,7 @@ public class CompletableConcatTest {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onComplete();
             }
         }, Completable.complete())
@@ -196,7 +197,7 @@ public class CompletableConcatTest {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onComplete();
             }
         }, Completable.complete()))
@@ -226,7 +227,7 @@ public class CompletableConcatTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -255,7 +256,7 @@ public class CompletableConcatTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

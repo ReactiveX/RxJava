@@ -17,11 +17,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.FlowableSubscriber;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.BaseTestConsumer;
 
 /**
@@ -39,7 +35,7 @@ import io.reactivex.observers.BaseTestConsumer;
  */
 public class TestSubscriber<T>
 extends BaseTestConsumer<T, TestSubscriber<T>>
-implements FlowableSubscriber<T>, Subscription, Disposable {
+implements FlowableSubscriber<T>, Subscription {
     /** The actual subscriber to forward events to. */
     private final Subscriber<? super T> downstream;
 
@@ -51,8 +47,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
 
     /** Holds the requested amount until a subscription arrives. */
     private final AtomicLong missedRequested;
-
-    private QueueSubscription<T> qs;
 
     /**
      * Creates a TestSubscriber with Long.MAX_VALUE initial request.
@@ -125,7 +119,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
         this.missedRequested = new AtomicLong(initialRequest);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onSubscribe(Subscription s) {
         lastThread = Thread.currentThread();
@@ -140,31 +133,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
                 errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
-        }
-
-        if (initialFusionMode != 0) {
-            if (s instanceof QueueSubscription) {
-                qs = (QueueSubscription<T>)s;
-
-                int m = qs.requestFusion(initialFusionMode);
-                establishedFusionMode = m;
-
-                if (m == QueueSubscription.SYNC) {
-                    checkSubscriptionOnce = true;
-                    lastThread = Thread.currentThread();
-                    try {
-                        T t;
-                        while ((t = qs.poll()) != null) {
-                            values.add(t);
-                        }
-                        completions++;
-                    } catch (Throwable ex) {
-                        // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
-                        errors.add(ex);
-                    }
-                    return;
-                }
-            }
         }
 
         downstream.onSubscribe(s);
@@ -193,19 +161,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
             }
         }
         lastThread = Thread.currentThread();
-
-        if (establishedFusionMode == QueueSubscription.ASYNC) {
-            try {
-                while ((t = qs.poll()) != null) {
-                    values.add(t);
-                }
-            } catch (Throwable ex) {
-                // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
-                errors.add(ex);
-                qs.cancel();
-            }
-            return;
-        }
 
         values.add(t);
 
@@ -278,12 +233,12 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
     }
 
     @Override
-    public final void dispose() {
+    protected final void dispose() {
         cancel();
     }
 
     @Override
-    public final boolean isDisposed() {
+    protected final boolean isDisposed() {
         return cancelled;
     }
 
@@ -304,105 +259,9 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
      * @return this
      */
     @Override
-    public final TestSubscriber<T> assertSubscribed() {
+    protected final TestSubscriber<T> assertSubscribed() {
         if (upstream.get() == null) {
             throw fail("Not subscribed!");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the onSubscribe method hasn't been called at all.
-     * @return this
-     */
-    @Override
-    public final TestSubscriber<T> assertNotSubscribed() {
-        if (upstream.get() != null) {
-            throw fail("Subscribed!");
-        } else
-        if (!errors.isEmpty()) {
-            throw fail("Not subscribed but errors found");
-        }
-        return this;
-    }
-
-    /**
-     * Sets the initial fusion mode if the upstream supports fusion.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use SubscriberFusion to work with such tests.
-     * @param mode the mode to establish, see the {@link QueueSubscription} constants
-     * @return this
-     */
-    final TestSubscriber<T> setInitialFusionMode(int mode) {
-        this.initialFusionMode = mode;
-        return this;
-    }
-
-    /**
-     * Asserts that the given fusion mode has been established
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use SubscriberFusion to work with such tests.
-     * @param mode the expected mode
-     * @return this
-     */
-    final TestSubscriber<T> assertFusionMode(int mode) {
-        int m = establishedFusionMode;
-        if (m != mode) {
-            if (qs != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
-                + ", actual: " + fusionModeToString(m));
-            } else {
-                throw fail("Upstream is not fuseable");
-            }
-        }
-        return this;
-    }
-
-    static String fusionModeToString(int mode) {
-        switch (mode) {
-        case QueueSubscription.NONE : return "NONE";
-        case QueueSubscription.SYNC : return "SYNC";
-        case QueueSubscription.ASYNC : return "ASYNC";
-        default: return "Unknown(" + mode + ")";
-        }
-    }
-
-    /**
-     * Assert that the upstream is a fuseable source.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use SubscriberFusion to work with such tests.
-     * @return this
-     */
-    final TestSubscriber<T> assertFuseable() {
-        if (qs == null) {
-            throw new AssertionError("Upstream is not fuseable.");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the upstream is not a fuseable source.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use SubscriberFusion to work with such tests.
-     * @return this
-     */
-    final TestSubscriber<T> assertNotFuseable() {
-        if (qs != null) {
-            throw new AssertionError("Upstream is fuseable.");
-        }
-        return this;
-    }
-
-    /**
-     * Run a check consumer with this TestSubscriber instance.
-     * @param check the check consumer to run
-     * @return this
-     */
-    public final TestSubscriber<T> assertOf(Consumer<? super TestSubscriber<T>> check) {
-        try {
-            check.accept(this);
-        } catch (Throwable ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
     }

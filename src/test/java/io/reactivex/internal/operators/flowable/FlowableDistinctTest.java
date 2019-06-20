@@ -31,7 +31,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
-import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableDistinctTest {
 
@@ -142,19 +142,19 @@ public class FlowableDistinctTest {
 
     @Test
     public void fusedSync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Flowable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
+        ts.assertFusionMode(QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedAsync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         UnicastProcessor<Integer> us = UnicastProcessor.create();
 
@@ -164,7 +164,7 @@ public class FlowableDistinctTest {
 
         TestHelper.emit(us, 1, 1, 2, 1, 3, 2, 4, 5, 4);
 
-        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
+        ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
@@ -220,7 +220,7 @@ public class FlowableDistinctTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }

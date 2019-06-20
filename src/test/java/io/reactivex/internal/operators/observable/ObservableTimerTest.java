@@ -33,6 +33,7 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableTimerTest {
     @Mock
@@ -334,7 +335,7 @@ public class ObservableTimerTest {
 
                 Thread.sleep(500);
 
-                to.cancel();
+                to.dispose();
 
                 Thread.sleep(500);
 

@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.BooleanSupplier;
@@ -31,6 +30,7 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class QueueDrainHelperTest {
 

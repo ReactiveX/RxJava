@@ -21,6 +21,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Supplier;
+import io.reactivex.testsupport.TestHelper;
 
 @SuppressWarnings("unchecked")
 public class ObservableDeferTest {

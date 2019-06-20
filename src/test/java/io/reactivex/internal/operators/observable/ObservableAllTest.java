@@ -27,8 +27,8 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class ObservableAllTest {
 
@@ -146,7 +146,7 @@ public class ObservableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -277,7 +277,7 @@ public class ObservableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 

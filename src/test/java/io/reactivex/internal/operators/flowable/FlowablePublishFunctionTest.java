@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -32,6 +32,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowablePublishFunctionTest {
     @Test
@@ -209,7 +210,7 @@ public class FlowablePublishFunctionTest {
 
     @Test
     public void overflowMissingBackpressureException() {
-        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -235,7 +236,7 @@ public class FlowablePublishFunctionTest {
 
     @Test
     public void overflowMissingBackpressureExceptionDelayed() {
-        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 

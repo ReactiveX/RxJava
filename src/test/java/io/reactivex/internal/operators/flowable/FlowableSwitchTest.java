@@ -35,6 +35,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableSwitchTest {
 
@@ -449,7 +450,7 @@ public class FlowableSwitchTest {
         publishCompleted(o2, 50);
         publishCompleted(o3, 55);
 
-        final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+        final TestSubscriberEx<String> testSubscriber = new TestSubscriberEx<String>();
         Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
             private int requested;
@@ -524,11 +525,11 @@ public class FlowableSwitchTest {
         .share()
         ;
 
-        TestSubscriber<String> ts = new TestSubscriber<String>() {
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>() {
             @Override
             public void onNext(String t) {
                 super.onNext(t);
-                if (valueCount() == 250) {
+                if (values().size() == 250) {
                     onComplete();
                     dispose();
                 }
@@ -536,14 +537,14 @@ public class FlowableSwitchTest {
         };
         src.subscribe(ts);
 
-        ts.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        ts.awaitDone(10, TimeUnit.SECONDS);
 
-        System.out.println("> testIssue2654: " + ts.valueCount());
+        System.out.println("> testIssue2654: " + ts.values().size());
 
         ts.assertTerminated();
         ts.assertNoErrors();
 
-        Assert.assertEquals(250, ts.valueCount());
+        Assert.assertEquals(250, ts.values().size());
     }
 
     @Test(timeout = 10000)
@@ -562,7 +563,7 @@ public class FlowableSwitchTest {
                           .subscribe(ts);
         ts.request(Long.MAX_VALUE - 100);
         ts.request(1);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
     @Test(timeout = 10000)
@@ -578,8 +579,8 @@ public class FlowableSwitchTest {
                         }).take(3)).subscribe(ts);
         ts.request(Long.MAX_VALUE - 1);
         ts.request(2);
-        ts.awaitTerminalEvent();
-        assertTrue(ts.valueCount() > 0);
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertTrue(ts.values().size() > 0);
     }
 
     @Test(timeout = 10000)
@@ -598,7 +599,7 @@ public class FlowableSwitchTest {
         Thread.sleep(250);
         ts.request(Long.MAX_VALUE - 1);
         ts.request(Long.MAX_VALUE - 1);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValueCount(7);
     }
 
@@ -627,8 +628,8 @@ public class FlowableSwitchTest {
         Thread.sleep(250);
         ts.request(Long.MAX_VALUE - 1);
         ts.request(Long.MAX_VALUE - 1);
-        ts.awaitTerminalEvent();
-        assertTrue(ts.valueCount() > 0);
+        ts.awaitDone(5, TimeUnit.SECONDS);
+        assertTrue(ts.values().size() > 0);
         System.out.println(requests);
         assertEquals(5, requests.size());
         assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size() - 1));
@@ -638,8 +639,8 @@ public class FlowableSwitchTest {
     public void delayErrors() {
         PublishProcessor<Publisher<Integer>> source = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
-        .test();
+        TestSubscriberEx<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
+                .to(TestHelper.<Integer>testConsumer());
 
         ts.assertNoValues()
         .assertNoErrors()
@@ -1182,9 +1183,9 @@ public class FlowableSwitchTest {
         String thread = Thread.currentThread().getName();
 
         Flowable.range(1, 10000)
-        .switchMap(new Function<Integer, Flowable<? extends Object>>() {
+        .switchMap(new Function<Integer, Flowable<Object>>() {
             @Override
-            public Flowable<? extends Object> apply(Integer v)
+            public Flowable<Object> apply(Integer v)
                     throws Exception {
                 return Flowable.just(2).hide()
                 .observeOn(Schedulers.single())
@@ -1196,7 +1197,7 @@ public class FlowableSwitchTest {
                 });
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertNever(thread)
         .assertNoErrors()

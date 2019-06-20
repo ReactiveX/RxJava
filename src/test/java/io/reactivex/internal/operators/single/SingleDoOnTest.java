@@ -24,9 +24,9 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class SingleDoOnTest {
 
@@ -144,7 +144,7 @@ public class SingleDoOnTest {
                     throw new TestException("Inner");
                 }
             })
-            .test()
+            .to(TestHelper.testConsumer())
             .assertFailureAndMessage(TestException.class, "Inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Outer");
@@ -173,14 +173,14 @@ public class SingleDoOnTest {
 
     @Test
     public void onErrorCrashes() {
-        TestObserver<Object> to = Single.error(new TestException("Outer"))
+        TestObserverEx<Object> to = Single.error(new TestException("Outer"))
         .doOnError(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable v) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -204,14 +204,14 @@ public class SingleDoOnTest {
 
     @Test
     public void doOnEventThrowsError() {
-        TestObserver<Integer> to = Single.<Integer>error(new TestException("Main"))
+        TestObserverEx<Integer> to = Single.<Integer>error(new TestException("Main"))
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
             public void accept(Integer v, Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -290,7 +290,7 @@ public class SingleDoOnTest {
                 }
             })
             .test()
-            .cancel();
+            .dispose();
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -348,7 +348,7 @@ public class SingleDoOnTest {
                     throw new TestException("First");
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isDisposed());

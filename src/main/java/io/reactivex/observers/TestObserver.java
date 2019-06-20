@@ -16,10 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -39,8 +36,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
 
     /** Holds the current subscription if any. */
     private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
-
-    private QueueDisposable<T> qd;
 
     /**
      * Constructs a non-forwarding TestObserver.
@@ -76,7 +71,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         this.downstream = downstream;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onSubscribe(Disposable d) {
         lastThread = Thread.currentThread();
@@ -93,33 +87,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
             return;
         }
 
-        if (initialFusionMode != 0) {
-            if (d instanceof QueueDisposable) {
-                qd = (QueueDisposable<T>)d;
-
-                int m = qd.requestFusion(initialFusionMode);
-                establishedFusionMode = m;
-
-                if (m == QueueDisposable.SYNC) {
-                    checkSubscriptionOnce = true;
-                    lastThread = Thread.currentThread();
-                    try {
-                        T t;
-                        while ((t = qd.poll()) != null) {
-                            values.add(t);
-                        }
-                        completions++;
-
-                        upstream.lazySet(DisposableHelper.DISPOSED);
-                    } catch (Throwable ex) {
-                        // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
-                        errors.add(ex);
-                    }
-                    return;
-                }
-            }
-        }
-
         downstream.onSubscribe(d);
     }
 
@@ -133,19 +100,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         }
 
         lastThread = Thread.currentThread();
-
-        if (establishedFusionMode == QueueDisposable.ASYNC) {
-            try {
-                while ((t = qd.poll()) != null) {
-                    values.add(t);
-                }
-            } catch (Throwable ex) {
-                // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
-                errors.add(ex);
-                qd.dispose();
-            }
-            return;
-        }
 
         values.add(t);
 
@@ -198,23 +152,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         }
     }
 
-    /**
-     * Returns true if this TestObserver has been cancelled.
-     * @return true if this TestObserver has been cancelled
-     */
-    public final boolean isCancelled() {
-        return isDisposed();
-    }
-
-    /**
-     * Cancels the TestObserver (before or after the subscription happened).
-     * <p>This operation is thread-safe.
-     * <p>This method is provided as a convenience when converting Flowable tests that cancel.
-     */
-    public final void cancel() {
-        dispose();
-    }
-
     @Override
     public final void dispose() {
         DisposableHelper.dispose(upstream);
@@ -239,105 +176,9 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
      * @return this;
      */
     @Override
-    public final TestObserver<T> assertSubscribed() {
+    protected final TestObserver<T> assertSubscribed() {
         if (upstream.get() == null) {
             throw fail("Not subscribed!");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the onSubscribe method hasn't been called at all.
-     * @return this;
-     */
-    @Override
-    public final TestObserver<T> assertNotSubscribed() {
-        if (upstream.get() != null) {
-            throw fail("Subscribed!");
-        } else
-        if (!errors.isEmpty()) {
-            throw fail("Not subscribed but errors found");
-        }
-        return this;
-    }
-
-    /**
-     * Run a check consumer with this TestObserver instance.
-     * @param check the check consumer to run
-     * @return this
-     */
-    public final TestObserver<T> assertOf(Consumer<? super TestObserver<T>> check) {
-        try {
-            check.accept(this);
-        } catch (Throwable ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return this;
-    }
-
-    /**
-     * Sets the initial fusion mode if the upstream supports fusion.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use ObserverFusion to work with such tests.
-     * @param mode the mode to establish, see the {@link QueueDisposable} constants
-     * @return this
-     */
-    final TestObserver<T> setInitialFusionMode(int mode) {
-        this.initialFusionMode = mode;
-        return this;
-    }
-
-    /**
-     * Asserts that the given fusion mode has been established
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use ObserverFusion to work with such tests.
-     * @param mode the expected mode
-     * @return this
-     */
-    final TestObserver<T> assertFusionMode(int mode) {
-        int m = establishedFusionMode;
-        if (m != mode) {
-            if (qd != null) {
-                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
-                + ", actual: " + fusionModeToString(m));
-            } else {
-                throw fail("Upstream is not fuseable");
-            }
-        }
-        return this;
-    }
-
-    static String fusionModeToString(int mode) {
-        switch (mode) {
-        case QueueFuseable.NONE : return "NONE";
-        case QueueFuseable.SYNC : return "SYNC";
-        case QueueFuseable.ASYNC : return "ASYNC";
-        default: return "Unknown(" + mode + ")";
-        }
-    }
-
-    /**
-     * Assert that the upstream is a fuseable source.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use ObserverFusion to work with such tests.
-     * @return this
-     */
-    final TestObserver<T> assertFuseable() {
-        if (qd == null) {
-            throw new AssertionError("Upstream is not fuseable.");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the upstream is not a fuseable source.
-     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
-     * Use ObserverFusion to work with such tests.
-     * @return this
-     */
-    final TestObserver<T> assertNotFuseable() {
-        if (qd != null) {
-            throw new AssertionError("Upstream is fuseable.");
         }
         return this;
     }

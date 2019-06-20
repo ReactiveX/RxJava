@@ -20,6 +20,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.DefaultObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableDefaultIfEmptyTest {
 

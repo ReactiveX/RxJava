@@ -24,6 +24,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class DisposableSingleObserverTest {
 

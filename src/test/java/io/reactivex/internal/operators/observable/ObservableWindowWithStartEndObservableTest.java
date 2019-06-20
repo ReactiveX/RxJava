@@ -32,6 +32,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableWindowWithStartEndObservableTest {
 
@@ -448,7 +449,7 @@ public class ObservableWindowWithStartEndObservableTest {
                 return observableDisposed(closeDisposed);
             }
         })
-        .test()
+        .to(TestHelper.<Observable<Integer>>testConsumer())
         .assertSubscribed()
         .assertNoErrors()
         .assertNotComplete()

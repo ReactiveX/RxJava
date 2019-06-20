@@ -19,17 +19,17 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableUnsubscribeOnTest {
 
@@ -54,13 +54,13 @@ public class FlowableUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             w.subscribeOn(uiEventLoop).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(ts);
 
-            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.awaitDone(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -103,13 +103,13 @@ public class FlowableUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(ts);
 
-            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.awaitDone(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -201,7 +201,7 @@ public class FlowableUnsubscribeOnTest {
         int elements = 1024;
         Flowable.range(0, elements * 2).unsubscribeOn(Schedulers.single())
         .take(elements)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(elements)
         .assertComplete()

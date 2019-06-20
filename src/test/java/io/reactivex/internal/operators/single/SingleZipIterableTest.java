@@ -27,6 +27,7 @@ import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleZipIterableTest {
 
@@ -63,7 +64,7 @@ public class SingleZipIterableTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -161,7 +162,7 @@ public class SingleZipIterableTest {
                 return Single.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -173,7 +174,7 @@ public class SingleZipIterableTest {
                 return Single.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -185,7 +186,7 @@ public class SingleZipIterableTest {
                 return Single.just(v);
             }
         }), addString)
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -241,7 +242,7 @@ public class SingleZipIterableTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zip(Arrays.asList(Single.just(1)), Functions.justFunction(null))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 }

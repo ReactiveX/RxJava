@@ -25,15 +25,16 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableRetryWithPredicateTest {
     BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
@@ -277,7 +278,7 @@ public class ObservableRetryWithPredicateTest {
 
     @Test
     public void testIssue2826() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1).map(new Function<Integer, Integer>() {
@@ -364,14 +365,14 @@ public class ObservableRetryWithPredicateTest {
     @Test
     public void predicateThrows() {
 
-        TestObserver<Object> to = Observable.error(new TestException("Outer"))
+        TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
         .retry(new Predicate<Throwable>() {
             @Override
             public boolean test(Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -384,7 +385,7 @@ public class ObservableRetryWithPredicateTest {
     public void dontRetry() {
         Observable.error(new TestException("Outer"))
         .retry(Functions.alwaysFalse())
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Outer");
     }
 
@@ -407,7 +408,7 @@ public class ObservableRetryWithPredicateTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -420,14 +421,14 @@ public class ObservableRetryWithPredicateTest {
     @Test
     public void bipredicateThrows() {
 
-        TestObserver<Object> to = Observable.error(new TestException("Outer"))
+        TestObserverEx<Object> to = Observable.error(new TestException("Outer"))
         .retry(new BiPredicate<Integer, Throwable>() {
             @Override
             public boolean test(Integer n, Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
-        .test()
+        .to(TestHelper.testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -460,7 +461,7 @@ public class ObservableRetryWithPredicateTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 

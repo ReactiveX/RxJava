@@ -16,14 +16,16 @@ package io.reactivex.processors;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class SerializedProcessorTest {
 
@@ -34,7 +36,7 @@ public class SerializedProcessorTest {
         processor.subscribe(ts);
         processor.onNext("hello");
         processor.onComplete();
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValue("hello");
     }
 
@@ -414,10 +416,12 @@ public class SerializedProcessorTest {
 
     @Test
     public void onNextOnNextRace() {
+        Set<Integer> expectedSet = new HashSet<Integer>(Arrays.asList(1, 2));
+
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
-            TestSubscriber<Integer> ts = s.test();
+            TestSubscriberEx<Integer> ts = s.to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -435,8 +439,14 @@ public class SerializedProcessorTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertSubscribed().assertNoErrors().assertNotComplete()
-            .assertValueSet(Arrays.asList(1, 2));
+            ts.assertSubscribed()
+            .assertNoErrors()
+            .assertNotComplete()
+            .assertValueCount(2)
+            ;
+
+            Set<Integer> actualSet = new HashSet<Integer>(ts.values());
+            assertEquals("" + actualSet, expectedSet, actualSet);
         }
     }
 
@@ -467,7 +477,7 @@ public class SerializedProcessorTest {
 
             ts.assertError(ex).assertNotComplete();
 
-            if (ts.valueCount() != 0) {
+            if (ts.values().size() != 0) {
                 ts.assertValue(1);
             }
         }
@@ -498,7 +508,7 @@ public class SerializedProcessorTest {
 
             ts.assertComplete().assertNoErrors();
 
-            if (ts.valueCount() != 0) {
+            if (ts.values().size() != 0) {
                 ts.assertValue(1);
             }
         }

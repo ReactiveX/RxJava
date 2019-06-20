@@ -26,6 +26,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleZipArrayTest {
 
@@ -66,7 +67,7 @@ public class SingleZipArrayTest {
 
         assertTrue(pp.hasSubscribers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -192,7 +193,7 @@ public class SingleZipArrayTest {
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zipArray(Functions.justFunction(null), Single.just(1))
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 }

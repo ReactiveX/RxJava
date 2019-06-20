@@ -28,6 +28,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableSwitchMapSingleTest {
 
@@ -258,7 +259,7 @@ public class ObservableSwitchMapSingleTest {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
-                        to.cancel();
+                        to.dispose();
                         return Single.just(1);
                     }
         }).subscribe(to);
@@ -276,7 +277,7 @@ public class ObservableSwitchMapSingleTest {
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
                 if (v == 2) {
-                    to.cancel();
+                    to.dispose();
                 }
                 return Single.just(1);
             }
@@ -310,7 +311,7 @@ public class ObservableSwitchMapSingleTest {
         assertTrue(ps.hasObservers());
         assertTrue(ms.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
         assertFalse(ms.hasObservers());
@@ -335,7 +336,7 @@ public class ObservableSwitchMapSingleTest {
                     return Single.error(new TestException("inner"));
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "inner");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "outer");
@@ -350,7 +351,7 @@ public class ObservableSwitchMapSingleTest {
         try {
             final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestObserver<Integer> to = new Observable<Integer>() {
+            TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -372,7 +373,7 @@ public class ObservableSwitchMapSingleTest {
                     };
                 }
             })
-            .test();
+            .to(TestHelper.<Integer>testConsumer());
 
             to.assertFailureAndMessage(TestException.class, "outer");
 
@@ -410,7 +411,7 @@ public class ObservableSwitchMapSingleTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -433,7 +434,7 @@ public class ObservableSwitchMapSingleTest {
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestObserver<Integer> to = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+                final TestObserverEx<Integer> to = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(Integer v)
                             throws Exception {
@@ -442,7 +443,7 @@ public class ObservableSwitchMapSingleTest {
                         }
                         return Single.never();
                     }
-                }).test();
+                }).to(TestHelper.<Integer>testConsumer());
 
                 ps.onNext(1);
 
@@ -462,7 +463,7 @@ public class ObservableSwitchMapSingleTest {
 
                 TestHelper.race(r1, r2);
 
-                if (to.errorCount() != 0) {
+                if (to.errors().size() != 0) {
                     assertTrue(errors.isEmpty());
                     to.assertFailure(TestException.class);
                 } else if (!errors.isEmpty()) {

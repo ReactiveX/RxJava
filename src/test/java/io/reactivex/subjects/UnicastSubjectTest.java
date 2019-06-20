@@ -21,12 +21,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.observers.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class UnicastSubjectTest extends SubjectTest<Integer> {
 
@@ -39,13 +40,13 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         UnicastSubject<Integer> ap = UnicastSubject.create();
 
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         ap.subscribe(to);
 
         to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC);
 
         to.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -64,13 +65,13 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
 
         ap.subscribe(to);
 
         to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1);
     }
 
@@ -120,7 +121,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
         ap.subscribe(to);
 
         to
@@ -135,7 +136,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(2);
         ap.onNext(3);
         ap.onComplete();
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
         ap.subscribe(to);
 
         to
@@ -236,7 +237,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -299,11 +300,11 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void rejectSyncFusion() {
         UnicastSubject<Object> p = UnicastSubject.create();
 
-        TestObserver<Object> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        TestObserverEx<Object> to = new TestObserverEx<Object>(QueueFuseable.SYNC);
 
         p.subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE);
+        to.assertFusionMode(QueueFuseable.NONE);
     }
 
     @Test
@@ -333,7 +334,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Object> p = UnicastSubject.create();
 
-            final TestObserver<Object> to = ObserverFusion.newTest(QueueFuseable.ANY);
+            final TestObserverEx<Object> to = new TestObserverEx<Object>(QueueFuseable.ANY);
 
             p.subscribe(to);
 
@@ -347,7 +348,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -389,8 +390,8 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Integer> us = UnicastSubject.create();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
-            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+            final TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -408,10 +409,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (to1.errorCount() == 0) {
+            if (to1.errors().size() == 0) {
                 to2.assertFailure(IllegalStateException.class);
             } else
-            if (to2.errorCount() == 0) {
+            if (to2.errors().size() == 0) {
                 to1.assertFailure(IllegalStateException.class);
             } else {
                 fail("Neither TestObserver failed");
@@ -429,7 +430,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
         assertTrue(us.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(us.hasObservers());
     }
@@ -438,7 +439,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void drainFusedFailFast() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
-        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
+        TestObserverEx<Integer> to = us.to(TestHelper.<Integer>testConsumer(QueueFuseable.ANY, false));
 
         us.done = true;
         us.drainFused(to);
@@ -450,7 +451,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void drainFusedFailFastEmpty() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
-        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
+        TestObserverEx<Integer> to = us.to(TestHelper.<Integer>testConsumer(QueueFuseable.ANY, false));
 
         us.drainFused(to);
 

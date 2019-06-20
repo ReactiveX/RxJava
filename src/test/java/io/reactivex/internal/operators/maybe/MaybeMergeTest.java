@@ -21,6 +21,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeMergeTest {
 
@@ -93,7 +94,7 @@ public class MaybeMergeTest {
             count.set(0);
             Maybe.mergeDelayError(
                     Flowable.fromArray(sources), 1)
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .awaitDone(5, TimeUnit.SECONDS)
             .assertFailureAndMessage(TestException.class, "2", 0, 0);
         }

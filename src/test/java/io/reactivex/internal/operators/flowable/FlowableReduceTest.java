@@ -32,6 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableReduceTest {
     Subscriber<Object> subscriber;
@@ -258,7 +259,7 @@ public class FlowableReduceTest {
                 }
             })
             .toFlowable()
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "Reducer");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Source");

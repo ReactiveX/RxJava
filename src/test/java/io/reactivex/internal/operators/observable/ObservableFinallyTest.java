@@ -20,6 +20,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableFinallyTest {
 

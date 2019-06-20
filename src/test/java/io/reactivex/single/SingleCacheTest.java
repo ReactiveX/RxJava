@@ -75,7 +75,7 @@ public class SingleCacheTest {
 
         TestObserver<Integer> to2 = cache.test();
 
-        to1.cancel();
+        to1.dispose();
 
         ps.onNext(1);
         ps.onComplete();

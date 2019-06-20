@@ -14,7 +14,6 @@
 package io.reactivex.internal.subscribers;
 
 import io.reactivex.Flowable;
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
@@ -23,6 +22,8 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
+
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;

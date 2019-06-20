@@ -26,6 +26,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableDoOnLifecycleTest {
 
@@ -155,7 +156,7 @@ public class FlowableDoOnLifecycleTest {
                     throw new TestException("First");
                 }
             })
-            .test()
+            .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "First");
 
             assertTrue(bs.isCancelled());

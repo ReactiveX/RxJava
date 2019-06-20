@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
@@ -36,6 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableRetryTest {
 
@@ -90,7 +91,7 @@ public class FlowableRetryTest {
                     }});
             }
         }).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
 
         InOrder inOrder = inOrder(consumer);
@@ -155,7 +156,7 @@ public class FlowableRetryTest {
         })
         .subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         InOrder inOrder = inOrder(subscriber);
         // should show 3 attempts
         inOrder.verify(subscriber, times(1 + numRetries)).onNext("beginningEveryTime");
@@ -719,9 +720,9 @@ public class FlowableRetryTest {
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> subscriber = TestHelper.mockSubscriber();
                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-                TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+                TestSubscriberEx<String> ts = new TestSubscriberEx<String>(subscriber);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
-                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                ts.awaitDone(5, TimeUnit.SECONDS);
 
                 InOrder inOrder = inOrder(subscriber);
                 // should have no errors
@@ -762,10 +763,10 @@ public class FlowableRetryTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-                                TestSubscriber<String> ts = new TestSubscriber<String>();
+                                TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).subscribe(ts);
-                                ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+                                ts.awaitDone(2500, TimeUnit.MILLISECONDS);
                                 List<String> onNextEvents = new ArrayList<String>(ts.values());
                                 if (onNextEvents.size() != numRetries + 2) {
                                     for (Throwable t : ts.errors()) {
@@ -1269,7 +1270,7 @@ public class FlowableRetryTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.dispose();
+                ts.cancel();
             }
 
             if (!errors.isEmpty()) {

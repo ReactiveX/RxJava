@@ -14,6 +14,7 @@
 package io.reactivex.observers;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class SerializedObserverTest {
 
@@ -272,7 +274,7 @@ public class SerializedObserverTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
+                TestObserverEx<String> to = new TestObserverEx<String>(new DefaultObserver<String>() {
 
                     @Override
                     public void onComplete() {
@@ -312,7 +314,7 @@ public class SerializedObserverTest {
                 waitOnThreads(f1, f2);
                 // not completed yet
 
-                assertEquals(2, to.valueCount());
+                assertEquals(2, to.values().size());
 
                 Thread t2 = to.lastThread();
                 System.out.println("second onNext on thread: " + t2);
@@ -1024,7 +1026,7 @@ public class SerializedObserverTest {
 
         assertFalse(so.isDisposed());
 
-        to.cancel();
+        to.dispose();
 
         assertTrue(so.isDisposed());
 
@@ -1088,7 +1090,7 @@ public class SerializedObserverTest {
             .assertNoErrors()
             .assertComplete();
 
-            assertTrue(to.valueCount() <= 1);
+            assertTrue(to.values().size() <= 1);
         }
 
     }
@@ -1126,7 +1128,7 @@ public class SerializedObserverTest {
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(to.valueCount() <= 1);
+            assertTrue(to.values().size() <= 1);
         }
 
     }
@@ -1164,7 +1166,7 @@ public class SerializedObserverTest {
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(to.valueCount() <= 1);
+            assertTrue(to.values().size() <= 1);
         }
 
     }
@@ -1199,7 +1201,7 @@ public class SerializedObserverTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestObserver<Integer> to = new TestObserver<Integer>();
+                TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
                 final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
@@ -1246,7 +1248,7 @@ public class SerializedObserverTest {
     @Test
     public void nullOnNext() {
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 

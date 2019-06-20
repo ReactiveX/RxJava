@@ -26,6 +26,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
+import io.reactivex.testsupport.*;
 
 public class ObservableRangeTest {
 
@@ -100,7 +101,7 @@ public class ObservableRangeTest {
 
         Observable<Integer> o = Observable.range(1, list.size());
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         o.subscribe(to);
 
@@ -157,12 +158,12 @@ public class ObservableRangeTest {
 
     @Test
     public void requestWrongFusion() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
 
         Observable.range(1, 5)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
+        to.assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 }

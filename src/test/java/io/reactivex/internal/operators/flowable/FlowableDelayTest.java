@@ -32,6 +32,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableDelayTest {
     private Subscriber<Long> subscriber;
@@ -220,7 +221,7 @@ public class FlowableDelayTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         result.subscribe(ts);
-        ts.dispose();
+        ts.cancel();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         verify(subscriber, never()).onNext(any());
@@ -654,9 +655,9 @@ public class FlowableDelayTest {
 
                 }).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
     @Test
@@ -683,9 +684,9 @@ public class FlowableDelayTest {
 
                 }).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
     @Test
@@ -718,9 +719,9 @@ public class FlowableDelayTest {
 
                 }).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
     @Test
@@ -759,9 +760,9 @@ public class FlowableDelayTest {
 
                 }).subscribe(ts);
 
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
     @Test
@@ -906,7 +907,7 @@ public class FlowableDelayTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         result.subscribe(ts);
-        ts.dispose();
+        ts.cancel();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         verify(subscriber, never()).onNext(any());
@@ -1026,7 +1027,7 @@ public class FlowableDelayTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null Publisher");
     }
 }

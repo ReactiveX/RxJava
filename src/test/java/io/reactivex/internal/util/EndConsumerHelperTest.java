@@ -28,6 +28,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class EndConsumerHelperTest {
 

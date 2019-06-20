@@ -23,6 +23,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletablePeekTest {
 

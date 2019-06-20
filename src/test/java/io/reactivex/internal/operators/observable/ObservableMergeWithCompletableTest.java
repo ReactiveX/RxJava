@@ -23,6 +23,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableMergeWithCompletableTest {
 
@@ -66,7 +67,7 @@ public class ObservableMergeWithCompletableTest {
         assertTrue(ps.hasObservers());
         assertTrue(cs.hasObservers());
 
-        to.cancel();
+        to.dispose();
 
         assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());

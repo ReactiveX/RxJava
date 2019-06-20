@@ -24,13 +24,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableWindowWithSizeTest {
 
@@ -106,7 +107,8 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlapping() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -115,8 +117,10 @@ public class FlowableWindowWithSizeTest {
                 count.incrementAndGet();
             }
 
-        }).window(5).take(2)).subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        }).window(5).take(2))
+        .subscribe(ts);
+
+        ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         //        System.out.println(ts.getOnNextEvents());
@@ -125,7 +129,7 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeNonOverlappingAsyncSource() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -140,7 +144,7 @@ public class FlowableWindowWithSizeTest {
                 .window(5)
                 .take(2))
                 .subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // make sure we don't emit all values ... the unsubscribe should propagate
@@ -149,7 +153,7 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlapping() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -159,7 +163,7 @@ public class FlowableWindowWithSizeTest {
             }
 
         }).window(5, 4).take(2)).subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         //        System.out.println(ts.getOnNextEvents());
         ts.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
@@ -168,7 +172,7 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void testWindowUnsubscribeOverlappingAsyncSource() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -183,7 +187,7 @@ public class FlowableWindowWithSizeTest {
                 .window(5, 4)
                 .take(2), 128)
                 .subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
         // make sure we don't emit all values ... the unsubscribe should propagate
@@ -289,7 +293,7 @@ public class FlowableWindowWithSizeTest {
             }
         }).subscribe(ts);
 
-        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        ts.awaitDone(2, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertValueCount(22);
     }

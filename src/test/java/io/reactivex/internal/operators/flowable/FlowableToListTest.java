@@ -30,6 +30,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableToListTest {
 
@@ -139,7 +140,7 @@ public class FlowableToListTest {
                 Flowable<List<Integer>> sorted = source.toList().toFlowable();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
+                final TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<List<Integer>>(0L);
                 sorted.subscribe(ts);
 
                 w.schedule(new Runnable() {
@@ -152,7 +153,7 @@ public class FlowableToListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                ts.awaitDone(1, TimeUnit.SECONDS);
                 ts.assertTerminated();
                 ts.assertNoErrors();
                 ts.assertValue(Arrays.asList(1));
@@ -271,7 +272,7 @@ public class FlowableToListTest {
                 Single<List<Integer>> sorted = source.toList();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+                final TestObserverEx<List<Integer>> to = new TestObserverEx<List<Integer>>();
                 sorted.subscribe(to);
 
                 w.schedule(new Runnable() {
@@ -284,7 +285,7 @@ public class FlowableToListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                to.awaitDone(1, TimeUnit.SECONDS);
                 to.assertTerminated();
                 to.assertNoErrors();
                 to.assertValue(Arrays.asList(1));
@@ -364,7 +365,7 @@ public class FlowableToListTest {
             }
         })
         .toFlowable()
-        .test()
+        .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }
@@ -393,7 +394,7 @@ public class FlowableToListTest {
                 return null;
             }
         })
-        .test()
+        .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }
@@ -413,7 +414,7 @@ public class FlowableToListTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
 
@@ -468,7 +469,7 @@ public class FlowableToListTest {
 
             TestHelper.race(r1, r2);
 
-            if (ts.valueCount() != 0) {
+            if (ts.values().size() != 0) {
                 ts.assertValue(Arrays.asList(1))
                 .assertNoErrors();
             }

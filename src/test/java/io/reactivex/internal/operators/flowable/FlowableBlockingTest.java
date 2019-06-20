@@ -31,6 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowableBlockingTest {
 
@@ -466,7 +467,7 @@ public class FlowableBlockingTest {
     @Test
     public void disposeUpFront() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        ts.dispose();
+        ts.cancel();
         Flowable.just(1).blockingSubscribe(ts);
 
         ts.assertEmpty();
@@ -482,7 +483,7 @@ public class FlowableBlockingTest {
             @SuppressWarnings("unchecked")
             @Override
             public void run() {
-                ts.dispose();
+                ts.cancel();
                 s[0].onNext(1);
             }
         }, 200, TimeUnit.MILLISECONDS);
@@ -495,7 +496,7 @@ public class FlowableBlockingTest {
             }
         }.blockingSubscribe(ts);
 
-        while (!ts.isDisposed()) {
+        while (!ts.isCancelled()) {
             Thread.sleep(100);
         }
 

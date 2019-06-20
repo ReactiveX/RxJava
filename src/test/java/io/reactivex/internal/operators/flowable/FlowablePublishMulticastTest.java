@@ -19,13 +19,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.operators.flowable.FlowablePublishMulticast.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class FlowablePublishMulticastTest {
 

@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.functions.*;
 import io.reactivex.observables.GroupedObservable;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestObserverEx;
 
 /**
  * Test super/extends of generics.
@@ -66,7 +66,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testGroupByCompose() {
         Observable<Movie> movies = Observable.just(new HorrorMovie(), new ActionMovie(), new Movie());
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserverEx<String> to = new TestObserverEx<String>();
         movies
         .groupBy(new Function<Movie, Object>() {
             @Override
@@ -109,7 +109,7 @@ public class ObservableCovarianceTest {
         to.assertTerminated();
         to.assertNoErrors();
         //        System.out.println(ts.getOnNextEvents());
-        assertEquals(6, to.valueCount());
+        assertEquals(6, to.values().size());
     }
 
     @SuppressWarnings("unused")

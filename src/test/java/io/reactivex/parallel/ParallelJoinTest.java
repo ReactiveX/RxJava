@@ -18,11 +18,12 @@ import java.util.List;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class ParallelJoinTest {
 
@@ -158,7 +159,7 @@ public class ParallelJoinTest {
 
     @Test
     public void delayError() {
-        TestSubscriber<Integer> flow = Flowable.range(1, 2)
+        TestSubscriberEx<Integer> flow = Flowable.range(1, 2)
         .parallel(2)
         .map(new Function<Integer, Integer>() {
             @Override
@@ -167,7 +168,7 @@ public class ParallelJoinTest {
             }
         })
         .sequentialDelayError()
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> error = TestHelper.errorList(flow);

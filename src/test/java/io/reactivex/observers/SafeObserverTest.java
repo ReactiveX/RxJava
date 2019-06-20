@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class SafeObserverTest {
 
@@ -547,7 +548,7 @@ public class SafeObserverTest {
 
     @Test
     public void onNextWithoutOnSubscribe() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
@@ -558,7 +559,7 @@ public class SafeObserverTest {
 
     @Test
     public void onErrorWithoutOnSubscribe() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
@@ -572,7 +573,7 @@ public class SafeObserverTest {
 
     @Test
     public void onCompleteWithoutOnSubscribe() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 

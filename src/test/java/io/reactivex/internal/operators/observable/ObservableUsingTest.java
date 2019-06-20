@@ -21,8 +21,8 @@ import java.util.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
@@ -30,6 +30,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class ObservableUsingTest {
 
@@ -452,7 +453,7 @@ public class ObservableUsingTest {
 
     @Test
     public void supplierDisposerCrash() {
-        TestObserver<Object> to = Observable.using(new Supplier<Object>() {
+        TestObserverEx<Object> to = Observable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -468,7 +469,7 @@ public class ObservableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -479,7 +480,7 @@ public class ObservableUsingTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestObserver<Object> to = Observable.using(new Supplier<Object>() {
+        TestObserverEx<Object> to = Observable.using(new Supplier<Object>() {
             @Override
             public Object get() throws Exception {
                 return 1;
@@ -495,7 +496,7 @@ public class ObservableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailure(CompositeException.class);
 
         List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
@@ -522,7 +523,7 @@ public class ObservableUsingTest {
                 throw new TestException("Second");
             }
         })
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Second");
     }
 
@@ -560,7 +561,7 @@ public class ObservableUsingTest {
         Observable.using(Functions.justSupplier(1),
                 Functions.justFunction((Observable<Object>)null),
                 Functions.emptyConsumer())
-        .test()
+        .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null ObservableSource")
         ;
     }
@@ -584,7 +585,7 @@ public class ObservableUsingTest {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onComplete();
             }
         }), Functions.emptyConsumer(), true)
@@ -599,7 +600,7 @@ public class ObservableUsingTest {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
                 observer.onSubscribe(Disposables.empty());
-                to.cancel();
+                to.dispose();
                 observer.onError(new TestException());
             }
         }), Functions.emptyConsumer(), true)

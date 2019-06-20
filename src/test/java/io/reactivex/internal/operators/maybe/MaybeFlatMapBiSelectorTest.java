@@ -22,6 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.testsupport.TestHelper;
 
 public class MaybeFlatMapBiSelectorTest {
 
@@ -220,7 +221,7 @@ public class MaybeFlatMapBiSelectorTest {
         .flatMap(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
-                to.cancel();
+                to.dispose();
                 return Maybe.just(2);
             }
         }, new BiFunction<Integer, Integer, Integer>() {

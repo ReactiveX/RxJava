@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -23,9 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableSkipTest {
 
@@ -153,16 +155,14 @@ public class FlowableSkipTest {
         ts.request(1);
         ts.request(1);
         Thread.sleep(100);
-        ts.dispose();
-        // FIXME not assertable anymore
-//        ts.assertUnsubscribed();
+        ts.cancel();
         ts.assertNoErrors();
         assertEquals(6, requests.get());
     }
 
     @Test
     public void testRequestOverflowDoesNotOccur() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(Long.MAX_VALUE - 1);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(Long.MAX_VALUE - 1);
         Flowable.range(1, 10).skip(5).subscribe(ts);
         ts.assertTerminated();
         ts.assertComplete();

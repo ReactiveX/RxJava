@@ -24,8 +24,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.*;
 
 public class ObservableCreateTest {
 
@@ -447,8 +447,11 @@ public class ObservableCreateTest {
             }
         })
         .take(TestHelper.RACE_DEFAULT_LOOPS)
-        .test()
-        .assertSubscribed().assertValueCount(TestHelper.RACE_DEFAULT_LOOPS).assertComplete().assertNoErrors();
+        .to(TestHelper.<Object>testConsumer())
+        .assertSubscribed()
+        .assertValueCount(TestHelper.RACE_DEFAULT_LOOPS)
+        .assertComplete()
+        .assertNoErrors();
     }
 
     @Test
@@ -480,14 +483,15 @@ public class ObservableCreateTest {
                 TestHelper.race(r1, r2);
             }
         })
-        .test()
-        .assertSubscribed().assertNotComplete()
+        .to(TestHelper.<Object>testConsumer())
+        .assertSubscribed()
+        .assertNotComplete()
         .assertError(TestException.class);
     }
 
     @Test
     public void serializedConcurrentOnNextOnComplete() {
-        TestObserver<Object> to = Observable.create(new ObservableOnSubscribe<Object>() {
+        TestObserverEx<Object> to = Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e) throws Exception {
                 final ObservableEmitter<Object> f = e.serialize();
@@ -514,11 +518,12 @@ public class ObservableCreateTest {
                 TestHelper.race(r1, r2);
             }
         })
-        .test()
-        .assertSubscribed().assertComplete()
+        .to(TestHelper.<Object>testConsumer())
+        .assertSubscribed()
+        .assertComplete()
         .assertNoErrors();
 
-        int c = to.valueCount();
+        int c = to.values().size();
         assertTrue("" + c, c >= 100);
     }
 

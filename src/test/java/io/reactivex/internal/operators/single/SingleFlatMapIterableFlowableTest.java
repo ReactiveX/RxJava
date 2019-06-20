@@ -28,7 +28,8 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class SingleFlatMapIterableFlowableTest {
 
@@ -108,7 +109,7 @@ public class SingleFlatMapIterableFlowableTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
         Single.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -118,15 +119,15 @@ public class SingleFlatMapIterableFlowableTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2);
         ;
     }
 
     @Test
     public void fusedNoSync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
 
         Single.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -136,8 +137,8 @@ public class SingleFlatMapIterableFlowableTest {
         })
         .subscribe(ts);
 
-        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+        ts.assertFuseable()
+        .assertFusionMode(QueueFuseable.NONE)
         .assertResult(1, 2);
         ;
     }
@@ -151,7 +152,7 @@ public class SingleFlatMapIterableFlowableTest {
                 return new CrashingIterable(1, 100, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
@@ -164,7 +165,7 @@ public class SingleFlatMapIterableFlowableTest {
                 return new CrashingIterable(100, 1, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
     }
 
@@ -177,7 +178,7 @@ public class SingleFlatMapIterableFlowableTest {
                 return new CrashingIterable(100, 100, 1);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -190,7 +191,7 @@ public class SingleFlatMapIterableFlowableTest {
                 return new CrashingIterable(100, 2, 100);
             }
         })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -207,7 +208,7 @@ public class SingleFlatMapIterableFlowableTest {
                 })
         .hide()
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -227,7 +228,7 @@ public class SingleFlatMapIterableFlowableTest {
                     }
                 })
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(1000 * 1000)
@@ -248,7 +249,7 @@ public class SingleFlatMapIterableFlowableTest {
                 })
         .take(500 * 1000)
         .observeOn(Schedulers.single())
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -269,7 +270,7 @@ public class SingleFlatMapIterableFlowableTest {
                 })
         .observeOn(Schedulers.single())
         .take(500 * 1000)
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertSubscribed()
         .assertValueCount(500 * 1000)
@@ -325,7 +326,7 @@ public class SingleFlatMapIterableFlowableTest {
                         return new CrashingIterable(100, 2, 100);
                     }
                 })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -338,7 +339,7 @@ public class SingleFlatMapIterableFlowableTest {
                         return new CrashingIterable(100, 100, 1);
                     }
                 })
-        .test()
+        .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
@@ -351,7 +352,7 @@ public class SingleFlatMapIterableFlowableTest {
                         return new CrashingIterable(100, 2, 100);
                     }
                 })
-        .test(2L)
+        .to(TestHelper.<Integer>testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "hasNext()", 0);
     }
 
@@ -364,7 +365,7 @@ public class SingleFlatMapIterableFlowableTest {
                         return new CrashingIterable(100, 100, 1);
                     }
                 })
-        .test(2L)
+        .to(TestHelper.<Integer>testSubscriber(2L))
         .assertFailureAndMessage(TestException.class, "next()");
     }
 

@@ -34,6 +34,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableZipTest {
     BiFunction<String, String, String> concat2Strings;
@@ -797,10 +798,10 @@ public class ObservableZipTest {
         TestObserver<String> to = new TestObserver<String>();
         os.subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
 
-        assertEquals(5, to.valueCount());
+        assertEquals(5, to.values().size());
         assertEquals("1-1", to.values().get(0));
         assertEquals("2-2", to.values().get(1));
         assertEquals("5-5", to.values().get(4));
@@ -971,7 +972,7 @@ public class ObservableZipTest {
 
         TestObserver<Object> to = new TestObserver<Object>();
         o.subscribe(to);
-        to.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        to.awaitDone(200, TimeUnit.MILLISECONDS);
         to.assertNoValues();
     }
 
@@ -1013,9 +1014,9 @@ public class ObservableZipTest {
 
         }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(to);
 
-        to.awaitTerminalEvent();
+        to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        assertEquals(Observable.bufferSize() * 2, to.valueCount());
+        assertEquals(Observable.bufferSize() * 2, to.values().size());
         System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
         assertTrue(generatedA.get() < (Observable.bufferSize() * 3));
         assertTrue(generatedB.get() < (Observable.bufferSize() * 3));
@@ -1404,7 +1405,7 @@ public class ObservableZipTest {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                cancel();
+                dispose();
                 if (ps1.hasObservers()) {
                     onError(new IllegalStateException("ps1 not disposed"));
                 } else

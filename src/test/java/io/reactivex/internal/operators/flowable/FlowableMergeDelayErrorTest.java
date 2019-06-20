@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
@@ -24,13 +25,13 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
+import io.reactivex.testsupport.*;
 
 public class FlowableMergeDelayErrorTest {
 
@@ -495,15 +496,15 @@ public class FlowableMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentFlowable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         Flowable.mergeDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
                         .startWith(Flowable.<Integer> error(new RuntimeException()))
                 ).subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertTerminated();
         ts.assertValues(1, 2);
-        assertEquals(1, ts.errorCount());
+        assertEquals(1, ts.errors().size());
 
     }
 
@@ -524,11 +525,11 @@ public class FlowableMergeDelayErrorTest {
 
             stringSubscriber = TestHelper.mockSubscriber();
 
-            TestSubscriber<String> ts = new TestSubscriber<String>(stringSubscriber);
+            TestSubscriberEx<String> ts = new TestSubscriberEx<String>(stringSubscriber);
             Flowable<String> m = Flowable.mergeDelayError(parentFlowable);
             m.subscribe(ts);
             System.out.println("testErrorInParentFlowableDelayed | " + i);
-            ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
+            ts.awaitDone(2000, TimeUnit.MILLISECONDS);
             ts.assertTerminated();
 
             verify(stringSubscriber, times(2)).onNext("hello");
@@ -574,7 +575,7 @@ public class FlowableMergeDelayErrorTest {
                     }
                 }), 1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         source.subscribe(ts);
 
@@ -631,7 +632,7 @@ public class FlowableMergeDelayErrorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void iterableMaxConcurrentError() {
-        TestSubscriber<Integer> ts = TestSubscriber.create();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
@@ -707,7 +708,7 @@ public class FlowableMergeDelayErrorTest {
 
             Method m = Flowable.class.getMethod("mergeDelayError", clazz);
 
-            TestSubscriber<Integer> ts = TestSubscriber.create();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
             ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
 

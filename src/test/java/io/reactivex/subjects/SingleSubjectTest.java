@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class SingleSubjectTest {
 
@@ -137,7 +138,7 @@ public class SingleSubjectTest {
             assertEquals("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
         }
 
-        ss.test().assertEmpty().cancel();
+        ss.test().assertEmpty().dispose();
     }
 
     @Test
@@ -151,7 +152,7 @@ public class SingleSubjectTest {
             assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
         }
 
-        ss.test().assertEmpty().cancel();
+        ss.test().assertEmpty().dispose();
     }
 
     @Test
@@ -239,7 +240,7 @@ public class SingleSubjectTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    to.dispose();
                 }
             };
             TestHelper.race(r1, r2);

@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
@@ -31,7 +32,8 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.*;
 
 public class FlowableOnErrorResumeNextViaFunctionTest {
 
@@ -152,7 +154,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("Failed operator may leave the child subscriber in an inconsistent state which prevents further error delivery.")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
             @Override
@@ -185,7 +187,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Test
     @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
         Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
 
             @Override
@@ -264,7 +266,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
         flowable.subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
 
         verify(subscriber, Mockito.never()).onError(any(Throwable.class));
         verify(subscriber, times(1)).onComplete();
@@ -343,7 +345,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
                 })
                 .subscribe(ts);
-        ts.awaitTerminalEvent();
+        ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
 

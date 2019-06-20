@@ -32,6 +32,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.*;
 
 public class ObservableTimeoutTests {
     private PublishSubject<String> underlyingSubject;
@@ -82,7 +83,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        TestObserver<String> observer = new TestObserver<String>();
+        TestObserverEx<String> observer = new TestObserverEx<String>();
 
         withTimeout.subscribe(observer);
 
@@ -92,7 +93,7 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        TestObserver<String> observer = new TestObserver<String>();
+        TestObserverEx<String> observer = new TestObserverEx<String>();
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -231,7 +232,7 @@ public class ObservableTimeoutTests {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final TestObserver<String> observer = new TestObserver<String>();
+        final TestObserverEx<String> observer = new TestObserverEx<String>();
 
         new Thread(new Runnable() {
 
@@ -280,7 +281,7 @@ public class ObservableTimeoutTests {
         TestScheduler testScheduler = new TestScheduler();
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        TestObserver<String> observer = new TestObserver<String>();
+        TestObserverEx<String> observer = new TestObserverEx<String>();
         observableWithTimeout.subscribe(observer);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
@@ -517,7 +518,7 @@ public class ObservableTimeoutTests {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch).test();
+            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -535,8 +536,8 @@ public class ObservableTimeoutTests {
 
             TestHelper.race(r1, r2);
 
-            if (to.valueCount() != 0) {
-                if (to.errorCount() != 0) {
+            if (to.values().size() != 0) {
+                if (to.errors().size() != 0) {
                     to.assertFailure(TimeoutException.class, 1);
                     to.assertErrorMessage(timeoutMessage(1, TimeUnit.SECONDS));
                 } else {
@@ -556,7 +557,7 @@ public class ObservableTimeoutTests {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).test();
+            TestObserverEx<Integer> to = ps.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -575,7 +576,7 @@ public class ObservableTimeoutTests {
             TestHelper.race(r1, r2);
 
             if (to.isTerminated()) {
-                int c = to.valueCount();
+                int c = to.values().size();
                 if (c == 1) {
                     int v = to.values().get(0);
                     assertTrue("" + v, v == 1 || v == 2);

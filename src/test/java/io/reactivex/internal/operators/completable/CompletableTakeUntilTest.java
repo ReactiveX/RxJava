@@ -26,6 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.CompletableSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableTakeUntilTest {
 

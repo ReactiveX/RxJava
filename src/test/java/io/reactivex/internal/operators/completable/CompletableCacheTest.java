@@ -24,6 +24,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.testsupport.TestHelper;
 
 public class CompletableCacheTest implements Consumer<Object>, Action {
 
@@ -91,7 +92,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
             @Override
             public void onComplete() {
                 super.onComplete();
-                to1.cancel();
+                to1.dispose();
             }
         };
 
@@ -116,7 +117,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
             @Override
             public void onError(Throwable ex) {
                 super.onError(ex);
-                to1.cancel();
+                to1.dispose();
             }
         };
 
@@ -143,17 +144,17 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
         assertTrue(ps.hasObservers());
 
-        to1.cancel();
+        to1.dispose();
 
         assertTrue(ps.hasObservers());
 
         TestObserver<Void> to2 = c.test();
 
         TestObserver<Void> to3 = c.test();
-        to3.cancel();
+        to3.dispose();
 
         TestObserver<Void> to4 = c.test(true);
-        to3.cancel();
+        to3.dispose();
 
         ps.onComplete();
 
@@ -213,7 +214,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    to1.dispose();
                 }
             };
             Runnable r2 = new Runnable() {

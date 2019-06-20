@@ -27,6 +27,7 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.testsupport.TestHelper;
 
 public class XFlatMapTest {
 
@@ -48,11 +49,20 @@ public class XFlatMapTest {
         }
     }
 
-    void beforeCancelSleep(BaseTestConsumer<?, ?> ts) throws Exception {
+    void beforeCancelSleep(TestSubscriber<?> ts) throws Exception {
         long before = System.currentTimeMillis();
         Thread.sleep(50);
         if (System.currentTimeMillis() - before > 100) {
-            ts.dispose();
+            ts.cancel();
+            throw new IllegalStateException("Overslept?" + (System.currentTimeMillis() - before));
+        }
+    }
+
+    void beforeCancelSleep(TestObserver<?> to) throws Exception {
+        long before = System.currentTimeMillis();
+        Thread.sleep(50);
+        if (System.currentTimeMillis() - before > 100) {
+            to.dispose();
             throw new IllegalStateException("Overslept?" + (System.currentTimeMillis() - before));
         }
     }
@@ -169,7 +179,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -232,7 +242,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -263,7 +273,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -294,7 +304,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -325,7 +335,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -357,7 +367,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -388,7 +398,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -419,7 +429,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -450,7 +460,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -482,7 +492,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -513,7 +523,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -544,7 +554,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -575,7 +585,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
@@ -607,7 +617,7 @@ public class XFlatMapTest {
 
             beforeCancelSleep(to);
 
-            to.cancel();
+            to.dispose();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 

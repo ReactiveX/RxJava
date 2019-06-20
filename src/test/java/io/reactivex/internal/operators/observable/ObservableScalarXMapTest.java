@@ -23,6 +23,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.testsupport.TestHelper;
 
 public class ObservableScalarXMapTest {
 

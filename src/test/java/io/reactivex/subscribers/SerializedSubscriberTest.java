@@ -24,11 +24,12 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.testsupport.*;
 
 public class SerializedSubscriberTest {
 
@@ -274,7 +275,7 @@ public class SerializedSubscriberTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriber<String> ts = new TestSubscriber<String>(new DefaultSubscriber<String>() {
+                TestSubscriberEx<String> ts = new TestSubscriberEx<String>(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -314,7 +315,7 @@ public class SerializedSubscriberTest {
                 waitOnThreads(f1, f2);
                 // not completed yet
 
-                assertEquals(2, ts.valueCount());
+                assertEquals(2, ts.values().size());
 
                 Thread t2 = ts.lastThread();
                 System.out.println("second onNext on thread: " + t2);
@@ -1086,7 +1087,7 @@ public class SerializedSubscriberTest {
             .assertNoErrors()
             .assertComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(ts.values().size() <= 1);
         }
 
     }
@@ -1124,7 +1125,7 @@ public class SerializedSubscriberTest {
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(ts.values().size() <= 1);
         }
 
     }
@@ -1162,7 +1163,7 @@ public class SerializedSubscriberTest {
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(ts.values().size() <= 1);
         }
 
     }
@@ -1196,7 +1197,7 @@ public class SerializedSubscriberTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
                 final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
@@ -1241,7 +1242,7 @@ public class SerializedSubscriberTest {
     @Test
     public void nullOnNext() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
 
         final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
