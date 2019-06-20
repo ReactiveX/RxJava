@@ -30,7 +30,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * manner.
  * @param <T> the value type
  */
-public final class ObservablePublish<T> extends ConnectableObservable<T> implements HasUpstreamObservableSource<T> {
+public final class ObservablePublish<T> extends ConnectableObservable<T>
+implements HasUpstreamObservableSource<T>, ObservablePublishClassic<T> {
     /** The source observable. */
     final ObservableSource<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -60,6 +61,11 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
     @Override
     public ObservableSource<T> source() {
+        return source;
+    }
+
+    @Override
+    public ObservableSource<T> publishSource() {
         return source;
     }
 

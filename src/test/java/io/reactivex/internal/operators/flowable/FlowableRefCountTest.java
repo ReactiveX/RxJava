@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -42,6 +42,28 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableRefCountTest {
+
+    // This will undo the workaround so that the plain ObservablePublish is still
+    // tested.
+    @Before
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void before() {
+        RxJavaPlugins.setOnConnectableFlowableAssembly(new Function<ConnectableFlowable, ConnectableFlowable>() {
+            @Override
+            public ConnectableFlowable apply(ConnectableFlowable co) throws Exception {
+                if (co instanceof FlowablePublishAlt) {
+                    FlowablePublishAlt fpa = (FlowablePublishAlt) co;
+                    return FlowablePublish.create(Flowable.fromPublisher(fpa.source()), fpa.publishBufferSize());
+                }
+                return co;
+            }
+        });
+    }
+
+    @After
+    public void after() {
+        RxJavaPlugins.setOnConnectableFlowableAssembly(null);
+    }
 
     @Test
     public void testRefCountAsync() {
@@ -653,6 +675,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void replayNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -669,6 +692,7 @@ public class FlowableRefCountTest {
 
         source.subscribe();
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -680,6 +704,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void replayNoLeak2() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -703,6 +728,7 @@ public class FlowableRefCountTest {
         d1 = null;
         d2 = null;
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -724,6 +750,7 @@ public class FlowableRefCountTest {
 
     @Test
     public void publishNoLeak() throws Exception {
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 
@@ -740,6 +767,7 @@ public class FlowableRefCountTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
+        Thread.sleep(100);
         System.gc();
         Thread.sleep(100);
 

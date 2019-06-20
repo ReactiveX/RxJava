@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
@@ -41,28 +41,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 
-public class ObservableRefCountTest {
-
-    // This will undo the workaround so that the plain ObservablePublish is still
-    // tested.
-    @Before
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void before() {
-        RxJavaPlugins.setOnConnectableObservableAssembly(new Function<ConnectableObservable, ConnectableObservable>() {
-            @Override
-            public ConnectableObservable apply(ConnectableObservable co) throws Exception {
-                if (co instanceof ObservablePublishAlt) {
-                    return ObservablePublish.create(((ObservablePublishAlt)co).source());
-                }
-                return co;
-            }
-        });
-    }
-
-    @After
-    public void after() {
-        RxJavaPlugins.setOnConnectableObservableAssembly(null);
-    }
+public class ObservableRefCountAltTest {
 
     @Test
     public void testRefCountAsync() {
@@ -1025,9 +1004,12 @@ public class ObservableRefCountTest {
         for (int i = 0; i < 3; i++) {
             TestObserver<Integer> to1 = source.test();
 
+            to1.withTag("to1 " + i);
             to1.assertEmpty();
 
             TestObserver<Integer> to2 = source.test();
+
+            to2.withTag("to2 " + i);
 
             to1.assertResult(1, 2, 3, 4, 5);
             to2.assertResult(1, 2, 3, 4, 5);
@@ -1298,6 +1280,7 @@ public class ObservableRefCountTest {
         rc.subscriberCount = 1;
         rc.connected = true;
         o.connection = rc;
+        rc.lazySet(null);
         o.cancel(rc);
 
         o.connection = rc;
@@ -1380,5 +1363,32 @@ public class ObservableRefCountTest {
         subject.onNext(2);
 
         observable.take(1).test().assertResult(2);
+    }
+
+    @Test
+    public void publishRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Observable<Integer> observable = Observable.just(1).publish().refCount();
+
+            TestObserver<Integer> observer1 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestObserver<Integer> observer2 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            observer1
+            .withTag("observer1 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+
+            observer2
+            .withTag("observer2 " + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertNoErrors()
+            .assertComplete();
+        }
     }
 }

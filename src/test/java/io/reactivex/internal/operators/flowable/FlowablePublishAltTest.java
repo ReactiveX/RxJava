@@ -37,29 +37,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowablePublishTest {
-
-    // This will undo the workaround so that the plain ObservablePublish is still
-    // tested.
-    @Before
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void before() {
-        RxJavaPlugins.setOnConnectableFlowableAssembly(new Function<ConnectableFlowable, ConnectableFlowable>() {
-            @Override
-            public ConnectableFlowable apply(ConnectableFlowable co) throws Exception {
-                if (co instanceof FlowablePublishAlt) {
-                    FlowablePublishAlt fpa = (FlowablePublishAlt) co;
-                    return FlowablePublish.create(Flowable.fromPublisher(fpa.source()), fpa.publishBufferSize());
-                }
-                return co;
-            }
-        });
-    }
-
-    @After
-    public void after() {
-        RxJavaPlugins.setOnConnectableFlowableAssembly(null);
-    }
+public class FlowablePublishAltTest {
 
     @Test
     public void testPublish() throws InterruptedException {
@@ -1034,7 +1012,7 @@ public class FlowablePublishTest {
 
     @Test
     public void subscriberLiveSwap() {
-        final ConnectableFlowable<Integer> cf = Flowable.range(1, 5).publish();
+        final ConnectableFlowable<Integer> cf = new FlowablePublishAlt<Integer>(Flowable.range(1, 5), 128);
 
         final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
 
@@ -1519,5 +1497,133 @@ public class FlowablePublishTest {
                 Arrays.asList(16, 17),
                 Arrays.asList(18, 19)
         );
+    }
+
+    @Test
+    public void altConnectCrash() {
+        try {
+            new FlowablePublishAlt<Integer>(Flowable.<Integer>empty(), 128)
+            .connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable t) throws Exception {
+                    throw new TestException();
+                }
+            });
+            fail("Should have thrown");
+        } catch (TestException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void altConnectRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final ConnectableFlowable<Integer> cf =
+                    new FlowablePublishAlt<Integer>(Flowable.<Integer>never(), 128);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    cf.connect();
+                }
+            };
+
+            TestHelper.race(r, r);
+        }
+    }
+
+    @Test
+    public void fusedPollCrash() {
+        Flowable.range(1, 5)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .compose(TestHelper.flowableStripBoundary())
+        .publish()
+        .refCount()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void syncFusedNoRequest() {
+        Flowable.range(1, 5)
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalBackpressuredPolls() {
+        Flowable.range(1, 5)
+        .hide()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void emptyHidden() {
+        Flowable.empty()
+        .hide()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emptyFused() {
+        Flowable.empty()
+        .publish(1)
+        .refCount()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void overflowQueueRefCount() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+            }
+        }
+        .publish(1)
+        .refCount()
+        .test(0)
+        .requestMore(1)
+        .assertFailure(MissingBackpressureException.class, 1);
+    }
+
+    @Test
+    public void doubleErrorRefCount() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("one"));
+                    s.onError(new TestException("two"));
+                }
+            }
+            .publish(1)
+            .refCount()
+            .test(0)
+            .assertFailureAndMessage(TestException.class, "one");
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "two");
+            assertEquals(1, errors.size());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
