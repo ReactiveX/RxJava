@@ -1611,6 +1611,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * });
      * </code></pre>
      * <p>
+     * Whenever an {@link Observer} subscribes to the returned {@code Observable}, the provided
+     * {@link ObservableOnSubscribe} callback is invoked with a fresh instance of an {@link ObservableEmitter}
+     * that will interact only with that specific {@code Observer}. If this {@code Observer}
+     * disposes the flow (making {@link ObservableEmitter#isDisposed} return true),
+     * other observers subscribed to the same returned {@code Observable} are not affected.
+     * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create.png" alt="">
      * <p>
      * You should call the ObservableEmitter's onNext, onError and onComplete methods in a serialized fashion. The

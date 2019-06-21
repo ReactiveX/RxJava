@@ -501,6 +501,12 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * });
      * </code></pre>
+     * <p>
+     * Whenever a {@link SingleObserver} subscribes to the returned {@code Single}, the provided
+     * {@link SingleOnSubscribe} callback is invoked with a fresh instance of a {@link SingleEmitter}
+     * that will interact only with that specific {@code SingleObserver}. If this {@code SingleObserver}
+     * disposes the flow (making {@link SingleEmitter#isDisposed} return true),
+     * other observers subscribed to the same returned {@code Single} are not affected.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
