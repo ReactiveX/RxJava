@@ -570,4 +570,67 @@ public class CompletableUsingTest {
         }
     }
 
+    @Test
+    public void eagerDisposeResourceThenDisposeUpstream() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Void> to = Completable.using(Functions.justSupplier(1),
+            new Function<Integer, Completable>() {
+                @Override
+                public Completable apply(Integer t) throws Throwable {
+                    return Completable.never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, true)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("ResourceDispose", sb.toString());
+    }
+
+    @Test
+    public void nonEagerDisposeUpstreamThenDisposeResource() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Void> to = Completable.using(Functions.justSupplier(1),
+            new Function<Integer, Completable>() {
+                @Override
+                public Completable apply(Integer t) throws Throwable {
+                    return Completable.never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, false)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("DisposeResource", sb.toString());
+    }
 }

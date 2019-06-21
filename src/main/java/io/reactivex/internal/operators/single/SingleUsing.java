@@ -106,9 +106,15 @@ public final class SingleUsing<T, U> extends Single<T> {
 
         @Override
         public void dispose() {
-            upstream.dispose();
-            upstream = DisposableHelper.DISPOSED;
-            disposeAfter();
+            if (eager) {
+                disposeResource();
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+            } else {
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+                disposeResource();
+            }
         }
 
         @Override
@@ -148,7 +154,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             downstream.onSuccess(value);
 
             if (!eager) {
-                disposeAfter();
+                disposeResource();
             }
         }
 
@@ -174,12 +180,12 @@ public final class SingleUsing<T, U> extends Single<T> {
             downstream.onError(e);
 
             if (!eager) {
-                disposeAfter();
+                disposeResource();
             }
         }
 
         @SuppressWarnings("unchecked")
-        void disposeAfter() {
+        void disposeResource() {
             Object u = getAndSet(this);
             if (u != this) {
                 try {

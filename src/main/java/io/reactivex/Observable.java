@@ -4089,8 +4089,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param disposer
      *            the function that will dispose of the resource
      * @param eager
-     *            if {@code true} then disposal will happen either on a dispose() call or just before emission of
-     *            a terminal event ({@code onComplete} or {@code onError}).
+     *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
+     *            or just before the emission of a terminal event ({@code onComplete} or {@code onError}).
+     *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
+     *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the ObservableSource whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @since 2.0

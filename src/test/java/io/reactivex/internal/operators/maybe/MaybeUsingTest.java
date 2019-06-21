@@ -23,6 +23,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
@@ -562,5 +563,69 @@ public class MaybeUsingTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void eagerDisposeResourceThenDisposeUpstream() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Integer> to = Maybe.using(Functions.justSupplier(1),
+            new Function<Integer, Maybe<Integer>>() {
+                @Override
+                public Maybe<Integer> apply(Integer t) throws Throwable {
+                    return Maybe.<Integer>never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, true)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("ResourceDispose", sb.toString());
+    }
+
+    @Test
+    public void nonEagerDisposeUpstreamThenDisposeResource() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Integer> to = Maybe.using(Functions.justSupplier(1),
+            new Function<Integer, Maybe<Integer>>() {
+                @Override
+                public Maybe<Integer> apply(Integer t) throws Throwable {
+                    return Maybe.<Integer>never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, false)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("DisposeResource", sb.toString());
     }
 }

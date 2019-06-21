@@ -1026,8 +1026,11 @@ public abstract class Completable implements CompletableSource {
      * @param completableFunction the function that given a resource returns a non-null
      * Completable instance that will be subscribed to
      * @param disposer the consumer that disposes the resource created by the resource supplier
-     * @param eager if true, the resource is disposed before the terminal event is emitted, if false, the
-     * resource is disposed after the terminal event has been emitted
+     * @param eager
+     *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
+     *            or just before the emission of a terminal event ({@code onComplete} or {@code onError}).
+     *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
+     *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the new Completable instance
      */
     @CheckReturnValue

@@ -106,13 +106,19 @@ public final class CompletableUsing<R> extends Completable {
 
         @Override
         public void dispose() {
-            upstream.dispose();
-            upstream = DisposableHelper.DISPOSED;
-            disposeResourceAfter();
+            if (eager) {
+                disposeResource();
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+            } else {
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+                disposeResource();
+            }
         }
 
         @SuppressWarnings("unchecked")
-        void disposeResourceAfter() {
+        void disposeResource() {
             Object resource = getAndSet(this);
             if (resource != this) {
                 try {
@@ -159,7 +165,7 @@ public final class CompletableUsing<R> extends Completable {
             downstream.onError(e);
 
             if (!eager) {
-                disposeResourceAfter();
+                disposeResource();
             }
         }
 
@@ -185,7 +191,7 @@ public final class CompletableUsing<R> extends Completable {
             downstream.onComplete();
 
             if (!eager) {
-                disposeResourceAfter();
+                disposeResource();
             }
         }
     }

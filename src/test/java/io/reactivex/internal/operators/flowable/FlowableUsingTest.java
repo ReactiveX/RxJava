@@ -677,4 +677,63 @@ public class FlowableUsingTest {
         }), Functions.emptyConsumer(), true)
         .subscribe(ts);
     }
+
+    @Test
+    public void eagerDisposeResourceThenDisposeUpstream() {
+        final StringBuilder sb = new StringBuilder();
+
+        Flowable.using(Functions.justSupplier(1),
+            new Function<Integer, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer t) throws Throwable {
+                    return Flowable.range(1, 2)
+                            .doOnCancel(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Cancel");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, true)
+        .take(1)
+        .test()
+        .assertResult(1);
+
+        assertEquals("ResourceCancel", sb.toString());
+    }
+
+    @Test
+    public void nonEagerDisposeUpstreamThenDisposeResource() {
+        final StringBuilder sb = new StringBuilder();
+
+        Flowable.using(Functions.justSupplier(1),
+            new Function<Integer, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer t) throws Throwable {
+                    return Flowable.range(1, 2)
+                            .doOnCancel(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Cancel");
+                                }
+                            });
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, false)
+        .take(1)
+        .test()
+        .assertResult(1);
+
+        assertEquals("CancelResource", sb.toString());
+    }
 }

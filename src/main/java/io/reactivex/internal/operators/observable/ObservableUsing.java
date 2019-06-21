@@ -120,7 +120,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             } else {
                 downstream.onError(t);
                 upstream.dispose();
-                disposeAfter();
+                disposeResource();
             }
         }
 
@@ -142,14 +142,21 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             } else {
                 downstream.onComplete();
                 upstream.dispose();
-                disposeAfter();
+                disposeResource();
             }
         }
 
         @Override
         public void dispose() {
-            disposeAfter();
-            upstream.dispose();
+            if (eager) {
+                disposeResource();
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+            } else {
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+                disposeResource();
+            }
         }
 
         @Override
@@ -157,7 +164,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             return get();
         }
 
-        void disposeAfter() {
+        void disposeResource() {
             if (compareAndSet(false, true)) {
                 try {
                     disposer.accept(resource);

@@ -327,4 +327,68 @@ public class SingleUsingTest {
             assertTrue(d.isDisposed());
         }
     }
+
+    @Test
+    public void eagerDisposeResourceThenDisposeUpstream() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Integer> to = Single.using(Functions.justSupplier(1),
+            new Function<Integer, Single<Integer>>() {
+                @Override
+                public Single<Integer> apply(Integer t) throws Throwable {
+                    return Single.<Integer>never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, true)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("ResourceDispose", sb.toString());
+    }
+
+    @Test
+    public void nonEagerDisposeUpstreamThenDisposeResource() {
+        final StringBuilder sb = new StringBuilder();
+
+        TestObserver<Integer> to = Single.using(Functions.justSupplier(1),
+            new Function<Integer, Single<Integer>>() {
+                @Override
+                public Single<Integer> apply(Integer t) throws Throwable {
+                    return Single.<Integer>never()
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, false)
+        .test()
+        ;
+        to.assertEmpty();
+
+        to.dispose();
+
+        assertEquals("DisposeResource", sb.toString());
+    }
 }
