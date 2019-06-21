@@ -2026,7 +2026,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that, when an observer subscribes to it, invokes a supplier function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Observable.fromSupplier.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until an observer subscribes to the
      * ObservableSource. That is to say, it makes the function "lazy."

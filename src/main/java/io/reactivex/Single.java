@@ -821,7 +821,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * It makes passed function "lazy".
      * Result of the function invocation will be emitted by the {@link Single}.
      * <p>
-     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.png" alt="">
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromSupplier.png" alt="">
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>

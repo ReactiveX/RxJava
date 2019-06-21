@@ -877,6 +877,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * subscribes to the  returned {@link Maybe}. In other terms, this source operator evaluates the given
      * {@code Supplier} "lazily".
      * <p>
+     * <img width="640" height="311" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.fromSupplier.png" alt="">
+     * <p>
      * Note that the {@code null} handling of this operator differs from the similar source operators in the other
      * {@link io.reactivex base reactive classes}. Those operators signal a {@code NullPointerException} if the value returned by their
      * {@code Supplier} is {@code null} while this {@code fromSupplier} considers it to indicate the
