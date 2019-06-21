@@ -14598,7 +14598,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
      *  {@code IllegalStateException} when the source {@code Publisher} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code startWithIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param items
@@ -14606,12 +14606,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @see #startWithArray(Object...)
+     * @see #startWithItem(Object)
+     * @since 3.0.0
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWith(Iterable<? extends T> items) {
+    public final Flowable<T> startWithIterable(Iterable<? extends T> items) {
         return concatArray(fromIterable(items), this);
     }
 
@@ -14656,23 +14659,26 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  is expected to honor backpressure as well. If it violates this rule, it <em>may</em> throw an
      *  {@code IllegalStateException} when the source {@code Publisher} completes.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code startWithItem} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param value
+     * @param item
      *            the item to emit first
      * @return a Flowable that emits the specified item before it begins to emit items emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @see #startWithArray(Object...)
+     * @see #startWithIterable(Iterable)
+     * @since 3.0.0
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWith(T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return concatArray(just(value), this);
+    public final Flowable<T> startWithItem(T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return concatArray(just(item), this);
     }
 
     /**
@@ -14694,6 +14700,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the specified items before it begins to emit items emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @see #startWithItem(Object)
+     * @see #startWithIterable(Iterable)
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue

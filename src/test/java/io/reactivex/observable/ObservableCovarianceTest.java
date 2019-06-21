@@ -211,7 +211,7 @@ public class ObservableCovarianceTest {
         @Override
         public Observable<Movie> apply(Observable<List<Movie>> movieList) {
             return movieList
-                .startWith(new ArrayList<Movie>())
+                .startWithItem(new ArrayList<Movie>())
                 .buffer(2, 1)
                 .skip(1)
                 .flatMap(calculateDelta);

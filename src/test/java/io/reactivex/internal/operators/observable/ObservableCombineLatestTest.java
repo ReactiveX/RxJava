@@ -951,7 +951,7 @@ public class ObservableCombineLatestTest {
                     }
                 },
                 128,
-                Observable.error(new TestException()).startWith(1),
+                Observable.error(new TestException()).startWithItem(1),
                 Observable.empty()
         )
         .test()

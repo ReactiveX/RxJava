@@ -289,7 +289,7 @@ public class FlowableWindowWithSizeTest {
         .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> w) {
-                return w.startWith(indicator);
+                return w.startWithItem(indicator);
             }
         }).subscribe(ts);
 

@@ -212,7 +212,7 @@ public class FlowableCovarianceTest {
         @Override
         public Publisher<Movie> apply(Flowable<List<Movie>> movieList) {
             return movieList
-                .startWith(new ArrayList<Movie>())
+                .startWithItem(new ArrayList<Movie>())
                 .buffer(2, 1)
                 .skip(1)
                 .flatMap(calculateDelta);

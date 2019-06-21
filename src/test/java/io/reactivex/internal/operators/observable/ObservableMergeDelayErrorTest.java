@@ -493,7 +493,7 @@ public class ObservableMergeDelayErrorTest {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
         Observable.mergeDelayError(
                 Observable.just(Observable.just(1), Observable.just(2))
-                        .startWith(Observable.<Integer> error(new RuntimeException()))
+                        .startWithItem(Observable.<Integer> error(new RuntimeException()))
                 ).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertTerminated();
