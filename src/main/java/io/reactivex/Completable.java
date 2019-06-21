@@ -615,7 +615,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable which when subscribed, executes the supplier function, ignores its
      * normal result and emits onError or onComplete only.
      * <p>
-     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromCallable.png" alt="">
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromSupplier.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromSupplier} does not operate by default on a particular {@link Scheduler}.</dd>

@@ -2336,7 +2336,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Flowable that, when a Subscriber subscribes to it, invokes a supplier function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.fromSupplier.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until a Subscriber subscribes to the
      * Publisher. That is to say, it makes the function "lazy."
