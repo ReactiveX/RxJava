@@ -990,7 +990,7 @@ public class ObservableTest {
     @Test
     public void startWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
-        Observable<Integer> o = Observable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
+        Observable<Integer> o = Observable.just(3, 4).startWithIterable(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
         Observer<Integer> observer = TestHelper.mockObserver();
 

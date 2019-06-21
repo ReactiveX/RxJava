@@ -145,7 +145,7 @@ public class FlowableRetryTest {
                     public Integer apply(Throwable t1) {
                         return 1;
                     }
-                }).startWith(1).cast(Object.class);
+                }).startWithItem(1).cast(Object.class);
             }
         })
         .doOnError(new Consumer<Throwable>() {
@@ -183,7 +183,7 @@ public class FlowableRetryTest {
                     public Integer apply(Throwable t1) {
                         return 0;
                     }
-                }).startWith(0).cast(Object.class);
+                }).startWithItem(0).cast(Object.class);
             }
         }).subscribe(subscriber);
 

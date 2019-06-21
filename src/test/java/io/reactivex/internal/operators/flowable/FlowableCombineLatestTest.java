@@ -1363,7 +1363,7 @@ public class FlowableCombineLatestTest {
                     }
                 },
                 128,
-                Flowable.error(new TestException()).startWith(1),
+                Flowable.error(new TestException()).startWithItem(1),
                 Flowable.empty()
         )
         .test()

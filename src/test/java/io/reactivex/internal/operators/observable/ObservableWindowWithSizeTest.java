@@ -251,7 +251,7 @@ public class ObservableWindowWithSizeTest {
         .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWith(indicator);
+                return w.startWithItem(indicator);
             }
         }).subscribe(to);
 

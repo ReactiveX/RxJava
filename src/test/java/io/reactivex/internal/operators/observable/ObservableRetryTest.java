@@ -147,7 +147,7 @@ public class ObservableRetryTest {
                     public Object apply(Throwable t1) {
                         return 1;
                     }
-                }).startWith(1);
+                }).startWithItem(1);
             }
         })
         .doOnError(new Consumer<Throwable>() {
@@ -185,7 +185,7 @@ public class ObservableRetryTest {
                     public Integer apply(Throwable t1) {
                         return 0;
                     }
-                }).startWith(0).cast(Object.class);
+                }).startWithItem(0).cast(Object.class);
             }
         }).subscribe(observer);
 

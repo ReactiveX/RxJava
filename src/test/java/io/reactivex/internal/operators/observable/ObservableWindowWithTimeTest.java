@@ -200,7 +200,7 @@ public class ObservableWindowWithTimeTest {
         .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Observable<Integer> w) {
-                return w.startWith(indicator)
+                return w.startWithItem(indicator)
                         .doOnComplete(new Action() {
                             @Override
                             public void run() {

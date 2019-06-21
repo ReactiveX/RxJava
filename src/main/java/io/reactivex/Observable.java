@@ -12036,7 +12036,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code startWithIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param items
@@ -12044,11 +12044,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @since 3.0.0
+     * @see #startWithItem(Object)
+     * @see #startWithArray(Object...)
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(Iterable<? extends T> items) {
+    public final Observable<T> startWithIterable(Iterable<? extends T> items) {
         return concatArray(fromIterable(items), this);
     }
 
@@ -12083,7 +12086,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.item.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code startWithItem} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param item
@@ -12091,11 +12094,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the specified item before it begins to emit items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @see #startWithArray(Object...)
+     * @see #startWithIterable(Iterable)
+     * @since 3.0.0
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(T item) {
+    public final Observable<T> startWithItem(T item) {
         ObjectHelper.requireNonNull(item, "item is null");
         return concatArray(just(item), this);
     }
@@ -12115,6 +12121,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the specified items before it begins to emit items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
+     * @see #startWithItem(Object)
+     * @see #startWithIterable(Iterable)
      */
     @SuppressWarnings("unchecked")
     @CheckReturnValue

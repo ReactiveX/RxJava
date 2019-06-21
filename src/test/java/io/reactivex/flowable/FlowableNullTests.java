@@ -2103,12 +2103,12 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void startWithIterableNull() {
-        just1.startWith((Iterable<Integer>)null);
+        just1.startWithIterable((Iterable<Integer>)null);
     }
 
     @Test(expected = NullPointerException.class)
     public void startWithIterableIteratorNull() {
-        just1.startWith(new Iterable<Integer>() {
+        just1.startWithIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return null;
@@ -2118,12 +2118,12 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void startWithIterableOneNull() {
-        just1.startWith(Arrays.asList(1, null)).blockingSubscribe();
+        just1.startWithIterable(Arrays.asList(1, null)).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void startWithSingleNull() {
-        just1.startWith((Integer)null);
+        just1.startWithItem((Integer)null);
     }
 
     @Test(expected = NullPointerException.class)

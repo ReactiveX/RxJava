@@ -37,7 +37,7 @@ public class ObservableStartWithTests {
         List<String> li = new ArrayList<String>();
         li.add("alpha");
         li.add("beta");
-        List<String> values = Observable.just("one", "two").startWith(li).toList().blockingGet();
+        List<String> values = Observable.just("one", "two").startWithIterable(li).toList().blockingGet();
 
         assertEquals("alpha", values.get(0));
         assertEquals("beta", values.get(1));

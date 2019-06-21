@@ -968,7 +968,7 @@ public class FlowableTests {
     @Test
     public void startWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
-        Flowable<Integer> flowable = Flowable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
+        Flowable<Integer> flowable = Flowable.just(3, 4).startWithIterable(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 

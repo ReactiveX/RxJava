@@ -499,7 +499,7 @@ public class FlowableMergeDelayErrorTest {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
         Flowable.mergeDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
-                        .startWith(Flowable.<Integer> error(new RuntimeException()))
+                        .startWithItem(Flowable.<Integer> error(new RuntimeException()))
                 ).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertTerminated();
