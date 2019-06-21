@@ -167,12 +167,16 @@ public class ParamValidationCheckerTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
 
         // zero retry is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
@@ -417,12 +421,16 @@ public class ParamValidationCheckerTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
         addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class, boolean.class));
 
         // zero retry is allowed
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));

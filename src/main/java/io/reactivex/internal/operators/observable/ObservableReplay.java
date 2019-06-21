@@ -92,14 +92,15 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param <T> the value type
      * @param source the source ObservableSource to use
      * @param bufferSize the maximum number of elements to hold
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(ObservableSource<T> source,
-            final int bufferSize) {
+            final int bufferSize, boolean eagerTruncate) {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new ReplayBufferSupplier<T>(bufferSize));
+        return create(source, new ReplayBufferSupplier<T>(bufferSize, eagerTruncate));
     }
 
     /**
@@ -109,11 +110,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param maxAge the maximum age of entries
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(ObservableSource<T> source,
-            long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
+            long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
+        return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE, eagerTruncate);
     }
 
     /**
@@ -124,11 +126,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
      * @param bufferSize the maximum number of elements to hold
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(ObservableSource<T> source,
-            final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new ScheduledReplaySupplier<T>(bufferSize, maxAge, unit, scheduler));
+            final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize, boolean eagerTruncate) {
+        return create(source, new ScheduledReplaySupplier<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate));
     }
 
     /**
@@ -595,7 +598,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         Node tail;
         int size;
 
-        BoundedReplayBuffer() {
+        final boolean eagerTruncate;
+
+        BoundedReplayBuffer(boolean eagerTruncate) {
+            this.eagerTruncate = eagerTruncate;
             Node n = new Node(null);
             tail = n;
             set(n);
@@ -646,6 +652,15 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          * @param n the Node instance to set as first
          */
         final void setFirst(Node n) {
+            if (eagerTruncate) {
+                Node m = new Node(null);
+                Node nextNode = n.get();
+                if (nextNode == null) {
+                    tail = m;
+                }
+                m.lazySet(nextNode);
+                n = m;
+            }
             set(n);
         }
 
@@ -787,7 +802,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         private static final long serialVersionUID = -5898283885385201806L;
 
         final int limit;
-        SizeBoundReplayBuffer(int limit) {
+
+        SizeBoundReplayBuffer(int limit, boolean eagerTruncate) {
+            super(eagerTruncate);
             this.limit = limit;
         }
 
@@ -814,7 +831,8 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         final long maxAge;
         final TimeUnit unit;
         final int limit;
-        SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
+            super(eagerTruncate);
             this.scheduler = scheduler;
             this.limit = limit;
             this.maxAge = maxAge;
@@ -939,15 +957,19 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     static final class ReplayBufferSupplier<T> implements BufferSupplier<T> {
-        private final int bufferSize;
 
-        ReplayBufferSupplier(int bufferSize) {
+        final int bufferSize;
+
+        final boolean eagerTruncate;
+
+        ReplayBufferSupplier(int bufferSize, boolean eagerTruncate) {
             this.bufferSize = bufferSize;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ReplayBuffer<T> call() {
-            return new SizeBoundReplayBuffer<T>(bufferSize);
+            return new SizeBoundReplayBuffer<T>(bufferSize, eagerTruncate);
         }
     }
 
@@ -957,16 +979,19 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        ScheduledReplaySupplier(int bufferSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        ScheduledReplaySupplier(int bufferSize, long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.bufferSize = bufferSize;
             this.maxAge = maxAge;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ReplayBuffer<T> call() {
-            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
+            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate);
         }
     }
 

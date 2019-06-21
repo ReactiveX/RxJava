@@ -89,14 +89,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the value type
      * @param source the source Flowable to use
      * @param bufferSize the maximum number of elements to hold
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
-            final int bufferSize) {
+            final int bufferSize, boolean eagerTruncate) {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new ReplayBufferTask<T>(bufferSize));
+        return create(source, new ReplayBufferSupplier<T>(bufferSize, eagerTruncate));
     }
 
     /**
@@ -106,11 +107,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param maxAge the maximum age of entries
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
-            long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
+            long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
+        return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE, eagerTruncate);
     }
 
     /**
@@ -121,11 +123,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
      * @param bufferSize the maximum number of elements to hold
+     * @param eagerTruncate if true, the head reference is refreshed to avoid unwanted item retention
      * @return the new ConnectableFlowable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
-            final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new ScheduledReplayBufferTask<T>(bufferSize, maxAge, unit, scheduler));
+            final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize, boolean eagerTruncate) {
+        return create(source, new ScheduledReplayBufferSupplier<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate));
     }
 
     /**
@@ -731,12 +734,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         private static final long serialVersionUID = 2346567790059478686L;
 
+        final boolean eagerTruncate;
+
         Node tail;
         int size;
 
         long index;
 
-        BoundedReplayBuffer() {
+        BoundedReplayBuffer(boolean eagerTruncate) {
+            this.eagerTruncate = eagerTruncate;
             Node n = new Node(null, 0);
             tail = n;
             set(n);
@@ -780,6 +786,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * @param n the Node instance to set as first
          */
         final void setFirst(Node n) {
+            if (eagerTruncate) {
+                Node m = new Node(null, n.index);
+                Node nextNode = n.get();
+                if (nextNode == null) {
+                    tail = m;
+                }
+                m.lazySet(nextNode);
+                n = m;
+            }
             set(n);
         }
 
@@ -962,7 +977,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         private static final long serialVersionUID = -5898283885385201806L;
 
         final int limit;
-        SizeBoundReplayBuffer(int limit) {
+        SizeBoundReplayBuffer(int limit, boolean eagerTruncate) {
+            super(eagerTruncate);
             this.limit = limit;
         }
 
@@ -989,7 +1005,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         final long maxAge;
         final TimeUnit unit;
         final int limit;
-        SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
+            super(eagerTruncate);
             this.scheduler = scheduler;
             this.limit = limit;
             this.maxAge = maxAge;
@@ -1168,35 +1185,42 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class ReplayBufferTask<T> implements Supplier<ReplayBuffer<T>> {
-        private final int bufferSize;
+    static final class ReplayBufferSupplier<T> implements Supplier<ReplayBuffer<T>> {
 
-        ReplayBufferTask(int bufferSize) {
+        final int bufferSize;
+
+        final boolean eagerTruncate;
+
+        ReplayBufferSupplier(int bufferSize, boolean eagerTruncate) {
             this.bufferSize = bufferSize;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ReplayBuffer<T> get() {
-            return new SizeBoundReplayBuffer<T>(bufferSize);
+            return new SizeBoundReplayBuffer<T>(bufferSize, eagerTruncate);
         }
     }
 
-    static final class ScheduledReplayBufferTask<T> implements Supplier<ReplayBuffer<T>> {
+    static final class ScheduledReplayBufferSupplier<T> implements Supplier<ReplayBuffer<T>> {
         private final int bufferSize;
         private final long maxAge;
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        ScheduledReplayBufferTask(int bufferSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        ScheduledReplayBufferSupplier(int bufferSize, long maxAge, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.bufferSize = bufferSize;
             this.maxAge = maxAge;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ReplayBuffer<T> get() {
-            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
+            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate);
         }
     }
 
