@@ -606,4 +606,63 @@ public class ObservableUsingTest {
         }), Functions.emptyConsumer(), true)
         .subscribe(to);
     }
+
+    @Test
+    public void eagerDisposeResourceThenDisposeUpstream() {
+        final StringBuilder sb = new StringBuilder();
+
+        Observable.using(Functions.justSupplier(1),
+            new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer t) throws Throwable {
+                    return Observable.range(1, 2)
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            })
+                            ;
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, true)
+        .take(1)
+        .test()
+        .assertResult(1);
+
+        assertEquals("ResourceDispose", sb.toString());
+    }
+
+    @Test
+    public void nonEagerDisposeUpstreamThenDisposeResource() {
+        final StringBuilder sb = new StringBuilder();
+
+        Observable.using(Functions.justSupplier(1),
+            new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer t) throws Throwable {
+                    return Observable.range(1, 2)
+                            .doOnDispose(new Action() {
+                                @Override
+                                public void run() throws Throwable {
+                                    sb.append("Dispose");
+                                }
+                            });
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Throwable {
+                    sb.append("Resource");
+                }
+            }, false)
+        .take(1)
+        .test()
+        .assertResult(1);
+
+        assertEquals("DisposeResource", sb.toString());
+    }
 }

@@ -126,7 +126,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
             } else {
                 downstream.onError(t);
                 upstream.cancel();
-                disposeAfter();
+                disposeResource();
             }
         }
 
@@ -148,7 +148,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
             } else {
                 downstream.onComplete();
                 upstream.cancel();
-                disposeAfter();
+                disposeResource();
             }
         }
 
@@ -159,11 +159,18 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         @Override
         public void cancel() {
-            disposeAfter();
-            upstream.cancel();
+            if (eager) {
+                disposeResource();
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+            } else {
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+                disposeResource();
+            }
         }
 
-        void disposeAfter() {
+        void disposeResource() {
             if (compareAndSet(false, true)) {
                 try {
                     disposer.accept(resource);

@@ -1483,8 +1483,10 @@ public abstract class Single<T> implements SingleSource<T> {
      *                  that particular resource when the generated SingleSource terminates
      *                  (successfully or with an error) or gets disposed.
      * @param eager
-     *                 if true, the disposer is called before the terminal event is signalled
-     *                 if false, the disposer is called after the terminal event is delivered to downstream
+     *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
+     *            or just before the emission of a terminal event ({@code onSuccess} or {@code onError}).
+     *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
+     *            or just after the emission of a terminal event ({@code onSuccess} or {@code onError}).
      * @return the new Single instance
      * @since 2.0
      */

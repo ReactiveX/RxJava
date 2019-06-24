@@ -117,13 +117,19 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
         @Override
         public void dispose() {
-            upstream.dispose();
-            upstream = DisposableHelper.DISPOSED;
-            disposeResourceAfter();
+            if (eager) {
+                disposeResource();
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+            } else {
+                upstream.dispose();
+                upstream = DisposableHelper.DISPOSED;
+                disposeResource();
+            }
         }
 
         @SuppressWarnings("unchecked")
-        void disposeResourceAfter() {
+        void disposeResource() {
             Object resource = getAndSet(this);
             if (resource != this) {
                 try {
@@ -171,7 +177,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             downstream.onSuccess(value);
 
             if (!eager) {
-                disposeResourceAfter();
+                disposeResource();
             }
         }
 
@@ -196,7 +202,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             downstream.onError(e);
 
             if (!eager) {
-                disposeResourceAfter();
+                disposeResource();
             }
         }
 
@@ -222,7 +228,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             downstream.onComplete();
 
             if (!eager) {
-                disposeResourceAfter();
+                disposeResource();
             }
         }
     }
