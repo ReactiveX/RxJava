@@ -292,6 +292,12 @@ public abstract class Completable implements CompletableSource {
      *
      * });
      * </code></pre>
+     * <p>
+     * Whenever a {@link CompletableObserver} subscribes to the returned {@code Completable}, the provided
+     * {@link CompletableOnSubscribe} callback is invoked with a fresh instance of a {@link CompletableEmitter}
+     * that will interact only with that specific {@code CompletableObserver}. If this {@code CompletableObserver}
+     * disposes the flow (making {@link CompletableEmitter#isDisposed} return true),
+     * other observers subscribed to the same returned {@code Completable} are not affected.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>

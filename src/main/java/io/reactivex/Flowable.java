@@ -1877,6 +1877,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * }, BackpressureStrategy.BUFFER);
      * </code></pre>
      * <p>
+     * Whenever a {@link Subscriber} subscribes to the returned {@code Flowable}, the provided
+     * {@link FlowableOnSubscribe} callback is invoked with a fresh instance of a {@link FlowableEmitter}
+     * that will interact only with that specific {@code Subscriber}. If this {@code Subscriber}
+     * cancels the flow (making {@link FlowableEmitter#isCancelled} return true),
+     * other observers subscribed to the same returned {@code Flowable} are not affected.
+     * <p>
      * You should call the FlowableEmitter onNext, onError and onComplete methods in a serialized fashion. The
      * rest of its methods are thread-safe.
      * <dl>
