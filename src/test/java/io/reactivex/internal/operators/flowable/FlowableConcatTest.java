@@ -1452,7 +1452,7 @@ public class FlowableConcatTest {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
             public Object apply(Flowable<Integer> f) throws Exception {
-                return f.concatMap(Functions.justFunction(Flowable.just(1).hide()));
+                return f.concatMapDelayError(Functions.justFunction(Flowable.just(1).hide()));
             }
         }, true, 1, 1, 1);
     }
