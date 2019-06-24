@@ -14,17 +14,16 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.internal.operators.mixed.MaterializeSingleObserver;
 
 /**
  * Turn the signal types of a Single source into a single Notification of
  * equal kind.
+ * <p>History: 2.2.4 - experimental
  *
  * @param <T> the element type of the source
- * @since 2.2.4 - experimental
+ * @since 3.0.0
  */
-@Experimental
 public final class SingleMaterialize<T> extends Single<Notification<T>> {
 
     final Single<T> source;

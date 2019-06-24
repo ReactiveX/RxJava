@@ -1412,15 +1412,15 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.3 - experimental
      *
      * @param delay the time to delay the subscription
      * @param unit  the time unit of {@code delay}
      * @return a Completable that delays the subscription to the source CompletableSource by the given amount
-     * @since 2.2.3 - experimental
+     * @since 3.0.0
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Completable delaySubscription(long delay, TimeUnit unit) {
         return delaySubscription(delay, unit, Schedulers.computation());
@@ -1435,17 +1435,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
-     *
+     * <p>History: 2.2.3 - experimental
      * @param delay     the time to delay the subscription
      * @param unit      the time unit of {@code delay}
      * @param scheduler the Scheduler on which the waiting and subscription will happen
      * @return a Completable that delays the subscription to the source CompletableSource by a given
      * amount, waiting and subscribing on the given Scheduler
-     * @since 2.2.3 - experimental
+     * @since 3.0.0
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
         return Completable.timer(delay, unit, scheduler).andThen(this);
@@ -1809,12 +1808,12 @@ public abstract class Completable implements CompletableSource {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.4 - experimental
      * @param <T> the intended target element type of the notification
      * @return the new Single instance
-     * @since 2.2.4 - experimental
+     * @since 3.0.0
      * @see Single#dematerialize(Function)
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Single<Notification<T>> materialize() {

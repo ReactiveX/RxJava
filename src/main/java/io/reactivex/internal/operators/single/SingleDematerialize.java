@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -24,11 +23,11 @@ import io.reactivex.internal.functions.ObjectHelper;
 /**
  * Maps the success value of the source to a Notification, then
  * maps it back to the corresponding signal type.
+ * <p>History: 2.2.4 - experimental
  * @param <T> the element type of the source
  * @param <R> the element type of the Notification and result
- * @since 2.2.4 - experimental
+ * @since 3.0.0
  */
-@Experimental
 public final class SingleDematerialize<T, R> extends Maybe<R> {
 
     final Single<T> source;
