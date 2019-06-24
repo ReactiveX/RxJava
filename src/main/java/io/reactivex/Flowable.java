@@ -12912,6 +12912,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         a {@link ConnectableFlowable} that shares a single subscription to the source Publisher
      *         replaying no more than {@code bufferSize} items
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, int, boolean)
      */
     @CheckReturnValue
     @NonNull
@@ -12920,7 +12921,50 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize), selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize, false), selector);
+    }
+
+    /**
+     * Returns a Flowable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source Publisher,
+     * replaying {@code bufferSize} notifications.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting Publisher
+     * @param selector
+     *            the selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the Publisher
+     * @param bufferSize
+     *            the buffer size that limits the number of items the connectable Publisher can replay
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a Flowable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableFlowable} that shares a single subscription to the source Publisher
+     *         replaying no more than {@code bufferSize} items
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize, eagerTruncate), selector);
     }
 
     /**
@@ -13003,6 +13047,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @throws IllegalArgumentException
      *             if {@code bufferSize} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @NonNull
@@ -13014,7 +13059,62 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return FlowableReplay.multicastSelector(
-                FlowableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler), selector);
+                FlowableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler, false), selector);
+    }
+
+    /**
+     * Returns a Flowable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source Publisher,
+     * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting Publisher
+     * @param selector
+     *            a selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the Publisher
+     * @param bufferSize
+     *            the buffer size that limits the number of items the connectable Publisher can replay
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the Scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a Flowable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableFlowable} that shares a single subscription to the source Publisher, and
+     *         replays no more than {@code bufferSize} items that were emitted within the window defined by
+     *         {@code time}
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return FlowableReplay.multicastSelector(
+                FlowableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler, eagerTruncate), selector);
     }
 
     /**
@@ -13057,7 +13157,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize),
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, bufferSize, false),
                 FlowableInternalHelper.replayFunction(selector, scheduler)
         );
     }
@@ -13128,6 +13228,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         a {@link ConnectableFlowable} that shares a single subscription to the source Publisher,
      *         replaying all items that were emitted within the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @NonNull
@@ -13137,7 +13238,52 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, time, unit, scheduler), selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, time, unit, scheduler, false), selector);
+    }
+
+    /**
+     * Returns a Flowable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source Publisher,
+     * replaying all items that were emitted within a specified time window.
+     * <p>
+     * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting Publisher
+     * @param selector
+     *            a selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the Publisher
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a Flowable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableFlowable} that shares a single subscription to the source Publisher,
+     *         replaying all items that were emitted within the window defined by {@code time}
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replaySupplier(this, time, unit, scheduler, eagerTruncate), selector);
     }
 
     /**
@@ -13185,6 +13331,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
+     * To ensure no beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, boolean)} overload with {@code eagerTruncate = true}.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.png" alt="">
      * <dl>
@@ -13201,13 +13349,51 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
      *         replays at most {@code bufferSize} items emitted by that Publisher
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableFlowable<T> replay(final int bufferSize) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.create(this, bufferSize);
+        return FlowableReplay.create(this, bufferSize, false);
+    }
+    /**
+     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source Publisher that
+     * replays at most {@code bufferSize} items emitted by that Publisher. A Connectable Publisher resembles
+     * an ordinary Publisher, except that it does not begin emitting items when it is subscribed to, but only
+     * when its {@code connect} method is called.
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.png" alt="">
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * To ensure no beyond-bufferSize items are referenced, set {@code eagerTruncate = true}.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param bufferSize
+     *            the buffer size that limits the number of items that can be replayed
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
+     *         replays at most {@code bufferSize} items emitted by that Publisher
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final ConnectableFlowable<T> replay(final int bufferSize, boolean eagerTruncate) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return FlowableReplay.create(this, bufferSize, eagerTruncate);
     }
 
     /**
@@ -13216,10 +13402,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher resembles an ordinary Publisher, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nt.png" alt="">
+     * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nt.png" alt="">
+     * To ensure no out-of-date or beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13239,6 +13427,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         replays at most {@code bufferSize} items that were emitted during the window defined by
      *         {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -13253,10 +13442,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Connectable Publisher resembles an ordinary Publisher, except that it does not begin emitting items
      * when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * To ensure no out-of-date or beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13280,6 +13471,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @throws IllegalArgumentException
      *             if {@code bufferSize} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -13289,7 +13481,57 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return FlowableReplay.create(this, time, unit, scheduler, bufferSize);
+        return FlowableReplay.create(this, time, unit, scheduler, bufferSize, false);
+    }
+
+    /**
+     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
+     * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window. A
+     * Connectable Publisher resembles an ordinary Publisher, except that it does not begin emitting items
+     * when it is subscribed to, but only when its {@code connect} method is called.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions. To ensure no out-of-date or beyond-bufferSize items
+     * are referenced, set {@code eagerTruncate = true}.
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param bufferSize
+     *            the buffer size that limits the number of items that can be replayed
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the scheduler that is used as a time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
+     *         replays at most {@code bufferSize} items that were emitted during the window defined by
+     *         {@code time}
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final ConnectableFlowable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return FlowableReplay.create(this, time, unit, scheduler, bufferSize, eagerTruncate);
     }
 
     /**
@@ -13334,6 +13576,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.t.png" alt="">
+     * <p>
+     * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
+     * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13365,6 +13610,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
+     * <p>
+     * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
+     * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
@@ -13383,6 +13631,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
      *         replays the items that were emitted during the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -13390,7 +13639,48 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final ConnectableFlowable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.create(this, time, unit, scheduler);
+        return FlowableReplay.create(this, time, unit, scheduler, false);
+    }
+
+    /**
+     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
+     * replays all items emitted by that Publisher within a specified time window. A Connectable Publisher
+     * resembles an ordinary Publisher, except that it does not begin emitting items when it is subscribed to,
+     * but only when its {@code connect} method is called.
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
+     * <p>
+     * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
+     * are referenced, set {@code eagerTruncate = true}.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
+     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
+     *  request 100 elements from the underlying Publisher sequence.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the Scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a {@link ConnectableFlowable} that shares a single subscription to the source Publisher and
+     *         replays the items that were emitted during the window defined by {@code time}
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final ConnectableFlowable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return FlowableReplay.create(this, time, unit, scheduler, eagerTruncate);
     }
 
     /**

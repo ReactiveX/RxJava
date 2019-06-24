@@ -202,16 +202,16 @@ public final class ObservableInternalHelper {
         return new ReplaySupplier<T>(parent);
     }
 
-    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize) {
-        return new BufferedReplaySupplier<T>(parent, bufferSize);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, boolean eagerTruncate) {
+        return new BufferedReplaySupplier<T>(parent, bufferSize, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new BufferedTimedReplaySupplier<T>(parent, bufferSize, time, unit, scheduler);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        return new BufferedTimedReplaySupplier<T>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new TimedReplayCallable<T>(parent, time, unit, scheduler);
+    public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        return new TimedReplayCallable<T>(parent, time, unit, scheduler, eagerTruncate);
     }
 
     public static <T, R> Function<Observable<T>, ObservableSource<R>> replayFunction(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
@@ -250,57 +250,66 @@ public final class ObservableInternalHelper {
     }
 
     static final class BufferedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
-        private final Observable<T> parent;
-        private final int bufferSize;
+        final Observable<T> parent;
+        final int bufferSize;
 
-        BufferedReplaySupplier(Observable<T> parent, int bufferSize) {
+        final boolean eagerTruncate;
+
+        BufferedReplaySupplier(Observable<T> parent, int bufferSize, boolean eagerTruncate) {
             this.parent = parent;
             this.bufferSize = bufferSize;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableObservable<T> get() {
-            return parent.replay(bufferSize);
+            return parent.replay(bufferSize, eagerTruncate);
         }
     }
 
     static final class BufferedTimedReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {
-        private final Observable<T> parent;
-        private final int bufferSize;
-        private final long time;
-        private final TimeUnit unit;
-        private final Scheduler scheduler;
+        final Observable<T> parent;
+        final int bufferSize;
+        final long time;
+        final TimeUnit unit;
+        final Scheduler scheduler;
 
-        BufferedTimedReplaySupplier(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        BufferedTimedReplaySupplier(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.parent = parent;
             this.bufferSize = bufferSize;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableObservable<T> get() {
-            return parent.replay(bufferSize, time, unit, scheduler);
+            return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
         }
     }
 
     static final class TimedReplayCallable<T> implements Supplier<ConnectableObservable<T>> {
-        private final Observable<T> parent;
-        private final long time;
-        private final TimeUnit unit;
-        private final Scheduler scheduler;
+        final Observable<T> parent;
+        final long time;
+        final TimeUnit unit;
+        final Scheduler scheduler;
 
-        TimedReplayCallable(Observable<T> parent, long time, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        TimedReplayCallable(Observable<T> parent, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.parent = parent;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableObservable<T> get() {
-            return parent.replay(time, unit, scheduler);
+            return parent.replay(time, unit, scheduler, eagerTruncate);
         }
     }
 

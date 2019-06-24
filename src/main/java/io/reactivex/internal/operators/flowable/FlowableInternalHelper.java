@@ -197,16 +197,16 @@ public final class FlowableInternalHelper {
         return new ReplaySupplier<T>(parent);
     }
 
-    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize) {
-        return new BufferedReplaySupplier<T>(parent, bufferSize);
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, boolean eagerTruncate) {
+        return new BufferedReplaySupplier<T>(parent, bufferSize, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler);
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new TimedReplay<T>(parent, time, unit, scheduler);
+    public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        return new TimedReplay<T>(parent, time, unit, scheduler, eagerTruncate);
     }
 
     public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
@@ -240,7 +240,8 @@ public final class FlowableInternalHelper {
     }
 
     static final class ReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
-        private final Flowable<T> parent;
+
+        final Flowable<T> parent;
 
         ReplaySupplier(Flowable<T> parent) {
             this.parent = parent;
@@ -253,38 +254,46 @@ public final class FlowableInternalHelper {
     }
 
     static final class BufferedReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {
-        private final Flowable<T> parent;
-        private final int bufferSize;
 
-        BufferedReplaySupplier(Flowable<T> parent, int bufferSize) {
+        final Flowable<T> parent;
+
+        final int bufferSize;
+
+        final boolean eagerTruncate;
+
+        BufferedReplaySupplier(Flowable<T> parent, int bufferSize, boolean eagerTruncate) {
             this.parent = parent;
             this.bufferSize = bufferSize;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableFlowable<T> get() {
-            return parent.replay(bufferSize);
+            return parent.replay(bufferSize, eagerTruncate);
         }
     }
 
     static final class BufferedTimedReplay<T> implements Supplier<ConnectableFlowable<T>> {
-        private final Flowable<T> parent;
-        private final int bufferSize;
-        private final long time;
-        private final TimeUnit unit;
-        private final Scheduler scheduler;
+        final Flowable<T> parent;
+        final int bufferSize;
+        final long time;
+        final TimeUnit unit;
+        final Scheduler scheduler;
 
-        BufferedTimedReplay(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        BufferedTimedReplay(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.parent = parent;
             this.bufferSize = bufferSize;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableFlowable<T> get() {
-            return parent.replay(bufferSize, time, unit, scheduler);
+            return parent.replay(bufferSize, time, unit, scheduler, eagerTruncate);
         }
     }
 
@@ -294,16 +303,19 @@ public final class FlowableInternalHelper {
         private final TimeUnit unit;
         private final Scheduler scheduler;
 
-        TimedReplay(Flowable<T> parent, long time, TimeUnit unit, Scheduler scheduler) {
+        final boolean eagerTruncate;
+
+        TimedReplay(Flowable<T> parent, long time, TimeUnit unit, Scheduler scheduler, boolean eagerTruncate) {
             this.parent = parent;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
+            this.eagerTruncate = eagerTruncate;
         }
 
         @Override
         public ConnectableFlowable<T> get() {
-            return parent.replay(time, unit, scheduler);
+            return parent.replay(time, unit, scheduler, eagerTruncate);
         }
     }
 

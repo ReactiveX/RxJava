@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.annotations.NonNull;
@@ -43,12 +43,12 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableReplayTest {
+public class ObservableReplayEagerTruncateTest {
     @Test
     public void bufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.replay(3);
+        ConnectableObservable<Integer> co = source.replay(3, true);
         co.connect();
 
         {
@@ -93,7 +93,7 @@ public class ObservableReplayTest {
     public void bufferedWindowReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
         TestScheduler scheduler = new TestScheduler();
-        ConnectableObservable<Integer> co = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
+        ConnectableObservable<Integer> co = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler, true);
         co.connect();
 
         {
@@ -145,7 +145,7 @@ public class ObservableReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler, true);
         co.connect();
 
         {
@@ -373,7 +373,7 @@ public class ObservableReplayTest {
     public void bufferedReplayError() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.replay(3);
+        ConnectableObservable<Integer> co = source.replay(3, true);
         co.connect();
 
         {
@@ -421,7 +421,7 @@ public class ObservableReplayTest {
 
         PublishSubject<Integer> source = PublishSubject.create();
 
-        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        ConnectableObservable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler, true);
         co.connect();
 
         {
@@ -1109,7 +1109,7 @@ public class ObservableReplayTest {
 
     @Test
     public void replayTime() {
-        Observable.just(1).replay(1, TimeUnit.MINUTES)
+        Observable.just(1).replay(1, TimeUnit.MINUTES, Schedulers.computation(), true)
         .autoConnect()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1128,7 +1128,7 @@ public class ObservableReplayTest {
 
     @Test
     public void replaySizeAndTime() {
-        Observable.just(1).replay(1, 1, TimeUnit.MILLISECONDS)
+        Observable.just(1).replay(1, 1, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
         .autoConnect()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1162,7 +1162,7 @@ public class ObservableReplayTest {
     @Test
     public void replayMaxInt() {
         Observable.range(1, 2)
-        .replay(Integer.MAX_VALUE)
+        .replay(Integer.MAX_VALUE, true)
         .autoConnect()
         .test()
         .assertResult(1, 2);
@@ -1248,7 +1248,7 @@ public class ObservableReplayTest {
     @Test
     public void cancelOnArrival() {
         Observable.range(1, 2)
-        .replay(Integer.MAX_VALUE)
+        .replay(Integer.MAX_VALUE, true)
         .autoConnect()
         .test(true)
         .assertEmpty();
@@ -1257,7 +1257,7 @@ public class ObservableReplayTest {
     @Test
     public void cancelOnArrival2() {
         ConnectableObservable<Integer> co = PublishSubject.<Integer>create()
-        .replay(Integer.MAX_VALUE);
+        .replay(Integer.MAX_VALUE, true);
 
         co.test();
 
@@ -1439,7 +1439,7 @@ public class ObservableReplayTest {
             }
         };
 
-        ps.replay(10).autoConnect().subscribe(to);
+        ps.replay(10, true).autoConnect().subscribe(to);
 
         ps.onNext(1);
 
@@ -1483,7 +1483,7 @@ public class ObservableReplayTest {
             }
         };
 
-        ps.replay(10).autoConnect().subscribe(to);
+        ps.replay(10, true).autoConnect().subscribe(to);
 
         ps.onNext(1);
 
@@ -1516,7 +1516,7 @@ public class ObservableReplayTest {
         TestScheduler scheduler = new TestScheduler();
 
         Observable<Integer> source = Observable.just(1)
-                .replay(2, TimeUnit.SECONDS, scheduler)
+                .replay(2, TimeUnit.SECONDS, scheduler, true)
                 .autoConnect();
 
         source.test().assertResult(1);
@@ -1566,7 +1566,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1);
+                .replay(1, true);
 
         co.connect();
 
@@ -1590,7 +1590,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1);
+                .replay(1, true);
 
         co.connect();
 
@@ -1614,7 +1614,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1);
+                .replay(1, true);
 
         co.connect();
 
@@ -1623,7 +1623,7 @@ public class ObservableReplayTest {
         source.onNext(1);
         source.onNext(2);
 
-        assertNotNull(buf.get().value);
+        assertNull(buf.get().value);
 
         buf.trimHead();
 
@@ -1641,7 +1641,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation(), true);
 
         co.connect();
 
@@ -1665,7 +1665,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation(), true);
 
         co.connect();
 
@@ -1691,7 +1691,7 @@ public class ObservableReplayTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
-                .replay(1, TimeUnit.MILLISECONDS, sch);
+                .replay(1, TimeUnit.MILLISECONDS, sch, true);
 
         co.connect();
 
@@ -1703,7 +1703,7 @@ public class ObservableReplayTest {
 
         source.onNext(2);
 
-        assertNotNull(buf.get().value);
+        assertNull(buf.get().value);
 
         buf.trimHead();
 
@@ -1777,4 +1777,274 @@ public class ObservableReplayTest {
             Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
-    }}
+    }
+
+    @Test
+    public void sizeBoundEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        ConnectableObservable<int[]> co = ps.replay(1, true);
+
+        TestObserver<int[]> to = co.test();
+
+        co.connect();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+    @Test
+    public void timeBoundEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        TestScheduler scheduler = new TestScheduler();
+
+        ConnectableObservable<int[]> co = ps.replay(1, TimeUnit.SECONDS, scheduler, true);
+
+        TestObserver<int[]> to = co.test();
+
+        co.connect();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+    @Test
+    public void timeAndSizeBoundEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        TestScheduler scheduler = new TestScheduler();
+
+        ConnectableObservable<int[]> co = ps.replay(1, 5, TimeUnit.SECONDS, scheduler, true);
+
+        TestObserver<int[]> to = co.test();
+
+        co.connect();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+    @Test
+    public void sizeBoundSelectorEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        Observable<int[]> co = ps.replay(Functions.<Observable<int[]>>identity(), 1, true);
+
+        TestObserver<int[]> to = co.test();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+    @Test
+    public void timeBoundSelectorEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable<int[]> co = ps.replay(Functions.<Observable<int[]>>identity(), 1, TimeUnit.SECONDS, scheduler, true);
+
+        TestObserver<int[]> to = co.test();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+    @Test
+    public void timeAndSizeSelectorBoundEagerTruncate() throws Exception {
+
+        PublishSubject<int[]> ps = PublishSubject.create();
+
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable<int[]> co = ps.replay(Functions.<Observable<int[]>>identity(), 1, 5, TimeUnit.SECONDS, scheduler, true);
+
+        TestObserver<int[]> to = co.test();
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        ps.onNext(new int[100 * 1024 * 1024]);
+
+        to.assertValueCount(1);
+        to.values().clear();
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ps.onNext(new int[0]);
+
+        Thread.sleep(200);
+        System.gc();
+        Thread.sleep(200);
+
+        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
+
+        to.dispose();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after) {
+            Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after / 1024.0 / 1024.0);
+        }
+    }
+
+}

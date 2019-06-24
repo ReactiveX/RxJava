@@ -10581,13 +10581,51 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource
      *         replaying no more than {@code bufferSize} items
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, int, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize), selector);
+        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize, false), selector);
+    }
+
+    /**
+     * Returns an Observable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
+     * replaying {@code bufferSize} notifications.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
+     * <img width="640" height="391" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fn.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting ObservableSource
+     * @param selector
+     *            the selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the ObservableSource
+     * @param bufferSize
+     *            the buffer size that limits the number of items the connectable ObservableSource can replay
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource
+     *         replaying no more than {@code bufferSize} items
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize, eagerTruncate), selector);
     }
 
     /**
@@ -10661,6 +10699,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws IllegalArgumentException
      *             if {@code bufferSize} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -10670,7 +10709,55 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return ObservableReplay.multicastSelector(
-                ObservableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler), selector);
+                ObservableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler, false), selector);
+    }
+    /**
+     * Returns an Observable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
+     * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
+     * <img width="640" height="328" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fnts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting ObservableSource
+     * @param selector
+     *            a selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the ObservableSource
+     * @param bufferSize
+     *            the buffer size that limits the number of items the connectable ObservableSource can replay
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the Scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource, and
+     *         replays no more than {@code bufferSize} items that were emitted within the window defined by
+     *         {@code time}
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return ObservableReplay.multicastSelector(
+                ObservableInternalHelper.replaySupplier(this, bufferSize, time, unit, scheduler, eagerTruncate), selector);
     }
 
     /**
@@ -10707,7 +10794,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize),
+        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize, false),
                 ObservableInternalHelper.replayFunction(selector, scheduler));
     }
 
@@ -10768,6 +10855,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      *         replaying all items that were emitted within the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(Function, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -10775,7 +10863,46 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(selector, "selector is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, time, unit, scheduler), selector);
+        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, time, unit, scheduler, false), selector);
+    }
+
+    /**
+     * Returns an Observable that emits items that are the results of invoking a specified selector on items
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
+     * replaying all items that were emitted within a specified time window.
+     * <p>
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the type of items emitted by the resulting ObservableSource
+     * @param selector
+     *            a selector function, which can use the multicasted sequence as many times as needed, without
+     *            causing multiple subscriptions to the ObservableSource
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
+     *         replaying all items that were emitted within the window defined by {@code time}
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, time, unit, scheduler, eagerTruncate), selector);
     }
 
     /**
@@ -10815,10 +10942,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
      * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
+     * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
+     * To ensure no beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10829,12 +10958,45 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays at most {@code bufferSize} items emitted by that ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> replay(final int bufferSize) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservableReplay.create(this, bufferSize);
+        return ObservableReplay.create(this, bufferSize, false);
+    }
+
+    /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
+     * replays at most {@code bufferSize} items emitted by that ObservableSource. A Connectable ObservableSource resembles
+     * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
+     * when its {@code connect} method is called.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * To ensure no beyond-bufferSize items are referenced, set {@code eagerTruncate = true}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param bufferSize
+     *            the buffer size that limits the number of items that can be replayed
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
+     *         replays at most {@code bufferSize} items emitted by that ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final ConnectableObservable<T> replay(final int bufferSize, boolean eagerTruncate) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return ObservableReplay.create(this, bufferSize, eagerTruncate);
     }
 
     /**
@@ -10843,10 +11005,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nt.png" alt="">
+     * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nt.png" alt="">
+     * To ensure no out-of-date or beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -10862,6 +11026,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         replays at most {@code bufferSize} items that were emitted during the window defined by
      *         {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -10877,6 +11042,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
      * {@code bufferSize} source emissions.
+     * To ensure no out-of-date or beyond-bufferSize items are referenced,
+     * use the {@link #replay(int, long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.png" alt="">
      * <dl>
@@ -10898,6 +11065,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws IllegalArgumentException
      *             if {@code bufferSize} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(int, long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -10905,7 +11073,51 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.create(this, time, unit, scheduler, bufferSize);
+        return ObservableReplay.create(this, time, unit, scheduler, bufferSize, false);
+    }
+
+    /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
+     * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window. A
+     * Connectable ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items
+     * when it is subscribed to, but only when its {@code connect} method is called.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.png" alt="">
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * To ensure no out-of-date or beyond-bufferSize items
+     * are referenced, set {@code eagerTruncate = true}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param bufferSize
+     *            the buffer size that limits the number of items that can be replayed
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the scheduler that is used as a time source for the window
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
+     *         replays at most {@code bufferSize} items that were emitted during the window defined by
+     *         {@code time}
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final ConnectableObservable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return ObservableReplay.create(this, time, unit, scheduler, bufferSize, eagerTruncate);
     }
 
     /**
@@ -10971,6 +11183,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.png" alt="">
+     * <p>
+     * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
+     * are referenced, use the {@link #replay(long, TimeUnit, Scheduler, boolean)} overload with {@code eagerTruncate = true}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -10985,13 +11200,50 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays the items that were emitted during the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #replay(long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableObservable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.create(this, time, unit, scheduler);
+        return ObservableReplay.create(this, time, unit, scheduler, false);
+    }
+
+    /**
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
+     * replays all items emitted by that ObservableSource within a specified time window. A Connectable ObservableSource
+     * resembles an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to,
+     * but only when its {@code connect} method is called.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ts.png" alt="">
+     * <p>
+     * Note that the internal buffer may retain strong references to the oldest item. To ensure no out-of-date items
+     * are referenced, set {@code eagerTruncate = true}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param time
+     *            the duration of the window in which the replayed items must have been emitted
+     * @param unit
+     *            the time unit of {@code time}
+     * @param scheduler
+     *            the Scheduler that is the time source for the window
+     * @param eagerTruncate
+     *            if true, whenever the internal buffer is truncated to the given bufferSize/age, the
+     *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
+     *         replays the items that were emitted during the window defined by {@code time}
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final ConnectableObservable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return ObservableReplay.create(this, time, unit, scheduler, eagerTruncate);
     }
 
     /**
