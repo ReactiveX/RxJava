@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Check verifying there are no methods with the prefix "test" in the name
+ * Check verifying there are no methods with the prefix "test" in the name.
  */
 public class TestPrefixInMethodName {
 
@@ -70,7 +70,7 @@ public class TestPrefixInMethodName {
                             int lineNum = 0;
                             List<String> lines = new ArrayList<String>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
-                            boolean found = false;
+                            //boolean found = false;
                             try {
                                 for (; ; ) {
                                     String line = in.readLine();
@@ -81,7 +81,7 @@ public class TestPrefixInMethodName {
 
                                     Matcher matcher = p.matcher(line);
                                     if (!line.startsWith("//") && !line.startsWith("*") && matcher.find()) {
-                                        found = true;
+                                        // found = true;
                                         fail
                                                 .append(fname)
                                                 .append("#L").append(lineNum)

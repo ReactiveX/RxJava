@@ -8825,6 +8825,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.4 - experimental
      *
      * @param <R> the output value type
      * @param selector function that returns the upstream item and should return a Notification to signal
@@ -8832,9 +8833,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items and notifications embedded in the {@link Notification} objects
      *         selected from the items emitted by the source Flowable
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
-     * @since 2.2.4 - experimental
+     * @since 3.0.0
      */
-    @Experimental
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)

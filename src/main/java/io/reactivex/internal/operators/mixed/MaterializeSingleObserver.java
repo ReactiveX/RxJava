@@ -14,17 +14,16 @@
 package io.reactivex.internal.operators.mixed;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * A consumer that implements the consumer types of Maybe, Single and Completable
  * and turns their signals into Notifications for a SingleObserver.
+ * <p>History: 2.2.4 - experimental
  * @param <T> the element type of the source
- * @since 2.2.4 - experimental
+ * @since 3.0.0
  */
-@Experimental
 public final class MaterializeSingleObserver<T>
 implements SingleObserver<T>, MaybeObserver<T>, CompletableObserver, Disposable {
 

@@ -2936,13 +2936,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.7 - experimental
      * @param onTerminate the action to invoke when the consumer calls {@code onComplete} or {@code onError}
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doOnTerminate(Action)
-     * @since 2.2.7 - experimental
+     * @since 3.0.0
      */
-    @Experimental
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3521,11 +3521,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.4 - experimental
      * @return the new Single instance
-     * @since 2.2.4 - experimental
+     * @since 3.0.0
      * @see Single#dematerialize(Function)
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Notification<T>> materialize() {

@@ -2402,17 +2402,17 @@ public abstract class Single<T> implements SingleSource<T> {
      * .test()
      * .assertResult(1);
      * </code></pre>
+     * <p>History: 2.2.4 - experimental
      * @param <R> the result type
      * @param selector the function called with the success item and should
      * return a {@link Notification} instance.
      * @return the new Maybe instance
-     * @since 2.2.4 - experimental
+     * @since 3.0.0
      * @see #materialize()
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Maybe<R> dematerialize(Function<? super T, Notification<R>> selector) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         return RxJavaPlugins.onAssembly(new SingleDematerialize<T, R>(this, selector));
@@ -2532,13 +2532,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.7 - experimental
      * @param onTerminate the action to invoke when the consumer calls {@code onComplete} or {@code onError}
      * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doOnTerminate(Action)
-     * @since 2.2.7 - experimental
+     * @since 3.0.0
      */
-    @Experimental
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3042,11 +3042,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.2.4 - experimental
      * @return the new Single instance
-     * @since 2.2.4 - experimental
+     * @since 3.0.0
      * @see #dematerialize(Function)
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Notification<T>> materialize() {

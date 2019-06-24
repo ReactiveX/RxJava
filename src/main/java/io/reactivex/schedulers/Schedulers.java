@@ -394,6 +394,7 @@ public final class Schedulers {
      * execute those tasks "unexpectedly".
      * <p>
      * Note that this method returns a new {@link Scheduler} instance, even for the same {@link Executor} instance.
+     * <p>History: 2.2.6 - experimental
      * @param executor
      *          the executor to wrap
      * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.Scheduler.Worker Scheduler.Worker} will
@@ -402,7 +403,6 @@ public final class Schedulers {
      * @since 2.2.6 - experimental
      */
     @NonNull
-    @Experimental
     public static Scheduler from(@NonNull Executor executor, boolean interruptibleWorker) {
         return new ExecutorScheduler(executor, interruptibleWorker);
     }
