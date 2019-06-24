@@ -29,7 +29,6 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-@SuppressWarnings("deprecation")
 public class FlowableDematerializeTest {
 
     @Test
@@ -78,7 +77,7 @@ public class FlowableDematerializeTest {
     @Test
     public void dematerialize1() {
         Flowable<Notification<Integer>> notifications = Flowable.just(1, 2).materialize();
-        Flowable<Integer> dematerialize = notifications.dematerialize();
+        Flowable<Integer> dematerialize = notifications.dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -94,7 +93,7 @@ public class FlowableDematerializeTest {
     public void dematerialize2() {
         Throwable exception = new Throwable("test");
         Flowable<Integer> flowable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
+        Flowable<Integer> dematerialize = flowable.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -109,7 +108,7 @@ public class FlowableDematerializeTest {
     public void dematerialize3() {
         Exception exception = new Exception("test");
         Flowable<Integer> flowable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
+        Flowable<Integer> dematerialize = flowable.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -123,8 +122,8 @@ public class FlowableDematerializeTest {
     @Test
     public void errorPassThru() {
         Exception exception = new Exception("test");
-        Flowable<Integer> flowable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = flowable.dematerialize();
+        Flowable<Notification<Integer>> flowable = Flowable.error(exception);
+        Flowable<Integer> dematerialize = flowable.dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -137,8 +136,8 @@ public class FlowableDematerializeTest {
 
     @Test
     public void completePassThru() {
-        Flowable<Integer> flowable = Flowable.empty();
-        Flowable<Integer> dematerialize = flowable.dematerialize();
+        Flowable<Notification<Integer>> flowable = Flowable.empty();
+        Flowable<Integer> dematerialize = flowable.dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -156,7 +155,7 @@ public class FlowableDematerializeTest {
     public void honorsContractWhenCompleted() {
         Flowable<Integer> source = Flowable.just(1);
 
-        Flowable<Integer> result = source.materialize().dematerialize();
+        Flowable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -171,7 +170,7 @@ public class FlowableDematerializeTest {
     public void honorsContractWhenThrows() {
         Flowable<Integer> source = Flowable.error(new TestException());
 
-        Flowable<Integer> result = source.materialize().dematerialize();
+        Flowable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -184,15 +183,16 @@ public class FlowableDematerializeTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(Notification.createOnComplete()).dematerialize());
+        TestHelper.checkDisposed(Flowable.just(Notification.createOnComplete())
+                .dematerialize(Functions.<Notification<Object>>identity()));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Notification<Object>>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.dematerialize();
+            public Flowable<Object> apply(Flowable<Notification<Object>> f) throws Exception {
+                return f.dematerialize(Functions.<Notification<Object>>identity());
             }
         });
     }
@@ -201,17 +201,17 @@ public class FlowableDematerializeTest {
     public void eventsAfterDematerializedTerminal() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Flowable<Object>() {
+            new Flowable<Notification<Object>>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     subscriber.onNext(Notification.createOnComplete());
-                    subscriber.onNext(Notification.createOnNext(1));
+                    subscriber.onNext(Notification.<Object>createOnNext(1));
                     subscriber.onNext(Notification.createOnError(new TestException("First")));
                     subscriber.onError(new TestException("Second"));
                 }
             }
-            .dematerialize()
+            .dematerialize(Functions.<Notification<Object>>identity())
             .test()
             .assertResult();
 
@@ -224,15 +224,15 @@ public class FlowableDematerializeTest {
 
     @Test
     public void nonNotificationInstanceAfterDispose() {
-        new Flowable<Object>() {
+        new Flowable<Notification<Object>>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Object> subscriber) {
+            protected void subscribeActual(Subscriber<? super Notification<Object>> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
                 subscriber.onNext(Notification.createOnComplete());
-                subscriber.onNext(1);
+                subscriber.onNext(Notification.<Object>createOnNext(1));
             }
         }
-        .dematerialize()
+        .dematerialize(Functions.<Notification<Object>>identity())
         .test()
         .assertResult();
     }

@@ -7786,53 +7786,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the
-     * {@link Notification} objects emitted by the source ObservableSource into the items or notifications they
-     * represent.
-     * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
-     * <p>
-     * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
-     * {@link Notification#createOnComplete() onComplete} item, the
-     * returned Observable disposes of the flow and terminates with that type of terminal event:
-     * <pre><code>
-     * Observable.just(createOnNext(1), createOnComplete(), createOnNext(2))
-     * .doOnDispose(() -&gt; System.out.println("Disposed!"));
-     * .dematerialize()
-     * .test()
-     * .assertResult(1);
-     * </code></pre>
-     * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
-     * with the same event.
-     * <pre><code>
-     * Observable.just(createOnNext(1), createOnNext(2))
-     * .dematerialize()
-     * .test()
-     * .assertResult(1, 2);
-     * </code></pre>
-     * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(ObservableSource)}
-     * with a {@link #never()} source.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T2> the output value type
-     * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
-     *         emitted by the source ObservableSource
-     * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
-     * @see #dematerialize(Function)
-     * @deprecated in 2.2.4; inherently type-unsafe as it overrides the output generic type. Use {@link #dematerialize(Function)} instead.
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @Deprecated
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T2> Observable<T2> dematerialize() {
-        return RxJavaPlugins.onAssembly(new ObservableDematerialize(this, Functions.identity()));
-    }
-
-    /**
-     * Returns an Observable that reverses the effect of {@link #materialize materialize} by transforming the
      * {@link Notification} objects extracted from the source items via a selector function
      * into their respective {@code Observer} signal types.
      * <p>
@@ -10861,44 +10814,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits items that are the results of invoking a specified selector on items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
-     * replaying a maximum of {@code bufferSize} items.
-     * <p>
-     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
-     * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fns.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * @param <R>
-     *            the type of items emitted by the resulting ObservableSource
-     * @param selector
-     *            a selector function, which can use the multicasted sequence as many times as needed, without
-     *            causing multiple subscriptions to the ObservableSource
-     * @param bufferSize
-     *            the buffer size that limits the number of items the connectable ObservableSource can replay
-     * @param scheduler
-     *            the Scheduler on which the replay is observed
-     * @return an Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
-     *         replaying no more than {@code bufferSize} notifications
-     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(selector, "selector is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, bufferSize, false),
-                ObservableInternalHelper.replayFunction(selector, scheduler));
-    }
-
-    /**
-     * Returns an Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="393" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ft.png" alt="">
@@ -11001,37 +10916,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this, time, unit, scheduler, eagerTruncate), selector);
-    }
-
-    /**
-     * Returns an Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource.
-     * <p>
-     * <img width="640" height="406" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fs.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * @param <R>
-     *            the type of items emitted by the resulting ObservableSource
-     * @param selector
-     *            a selector function, which can use the multicasted sequence as many times as needed, without
-     *            causing multiple subscriptions to the ObservableSource
-     * @param scheduler
-     *            the Scheduler where the replay is observed
-     * @return an Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
-     *         replaying all items
-     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(selector, "selector is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.multicastSelector(ObservableInternalHelper.replaySupplier(this),
-                ObservableInternalHelper.replayFunction(selector, scheduler));
     }
 
     /**
@@ -11220,36 +11104,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
-     * replays at most {@code bufferSize} items emitted by that ObservableSource. A Connectable ObservableSource resembles
-     * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
-     * when its {@code connect} method is called.
-     * <p>
-     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
-     * {@code bufferSize} source emissions.
-     * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ns.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * @param bufferSize
-     *            the buffer size that limits the number of items that can be replayed
-     * @param scheduler
-     *            the scheduler on which the Observers will observe the emitted items
-     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
-     *         replays at most {@code bufferSize} items that were emitted by the ObservableSource
-     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final ConnectableObservable<T> replay(final int bufferSize, final Scheduler scheduler) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservableReplay.observeOn(replay(bufferSize), scheduler);
-    }
-
-    /**
-     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * replays all items emitted by that ObservableSource within a specified time window. A Connectable ObservableSource
      * resembles an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called.
@@ -11342,32 +11196,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return ObservableReplay.create(this, time, unit, scheduler, eagerTruncate);
-    }
-
-    /**
-     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
-     * will replay all of its items and notifications to any future {@link Observer} on the given
-     * {@link Scheduler}. A Connectable ObservableSource resembles an ordinary ObservableSource, except that it does not
-     * begin emitting items when it is subscribed to, but only when its {@code connect} method is called.
-     * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
-     * </dl>
-     *
-     * @param scheduler
-     *            the Scheduler on which the Observers will observe the emitted items
-     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
-     *         will replay all of its items and notifications to any future {@link Observer} on the given
-     *         {@link Scheduler}
-     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final ConnectableObservable<T> replay(final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return ObservableReplay.observeOn(replay(), scheduler);
     }
 
     /**

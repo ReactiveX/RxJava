@@ -209,10 +209,6 @@ public final class FlowableInternalHelper {
         return new TimedReplay<T>(parent, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
-        return new ReplayFunction<T, R>(selector, scheduler);
-    }
-
     public enum RequestMax implements Consumer<Subscription> {
         INSTANCE;
         @Override
@@ -316,22 +312,6 @@ public final class FlowableInternalHelper {
         @Override
         public ConnectableFlowable<T> get() {
             return parent.replay(time, unit, scheduler, eagerTruncate);
-        }
-    }
-
-    static final class ReplayFunction<T, R> implements Function<Flowable<T>, Publisher<R>> {
-        private final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
-        private final Scheduler scheduler;
-
-        ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
-            this.selector = selector;
-            this.scheduler = scheduler;
-        }
-
-        @Override
-        public Publisher<R> apply(Flowable<T> t) throws Throwable {
-            Publisher<R> p = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null Publisher");
-            return Flowable.fromPublisher(p).observeOn(scheduler);
         }
     }
 }

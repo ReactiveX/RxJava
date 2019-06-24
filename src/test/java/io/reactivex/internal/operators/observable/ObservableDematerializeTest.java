@@ -28,7 +28,6 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-@SuppressWarnings("deprecation")
 public class ObservableDematerializeTest {
 
     @Test
@@ -77,7 +76,7 @@ public class ObservableDematerializeTest {
     @Test
     public void dematerialize1() {
         Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
-        Observable<Integer> dematerialize = notifications.dematerialize();
+        Observable<Integer> dematerialize = notifications.dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -93,7 +92,7 @@ public class ObservableDematerializeTest {
     public void dematerialize2() {
         Throwable exception = new Throwable("test");
         Observable<Integer> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.materialize().dematerialize();
+        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -108,7 +107,7 @@ public class ObservableDematerializeTest {
     public void dematerialize3() {
         Exception exception = new Exception("test");
         Observable<Integer> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.materialize().dematerialize();
+        Observable<Integer> dematerialize = o.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -122,8 +121,8 @@ public class ObservableDematerializeTest {
     @Test
     public void errorPassThru() {
         Exception exception = new Exception("test");
-        Observable<Integer> o = Observable.error(exception);
-        Observable<Integer> dematerialize = o.dematerialize();
+        Observable<Notification<Integer>> o = Observable.error(exception);
+        Observable<Integer> dematerialize = o.dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -136,8 +135,8 @@ public class ObservableDematerializeTest {
 
     @Test
     public void completePassThru() {
-        Observable<Integer> o = Observable.empty();
-        Observable<Integer> dematerialize = o.dematerialize();
+        Observable<Notification<Integer>> o = Observable.empty();
+        Observable<Integer> dematerialize = o.dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
@@ -155,7 +154,7 @@ public class ObservableDematerializeTest {
     public void honorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
 
-        Observable<Integer> result = source.materialize().dematerialize();
+        Observable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> o = TestHelper.mockObserver();
 
@@ -170,7 +169,7 @@ public class ObservableDematerializeTest {
     public void honorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
 
-        Observable<Integer> result = source.materialize().dematerialize();
+        Observable<Integer> result = source.materialize().dematerialize(Functions.<Notification<Integer>>identity());
 
         Observer<Integer> o = TestHelper.mockObserver();
 
@@ -183,15 +182,15 @@ public class ObservableDematerializeTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(Notification.createOnComplete()).dematerialize());
+        TestHelper.checkDisposed(Observable.just(Notification.<Integer>createOnComplete()).dematerialize(Functions.<Notification<Integer>>identity()));
     }
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Notification<Object>>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.dematerialize();
+            public ObservableSource<Object> apply(Observable<Notification<Object>> o) throws Exception {
+                return o.dematerialize(Functions.<Notification<Object>>identity());
             }
         });
     }
@@ -200,17 +199,17 @@ public class ObservableDematerializeTest {
     public void eventsAfterDematerializedTerminal() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            new Observable<Object>() {
+            new Observable<Notification<Object>>() {
                 @Override
-                protected void subscribeActual(Observer<? super Object> observer) {
+                protected void subscribeActual(Observer<? super Notification<Object>> observer) {
                     observer.onSubscribe(Disposables.empty());
                     observer.onNext(Notification.createOnComplete());
-                    observer.onNext(Notification.createOnNext(1));
+                    observer.onNext(Notification.<Object>createOnNext(1));
                     observer.onNext(Notification.createOnError(new TestException("First")));
                     observer.onError(new TestException("Second"));
                 }
             }
-            .dematerialize()
+            .dematerialize(Functions.<Notification<Object>>identity())
             .test()
             .assertResult();
 
@@ -223,15 +222,15 @@ public class ObservableDematerializeTest {
 
     @Test
     public void nonNotificationInstanceAfterDispose() {
-        new Observable<Object>() {
+        new Observable<Notification<Object>>() {
             @Override
-            protected void subscribeActual(Observer<? super Object> observer) {
+            protected void subscribeActual(Observer<? super Notification<Object>> observer) {
                 observer.onSubscribe(Disposables.empty());
                 observer.onNext(Notification.createOnComplete());
-                observer.onNext(1);
+                observer.onNext(Notification.<Object>createOnNext(1));
             }
         }
-        .dematerialize()
+        .dematerialize(Functions.<Notification<Object>>identity())
         .test()
         .assertResult();
     }
