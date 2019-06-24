@@ -1233,28 +1233,8 @@ public class FlowableReplayEagerTruncateTest {
     }
 
     @Test
-    public void replayScheduler() {
-
-        Flowable.just(1).replay(Schedulers.computation())
-        .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
     public void replayTime() {
         Flowable.just(1).replay(1, TimeUnit.MINUTES, Schedulers.computation(), true)
-        .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySizeScheduler() {
-
-        Flowable.just(1).replay(1, Schedulers.computation())
         .autoConnect()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1265,22 +1245,6 @@ public class FlowableReplayEagerTruncateTest {
     public void replaySizeAndTime() {
         Flowable.just(1).replay(1, 1, TimeUnit.MILLISECONDS, Schedulers.computation(), true)
         .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySelectorSizeScheduler() {
-        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), 1, Schedulers.io())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySelectorScheduler() {
-        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), Schedulers.io())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -1739,19 +1703,6 @@ public class FlowableReplayEagerTruncateTest {
         scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
 
         source.test().assertResult();
-    }
-
-    @Test
-    public void replaySelectorReturnsNull() {
-        Flowable.just(1)
-        .replay(new Function<Flowable<Integer>, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Flowable<Integer> v) throws Exception {
-                return null;
-            }
-        }, Schedulers.trampoline())
-        .to(TestHelper.<Object>testConsumer())
-        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null Publisher");
     }
 
     @Test

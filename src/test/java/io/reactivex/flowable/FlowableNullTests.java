@@ -1837,11 +1837,6 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void replaySchedulerNull() {
-        just1.replay((Scheduler)null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void replayBoundedUnitNull() {
         just1.replay(new Function<Flowable<Integer>, Publisher<Integer>>() {
             @Override
@@ -1904,11 +1899,6 @@ public class FlowableNullTests {
     @Test(expected = NullPointerException.class)
     public void replayTimeSizeBoundedSchedulerNull() {
         just1.replay(1, 1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void replayBufferSchedulerNull() {
-        just1.replay(1, (Scheduler)null);
     }
 
     @Test(expected = NullPointerException.class)

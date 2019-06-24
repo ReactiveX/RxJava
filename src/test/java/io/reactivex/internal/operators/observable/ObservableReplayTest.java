@@ -1098,28 +1098,8 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void replayScheduler() {
-
-        Observable.just(1).replay(Schedulers.computation())
-        .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
     public void replayTime() {
         Observable.just(1).replay(1, TimeUnit.MINUTES)
-        .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySizeScheduler() {
-
-        Observable.just(1).replay(1, Schedulers.computation())
         .autoConnect()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1130,22 +1110,6 @@ public class ObservableReplayTest {
     public void replaySizeAndTime() {
         Observable.just(1).replay(1, 1, TimeUnit.MILLISECONDS)
         .autoConnect()
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySelectorSizeScheduler() {
-        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), 1, Schedulers.io())
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1);
-    }
-
-    @Test
-    public void replaySelectorScheduler() {
-        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), Schedulers.io())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
@@ -1526,19 +1490,6 @@ public class ObservableReplayTest {
         scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
 
         source.test().assertResult();
-    }
-
-    @Test
-    public void replaySelectorReturnsNullScheduled() {
-        Observable.just(1)
-        .replay(new Function<Observable<Integer>, Observable<Object>>() {
-            @Override
-            public Observable<Object> apply(Observable<Integer> v) throws Exception {
-                return null;
-            }
-        }, Schedulers.trampoline())
-        .to(TestHelper.<Object>testConsumer())
-        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null ObservableSource");
     }
 
     @Test

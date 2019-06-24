@@ -61,19 +61,6 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     /**
-     * Child Subscribers will observe the events of the ConnectableObservable on the
-     * specified scheduler.
-     * @param <T> the value type
-     * @param cf the ConnectableFlowable to wrap
-     * @param scheduler the target scheduler
-     * @return the new ConnectableObservable instance
-     */
-    public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> cf, final Scheduler scheduler) {
-        final Flowable<T> flowable = cf.observeOn(scheduler);
-        return RxJavaPlugins.onAssembly(new ConnectableFlowableReplay<T>(cf, flowable));
-    }
-
-    /**
      * Creates a replaying ConnectableObservable with an unbounded buffer.
      * @param <T> the value type
      * @param source the source Publisher to use

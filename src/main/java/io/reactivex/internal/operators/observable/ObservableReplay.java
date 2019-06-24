@@ -64,19 +64,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     /**
-     * Child Observers will observe the events of the ConnectableObservable on the
-     * specified scheduler.
-     * @param <T> the value type
-     * @param co the connectable observable instance
-     * @param scheduler the target scheduler
-     * @return the new ConnectableObservable instance
-     */
-    public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
-        final Observable<T> observable = co.observeOn(scheduler);
-        return RxJavaPlugins.onAssembly(new Replay<T>(co, observable));
-    }
-
-    /**
      * Creates a replaying ConnectableObservable with an unbounded buffer.
      * @param <T> the value type
      * @param source the source observable

@@ -214,10 +214,6 @@ public final class ObservableInternalHelper {
         return new TimedReplayCallable<T>(parent, time, unit, scheduler, eagerTruncate);
     }
 
-    public static <T, R> Function<Observable<T>, ObservableSource<R>> replayFunction(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
-        return new ReplayFunction<T, R>(selector, scheduler);
-    }
-
     static final class ZipIterableFunction<T, R>
     implements Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> {
         private final Function<? super Object[], ? extends R> zipper;
@@ -310,22 +306,6 @@ public final class ObservableInternalHelper {
         @Override
         public ConnectableObservable<T> get() {
             return parent.replay(time, unit, scheduler, eagerTruncate);
-        }
-    }
-
-    static final class ReplayFunction<T, R> implements Function<Observable<T>, ObservableSource<R>> {
-        private final Function<? super Observable<T>, ? extends ObservableSource<R>> selector;
-        private final Scheduler scheduler;
-
-        ReplayFunction(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, Scheduler scheduler) {
-            this.selector = selector;
-            this.scheduler = scheduler;
-        }
-
-        @Override
-        public ObservableSource<R> apply(Observable<T> t) throws Throwable {
-            ObservableSource<R> apply = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null ObservableSource");
-            return Observable.wrap(apply).observeOn(scheduler);
         }
     }
 }
