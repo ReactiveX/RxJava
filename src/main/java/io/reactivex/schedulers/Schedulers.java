@@ -400,7 +400,7 @@ public final class Schedulers {
      * @param interruptibleWorker if {@code true} the tasks submitted to the {@link io.reactivex.Scheduler.Worker Scheduler.Worker} will
      * be interrupted when the task is disposed.
      * @return the new Scheduler wrapping the Executor
-     * @since 2.2.6 - experimental
+     * @since 3.0.0
      */
     @NonNull
     public static Scheduler from(@NonNull Executor executor, boolean interruptibleWorker) {
