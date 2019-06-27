@@ -1051,7 +1051,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         scheduler.advanceTimeBy(2, TimeUnit.DAYS);
 
-        assertEquals(null, rp.getValue());
+        assertNull(rp.getValue());
         assertEquals(0, rp.getValues().length);
         assertNull(rp.getValues(new Integer[2])[0]);
     }

@@ -34,16 +34,16 @@ public class BlockingObservableToIteratorTest {
 
         Iterator<String> it = obs.blockingIterable().iterator();
 
-        assertEquals(true, it.hasNext());
+        assertTrue(it.hasNext());
         assertEquals("one", it.next());
 
-        assertEquals(true, it.hasNext());
+        assertTrue(it.hasNext());
         assertEquals("two", it.next());
 
-        assertEquals(true, it.hasNext());
+        assertTrue(it.hasNext());
         assertEquals("three", it.next());
 
-        assertEquals(false, it.hasNext());
+        assertFalse(it.hasNext());
 
     }
 
@@ -61,10 +61,10 @@ public class BlockingObservableToIteratorTest {
 
         Iterator<String> it = obs.blockingIterable().iterator();
 
-        assertEquals(true, it.hasNext());
+        assertTrue(it.hasNext());
         assertEquals("one", it.next());
 
-        assertEquals(true, it.hasNext());
+        assertTrue(it.hasNext());
         it.next();
     }
 

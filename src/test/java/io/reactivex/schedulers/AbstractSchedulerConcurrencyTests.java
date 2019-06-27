@@ -405,7 +405,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     throw new RuntimeException("The latch should have released if we are async.", e);
                 }
 
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+                assertNotEquals(Thread.currentThread().getName(), currentThreadName);
                 System.out.println("Thread: " + Thread.currentThread().getName());
                 System.out.println("t: " + t);
                 count.incrementAndGet();

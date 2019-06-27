@@ -2070,7 +2070,7 @@ public class RxJavaPluginsTest {
 
             Thread t = value.get();
             assertNotNull(t);
-            assertTrue(expectedThreadName.equals(t.getName()));
+            assertEquals(expectedThreadName, t.getName());
         } catch (Exception e) {
             fail();
         } finally {

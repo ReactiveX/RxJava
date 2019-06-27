@@ -120,6 +120,6 @@ public class BlockingFlowableToFutureTest {
     public void testGetWithASingleNullItem() throws Exception {
         Flowable<String> obs = Flowable.just((String)null);
         Future<String> f = obs.toFuture();
-        assertEquals(null, f.get());
+        assertNull(f.get());
     }
 }

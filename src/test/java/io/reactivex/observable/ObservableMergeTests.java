@@ -68,7 +68,7 @@ public class ObservableMergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) != null);
+        assertNotNull(values.get(2));
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 
@@ -91,7 +91,7 @@ public class ObservableMergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) != null);
+        assertNotNull(values.get(2));
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 

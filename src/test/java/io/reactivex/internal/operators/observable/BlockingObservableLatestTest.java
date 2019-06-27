@@ -44,13 +44,13 @@ public class BlockingObservableLatestTest {
         for (int i = 0; i < 9; i++) {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(true, it.hasNext());
+            Assert.assertTrue(it.hasNext());
 
             Assert.assertEquals(Long.valueOf(i), it.next());
         }
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
     }
 
     @Test(timeout = 1000)
@@ -69,13 +69,13 @@ public class BlockingObservableLatestTest {
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertEquals(true, it.hasNext());
+                Assert.assertTrue(it.hasNext());
 
                 Assert.assertEquals(Long.valueOf(i), it.next());
             }
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            Assert.assertEquals(false, it.hasNext());
+            Assert.assertFalse(it.hasNext());
         }
     }
 
@@ -87,7 +87,7 @@ public class BlockingObservableLatestTest {
 
         Iterator<Long> it = iter.iterator();
 
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
 
         it.next();
     }
@@ -166,7 +166,7 @@ public class BlockingObservableLatestTest {
         source.onNext(7);
         source.onComplete();
 
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
     }
 
     @Test(expected = UnsupportedOperationException.class)
