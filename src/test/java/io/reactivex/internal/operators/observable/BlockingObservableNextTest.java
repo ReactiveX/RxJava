@@ -323,7 +323,7 @@ public class BlockingObservableNextTest {
             BlockingObservableNext.NextIterator<Long> it = (BlockingObservableNext.NextIterator<Long>)iter.iterator();
 
             for (long i = 0; i < 10; i++) {
-                Assert.assertEquals(true, it.hasNext());
+                Assert.assertTrue(it.hasNext());
                 Assert.assertEquals(j + "th iteration next", Long.valueOf(i), it.next());
             }
             terminal.onNext(1);

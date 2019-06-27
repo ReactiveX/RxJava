@@ -45,6 +45,6 @@ public class NotificationLiteTest {
 
         assertEquals(ex.hashCode(), n1.hashCode());
 
-        assertFalse(n1.equals(NotificationLite.complete()));
+        assertNotEquals(n1, NotificationLite.complete());
     }
 }

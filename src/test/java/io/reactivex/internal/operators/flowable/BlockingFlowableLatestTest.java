@@ -43,13 +43,13 @@ public class BlockingFlowableLatestTest {
         for (int i = 0; i < 9; i++) {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(true, it.hasNext());
+            Assert.assertTrue(it.hasNext());
 
             Assert.assertEquals(Long.valueOf(i), it.next());
         }
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
     }
 
     @Test(timeout = 1000)
@@ -68,13 +68,13 @@ public class BlockingFlowableLatestTest {
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertEquals(true, it.hasNext());
+                Assert.assertTrue(it.hasNext());
 
                 Assert.assertEquals(Long.valueOf(i), it.next());
             }
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            Assert.assertEquals(false, it.hasNext());
+            Assert.assertFalse(it.hasNext());
         }
     }
 
@@ -86,7 +86,7 @@ public class BlockingFlowableLatestTest {
 
         Iterator<Long> it = iter.iterator();
 
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
 
         it.next();
     }
@@ -165,7 +165,7 @@ public class BlockingFlowableLatestTest {
         source.onNext(7);
         source.onComplete();
 
-        Assert.assertEquals(false, it.hasNext());
+        Assert.assertFalse(it.hasNext());
     }
 
     @Ignore("THe target is an enum")

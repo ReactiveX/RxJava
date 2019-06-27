@@ -28,7 +28,7 @@ import io.reactivex.schedulers.TestScheduler;
 public class BlockingFlowableMostRecentTest {
     @Test
     public void testMostRecentNull() {
-        assertEquals(null, Flowable.<Void>never().blockingMostRecent(null).iterator().next());
+        assertNull(Flowable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
     @Test
@@ -87,12 +87,12 @@ public class BlockingFlowableMostRecentTest {
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertEquals(true, it.hasNext());
+                Assert.assertTrue(it.hasNext());
                 Assert.assertEquals(Long.valueOf(i), it.next());
             }
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(false, it.hasNext());
+            Assert.assertFalse(it.hasNext());
         }
 
     }

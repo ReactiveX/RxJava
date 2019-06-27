@@ -41,11 +41,11 @@ public class NotificationTest {
     @Test
     public void notEqualsToObject() {
         Notification<Integer> n1 = Notification.createOnNext(0);
-        assertFalse(n1.equals(0));
+        assertNotEquals(0, n1);
         Notification<Integer> n2 = Notification.createOnError(new TestException());
-        assertFalse(n2.equals(0));
+        assertNotEquals(0, n2);
         Notification<Integer> n3 = Notification.createOnComplete();
-        assertFalse(n3.equals(0));
+        assertNotEquals(0, n3);
     }
 
     @Test

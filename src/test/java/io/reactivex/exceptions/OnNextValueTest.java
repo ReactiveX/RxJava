@@ -71,7 +71,7 @@ public final class OnNextValueTest {
 
             assertTrue(trace, trace.contains("OnNextValue"));
 
-            assertTrue("No Cause on throwable" + e, e.getCause() != null);
+            assertNotNull("No Cause on throwable" + e, e.getCause());
 //            assertTrue(e.getCause().getClass().getSimpleName() + " no OnNextValue",
 //                    e.getCause() instanceof OnErrorThrowable.OnNextValue);
         }

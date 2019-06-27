@@ -121,6 +121,6 @@ public class BlockingObservableToFutureTest {
     public void testGetWithASingleNullItem() throws Exception {
         Observable<String> obs = Observable.just((String)null);
         Future<String> f = obs.toFuture();
-        assertEquals(null, f.get());
+        assertNull(f.get());
     }
 }

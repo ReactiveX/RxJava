@@ -28,7 +28,7 @@ import io.reactivex.subjects.*;
 public class BlockingObservableMostRecentTest {
     @Test
     public void testMostRecentNull() {
-        assertEquals(null, Observable.<Void>never().blockingMostRecent(null).iterator().next());
+        assertNull(Observable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
     static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
@@ -91,12 +91,12 @@ public class BlockingObservableMostRecentTest {
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-                Assert.assertEquals(true, it.hasNext());
+                Assert.assertTrue(it.hasNext());
                 Assert.assertEquals(Long.valueOf(i), it.next());
             }
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(false, it.hasNext());
+            Assert.assertFalse(it.hasNext());
         }
 
     }
