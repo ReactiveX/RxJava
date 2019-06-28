@@ -1750,7 +1750,7 @@ public class Single<T> {
      *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
+     *             if {@code onSuccess} is null
      * @throws OnErrorNotImplementedException
      *             if the Single tries to call {@link Subscriber#onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
@@ -1775,7 +1775,7 @@ public class Single<T> {
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null, or
+     *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
     public final Subscription subscribe(final Action1<? super T> onSuccess, final Action1<Throwable> onError) {
