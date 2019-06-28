@@ -24,7 +24,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;

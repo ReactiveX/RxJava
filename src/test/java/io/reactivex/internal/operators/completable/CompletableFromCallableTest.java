@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;

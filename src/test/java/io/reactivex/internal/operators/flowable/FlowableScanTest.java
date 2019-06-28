@@ -24,7 +24,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowable.*;
 import io.reactivex.flowable.FlowableEventStream.Event;

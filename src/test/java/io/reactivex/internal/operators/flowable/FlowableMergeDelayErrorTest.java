@@ -25,7 +25,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
