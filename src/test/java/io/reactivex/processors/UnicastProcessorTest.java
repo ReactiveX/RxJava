@@ -133,9 +133,9 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
             }
         });
 
-        assertEquals(false, didRunOnTerminate.get());
+        assertFalse(didRunOnTerminate.get());
         us.onError(new RuntimeException("some error"));
-        assertEquals(true, didRunOnTerminate.get());
+        assertTrue(didRunOnTerminate.get());
     }
 
     @Test
@@ -148,9 +148,9 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
             }
         });
 
-        assertEquals(false, didRunOnTerminate.get());
+        assertFalse(didRunOnTerminate.get());
         us.onComplete();
-        assertEquals(true, didRunOnTerminate.get());
+        assertTrue(didRunOnTerminate.get());
     }
 
     @Test
@@ -165,9 +165,9 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
         final Disposable subscribe = us.subscribe();
 
-        assertEquals(false, didRunOnTerminate.get());
+        assertFalse(didRunOnTerminate.get());
         subscribe.dispose();
-        assertEquals(true, didRunOnTerminate.get());
+        assertTrue(didRunOnTerminate.get());
     }
 
     @Test(expected = NullPointerException.class)

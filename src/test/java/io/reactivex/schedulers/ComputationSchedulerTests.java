@@ -122,7 +122,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
             @Override
             public String apply(Integer t) {
-                assertFalse(Thread.currentThread().getName().equals(currentThreadName));
+                assertNotEquals(Thread.currentThread().getName(), currentThreadName);
                 assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }

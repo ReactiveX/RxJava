@@ -4285,7 +4285,7 @@ public class CompletableTest {
         Assert.assertEquals(2, errors.size());
 
         Assert.assertTrue(errors.get(0).toString(), errors.get(0) instanceof TestException);
-        Assert.assertEquals(errors.get(0).toString(), null, errors.get(0).getMessage());
+        Assert.assertNull(errors.get(0).toString(), errors.get(0).getMessage());
         Assert.assertTrue(errors.get(1).toString(), errors.get(1) instanceof TestException);
         Assert.assertEquals(errors.get(1).toString(), "Forced inner failure", errors.get(1).getMessage());
     }

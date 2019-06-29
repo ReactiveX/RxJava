@@ -1365,7 +1365,7 @@ public class ObservableGroupByTest {
                 });
             }
         });
-        assertEquals(null, key[0]);
+        assertNull(key[0]);
         assertEquals(Arrays.asList("a", "b", "c"), values);
     }
 

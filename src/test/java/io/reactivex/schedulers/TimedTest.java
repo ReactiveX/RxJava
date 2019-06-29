@@ -75,7 +75,7 @@ public class TimedTest {
 
         assertNotEquals(new Object(), t1);
 
-        assertFalse(t1.equals(new Object()));
+        assertNotEquals(t1, new Object());
     }
 
     @Test
