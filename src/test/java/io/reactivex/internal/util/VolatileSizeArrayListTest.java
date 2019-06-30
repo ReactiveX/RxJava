@@ -82,22 +82,22 @@ public class VolatileSizeArrayListTest {
         VolatileSizeArrayList<Integer> list2 = new VolatileSizeArrayList<Integer>();
         list2.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
 
-        assertFalse(list2.equals(list));
-        assertFalse(list.equals(list2));
+        assertNotEquals(list2, list);
+        assertNotEquals(list, list2);
 
         list2.add(7);
-        assertTrue(list2.equals(list));
-        assertTrue(list.equals(list2));
+        assertEquals(list2, list);
+        assertEquals(list, list2);
 
         List<Integer> list3 = new ArrayList<Integer>();
         list3.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
 
-        assertFalse(list3.equals(list));
-        assertFalse(list.equals(list3));
+        assertNotEquals(list3, list);
+        assertNotEquals(list, list3);
 
         list3.add(7);
-        assertTrue(list3.equals(list));
-        assertTrue(list.equals(list3));
+        assertEquals(list3, list);
+        assertEquals(list, list3);
 
         assertEquals(list.hashCode(), list3.hashCode());
         assertEquals(list.toString(), list3.toString());

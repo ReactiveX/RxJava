@@ -73,7 +73,7 @@ public class FlowableUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread == uiEventLoop.getThread());
+            assertSame(unsubscribeThread, uiEventLoop.getThread());
 
             ts.assertValues(1, 2);
             ts.assertTerminated();
