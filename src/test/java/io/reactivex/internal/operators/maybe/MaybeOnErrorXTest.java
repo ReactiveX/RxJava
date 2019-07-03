@@ -193,7 +193,7 @@ public class MaybeOnErrorXTest {
 
     @Test
     public void onErrorNextDispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorResumeNext(Maybe.just(1)));
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorResumeWith(Maybe.just(1)));
     }
 
     @Test
@@ -201,7 +201,7 @@ public class MaybeOnErrorXTest {
         TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
             @Override
             public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
-                return v.onErrorResumeNext(Maybe.just(1));
+                return v.onErrorResumeWith(Maybe.just(1));
             }
         });
     }
@@ -209,7 +209,7 @@ public class MaybeOnErrorXTest {
     @Test
     public void onErrorNextIsAlsoError() {
         Maybe.error(new TestException("Main"))
-        .onErrorResumeNext(Maybe.error(new TestException("Secondary")))
+        .onErrorResumeWith(Maybe.error(new TestException("Secondary")))
         .to(TestHelper.testConsumer())
         .assertFailureAndMessage(TestException.class, "Secondary");
     }
