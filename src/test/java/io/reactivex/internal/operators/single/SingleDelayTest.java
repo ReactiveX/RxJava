@@ -149,7 +149,7 @@ public class SingleDelayTest {
                         latch.countDown();
                     }
                 })
-                .onErrorResumeNext(Single.just(""))
+                .onErrorResumeWith(Single.just(""))
                 .subscribe();
 
         latch.await();
