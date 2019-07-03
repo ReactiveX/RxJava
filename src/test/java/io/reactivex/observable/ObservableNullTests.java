@@ -1700,7 +1700,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextFunctionNull() {
-        just1.onErrorResumeNext((Function<Throwable, Observable<Integer>>)null);
+        just1.onErrorResumeNext(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1715,7 +1715,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextObservableNull() {
-        just1.onErrorResumeNext((Observable<Integer>)null);
+        just1.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)

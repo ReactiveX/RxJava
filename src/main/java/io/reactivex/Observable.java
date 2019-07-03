@@ -10126,10 +10126,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * By default, when an ObservableSource encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the ObservableSource invokes its Observer's {@code onError} method, and then quits
-     * without invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
-     * behavior. If you pass another ObservableSource ({@code resumeSequence}) to an ObservableSource's
-     * {@code onErrorResumeNext} method, if the original ObservableSource encounters an error, instead of invoking its
-     * Observer's {@code onError} method, it will instead relinquish control to {@code resumeSequence} which
+     * without invoking any more of its Observer's methods. The {@code onErrorResumeWith} method changes this
+     * behavior. If you pass another ObservableSource ({@code next}) to an ObservableSource's
+     * {@code onErrorResumeWith} method, if the original ObservableSource encounters an error, instead of invoking its
+     * Observer's {@code onError} method, it will instead relinquish control to {@code next} which
      * will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case,
      * because no ObservableSource necessarily invokes {@code onError}, the Observer may never know that an error
      * happened.
@@ -10138,7 +10138,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * encountered.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param next
@@ -10149,7 +10149,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> onErrorResumeNext(final ObservableSource<? extends T> next) {
+    public final Observable<T> onErrorResumeWith(final ObservableSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return onErrorResumeNext(Functions.justFunction(next));
     }
