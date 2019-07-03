@@ -326,7 +326,7 @@ public class FlowablePublishFunctionTest {
         .publish(new Function<Flowable<Object>, Publisher<Object>>() {
             @Override
             public Publisher<Object> apply(Flowable<Object> f) throws Exception {
-                return f.onErrorResumeNext(f);
+                return f.onErrorResumeWith(f);
             }
         })
         .test()

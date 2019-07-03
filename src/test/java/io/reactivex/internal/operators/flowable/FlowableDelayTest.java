@@ -928,7 +928,7 @@ public class FlowableDelayTest {
                         latch.countDown();
                     }
                 })
-                .onErrorResumeNext(Flowable.<String>empty())
+                .onErrorResumeWith(Flowable.<String>empty())
                 .subscribe();
 
         latch.await();

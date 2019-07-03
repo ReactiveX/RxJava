@@ -39,7 +39,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
-        Flowable<String> flowable = w.onErrorResumeNext(resume);
+        Flowable<String> flowable = w.onErrorResumeWith(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         flowable.subscribe(subscriber);
@@ -81,7 +81,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
             }
         });
 
-        Flowable<String> flowable = w.onErrorResumeNext(resume);
+        Flowable<String> flowable = w.onErrorResumeWith(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -114,7 +114,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
         });
         Flowable<String> resume = Flowable.just("resume");
-        Flowable<String> flowable = testObservable.onErrorResumeNext(resume);
+        Flowable<String> flowable = testObservable.onErrorResumeWith(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         flowable.subscribe(subscriber);
@@ -136,7 +136,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
         });
         Flowable<String> resume = Flowable.just("resume");
-        Flowable<String> flowable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
+        Flowable<String> flowable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeWith(resume);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
@@ -196,7 +196,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
-                .onErrorResumeNext(Flowable.just(1))
+                .onErrorResumeWith(Flowable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     int c;
@@ -226,7 +226,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.onErrorResumeNext(Flowable.range(3, 2)).subscribe(ts);
+        pp.onErrorResumeWith(Flowable.range(3, 2)).subscribe(ts);
 
         ts.request(2);
 

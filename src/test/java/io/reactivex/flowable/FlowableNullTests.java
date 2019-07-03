@@ -1646,8 +1646,8 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFunctionNull() {
-        just1.onErrorResumeNext((Function<Throwable, Publisher<Integer>>)null);
+    public void onErrorResumeNextNull() {
+        just1.onErrorResumeNext(null);
     }
 
     @Test
@@ -1669,8 +1669,8 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextPublisherNull() {
-        just1.onErrorResumeNext((Publisher<Integer>)null);
+    public void onErrorResumeWithNull() {
+        just1.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2956,11 +2956,6 @@ public class FlowableNullTests {
     @Test(expected = NullPointerException.class)
     public void sampleFlowableNull() {
         just1.sample(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFlowableNull() {
-        just1.onErrorResumeNext((Flowable<Integer>)null);
     }
 
     @SuppressWarnings("unchecked")

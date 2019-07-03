@@ -19,12 +19,12 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class OnErrorResumeNextTckTest extends BaseTck<Integer> {
+public class OnErrorResumeWithTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).onErrorResumeNext(Flowable.<Integer>never())
+                Flowable.range(0, (int)elements).onErrorResumeWith(Flowable.<Integer>never())
         ;
     }
 }
