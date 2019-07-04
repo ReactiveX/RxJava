@@ -119,7 +119,9 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             if (!DisposableHelper.isDisposed(d)) {
                 @SuppressWarnings("unchecked")
                 DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
-                dis.emit();
+                if (dis != null) {
+                    dis.emit();
+                }
                 DisposableHelper.dispose(debouncer);
                 downstream.onComplete();
             }
