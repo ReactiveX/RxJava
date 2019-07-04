@@ -504,4 +504,14 @@ public class ObservableDebounceTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void debounceOnEmpty() {
+        Observable.empty().debounce(new Function<Object, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Object o) {
+                return Observable.just(new Object());
+            }
+        }).subscribe();
+    }
 }

@@ -546,4 +546,14 @@ public class FlowableDebounceTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void debounceOnEmpty() {
+        Flowable.empty().debounce(new Function<Object, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Object o) {
+                return Flowable.just(new Object());
+            }
+        }).subscribe();
+    }
 }
