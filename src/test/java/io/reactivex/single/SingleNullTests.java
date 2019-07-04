@@ -709,13 +709,13 @@ public class SingleNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextSingleNull() {
-        error.onErrorResumeNext((Single<Integer>)null);
+    public void onErrorResumeWithSingleNull() {
+        error.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFunctionNull() {
-        error.onErrorResumeNext((Function<Throwable, Single<Integer>>)null);
+    public void onErrorResumeNextNull() {
+        error.onErrorResumeNext(null);
     }
 
     @Test

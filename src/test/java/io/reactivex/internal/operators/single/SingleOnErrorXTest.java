@@ -53,7 +53,7 @@ public class SingleOnErrorXTest {
     @Test
     public void resumeErrors() {
         Single.error(new TestException("Main"))
-        .onErrorResumeNext(Single.error(new TestException("Resume")))
+        .onErrorResumeWith(Single.error(new TestException("Resume")))
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(TestException.class, "Resume");
     }
@@ -61,7 +61,7 @@ public class SingleOnErrorXTest {
     @Test
     public void resumeDispose() {
         TestHelper.checkDisposed(Single.error(new TestException("Main"))
-        .onErrorResumeNext(Single.just(1)));
+        .onErrorResumeWith(Single.just(1)));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class SingleOnErrorXTest {
         TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
             @Override
             public SingleSource<Object> apply(Single<Object> s) throws Exception {
-                return s.onErrorResumeNext(Single.just(1));
+                return s.onErrorResumeWith(Single.just(1));
             }
         });
     }
@@ -77,7 +77,7 @@ public class SingleOnErrorXTest {
     @Test
     public void resumeSuccess() {
         Single.just(1)
-        .onErrorResumeNext(Single.just(2))
+        .onErrorResumeWith(Single.just(2))
         .test()
         .assertResult(1);
     }

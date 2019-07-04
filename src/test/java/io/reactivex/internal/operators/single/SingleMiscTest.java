@@ -106,9 +106,9 @@ public class SingleMiscTest {
     }
 
     @Test
-    public void onErrorResumeNext() {
+    public void onErrorResumeWith() {
         Single.<Integer>error(new TestException())
-        .onErrorResumeNext(Single.just(1))
+        .onErrorResumeWith(Single.just(1))
         .test()
         .assertResult(1);
     }

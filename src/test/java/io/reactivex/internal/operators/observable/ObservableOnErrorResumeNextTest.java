@@ -32,7 +32,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class ObservableOnErrorResumeNextViaFunctionTest {
+public class ObservableOnErrorResumeNextTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {

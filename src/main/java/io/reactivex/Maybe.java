@@ -3732,7 +3732,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * encountered.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param next
@@ -3744,7 +3744,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onErrorResumeNext(final MaybeSource<? extends T> next) {
+    public final Maybe<T> onErrorResumeWith(final MaybeSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return onErrorResumeNext(Functions.justFunction(next));
     }

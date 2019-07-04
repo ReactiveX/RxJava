@@ -3207,9 +3207,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
      * its {@link SingleObserver}, the Single invokes its SingleObserver's {@code onError} method, and then quits
-     * without invoking any more of its SingleObserver's methods. The {@code onErrorResumeNext} method changes this
+     * without invoking any more of its SingleObserver's methods. The {@code onErrorResumeWith} method changes this
      * behavior. If you pass another Single ({@code resumeSingleInCaseOfError}) to a Single's
-     * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
+     * {@code onErrorResumeWith} method, if the original Single encounters an error, instead of invoking its
      * SingleObserver's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
      * will invoke the SingleObserver's {@link SingleObserver#onSuccess onSuccess} method if it is able to do so. In such a case,
      * because no Single necessarily invokes {@code onError}, the SingleObserver may never know that an error
@@ -3219,7 +3219,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * encountered.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param resumeSingleInCaseOfError a Single that will take control if source Single encounters an error.
@@ -3229,7 +3229,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> onErrorResumeNext(final Single<? extends T> resumeSingleInCaseOfError) {
+    public final Single<T> onErrorResumeWith(final SingleSource<? extends T> resumeSingleInCaseOfError) {
         ObjectHelper.requireNonNull(resumeSingleInCaseOfError, "resumeSingleInCaseOfError is null");
         return onErrorResumeNext(Functions.justFunction(resumeSingleInCaseOfError));
     }

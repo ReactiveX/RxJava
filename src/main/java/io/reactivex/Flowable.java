@@ -12197,9 +12197,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * By default, when a Publisher encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the Publisher invokes its Subscriber's {@code onError} method, and then quits
-     * without invoking any more of its Subscriber's methods. The {@code onErrorResumeNext} method changes this
+     * without invoking any more of its Subscriber's methods. The {@code onErrorResumeWith} method changes this
      * behavior. If you pass another Publisher ({@code resumeSequence}) to a Publisher's
-     * {@code onErrorResumeNext} method, if the original Publisher encounters an error, instead of invoking its
+     * {@code onErrorResumeWith} method, if the original Publisher encounters an error, instead of invoking its
      * Subscriber's {@code onError} method, it will instead relinquish control to {@code resumeSequence} which
      * will invoke the Subscriber's {@link Subscriber#onNext onNext} method if it is able to do so. In such a case,
      * because no Publisher necessarily invokes {@code onError}, the Subscriber may never know that an error
@@ -12215,7 +12215,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  {@code IllegalStateException} when the source {@code Publisher} completes or
      *  {@code MissingBackpressureException} is signaled somewhere downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param next
@@ -12228,7 +12228,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onErrorResumeNext(final Publisher<? extends T> next) {
+    public final Flowable<T> onErrorResumeWith(final Publisher<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return onErrorResumeNext(Functions.justFunction(next));
     }

@@ -3199,9 +3199,9 @@ public class MaybeTest {
     }
 
     @Test
-    public void onErrorResumeNextEmpty() {
+    public void onErrorResumeWithEmpty() {
         Maybe.empty()
-            .onErrorResumeNext(Maybe.just(1))
+            .onErrorResumeWith(Maybe.just(1))
             .test()
             .assertNoValues()
             .assertNoErrors()
@@ -3209,18 +3209,18 @@ public class MaybeTest {
     }
 
     @Test
-    public void onErrorResumeNextValue() {
+    public void onErrorResumeWithValue() {
         Maybe.just(1)
-            .onErrorResumeNext(Maybe.<Integer>empty())
+            .onErrorResumeWith(Maybe.<Integer>empty())
             .test()
             .assertNoErrors()
             .assertValue(1);
     }
 
     @Test
-    public void onErrorResumeNextError() {
+    public void onErrorResumeWithError() {
         Maybe.error(new RuntimeException("some error"))
-            .onErrorResumeNext(Maybe.empty())
+            .onErrorResumeWith(Maybe.empty())
             .test()
             .assertNoValues()
             .assertNoErrors()

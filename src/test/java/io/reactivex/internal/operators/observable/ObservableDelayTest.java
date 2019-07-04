@@ -876,7 +876,7 @@ public class ObservableDelayTest {
                         latch.countDown();
                     }
                 })
-                .onErrorResumeNext(Observable.<String>empty())
+                .onErrorResumeWith(Observable.<String>empty())
                 .subscribe();
 
         latch.await();
