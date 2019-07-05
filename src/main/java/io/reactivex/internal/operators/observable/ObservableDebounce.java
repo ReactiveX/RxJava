@@ -112,7 +112,9 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
                 DebounceInnerObserver<T, U> dis = (DebounceInnerObserver<T, U>)d;
-                dis.emit();
+                if (dis != null) {
+                    dis.emit();
+                }
                 DisposableHelper.dispose(debouncer);
                 downstream.onComplete();
             }
