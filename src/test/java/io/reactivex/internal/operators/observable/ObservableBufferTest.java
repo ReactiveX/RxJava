@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -30,15 +31,13 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.ObservableBuffer.BufferExactObserver;
-import io.reactivex.internal.operators.observable.ObservableBufferBoundarySupplier.BufferBoundarySupplierObserver;
 import io.reactivex.internal.operators.observable.ObservableBufferTimed.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
-import io.reactivex.subjects.*;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
 public class ObservableBufferTest {
@@ -233,50 +232,6 @@ public class ObservableBufferTest {
         InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
-    }
-
-    @Test
-    public void observableBasedCloser() {
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 250);
-            }
-        });
-
-        Supplier<Observable<Object>> closer = new Supplier<Observable<Object>>() {
-            @Override
-            public Observable<Object> get() {
-                return Observable.unsafeCreate(new ObservableSource<Object>() {
-                    @Override
-                    public void subscribe(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
-                        push(observer, new Object(), 100);
-                        push(observer, new Object(), 200);
-                        push(observer, new Object(), 300);
-                        complete(observer, 301);
-                    }
-                });
-            }
-        };
-
-        Observable<List<String>> buffered = source.buffer(closer);
-        buffered.subscribe(observer);
-
-        InOrder inOrder = Mockito.inOrder(observer);
-        scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
         inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
@@ -1020,209 +975,6 @@ public class ObservableBufferTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierThrows() {
-        Observable.never()
-        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                throw new TestException();
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierThrows() {
-        Observable.never()
-        .buffer(new Supplier<ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> get() throws Exception {
-                throw new TestException();
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierThrows2() {
-        Observable.never()
-        .buffer(Functions.justSupplier(Observable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
-            int count;
-            @Override
-            public Collection<Object> get() throws Exception {
-                if (count++ == 1) {
-                    throw new TestException();
-                } else {
-                    return new ArrayList<Object>();
-                }
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierReturnsNull() {
-        Observable.never()
-        .buffer(Functions.justSupplier(Observable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
-            int count;
-            @Override
-            public Collection<Object> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                } else {
-                    return new ArrayList<Object>();
-                }
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierThrows2() {
-        Observable.never()
-        .buffer(new Supplier<ObservableSource<Long>>() {
-            int count;
-            @Override
-            public ObservableSource<Long> get() throws Exception {
-                if (count++ == 1) {
-                    throw new TestException();
-                }
-                return Observable.timer(1, TimeUnit.MILLISECONDS);
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void boundaryCancel() {
-        PublishSubject<Object> ps = PublishSubject.create();
-
-        TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        assertTrue(ps.hasObservers());
-
-        to.dispose();
-
-        assertFalse(ps.hasObservers());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierReturnsNull() {
-        Observable.never()
-        .buffer(new Supplier<ObservableSource<Long>>() {
-            int count;
-            @Override
-            public ObservableSource<Long> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                }
-                return Observable.timer(1, TimeUnit.MILLISECONDS);
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierReturnsNull2() {
-        Observable.never()
-        .buffer(new Supplier<ObservableSource<Long>>() {
-            int count;
-            @Override
-            public ObservableSource<Long> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                }
-                return Observable.empty();
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void boundaryMainError() {
-        PublishSubject<Object> ps = PublishSubject.create();
-
-        TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justSupplier(Observable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        ps.onError(new TestException());
-
-        to.assertFailure(TestException.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void boundaryBoundaryError() {
-        PublishSubject<Object> ps = PublishSubject.create();
-
-        TestObserver<Collection<Object>> to = ps
-        .buffer(Functions.justSupplier(Observable.error(new TestException())), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        ps.onError(new TestException());
-
-        to.assertFailure(TestException.class);
-    }
-
-    @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, TimeUnit.DAYS, Schedulers.single()));
 
@@ -1240,8 +992,6 @@ public class ObservableBufferTest {
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, 2));
 
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never()));
-
-        TestHelper.checkDisposed(PublishSubject.create().buffer(Functions.justSupplier(Observable.never())));
 
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never(), Functions.justFunction(Observable.never())));
     }
@@ -1873,81 +1623,6 @@ public class ObservableBufferTest {
         ref.get().onNext(1);
 
         to.assertResult(Collections.<Integer>emptyList());
-    }
-
-    @Test
-    public void bufferBoundaryErrorTwice() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            BehaviorSubject.createDefault(1)
-            .buffer(Functions.justSupplier(new Observable<Integer>() {
-                @Override
-                protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
-                    observer.onError(new TestException("first"));
-                    observer.onError(new TestException("second"));
-                }
-            }))
-            .to(TestHelper.<List<Integer>>testConsumer())
-            .assertError(TestException.class)
-            .assertErrorMessage("first")
-            .assertNotComplete();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
-        } finally {
-            RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void bufferBoundarySupplierDisposed() {
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
-        BufferBoundarySupplierObserver<Integer, List<Integer>, Integer> sub =
-                new BufferBoundarySupplierObserver<Integer, List<Integer>, Integer>(
-                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justSupplier(Observable.<Integer>never())
-        );
-
-        Disposable bs = Disposables.empty();
-
-        sub.onSubscribe(bs);
-
-        assertFalse(sub.isDisposed());
-
-        sub.dispose();
-
-        assertTrue(sub.isDisposed());
-
-        sub.next();
-
-        assertSame(DisposableHelper.DISPOSED, sub.other.get());
-
-        sub.dispose();
-        sub.dispose();
-
-        assertTrue(bs.isDisposed());
-    }
-
-    @Test
-    public void bufferBoundarySupplierBufferAlreadyCleared() {
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
-        BufferBoundarySupplierObserver<Integer, List<Integer>, Integer> sub =
-                new BufferBoundarySupplierObserver<Integer, List<Integer>, Integer>(
-                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justSupplier(Observable.<Integer>never())
-        );
-
-        Disposable bs = Disposables.empty();
-
-        sub.onSubscribe(bs);
-
-        sub.buffer = null;
-
-        sub.next();
-
-        sub.onNext(1);
-
-        sub.onComplete();
     }
 
     @Test

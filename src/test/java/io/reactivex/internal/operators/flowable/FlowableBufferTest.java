@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -29,13 +30,11 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.operators.flowable.FlowableBufferBoundarySupplier.BufferBoundarySupplierSubscriber;
 import io.reactivex.internal.operators.flowable.FlowableBufferTimed.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
@@ -232,50 +231,6 @@ public class FlowableBufferTest {
         InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
-    }
-
-    @Test
-    public void flowableBasedCloser() {
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 10);
-                push(subscriber, "two", 60);
-                push(subscriber, "three", 110);
-                push(subscriber, "four", 160);
-                push(subscriber, "five", 210);
-                complete(subscriber, 250);
-            }
-        });
-
-        Supplier<Flowable<Object>> closer = new Supplier<Flowable<Object>>() {
-            @Override
-            public Flowable<Object> get() {
-                return Flowable.unsafeCreate(new Publisher<Object>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Object> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        push(subscriber, new Object(), 100);
-                        push(subscriber, new Object(), 200);
-                        push(subscriber, new Object(), 300);
-                        complete(subscriber, 301);
-                    }
-                });
-            }
-        };
-
-        Flowable<List<String>> buffered = source.buffer(closer);
-        buffered.subscribe(subscriber);
-
-        InOrder inOrder = Mockito.inOrder(subscriber);
-        scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four"));
         inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
         inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
@@ -1334,209 +1289,6 @@ public class FlowableBufferTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierThrows() {
-        Flowable.never()
-        .buffer(Functions.justSupplier(Flowable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                throw new TestException();
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierThrows() {
-        Flowable.never()
-        .buffer(new Supplier<Publisher<Object>>() {
-            @Override
-            public Publisher<Object> get() throws Exception {
-                throw new TestException();
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierThrows2() {
-        Flowable.never()
-        .buffer(Functions.justSupplier(Flowable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
-            int count;
-            @Override
-            public Collection<Object> get() throws Exception {
-                if (count++ == 1) {
-                    throw new TestException();
-                } else {
-                    return new ArrayList<Object>();
-                }
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBufferSupplierReturnsNull() {
-        Flowable.never()
-        .buffer(Functions.justSupplier(Flowable.timer(1, TimeUnit.MILLISECONDS)), new Supplier<Collection<Object>>() {
-            int count;
-            @Override
-            public Collection<Object> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                } else {
-                    return new ArrayList<Object>();
-                }
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierThrows2() {
-        Flowable.never()
-        .buffer(new Supplier<Publisher<Long>>() {
-            int count;
-            @Override
-            public Publisher<Long> get() throws Exception {
-                if (count++ == 1) {
-                    throw new TestException();
-                }
-                return Flowable.timer(1, TimeUnit.MILLISECONDS);
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void boundaryCancel() {
-        PublishProcessor<Object> pp = PublishProcessor.create();
-
-        TestSubscriber<Collection<Object>> ts = pp
-        .buffer(Functions.justSupplier(Flowable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        assertTrue(pp.hasSubscribers());
-
-        ts.cancel();
-
-        assertFalse(pp.hasSubscribers());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierReturnsNull() {
-        Flowable.never()
-        .buffer(new Supplier<Publisher<Long>>() {
-            int count;
-            @Override
-            public Publisher<Long> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                }
-                return Flowable.timer(1, TimeUnit.MILLISECONDS);
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void boundaryBoundarySupplierReturnsNull2() {
-        Flowable.never()
-        .buffer(new Supplier<Publisher<Long>>() {
-            int count;
-            @Override
-            public Publisher<Long> get() throws Exception {
-                if (count++ == 1) {
-                    return null;
-                }
-                return Flowable.empty();
-            }
-        }, new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test()
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(NullPointerException.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void boundaryMainError() {
-        PublishProcessor<Object> pp = PublishProcessor.create();
-
-        TestSubscriber<Collection<Object>> ts = pp
-        .buffer(Functions.justSupplier(Flowable.never()), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        pp.onError(new TestException());
-
-        ts.assertFailure(TestException.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void boundaryBoundaryError() {
-        PublishProcessor<Object> pp = PublishProcessor.create();
-
-        TestSubscriber<Collection<Object>> ts = pp
-        .buffer(Functions.justSupplier(Flowable.error(new TestException())), new Supplier<Collection<Object>>() {
-            @Override
-            public Collection<Object> get() throws Exception {
-                return new ArrayList<Object>();
-            }
-        })
-        .test();
-
-        pp.onError(new TestException());
-
-        ts.assertFailure(TestException.class);
-    }
-
-    @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1, TimeUnit.DAYS, Schedulers.single()));
 
@@ -2545,81 +2297,6 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> b = PublishProcessor.create();
 
         pp.buffer(b).test();
-    }
-
-    @Test
-    public void bufferBoundaryErrorTwice() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            BehaviorProcessor.createDefault(1)
-            .buffer(Functions.justSupplier(new Flowable<Integer>() {
-                @Override
-                protected void subscribeActual(Subscriber<? super Integer> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onError(new TestException("first"));
-                    s.onError(new TestException("second"));
-                }
-            }))
-            .to(TestHelper.<List<Integer>>testConsumer())
-            .assertError(TestException.class)
-            .assertErrorMessage("first")
-            .assertNotComplete();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
-        } finally {
-            RxJavaPlugins.reset();
-        }
-    }
-
-    @Test
-    public void bufferBoundarySupplierDisposed() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
-        BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer> sub =
-                new BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer>(
-                        ts, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justSupplier(Flowable.<Integer>never())
-        );
-
-        BooleanSubscription bs = new BooleanSubscription();
-
-        sub.onSubscribe(bs);
-
-        assertFalse(sub.isDisposed());
-
-        sub.dispose();
-
-        assertTrue(sub.isDisposed());
-
-        sub.next();
-
-        assertSame(DisposableHelper.DISPOSED, sub.other.get());
-
-        sub.cancel();
-        sub.cancel();
-
-        assertTrue(bs.isCancelled());
-    }
-
-    @Test
-    public void bufferBoundarySupplierBufferAlreadyCleared() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
-        BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer> sub =
-                new BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer>(
-                        ts, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
-                        Functions.justSupplier(Flowable.<Integer>never())
-        );
-
-        BooleanSubscription bs = new BooleanSubscription();
-
-        sub.onSubscribe(bs);
-
-        sub.buffer = null;
-
-        sub.next();
-
-        sub.onNext(1);
-
-        sub.onComplete();
     }
 
     @Test

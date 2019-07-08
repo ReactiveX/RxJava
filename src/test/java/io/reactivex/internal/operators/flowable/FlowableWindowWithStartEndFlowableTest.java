@@ -95,56 +95,6 @@ public class FlowableWindowWithStartEndFlowableTest {
         assertEquals(lists.get(1), list("five"));
     }
 
-    @Test
-    public void flowableBasedCloser() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
-
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                push(subscriber, "one", 10);
-                push(subscriber, "two", 60);
-                push(subscriber, "three", 110);
-                push(subscriber, "four", 160);
-                push(subscriber, "five", 210);
-                complete(subscriber, 250);
-            }
-        });
-
-        Supplier<Flowable<Object>> closer = new Supplier<Flowable<Object>>() {
-            int calls;
-            @Override
-            public Flowable<Object> get() {
-                return Flowable.unsafeCreate(new Publisher<Object>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Object> subscriber) {
-                        subscriber.onSubscribe(new BooleanSubscription());
-                        int c = calls++;
-                        if (c == 0) {
-                            push(subscriber, new Object(), 100);
-                        } else
-                        if (c == 1) {
-                            push(subscriber, new Object(), 100);
-                        } else {
-                            complete(subscriber, 101);
-                        }
-                    }
-                });
-            }
-        };
-
-        Flowable<Flowable<String>> windowed = source.window(closer);
-        windowed.subscribe(observeWindow(list, lists));
-
-        scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        assertEquals(3, lists.size());
-        assertEquals(lists.get(0), list("one", "two"));
-        assertEquals(lists.get(1), list("three", "four"));
-        assertEquals(lists.get(2), list("five"));
-    }
-
     private List<String> list(String... args) {
         List<String> list = new ArrayList<String>();
         for (String arg : args) {

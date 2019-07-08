@@ -6148,70 +6148,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
-     * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <p>
-     * If either the source {@code ObservableSource} or the boundary {@code ObservableSource} issues an {@code onError} notification the event
-     * is passed on immediately without first emitting the buffer it is in the process of assembling.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <B> the value type of the boundary-providing ObservableSource
-     * @param boundarySupplier
-     *            a {@link Supplier} that produces an ObservableSource that governs the boundary between buffers.
-     *            Whenever the supplied {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
-     *            begins to fill a new one
-     * @return an Observable that emits a connected, non-overlapping buffer of items from the source ObservableSource
-     *         each time the ObservableSource created with the {@code closingIndicator} argument emits an item
-     * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<List<T>> buffer(Supplier<? extends ObservableSource<B>> boundarySupplier) {
-        return buffer(boundarySupplier, ArrayListSupplier.<T>asSupplier());
-    }
-
-    /**
-     * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
-     * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <p>
-     * If either the source {@code ObservableSource} or the boundary {@code ObservableSource} issues an {@code onError} notification the event
-     * is passed on immediately without first emitting the buffer it is in the process of assembling.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <U> the collection subclass type to buffer into
-     * @param <B> the value type of the boundary-providing ObservableSource
-     * @param boundarySupplier
-     *            a {@link Supplier} that produces an ObservableSource that governs the boundary between buffers.
-     *            Whenever the supplied {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
-     *            begins to fill a new one
-     * @param bufferSupplier
-     *            a factory function that returns an instance of the collection subclass to be used and returned
-     *            as the buffer
-     * @return an Observable that emits a connected, non-overlapping buffer of items from the source ObservableSource
-     *         each time the ObservableSource created with the {@code closingIndicator} argument emits an item
-     * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Observable<U> buffer(Supplier<? extends ObservableSource<B>> boundarySupplier, Supplier<U> bufferSupplier) {
-        ObjectHelper.requireNonNull(boundarySupplier, "boundarySupplier is null");
-        ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier));
-    }
-
-    /**
      * Returns an Observable that subscribes to this ObservableSource lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
@@ -10115,7 +10051,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onErrorResumeNext(Function<? super Throwable, ? extends ObservableSource<? extends T>> resumeFunction) {
         ObjectHelper.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<T>(this, resumeFunction, false));
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<T>(this, resumeFunction));
     }
 
     /**
@@ -10218,45 +10154,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> onErrorReturnItem(final T item) {
         ObjectHelper.requireNonNull(item, "item is null");
         return onErrorReturn(Functions.justFunction(item));
-    }
-
-    /**
-     * Instructs an ObservableSource to pass control to another ObservableSource rather than invoking
-     * {@link Observer#onError onError} if it encounters an {@link java.lang.Exception}.
-     * <p>
-     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable}
-     * or {@link java.lang.Error} but lets those continue through.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onExceptionResumeNextViaObservableSource.png" alt="">
-     * <p>
-     * By default, when an ObservableSource encounters an exception that prevents it from emitting the expected item
-     * to its {@link Observer}, the ObservableSource invokes its Observer's {@code onError} method, and then quits
-     * without invoking any more of its Observer's methods. The {@code onExceptionResumeNext} method changes
-     * this behavior. If you pass another ObservableSource ({@code resumeSequence}) to an ObservableSource's
-     * {@code onExceptionResumeNext} method, if the original ObservableSource encounters an exception, instead of
-     * invoking its Observer's {@code onError} method, it will instead relinquish control to
-     * {@code resumeSequence} which will invoke the Observer's {@link Observer#onNext onNext} method if it is
-     * able to do so. In such a case, because no ObservableSource necessarily invokes {@code onError}, the Observer
-     * may never know that an exception happened.
-     * <p>
-     * You can use this to prevent exceptions from propagating or to supply fallback data should exceptions be
-     * encountered.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onExceptionResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param next
-     *            the next ObservableSource that will take over if the source ObservableSource encounters
-     *            an exception
-     * @return the original ObservableSource, with appropriately modified behavior
-     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> onExceptionResumeNext(final ObservableSource<? extends T> next) {
-        ObjectHelper.requireNonNull(next, "next is null");
-        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<T>(this, Functions.justFunction(next), true));
     }
 
     /**
@@ -15173,62 +15070,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySelector<T, U, V>(this, openingIndicator, closingIndicator, bufferSize));
-    }
-
-    /**
-     * Returns an Observable that emits windows of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
-     * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
-     * <p>
-     * <img width="640" height="455" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <B> the element type of the boundary ObservableSource
-     * @param boundary
-     *            a {@link Supplier} that returns an {@code ObservableSource} that governs the boundary between windows.
-     *            When the source {@code ObservableSource} emits an item, {@code window} emits the current window and begins
-     *            a new one.
-     * @return an Observable that emits connected, non-overlapping windows of items from the source ObservableSource
-     *         whenever {@code closingIndicator} emits an item
-     * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<Observable<T>> window(Supplier<? extends ObservableSource<B>> boundary) {
-        return window(boundary, bufferSize());
-    }
-
-    /**
-     * Returns an Observable that emits windows of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
-     * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
-     * <p>
-     * <img width="640" height="455" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <B> the element type of the boundary ObservableSource
-     * @param boundary
-     *            a {@link Supplier} that returns an {@code ObservableSource} that governs the boundary between windows.
-     *            When the source {@code ObservableSource} emits an item, {@code window} emits the current window and begins
-     *            a new one.
-     * @param bufferSize
-     *            the capacity hint for the buffer in the inner windows
-     * @return an Observable that emits connected, non-overlapping windows of items from the source ObservableSource
-     *         whenever {@code closingIndicator} emits an item
-     * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Observable<Observable<T>> window(Supplier<? extends ObservableSource<B>> boundary, int bufferSize) {
-        ObjectHelper.requireNonNull(boundary, "boundary is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize));
     }
 
     /**
