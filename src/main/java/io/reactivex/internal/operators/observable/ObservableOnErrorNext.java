@@ -22,18 +22,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
-    final boolean allowFatal;
 
     public ObservableOnErrorNext(ObservableSource<T> source,
-                                 Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
+                                 Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier) {
         super(source);
         this.nextSupplier = nextSupplier;
-        this.allowFatal = allowFatal;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        OnErrorNextObserver<T> parent = new OnErrorNextObserver<T>(t, nextSupplier, allowFatal);
+        OnErrorNextObserver<T> parent = new OnErrorNextObserver<T>(t, nextSupplier);
         t.onSubscribe(parent.arbiter);
         source.subscribe(parent);
     }
@@ -41,17 +39,15 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
     static final class OnErrorNextObserver<T> implements Observer<T> {
         final Observer<? super T> downstream;
         final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
-        final boolean allowFatal;
         final SequentialDisposable arbiter;
 
         boolean once;
 
         boolean done;
 
-        OnErrorNextObserver(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
+        OnErrorNextObserver(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier) {
             this.downstream = actual;
             this.nextSupplier = nextSupplier;
-            this.allowFatal = allowFatal;
             this.arbiter = new SequentialDisposable();
         }
 
@@ -79,11 +75,6 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
                 return;
             }
             once = true;
-
-            if (allowFatal && !(t instanceof Exception)) {
-                downstream.onError(t);
-                return;
-            }
 
             ObservableSource<? extends T> p;
 

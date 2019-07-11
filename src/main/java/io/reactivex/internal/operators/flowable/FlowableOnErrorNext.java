@@ -24,18 +24,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
-    final boolean allowFatal;
 
     public FlowableOnErrorNext(Flowable<T> source,
-            Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
+            Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier) {
         super(source);
         this.nextSupplier = nextSupplier;
-        this.allowFatal = allowFatal;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<T>(s, nextSupplier, allowFatal);
+        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<T>(s, nextSupplier);
         s.onSubscribe(parent);
         source.subscribe(parent);
     }
@@ -49,19 +47,16 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
 
         final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
 
-        final boolean allowFatal;
-
         boolean once;
 
         boolean done;
 
         long produced;
 
-        OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
+        OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier) {
             super(false);
             this.downstream = actual;
             this.nextSupplier = nextSupplier;
-            this.allowFatal = allowFatal;
         }
 
         @Override
@@ -91,11 +86,6 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
                 return;
             }
             once = true;
-
-            if (allowFatal && !(t instanceof Exception)) {
-                downstream.onError(t);
-                return;
-            }
 
             Publisher<? extends T> p;
 
