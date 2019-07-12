@@ -18,6 +18,8 @@ import java.util.*;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 /**
  * Test verifying there are no 2..5 empty newlines in the code.
  */
@@ -44,7 +46,7 @@ public class TooManyEmptyNewLines {
     }
 
     static void findPattern(int newLines) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of TestHelper.findSourceDir()");
             return;

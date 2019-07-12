@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
 import io.reactivex.validators.BaseTypeParser.RxMethod;
 
 /**
@@ -38,7 +39,7 @@ public class JavadocWording {
 
     @Test
     public void maybeDocRefersToMaybeTypes() throws Exception {
-        List<RxMethod> list = BaseTypeParser.parse(MaybeNo2Dot0Since.findSource("Maybe"), "Maybe");
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("Maybe"), "Maybe");
 
         assertFalse(list.isEmpty());
 
@@ -214,7 +215,7 @@ public class JavadocWording {
 
     @Test
     public void flowableDocRefersToFlowableTypes() throws Exception {
-        List<RxMethod> list = BaseTypeParser.parse(MaybeNo2Dot0Since.findSource("Flowable"), "Flowable");
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("Flowable"), "Flowable");
 
         assertFalse(list.isEmpty());
 
@@ -323,7 +324,7 @@ public class JavadocWording {
 
     @Test
     public void observableDocRefersToObservableTypes() throws Exception {
-        List<RxMethod> list = BaseTypeParser.parse(MaybeNo2Dot0Since.findSource("Observable"), "Observable");
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("Observable"), "Observable");
 
         assertFalse(list.isEmpty());
 
@@ -424,7 +425,7 @@ public class JavadocWording {
 
     @Test
     public void singleDocRefersToSingleTypes() throws Exception {
-        List<RxMethod> list = BaseTypeParser.parse(MaybeNo2Dot0Since.findSource("Single"), "Single");
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("Single"), "Single");
 
         assertFalse(list.isEmpty());
 
@@ -598,7 +599,7 @@ public class JavadocWording {
 
     @Test
     public void completableDocRefersToCompletableTypes() throws Exception {
-        List<RxMethod> list = BaseTypeParser.parse(MaybeNo2Dot0Since.findSource("Completable"), "Completable");
+        List<RxMethod> list = BaseTypeParser.parse(TestHelper.findSource("Completable"), "Completable");
 
         assertFalse(list.isEmpty());
 

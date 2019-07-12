@@ -18,10 +18,12 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 public class OperatorsAreFinal {
 
     File directoryOf(String baseClassName) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             return null;
         }

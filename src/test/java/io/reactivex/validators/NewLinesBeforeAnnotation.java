@@ -18,6 +18,8 @@ import java.util.*;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 /**
  * These tests verify the code style that a typical closing curly brace
  * and the next annotation &#64; indicator
@@ -64,7 +66,7 @@ public class NewLinesBeforeAnnotation {
     }
 
     static void findPattern(int newLines) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
             return;

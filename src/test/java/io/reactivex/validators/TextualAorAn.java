@@ -18,6 +18,8 @@ import java.util.*;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 /**
  * Adds license header to java files.
  */
@@ -25,7 +27,7 @@ public class TextualAorAn {
 
     @Test
     public void checkFiles() throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             return;
         }

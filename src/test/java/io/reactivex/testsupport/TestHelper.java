@@ -17,7 +17,9 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -3217,5 +3219,40 @@ public enum TestHelper {
             }
         }
         return to;
+    }
+
+    /**
+     * Given a base reactive type name, try to find its source in the current runtime
+     * path and return a file to it or null if not found.
+     * @param baseClassName the class name such as {@code Maybe}
+     * @return the File pointing to the source
+     * @throws Exception on error
+     */
+    public static File findSource(String baseClassName) throws Exception {
+        URL u = TestHelper.class.getResource(TestHelper.class.getSimpleName() + ".class");
+
+        String path = new File(u.toURI()).toString().replace('\\', '/');
+
+//        System.out.println(path);
+
+        int i = path.toLowerCase().indexOf("/rxjava");
+        if (i < 0) {
+            System.out.println("Can't find the base RxJava directory");
+            return null;
+        }
+
+        // find end of any potential postfix to /RxJava
+        int j = path.indexOf("/", i + 6);
+
+        String p = path.substring(0, j + 1) + "src/main/java/io/reactivex/" + baseClassName + ".java";
+
+        File f = new File(p);
+
+        if (!f.canRead()) {
+            System.out.println("Can't read " + p);
+            return null;
+        }
+
+        return f;
     }
 }

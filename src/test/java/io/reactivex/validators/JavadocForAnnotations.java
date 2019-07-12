@@ -20,6 +20,7 @@ import java.io.*;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.testsupport.TestHelper;
 
 /**
  * Checks the source code of the base reactive types and locates missing
@@ -28,7 +29,7 @@ import io.reactivex.*;
 public class JavadocForAnnotations {
 
     static void checkSource(String baseClassName, boolean scheduler) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource(baseClassName);
+        File f = TestHelper.findSource(baseClassName);
         if (f == null) {
             return;
         }
@@ -173,7 +174,7 @@ public class JavadocForAnnotations {
     }
 
     static void checkSchedulerBadMethod(String baseClassName) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource(baseClassName);
+        File f = TestHelper.findSource(baseClassName);
         if (f == null) {
             return;
         }

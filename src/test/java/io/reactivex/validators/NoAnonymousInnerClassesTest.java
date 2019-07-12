@@ -13,7 +13,7 @@
 
 package io.reactivex.validators;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -25,6 +25,13 @@ public class NoAnonymousInnerClassesTest {
     public void verify() throws Exception {
         URL u = NoAnonymousInnerClassesTest.class.getResource("/");
         File f = new File(u.toURI());
+
+        // running this particular test from IntelliJ will have the wrong class directory
+        String fs = f.toString();
+        int idx = fs.toLowerCase().replace("\\", "/").indexOf("/out/test");
+        if (idx >= 0) {
+            f = new File(fs.substring(0, idx));
+        }
 
         StringBuilder b = new StringBuilder("Anonymous inner classes found:");
 
@@ -50,6 +57,7 @@ public class NoAnonymousInnerClassesTest {
                 if (name.endsWith(".class") && name.contains("$")
                         && !name.contains("Perf") && !name.contains("Test")
                         && !name.startsWith("Test")) {
+                    String baseName = name.substring(0, name.length() - 6);
                     String[] parts = name.split("\\$");
                     for (String s : parts) {
                         if (Character.isDigit(s.charAt(0))) {
@@ -57,9 +65,52 @@ public class NoAnonymousInnerClassesTest {
                             if (n.startsWith(".")) {
                                 n = n.substring(1);
                             }
-                            b.append("\r\n").append(n);
-                            count++;
-                            break;
+
+                            // javac 13+ generates switch-map anonymous classes with the same $x.class pattern
+                            // we have to look into the file and search for $SwitchMap$
+
+                            boolean found = false;
+
+                            FileInputStream fin = new FileInputStream(f);
+                            try {
+                                byte[] data = new byte[fin.available()];
+                                fin.read(data);
+
+                                String content = new String(data, "ISO-8859-1");
+
+                                if (content.contains("$SwitchMap$")) {
+                                    // the parent class can reference these synthetic inner classes
+                                    // and thus they also have $SwitchMap$
+                                    // but the synthetic inner classes should not have further inner classes
+
+                                    File[] filesInTheSameDir = f.getParentFile().listFiles();
+
+                                    for (File fsame : filesInTheSameDir) {
+                                        String fsameName = fsame.getName();
+                                        if (fsameName.endsWith(".class")) {
+                                            fsameName = fsameName.substring(0, fsameName.length() - 6);
+
+                                            if (fsameName.startsWith(baseName)
+                                                    && fsameName.length() > baseName.length() + 1
+                                                    && fsameName.charAt(baseName.length()) == '$'
+                                                    && Character.isDigit(fsameName.charAt(baseName.length() + 1))) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    found = true;
+                                }
+                            } finally {
+                                fin.close();
+                            }
+
+                            if (found) {
+                                b.append("\r\n").append(n);
+                                count++;
+                                break;
+                            }
                         }
                     }
                 }

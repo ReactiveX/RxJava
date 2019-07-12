@@ -18,13 +18,15 @@ import java.util.*;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 /**
  * Adds license header to java files.
  */
 public class InternalWrongNaming {
 
     static void checkInternalOperatorNaming(String baseClassName, String consumerClassName, String... ignore) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource(baseClassName);
+        File f = TestHelper.findSource(baseClassName);
         if (f == null) {
             return;
         }
