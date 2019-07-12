@@ -1327,7 +1327,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a singleton instance of a never-signalling Single (only calls onSubscribe).
+     * Returns a singleton instance of a never-signaling Single (only calls onSubscribe).
      * <p>
      * <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.never.png" alt="">
      * <dl>
@@ -2526,14 +2526,14 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
      * <p>
-     * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
+     * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onSuccess} or
      * {@code onError} notification.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.2.7 - experimental
-     * @param onTerminate the action to invoke when the consumer calls {@code onComplete} or {@code onError}
+     * @param onTerminate the action to invoke when the consumer calls {@code onSuccess} or {@code onError}
      * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doOnTerminate(Action)
@@ -3471,12 +3471,12 @@ public abstract class Single<T> implements SingleSource<T> {
      * Re-subscribes to the current Single if and when the Publisher returned by the handler
      * function signals a value.
      * <p>
-     * If the Publisher signals an onComplete, the resulting Single will signal a NoSuchElementException.
+     * If the Publisher signals an {@code onComplete}, the resulting {@code Single} will signal a {@link NoSuchElementException}.
      * <p>
      * Note that the inner {@code Publisher} returned by the handler function should signal
      * either {@code onNext}, {@code onError} or {@code onComplete} in response to the received
      * {@code Throwable} to indicate the operator should retry or terminate. If the upstream to
-     * the operator is asynchronous, signalling onNext followed by onComplete immediately may
+     * the operator is asynchronous, signaling onNext followed by onComplete immediately may
      * result in the sequence to be completed immediately. Similarly, if this inner
      * {@code Publisher} signals {@code onError} or {@code onComplete} while the upstream is
      * active, the sequence is terminated with the same signal immediately.
@@ -3900,7 +3900,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Returns a {@link Completable} that ignores the success value of this {@link Single}
-     * and calls {@code onComplete} instead on the returned {@code Completable}.
+     * and signals {@code onComplete} instead.
      * <p>
      * <img width="640" height="436" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ignoreElement.png" alt="">
      * <dl>
@@ -3908,7 +3908,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Completable} that calls {@code onComplete} on it's observer when the source {@link Single}
+     * @return a {@link Completable} that signals {@code onComplete} on it's observer when the source {@link Single}
      *         calls {@code onSuccess}.
      * @since 2.1.13
      */
