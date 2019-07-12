@@ -26,9 +26,13 @@ public class NoAnonymousInnerClassesTest {
         URL u = NoAnonymousInnerClassesTest.class.getResource("/");
         File f = new File(u.toURI());
 
+        String fs = f.toString().toLowerCase().replace("\\", "/");
+
+        System.out.println("Found " + fs);
+
         // running this particular test from IntelliJ will have the wrong class directory
-        String fs = f.toString();
-        int idx = fs.toLowerCase().replace("\\", "/").indexOf("/out/test");
+        // gradle will generate test classes into a separate directory too
+        int idx = fs.indexOf("/test");
         if (idx >= 0) {
             f = new File(fs.substring(0, idx));
         }
@@ -66,7 +70,7 @@ public class NoAnonymousInnerClassesTest {
                                 n = n.substring(1);
                             }
 
-                            // javac 13+ generates switch-map anonymous classes with the same $x.class pattern
+                            // javac generates switch-map anonymous classes with the same $x.class pattern
                             // we have to look into the file and search for $SwitchMap$
 
                             boolean found = false;
