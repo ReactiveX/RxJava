@@ -15,6 +15,8 @@ package io.reactivex.internal.util;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * Atomic container for Throwables including combining and having a
  * terminal state via ExceptionHelper.
@@ -45,5 +47,18 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
 
     public boolean isTerminated() {
         return get() == ExceptionHelper.TERMINATED;
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and calls {@link RxJavaPlugins#onError(Throwable)} if there was a non-null, non-indicator
+     * exception contained within before.
+     * @since 3.0.0
+     */
+    public void tryTerminateAndReport() {
+        Throwable ex = terminate();
+        if (ex != null && ex != ExceptionHelper.TERMINATED) {
+            RxJavaPlugins.onError(ex);
+        }
     }
 }

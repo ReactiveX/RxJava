@@ -646,4 +646,34 @@ public class FlowableSwitchMapMaybeTest {
 
         ts.assertResult(1, 1, 1, 1, 1);
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+
+            Flowable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    ts.cancel();
+                    throw new TestException();
+                }
+            })
+            .switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                @Override
+                public Maybe<Integer> apply(Integer v) throws Throwable {
+                    return Maybe.just(v).hide();
+                }
+            })
+            .subscribe(ts);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

@@ -164,6 +164,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             cancelled = true;
             upstream.dispose();
             disposeInner();
+            errors.tryTerminateAndReport();
         }
 
         @Override

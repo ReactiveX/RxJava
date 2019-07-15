@@ -160,6 +160,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         public void dispose() {
             upstream.dispose();
             disposeInner();
+            errors.tryTerminateAndReport();
         }
 
         @Override
@@ -176,7 +177,8 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
                             downstream.onError(ex);
                         }
                     } else {
-                        dispose();
+                        upstream.dispose();
+                        disposeInner();
                         Throwable ex = errors.terminate();
                         if (ex != ExceptionHelper.TERMINATED) {
                             downstream.onError(ex);

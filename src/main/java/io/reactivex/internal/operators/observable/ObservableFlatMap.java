@@ -307,10 +307,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             if (!cancelled) {
                 cancelled = true;
                 if (disposeAll()) {
-                    Throwable ex = errors.terminate();
-                    if (ex != null && ex != ExceptionHelper.TERMINATED) {
-                        RxJavaPlugins.onError(ex);
-                    }
+                    errors.tryTerminateAndReport();
                 }
             }
         }

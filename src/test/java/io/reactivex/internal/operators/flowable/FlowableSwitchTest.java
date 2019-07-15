@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -1201,5 +1202,35 @@ public class FlowableSwitchTest {
         .assertNever(thread)
         .assertNoErrors()
         .assertComplete();
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+
+            Flowable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    ts.cancel();
+                    throw new TestException();
+                }
+            })
+            .switchMap(new Function<Integer, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Integer v) throws Throwable {
+                    return Flowable.just(v).hide();
+                }
+            })
+            .subscribe(ts);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

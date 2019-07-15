@@ -173,6 +173,8 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 upstream.cancel();
 
                 disposeInner();
+
+                error.tryTerminateAndReport();
             }
         }
 

@@ -585,10 +585,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     for (InnerSubscriber<?, ?> inner : a) {
                         inner.dispose();
                     }
-                    Throwable ex = errs.terminate();
-                    if (ex != null && ex != ExceptionHelper.TERMINATED) {
-                        RxJavaPlugins.onError(ex);
-                    }
+                    errs.tryTerminateAndReport();
                 }
             }
         }

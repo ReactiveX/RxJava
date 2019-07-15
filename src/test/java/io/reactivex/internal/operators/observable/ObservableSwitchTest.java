@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -1193,6 +1194,36 @@ public class ObservableSwitchTest {
 
         for (Object o : to.values()) {
             assertNotEquals(thread, o);
+        }
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
+            Observable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    to.dispose();
+                    throw new TestException();
+                }
+            })
+            .switchMap(new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer v) throws Throwable {
+                    return Observable.just(v).hide();
+                }
+            })
+            .subscribe(to);
+
+            to.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

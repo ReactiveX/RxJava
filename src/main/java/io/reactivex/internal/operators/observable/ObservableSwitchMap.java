@@ -157,6 +157,8 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 cancelled = true;
                 upstream.dispose();
                 disposeInner();
+
+                errors.tryTerminateAndReport();
             }
         }
 
