@@ -15,6 +15,8 @@ package io.reactivex.validators;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class TestPrefixInMethodName {
 
     @Test
     public void checkAndUpdateTestMethodNames() throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
             return;

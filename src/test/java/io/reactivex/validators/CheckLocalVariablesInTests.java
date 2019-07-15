@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 /**
  * Checks for commonly copy-pasted but not-renamed local variables in unit tests.
  * <ul>
@@ -41,7 +43,7 @@ public class CheckLocalVariablesInTests {
     }
 
     static void findPattern(String pattern, boolean checkMain) throws Exception {
-        File f = MaybeNo2Dot0Since.findSource("Flowable");
+        File f = TestHelper.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
             return;

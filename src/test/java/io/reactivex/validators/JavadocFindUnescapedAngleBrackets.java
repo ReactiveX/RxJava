@@ -17,11 +17,13 @@ import java.util.*;
 
 import org.junit.Test;
 
+import io.reactivex.testsupport.TestHelper;
+
 public class JavadocFindUnescapedAngleBrackets {
 
     @Test
     public void find() throws Exception {
-        File base = MaybeNo2Dot0Since.findSource("Flowable");
+        File base = TestHelper.findSource("Flowable");
 
         if (base == null) {
             return;
