@@ -27,7 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
-import io.reactivex.testsupport.TestHelper;
+import io.reactivex.testsupport.*;
 
 public class ObservableSwitchMapCompletableTest {
 
@@ -428,5 +428,35 @@ public class ObservableSwitchMapCompletableTest {
         cs.onComplete();
 
         to.assertResult();
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+
+            Observable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    to.dispose();
+                    throw new TestException();
+                }
+            })
+            .switchMapCompletable(new Function<Integer, Completable>() {
+                @Override
+                public Completable apply(Integer v) throws Throwable {
+                    return Completable.complete().hide();
+                }
+            })
+            .subscribe(to);
+
+            to.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

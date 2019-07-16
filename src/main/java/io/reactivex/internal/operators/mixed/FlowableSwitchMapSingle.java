@@ -177,6 +177,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
             cancelled = true;
             upstream.cancel();
             disposeInner();
+            errors.tryTerminateAndReport();
         }
 
         void innerError(SwitchMapSingleObserver<R> sender, Throwable ex) {

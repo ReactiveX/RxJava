@@ -177,6 +177,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
             cancelled = true;
             upstream.cancel();
             disposeInner();
+            errors.tryTerminateAndReport();
         }
 
         void innerError(SwitchMapMaybeObserver<R> sender, Throwable ex) {

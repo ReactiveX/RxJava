@@ -15,7 +15,13 @@ package io.reactivex.internal.util;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
+
+import io.reactivex.exceptions.TestException;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.testsupport.TestHelper;
 
 public class AtomicThrowableTest {
 
@@ -28,5 +34,53 @@ public class AtomicThrowableTest {
         assertNull(ex.terminate());
 
         assertTrue(ex.isTerminated());
+    }
+
+    @Test
+    public void tryTerminateAndReportNull() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicThrowable ex = new AtomicThrowable();
+            ex.tryTerminateAndReport();
+
+            assertTrue("" + errors, errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void tryTerminateAndReportAlreadyTerminated() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicThrowable ex = new AtomicThrowable();
+            ex.terminate();
+
+            ex.tryTerminateAndReport();
+
+            assertTrue("" + errors, errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void tryTerminateAndReportHasError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicThrowable ex = new AtomicThrowable();
+            ex.set(new TestException());
+
+            ex.tryTerminateAndReport();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+
+            assertEquals(1, errors.size());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

@@ -162,6 +162,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
         public void dispose() {
             upstream.cancel();
             disposeInner();
+            errors.tryTerminateAndReport();
         }
 
         @Override
@@ -178,7 +179,8 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
                             downstream.onError(ex);
                         }
                     } else {
-                        dispose();
+                        upstream.cancel();
+                        disposeInner();
                         Throwable ex = errors.terminate();
                         if (ex != ExceptionHelper.TERMINATED) {
                             downstream.onError(ex);
