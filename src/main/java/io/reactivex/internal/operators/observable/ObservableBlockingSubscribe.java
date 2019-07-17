@@ -61,7 +61,7 @@ public final class ObservableBlockingSubscribe {
                 }
             }
             if (bs.isDisposed()
-                    || o == BlockingObserver.TERMINATED
+                    || v == BlockingObserver.TERMINATED
                     || NotificationLite.acceptFull(v, observer)) {
                 break;
             }
