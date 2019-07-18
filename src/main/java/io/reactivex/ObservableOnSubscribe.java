@@ -26,8 +26,8 @@ public interface ObservableOnSubscribe<T> {
     /**
      * Called for each Observer that subscribes.
      * @param emitter the safe emitter instance, never null
-     * @throws Exception on error
+     * @throws Throwable on error
      */
-    void subscribe(@NonNull ObservableEmitter<T> emitter) throws Exception;
+    void subscribe(@NonNull ObservableEmitter<T> emitter) throws Throwable;
 }
 
