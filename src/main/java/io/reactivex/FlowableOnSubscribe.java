@@ -26,8 +26,8 @@ public interface FlowableOnSubscribe<T> {
     /**
      * Called for each Subscriber that subscribes.
      * @param emitter the safe emitter instance, never null
-     * @throws Exception on error
+     * @throws Throwable on error
      */
-    void subscribe(@NonNull FlowableEmitter<T> emitter) throws Exception;
+    void subscribe(@NonNull FlowableEmitter<T> emitter) throws Throwable;
 }
 

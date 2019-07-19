@@ -24,8 +24,8 @@ public interface CompletableOnSubscribe {
     /**
      * Called for each CompletableObserver that subscribes.
      * @param emitter the safe emitter instance, never null
-     * @throws Exception on error
+     * @throws Throwable on error
      */
-    void subscribe(@NonNull CompletableEmitter emitter) throws Exception;
+    void subscribe(@NonNull CompletableEmitter emitter) throws Throwable;
 }
 
