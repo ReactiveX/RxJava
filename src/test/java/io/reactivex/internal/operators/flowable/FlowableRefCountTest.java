@@ -731,13 +731,12 @@ public class FlowableRefCountTest {
         }
     }
 
+    static final int GC_SLEEP_TIME = 250;
+
     @Test
     public void publishNoLeak() throws Exception {
-        Thread.sleep(100);
         System.gc();
-        Thread.sleep(100);
-
-        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        Thread.sleep(GC_SLEEP_TIME);
 
         source = Flowable.fromCallable(new Callable<Object>() {
             @Override
@@ -748,11 +747,12 @@ public class FlowableRefCountTest {
         .publish()
         .refCount();
 
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        Thread.sleep(100);
         System.gc();
-        Thread.sleep(200);
+        Thread.sleep(GC_SLEEP_TIME);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -764,7 +764,7 @@ public class FlowableRefCountTest {
     @Test
     public void publishNoLeak2() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(GC_SLEEP_TIME);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -787,7 +787,7 @@ public class FlowableRefCountTest {
         d2 = null;
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(GC_SLEEP_TIME);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
