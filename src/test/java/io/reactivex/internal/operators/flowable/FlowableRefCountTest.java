@@ -738,8 +738,6 @@ public class FlowableRefCountTest {
         System.gc();
         Thread.sleep(GC_SLEEP_TIME);
 
-        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-
         source = Flowable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
@@ -748,6 +746,8 @@ public class FlowableRefCountTest {
         })
         .publish()
         .refCount();
+
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 

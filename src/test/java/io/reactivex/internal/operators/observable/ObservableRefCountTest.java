@@ -711,8 +711,6 @@ public class ObservableRefCountTest {
         System.gc();
         Thread.sleep(GC_SLEEP_TIME);
 
-        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-
         source = Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
@@ -722,12 +720,23 @@ public class ObservableRefCountTest {
         .publish()
         .refCount();
 
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
-        Thread.sleep(GC_SLEEP_TIME);
+        long after = 0L;
 
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        for (int i = 0; i < 10; i++) {
+            System.gc();
+
+            after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+            if (start + 20 * 1000 * 1000 > after) {
+                break;
+            }
+
+            Thread.sleep(GC_SLEEP_TIME);
+        }
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
