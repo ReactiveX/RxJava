@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.management.*;
@@ -1997,4 +1998,12 @@ public class ObservableReplayEagerTruncateTest {
         }
     }
 
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange() {
+        Observable.just(1).replay(1, 1, TimeUnit.SECONDS, new TimesteppingScheduler(), true)
+        .autoConnect()
+        .test()
+        .assertComplete()
+        .assertNoErrors();
+    }
 }

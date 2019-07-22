@@ -633,6 +633,11 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             }
 
             setFirst(head);
+            // correct the tail if all items have been removed
+            head = get();
+            if (head.get() == null) {
+                tail = head;
+            }
         }
         /**
          * Arranges the given node is the new head from now on.
@@ -641,11 +646,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         final void setFirst(Node n) {
             if (eagerTruncate) {
                 Node m = new Node(null);
-                Node nextNode = n.get();
-                if (nextNode == null) {
-                    tail = m;
-                }
-                m.lazySet(nextNode);
+                m.lazySet(n.get());
                 n = m;
             }
             set(n);
@@ -845,7 +846,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             int e = 0;
             for (;;) {
-                if (next != null) {
+                if (next != null && size > 1) { // never truncate the very last item just added
                     if (size > limit) {
                         e++;
                         size--;

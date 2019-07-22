@@ -1071,6 +1071,10 @@ public final class ReplaySubject<T> extends Subject<T> {
             TimedNode<Object> h = head;
 
             for (;;) {
+                if (size <= 1) {
+                    head = h;
+                    break;
+                }
                 TimedNode<Object> next = h.get();
                 if (next == null) {
                     head = h;
@@ -1083,6 +1087,7 @@ public final class ReplaySubject<T> extends Subject<T> {
                 }
 
                 h = next;
+                size--;
             }
 
         }

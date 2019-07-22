@@ -14,6 +14,7 @@
 package io.reactivex.processors;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.management.*;
@@ -25,7 +26,7 @@ import org.junit.*;
 import org.mockito.*;
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -33,7 +34,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.ReplayProcessor.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
-import io.reactivex.testsupport.TestHelper;
+import io.reactivex.testsupport.*;
 
 public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -1750,5 +1751,80 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestSubscriber<Integer> ts = rp.test();
+
+        rp.onNext(1);
+        rp.cleanupBuffer();
+        rp.onComplete();
+
+        ts.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange2() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestSubscriber<Integer> ts = rp.test();
+
+        rp.onNext(1);
+        rp.cleanupBuffer();
+        rp.onNext(2);
+        rp.cleanupBuffer();
+        rp.onComplete();
+
+        ts.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange3() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestSubscriber<Integer> ts = rp.test();
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onComplete();
+
+        ts.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange4() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 10);
+
+        TestSubscriber<Integer> ts = rp.test();
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onComplete();
+
+        ts.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeRemoveCorrectNumberOfOld() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        rp.onNext(4);
+        rp.onNext(5);
+
+        rp.test().assertValuesOnly(4, 5);
     }
 }
