@@ -767,6 +767,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             }
 
             setFirst(head);
+            // correct the tail if all items have been removed
+            head = get();
+            if (head.get() == null) {
+                tail = head;
+            }
         }
         /**
          * Arranges the given node is the new head from now on.
@@ -775,11 +780,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         final void setFirst(Node n) {
             if (eagerTruncate) {
                 Node m = new Node(null, n.index);
-                Node nextNode = n.get();
-                if (nextNode == null) {
-                    tail = m;
-                }
-                m.lazySet(nextNode);
+                m.lazySet(n.get());
                 n = m;
             }
             set(n);
@@ -787,7 +788,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public final void next(T value) {
-            Object o = enterTransform(NotificationLite.next(value));
+            Object o = enterTransform(NotificationLite.next(value), false);
             Node n = new Node(o, ++index);
             addLast(n);
             truncate();
@@ -795,7 +796,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public final void error(Throwable e) {
-            Object o = enterTransform(NotificationLite.error(e));
+            Object o = enterTransform(NotificationLite.error(e), true);
             Node n = new Node(o, ++index);
             addLast(n);
             truncateFinal();
@@ -803,7 +804,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public final void complete() {
-            Object o = enterTransform(NotificationLite.complete());
+            Object o = enterTransform(NotificationLite.complete(), true);
             Node n = new Node(o, ++index);
             addLast(n);
             truncateFinal();
@@ -897,9 +898,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Override this to wrap the NotificationLite object into a
          * container to be used later by truncate.
          * @param value the value to transform into the internal representation
+         * @param terminal is this a terminal value?
          * @return the transformed value
          */
-        Object enterTransform(Object value) {
+        Object enterTransform(Object value, boolean terminal) {
             return value;
         }
         /**
@@ -1001,8 +1003,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        Object enterTransform(Object value) {
-            return new Timed<Object>(value, scheduler.now(unit), unit);
+        Object enterTransform(Object value, boolean terminal) {
+            return new Timed<Object>(value, terminal ? Long.MAX_VALUE : scheduler.now(unit), unit);
         }
 
         @Override
@@ -1019,7 +1021,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             int e = 0;
             for (;;) {
-                if (next != null) {
+                if (next != null && size > 1) { // never truncate the very last item just added
                     if (size > limit) {
                         e++;
                         size--;

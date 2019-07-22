@@ -28,7 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
@@ -2257,5 +2257,14 @@ public class FlowableReplayEagerTruncateTest {
             Assert.fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
                     + " -> " + after / 1024.0 / 1024.0);
         }
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange() {
+        Flowable.just(1).replay(1, 1, TimeUnit.SECONDS, new TimesteppingScheduler(), true)
+        .autoConnect()
+        .test()
+        .assertComplete()
+        .assertNoErrors();
     }
 }
