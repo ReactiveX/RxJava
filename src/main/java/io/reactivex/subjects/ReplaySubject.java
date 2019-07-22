@@ -1075,8 +1075,12 @@ public final class ReplaySubject<T> extends Subject<T> {
                     head = h;
                     break;
                 }
-
                 TimedNode<Object> next = h.get();
+                if (next == null) {
+                    head = h;
+                    break;
+                }
+
                 if (next.time > limit) {
                     head = h;
                     break;

@@ -1074,8 +1074,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                     head = h;
                     break;
                 }
-
                 TimedNode<T> next = h.get();
+                if (next == null) {
+                    head = h;
+                    break;
+                }
+
                 if (next.time > limit) {
                     head = h;
                     break;
