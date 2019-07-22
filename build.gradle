@@ -220,17 +220,17 @@ test {
     
     testLogging  {
         // showing skipped occasionally should prevent CI timeout due to lack of standard output
-        events=["skipped", "failed"] // "started", "passed"
+        events=["skipped", "failed", "started"] // "started", "passed"
         // showStandardStreams = true
         exceptionFormat="full"
 
-        debug.events = ["skipped", "failed"]
+        debug.events = ["skipped", "failed", "started"]
         debug.exceptionFormat="full"
 
-        info.events = ["failed", "skipped"]
+        info.events = ["failed", "skipped", "started"]
         info.exceptionFormat="full"
         
-        warn.events = ["failed", "skipped"]
+        warn.events = ["failed", "skipped", "started"]
         warn.exceptionFormat="full"
     }
 
