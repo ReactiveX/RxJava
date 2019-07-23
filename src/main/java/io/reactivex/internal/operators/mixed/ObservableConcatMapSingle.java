@@ -26,6 +26,8 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static io.reactivex.internal.util.ExceptionHelper.TERMINATED;
+
 /**
  * Maps each upstream item into a {@link SingleSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
@@ -123,12 +125,19 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t) && !cancelled) {
-                if (errorMode == ErrorMode.IMMEDIATE) {
-                    inner.dispose();
+            if (errors.addThrowable(t)) {
+                if (!cancelled) {
+                    if (errorMode == ErrorMode.IMMEDIATE) {
+                        inner.dispose();
+                    }
+                    done = true;
+                    drain();
+                } else {
+                    Throwable u = errors.terminate();
+                    if (u != null && u != TERMINATED) {
+                        RxJavaPlugins.onError(u);
+                    }
                 }
-                done = true;
-                drain();
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -149,8 +158,9 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                 queue.clear();
                 item = null;
 
-                if (errors.get() != null) {
-                    RxJavaPlugins.onError(errors.terminate());
+                Throwable t = errors.terminate ();
+                if (t != null && t != TERMINATED) {
+                    RxJavaPlugins.onError(t);
                 }
             }
         }
@@ -167,12 +177,19 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
         }
 
         void innerError(Throwable ex) {
-            if (errors.addThrowable(ex) && !cancelled) {
-                if (errorMode != ErrorMode.END) {
-                    upstream.dispose();
+            if (errors.addThrowable(ex)) {
+                if (!cancelled) {
+                    if (errorMode != ErrorMode.END) {
+                        upstream.dispose();
+                    }
+                    this.state = STATE_INACTIVE;
+                    drain();
+                } else {
+                    Throwable t = errors.terminate ();
+                    if (t != null && t != TERMINATED) {
+                        RxJavaPlugins.onError(t);
+                    }
                 }
-                this.state = STATE_INACTIVE;
-                drain();
             } else {
                 RxJavaPlugins.onError(ex);
             }
@@ -197,8 +214,11 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
                     if (errors.get() != null) {
                         if (isCancelled) {
-                            RxJavaPlugins.onError(errors.terminate());
-                            return;
+                            Throwable t = errors.terminate();
+                            if (t != null && t != TERMINATED) {
+                                RxJavaPlugins.onError(t);
+                                return;
+                            }
                         } else {
                             if (errorMode == ErrorMode.IMMEDIATE
                                     || (errorMode == ErrorMode.BOUNDARY && s == STATE_INACTIVE)) {
