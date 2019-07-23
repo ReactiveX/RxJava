@@ -213,6 +213,42 @@ public class ObservableConcatMapSingleTest {
     }
 
     @Test
+    public void innerErrorAfterMainDispose() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
+
+            TestObserverEx<Integer> to = ps.concatMapSingle(
+                    new Function<Integer, SingleSource<Integer>>() {
+                        @Override
+                        public SingleSource<Integer> apply(Integer v)
+                                throws Exception {
+                            return new Single<Integer>() {
+                                @Override
+                                protected void subscribeActual(
+                                        SingleObserver<? super Integer> observer) {
+                                    observer.onSubscribe(Disposables.empty());
+                                    obs.set(observer);
+                                }
+                            };
+                        }
+                    }
+            ).to(TestHelper.<Integer>testConsumer());
+
+            ps.onNext(1);
+
+            to.dispose();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
     public void delayAllErrors() {
         TestObserverEx<Object> to = Observable.range(1, 5)
         .concatMapSingleDelayError(new Function<Integer, SingleSource<? extends Object>>() {
