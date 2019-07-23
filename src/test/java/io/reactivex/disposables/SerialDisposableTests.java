@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -26,7 +27,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SerialDisposableTests {
+public class SerialDisposableTests extends RxJavaTest {
     private SerialDisposable serialDisposable;
 
     @Before
@@ -117,7 +118,7 @@ public class SerialDisposableTests {
         verify(underlying).dispose();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscriptionConcurrently()
             throws InterruptedException {
         final Disposable firstSet = mock(Disposable.class);
