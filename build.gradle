@@ -15,6 +15,10 @@ buildscript {
   }
 }
 
+plugins {
+	id 'ru.vyarus.animalsniffer' version '1.5.0'
+}
+
 group = "io.reactivex.rxjava3"
 ext.githubProjectName = "rxjava"
 
@@ -36,7 +40,6 @@ description = "RxJava: Reactive Extensions for the JVM – a library for composi
 apply plugin: "java-library"
 apply plugin: "checkstyle"
 apply plugin: "jacoco"
-apply plugin: "ru.vyarus.animalsniffer"
 apply plugin: "maven"
 apply plugin: "osgi"
 apply plugin: "me.champeau.gradle.jmh"
@@ -57,7 +60,7 @@ def mockitoVersion = "2.1.0"
 def jmhLibVersion = "1.20"
 def testNgVersion = "6.11"
 def guavaVersion = "24.0-jre"
-def jacocoVersion = "0.8.0"
+def jacocoVersion = "0.8.4"
 // --------------------------------------
 
 repositories {
@@ -106,6 +109,7 @@ javadoc {
 
 animalsniffer {
     annotation = "io.reactivex.internal.util.SuppressAnimalSniffer"
+    toolVersion = '1.18'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
