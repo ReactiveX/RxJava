@@ -337,4 +337,38 @@ public class FlowableConcatMapSingleTest {
             ts.assertNoErrors();
         }
     }
+
+    @Test
+    public void innerErrorAfterMainCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
+
+            TestSubscriber<Integer> ts = pp.concatMapSingle(
+                    new Function<Integer, SingleSource<Integer>>() {
+                        @Override
+                        public SingleSource<Integer> apply(Integer v) {
+                            return new Single<Integer>() {
+                                @Override
+                                protected void subscribeActual(
+                                        SingleObserver<? super Integer> observer) {
+                                    observer.onSubscribe(Disposables.empty());
+                                    obs.set(observer);
+                                }
+                            };
+                        }
+                    }
+            ).test ();
+
+            pp.onNext(1);
+
+            ts.cancel();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

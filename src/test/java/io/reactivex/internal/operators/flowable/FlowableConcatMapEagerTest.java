@@ -1367,4 +1367,39 @@ public class FlowableConcatMapEagerTest {
 
         assertFalse(pp1.hasSubscribers());
     }
+
+    @Test
+    public void innerErrorAfterMainCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final AtomicReference<Subscriber<? super Integer>> subs = new AtomicReference<Subscriber<? super Integer>>();
+
+            TestSubscriber<Integer> ts = pp.concatMapEager(
+                    new Function<Integer, Publisher<Integer>>() {
+                        @Override
+                        public Publisher<Integer> apply(Integer v) {
+                            return new Flowable<Integer>() {
+                                @Override
+                                protected void subscribeActual(
+                                        Subscriber<? super Integer> subscriber) {
+                                    subscriber.onSubscribe(new BooleanSubscription());
+                                    subs.set(subscriber);
+                                }
+                            };
+                        }
+                    }
+            ).test ();
+
+            pp.onNext(1);
+
+            ts.cancel();
+            subs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

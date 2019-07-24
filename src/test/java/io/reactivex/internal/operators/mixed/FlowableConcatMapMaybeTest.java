@@ -420,4 +420,35 @@ public class FlowableConcatMapMaybeTest {
         }
     }
 
+    @Test
+    public void innerErrorAfterMainCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
+
+            TestSubscriber<Integer> ts = pp.concatMapMaybe(
+                    new Function<Integer, MaybeSource<Integer>>() {
+                        @Override
+                        public MaybeSource<Integer> apply(Integer v) {
+                            return new MaybeSource<Integer> () {
+                                @Override
+                                public void subscribe(MaybeObserver<? super Integer> observer) {
+                                    obs.set (observer);
+                                }
+                            };
+                        }
+                    }
+            ).test ();
+
+            pp.onNext(1);
+
+            ts.cancel();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

@@ -223,8 +223,7 @@ public class ObservableConcatMapSingleTest {
             TestObserverEx<Integer> to = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
                         @Override
-                        public SingleSource<Integer> apply(Integer v)
-                                throws Exception {
+                        public SingleSource<Integer> apply(Integer v) {
                             return new Single<Integer>() {
                                 @Override
                                 protected void subscribeActual(

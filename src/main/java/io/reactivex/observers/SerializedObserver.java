@@ -197,4 +197,8 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             }
         }
     }
+
+    public void finish () {
+        done = true;
+    }
 }

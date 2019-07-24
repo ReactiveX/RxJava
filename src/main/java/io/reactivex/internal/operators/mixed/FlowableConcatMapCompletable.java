@@ -156,6 +156,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
             inner.dispose();
             if (getAndIncrement() == 0) {
                 queue.clear();
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -197,6 +198,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
             do {
                 if (disposed) {
                     queue.clear();
+                    errors.tryTerminateAndReport();
                     return;
                 }
 

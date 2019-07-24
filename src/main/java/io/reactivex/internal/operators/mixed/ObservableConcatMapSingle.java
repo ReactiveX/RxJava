@@ -26,8 +26,6 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-import static io.reactivex.internal.util.ExceptionHelper.TERMINATED;
-
 /**
  * Maps each upstream item into a {@link SingleSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
@@ -126,18 +124,11 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
         @Override
         public void onError(Throwable t) {
             if (errors.addThrowable(t)) {
-                if (!cancelled) {
-                    if (errorMode == ErrorMode.IMMEDIATE) {
-                        inner.dispose();
-                    }
-                    done = true;
-                    drain();
-                } else {
-                    Throwable u = errors.terminate();
-                    if (u != null && u != TERMINATED) {
-                        RxJavaPlugins.onError(u);
-                    }
+                if (errorMode == ErrorMode.IMMEDIATE) {
+                    inner.dispose();
                 }
+                done = true;
+                drain();
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -158,10 +149,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                 queue.clear();
                 item = null;
 
-                Throwable t = errors.terminate ();
-                if (t != null && t != TERMINATED) {
-                    RxJavaPlugins.onError(t);
-                }
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -178,18 +166,11 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
         void innerError(Throwable ex) {
             if (errors.addThrowable(ex)) {
-                if (!cancelled) {
-                    if (errorMode != ErrorMode.END) {
-                        upstream.dispose();
-                    }
-                    this.state = STATE_INACTIVE;
-                    drain();
-                } else {
-                    Throwable t = errors.terminate ();
-                    if (t != null && t != TERMINATED) {
-                        RxJavaPlugins.onError(t);
-                    }
+                if (errorMode != ErrorMode.END) {
+                    upstream.dispose();
                 }
+                this.state = STATE_INACTIVE;
+                drain();
             } else {
                 RxJavaPlugins.onError(ex);
             }
@@ -209,32 +190,24 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             for (;;) {
 
                 for (;;) {
-                    boolean isCancelled = cancelled;
+                    if (cancelled) {
+                        queue.clear();
+                        item = null;
+                        errors.tryTerminateAndReport();
+                        break;
+                    }
+
                     int s = state;
 
                     if (errors.get() != null) {
-                        if (isCancelled) {
-                            Throwable t = errors.terminate();
-                            if (t != null && t != TERMINATED) {
-                                RxJavaPlugins.onError(t);
-                                return;
-                            }
-                        } else {
-                            if (errorMode == ErrorMode.IMMEDIATE
-                                    || (errorMode == ErrorMode.BOUNDARY && s == STATE_INACTIVE)) {
-                                queue.clear();
-                                item = null;
-                                Throwable ex = errors.terminate();
-                                downstream.onError(ex);
-                                return;
-                            }
+                        if (errorMode == ErrorMode.IMMEDIATE
+                                || (errorMode == ErrorMode.BOUNDARY && s == STATE_INACTIVE)) {
+                            queue.clear();
+                            item = null;
+                            Throwable ex = errors.terminate();
+                            downstream.onError(ex);
+                            return;
                         }
-                    }
-
-                    if (isCancelled) {
-                        queue.clear();
-                        item = null;
-                        break;
                     }
 
                     if (s == STATE_INACTIVE) {

@@ -58,7 +58,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     static final class SourceObserver<T, U> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 8828587559905699186L;
-        final Observer<? super U> downstream;
+        final SerializedObserver<? super U> downstream;
         final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
         final InnerObserver<U> inner;
         final int bufferSize;
@@ -75,7 +75,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         int fusionMode;
 
-        SourceObserver(Observer<? super U> actual,
+        SourceObserver(SerializedObserver<? super U> actual,
                                 Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.downstream = actual;
             this.mapper = mapper;
@@ -137,8 +137,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 return;
             }
             done = true;
-            dispose();
             downstream.onError(t);
+            dispose();
         }
 
         @Override
@@ -165,6 +165,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             disposed = true;
             inner.dispose();
             upstream.dispose();
+            downstream.finish ();
 
             if (getAndIncrement() == 0) {
                 queue.clear();
@@ -191,9 +192,9 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         t = queue.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        dispose();
                         queue.clear();
                         downstream.onError(ex);
+                        dispose();
                         return;
                     }
 
@@ -212,9 +213,9 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                             o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            dispose();
                             queue.clear();
                             downstream.onError(ex);
+                            dispose();
                             return;
                         }
 
@@ -253,8 +254,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
             @Override
             public void onError(Throwable t) {
-                parent.dispose();
                 downstream.onError(t);
+                parent.dispose();
             }
 
             @Override
@@ -379,6 +380,11 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             cancelled = true;
             upstream.dispose();
             observer.dispose();
+
+            if (getAndIncrement() == 0) {
+                queue.clear();
+                error.tryTerminateAndReport();
+            }
         }
 
         @SuppressWarnings("unchecked")
@@ -397,6 +403,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
                     if (cancelled) {
                         queue.clear();
+                        error.tryTerminateAndReport();
                         return;
                     }
 

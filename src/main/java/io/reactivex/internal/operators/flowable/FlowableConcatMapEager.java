@@ -172,6 +172,8 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 do {
                     cancelAll();
                 } while (decrementAndGet() != 0);
+
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -279,6 +281,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         while (e != r) {
                             if (cancelled) {
                                 cancelAll();
+                                errors.tryTerminateAndReport();
                                 return;
                             }
 
@@ -305,6 +308,8 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                 current = null;
                                 inner.cancel();
                                 cancelAll();
+                                errors.addThrowable(ex);
+                                ex = errors.terminate();
                                 a.onError(ex);
                                 return;
                             }
@@ -333,6 +338,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         if (e == r) {
                             if (cancelled) {
                                 cancelAll();
+                                errors.tryTerminateAndReport();
                                 return;
                             }
 

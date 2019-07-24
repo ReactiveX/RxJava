@@ -170,6 +170,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             if (getAndIncrement() == 0) {
                 queue.clear();
                 item = null;
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -210,7 +211,8 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
-                        break;
+                        errors.tryTerminateAndReport();
+                        return;
                     }
 
                     int s = state;

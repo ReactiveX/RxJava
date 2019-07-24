@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -521,5 +522,84 @@ public class ObservableConcatMapTest {
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void innerImmediateErrorAfterMainDispose() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final AtomicReference<Observer<? super Integer>> obs = new AtomicReference<Observer<? super Integer>>();
+
+            TestObserver<Integer> to = ps.concatMap(
+                    new Function<Integer, ObservableSource<Integer>>() {
+                        @Override
+                        public ObservableSource<Integer> apply(Integer v) {
+                            return new Observable<Integer>() {
+                                @Override
+                                protected void subscribeActual(
+                                        Observer<? super Integer> observer) {
+                                    observer.onSubscribe(Disposables.empty());
+                                    obs.set(observer);
+                                }
+                            };
+                        }
+                    }
+            ).test();
+
+            ps.onNext(1);
+
+            to.dispose();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    private void innerDelayErrorAfterMainDispose(boolean tillTheEnd) {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final AtomicReference<Observer<? super Integer>> obs = new AtomicReference<Observer<? super Integer>>();
+
+            TestObserver<Integer> to = ps.concatMapDelayError(
+                    new Function<Integer, ObservableSource<Integer>>() {
+                        @Override
+                        public ObservableSource<Integer> apply(Integer v) {
+                            return new Observable<Integer>() {
+                                @Override
+                                protected void subscribeActual(
+                                        Observer<? super Integer> observer) {
+                                    observer.onSubscribe(Disposables.empty());
+                                    obs.set(observer);
+                                }
+                            };
+                        }
+                    }, 2, tillTheEnd
+            ).test();
+
+            ps.onNext(1);
+
+            to.dispose();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void innerEndErrorAfterMainDispose() {
+        innerDelayErrorAfterMainDispose (true);
+    }
+
+    @Test
+    public void innerBoundaryErrorAfterMainDispose() {
+        innerDelayErrorAfterMainDispose (false);
     }
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
@@ -385,5 +386,37 @@ public class FlowableConcatMapCompletableTest {
         cs.onComplete();
 
         to.assertResult();
+    }
+
+    @Test
+    public void innerErrorAfterMainDispose() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final AtomicReference<CompletableObserver> obs = new AtomicReference<CompletableObserver>();
+
+            TestObserver<Void> to = pp.concatMapCompletable(
+                    new Function<Integer, CompletableSource>() {
+                        @Override
+                        public CompletableSource apply(Integer v) {
+                            return new CompletableSource () {
+                                @Override
+                                public void subscribe(CompletableObserver co) {
+                                    obs.set (co);
+                                }
+                            };
+                        }
+                    }
+            ).test ();
+
+            pp.onNext(1);
+
+            to.dispose();
+            obs.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
