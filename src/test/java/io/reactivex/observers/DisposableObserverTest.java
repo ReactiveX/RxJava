@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -25,7 +26,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableObserverTest {
+public class DisposableObserverTest extends RxJavaTest {
 
     static final class TestDisposableObserver<T> extends DisposableObserver<T> {
 

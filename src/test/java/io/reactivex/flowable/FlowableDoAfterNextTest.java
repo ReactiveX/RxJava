@@ -19,11 +19,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.functions.Consumer;
 
-public class FlowableDoAfterNextTest {
+public class FlowableDoAfterNextTest extends RxJavaTest {
 
     @Test
     public void ifFunctionThrowsThatNoMoreEventsAreProcessed() {

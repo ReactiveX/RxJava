@@ -15,6 +15,7 @@ package io.reactivex.parallel;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -25,7 +26,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class ParallelJoinTest {
+public class ParallelJoinTest extends RxJavaTest {
 
     @Test
     public void overflowFastpath() {

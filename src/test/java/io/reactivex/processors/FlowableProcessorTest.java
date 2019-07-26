@@ -15,9 +15,10 @@ package io.reactivex.processors;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public abstract class FlowableProcessorTest<T> {
+public abstract class FlowableProcessorTest<T>  extends RxJavaTest {
 
     protected abstract FlowableProcessor<T> create();
 

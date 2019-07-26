@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observer;
@@ -26,7 +27,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class SafeObserverTest {
+public class SafeObserverTest extends RxJavaTest {
 
     @Test
     public void onNextFailure() {
@@ -81,45 +82,6 @@ public class SafeObserverTest {
     }
 
     @Test
-    @Ignore("Observers can't throw")
-    public void onErrorFailureSafe() {
-        try {
-            new SafeObserver<String>(OBSERVER_ONERROR_FAIL()).onError(new SafeObserverTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Observer.onError", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeObserverTestException);
-            assertEquals("error!", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorNotImplementedFailureSafe() {
-        try {
-            new SafeObserver<String>(OBSERVER_ONERROR_NOTIMPLEMENTED()).onError(new SafeObserverTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-//            assertTrue(e instanceof OnErrorNotImplementedException);
-            assertTrue(e.getCause() instanceof SafeObserverTestException);
-            assertEquals("error!", e.getCause().getMessage());
-        }
-    }
-
-    @Test
     public void onNextOnErrorFailure() {
         try {
             OBSERVER_ONNEXT_ONERROR_FAIL().onNext("one");
@@ -129,206 +91,6 @@ public class SafeObserverTest {
             assertTrue(e instanceof SafeObserverTestException);
             assertEquals("onNextFail", e.getMessage());
         }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onNextOnErrorFailureSafe() {
-        try {
-            new SafeObserver<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Observer.onError", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeObserverTestException);
-            assertEquals("onNextFail", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getMessage());
-        }
-    }
-
-    static final Disposable THROWING_DISPOSABLE = new Disposable() {
-
-        @Override
-        public boolean isDisposed() {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
-        @Override
-        public void dispose() {
-            // break contract by throwing exception
-            throw new SafeObserverTestException("failure from unsubscribe");
-        }
-    };
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onCompleteSuccessWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_SUCCESS();
-        try {
-            o.onSubscribe(THROWING_DISPOSABLE);
-            new SafeObserver<String>(o).onComplete();
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-//            assertTrue(e instanceof UnsubscribeFailedException);
-            assertTrue(e.getCause() instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e.getMessage());
-            // expected since onError fails so SafeObserver can't help
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorSuccessWithUnsubscribeFailure() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        Observer<String> o = OBSERVER_SUCCESS(onError);
-        try {
-            o.onSubscribe(THROWING_DISPOSABLE);
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("failed"));
-            fail("we expect the unsubscribe failure to cause an exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // we still expect onError to have received something before unsubscribe blew up
-            assertNotNull(onError.get());
-            assertTrue(onError.get() instanceof SafeObserverTestException);
-            assertEquals("failed", onError.get().getMessage());
-
-            // now assert the exception that was thrown
-            RuntimeException onErrorFailedException = (RuntimeException) e;
-            assertTrue(onErrorFailedException.getCause() instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_FAIL();
-        try {
-            o.onSubscribe(THROWING_DISPOSABLE);
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("onError failure"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // assertions for what is expected for the actual failure propagated to onError which then fails
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(3, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeObserverTestException);
-            assertEquals("onError failure", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getMessage());
-
-            Throwable e5 = innerExceptions.get(2);
-            assertTrue(e5 instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e5.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
-        Observer<String> o = OBSERVER_ONERROR_NOTIMPLEMENTED();
-        try {
-            o.onSubscribe(THROWING_DISPOSABLE);
-            new SafeObserver<String>(o).onError(new SafeObserverTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // assertions for what is expected for the actual failure propagated to onError which then fails
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Observer.onError not implemented and error while unsubscribing.", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeObserverTestException);
-            assertEquals("error!", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e4.getMessage());
-        }
-    }
-
-    private static Observer<String> OBSERVER_SUCCESS() {
-        return new DefaultObserver<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-        };
-
-    }
-
-    private static Observer<String> OBSERVER_SUCCESS(final AtomicReference<Throwable> onError) {
-        return new DefaultObserver<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                onError.set(e);
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-        };
-
     }
 
     private static Observer<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
@@ -394,28 +156,6 @@ public class SafeObserverTest {
         };
     }
 
-    private static Observer<String> OBSERVER_ONERROR_NOTIMPLEMENTED() {
-        return new DefaultObserver<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-//                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-
-        };
-    }
-
     private static Observer<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
         return new DefaultObserver<String>() {
 
@@ -441,35 +181,6 @@ public class SafeObserverTest {
     static class SafeObserverTestException extends RuntimeException {
         SafeObserverTestException(String message) {
             super(message);
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onCompletedThrows() {
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        SafeObserver<Integer> observer = new SafeObserver<Integer>(new DefaultObserver<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                error.set(e);
-            }
-
-            @Override
-            public void onComplete() {
-                throw new TestException();
-            }
-        });
-
-        try {
-            observer.onComplete();
-            Assert.fail();
-        } catch (RuntimeException e) {
-           assertNull(error.get());
         }
     }
 

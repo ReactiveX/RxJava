@@ -26,7 +26,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableSingleObserverTest {
+public class DisposableSingleObserverTest extends RxJavaTest {
 
     static final class TestSingle<T> extends DisposableSingleObserver<T> {
 

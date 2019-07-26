@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
@@ -26,7 +27,7 @@ import io.reactivex.flowable.FlowableEventStream.Event;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
 
-public class FlowableZipTests {
+public class FlowableZipTests extends RxJavaTest {
 
     @Test
     public void zipObservableOfObservables() {

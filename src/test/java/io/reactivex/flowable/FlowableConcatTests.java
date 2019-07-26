@@ -16,13 +16,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 
-public class FlowableConcatTests {
+public class FlowableConcatTests extends RxJavaTest {
 
     @Test
     public void concatSimple() {

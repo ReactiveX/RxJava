@@ -15,17 +15,14 @@
  */
 package io.reactivex.flowable;
 
-import static io.reactivex.Flowable.combineLatest;
-import static org.junit.Assert.assertNull;
-
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 import io.reactivex.functions.*;
-import io.reactivex.processors.BehaviorProcessor;
 
-public class FlowableCombineLatestTests {
+public class FlowableCombineLatestTests extends RxJavaTest {
     /**
      * This won't compile if super/extends isn't done correctly on generics.
      */
@@ -63,25 +60,4 @@ public class FlowableCombineLatestTests {
             System.out.println("Result: " + t1);
         }
     };
-
-    @Ignore("No longer allowed")
-    @Test
-    public void nullEmitting() throws Exception {
-        // FIXME this is no longer allowed
-        Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault((Boolean) null);
-        Flowable<Boolean> nonNullObservable = BehaviorProcessor.createDefault(true);
-        Flowable<Boolean> combined =
-                combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {
-                    @Override
-                    public Boolean apply(Boolean bool1, Boolean bool2) {
-                        return bool1 == null ? null : bool2;
-                    }
-                });
-        combined.subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean aBoolean) {
-                assertNull(aBoolean);
-            }
-        });
-    }
 }

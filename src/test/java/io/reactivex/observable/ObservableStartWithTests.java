@@ -17,11 +17,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
 
-public class ObservableStartWithTests {
+public class ObservableStartWithTests extends RxJavaTest {
 
     @Test
     public void startWith1() {

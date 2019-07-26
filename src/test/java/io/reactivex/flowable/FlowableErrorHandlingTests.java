@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -25,7 +26,7 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultSubscriber;
 
-public class FlowableErrorHandlingTests {
+public class FlowableErrorHandlingTests extends RxJavaTest {
 
     /**
      * Test that an error from a user provided Observer.onNext

@@ -32,7 +32,7 @@ import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class ParallelFromPublisherTest {
+public class ParallelFromPublisherTest extends RxJavaTest {
 
     @Test
     public void sourceOverflow() {

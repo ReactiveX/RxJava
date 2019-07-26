@@ -28,7 +28,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class ParallelReduceFullTest {
+public class ParallelReduceFullTest extends RxJavaTest {
 
     @Test
     public void cancel() {

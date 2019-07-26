@@ -41,7 +41,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class MaybeTest {
+public class MaybeTest extends RxJavaTest {
     @Test
     public void fromFlowableEmpty() {
 

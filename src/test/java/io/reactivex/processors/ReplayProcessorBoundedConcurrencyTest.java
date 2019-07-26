@@ -28,9 +28,9 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.testsupport.TestSubscriberEx;
 
-public class ReplayProcessorBoundedConcurrencyTest {
+public class ReplayProcessorBoundedConcurrencyTest extends RxJavaTest {
 
-    @Test(timeout = 4000)
+    @Test
     public void replaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplayProcessor<Long> replay = ReplayProcessor.createUnbounded();
         Thread source = new Thread(new Runnable() {
@@ -225,7 +225,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
-    @Test(timeout = 10000)
+    @Test
     public void subscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplayProcessor<String> processor = ReplayProcessor.createUnbounded();
@@ -407,7 +407,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void concurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -462,7 +462,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
         t.join();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void concurrentSizeAndHasAnyValueBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithSize(3);
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -506,7 +506,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
         t.join();
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void concurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
         final CyclicBarrier cb = new CyclicBarrier(2);

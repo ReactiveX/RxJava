@@ -26,7 +26,7 @@ import io.reactivex.functions.Cancellable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeCreateTest {
+public class MaybeCreateTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void nullArgument() {
         Maybe.create(null);

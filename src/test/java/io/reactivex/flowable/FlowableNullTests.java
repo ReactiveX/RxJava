@@ -34,7 +34,7 @@ import io.reactivex.testsupport.TestHelper;
 /**
  * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.
  */
-public class FlowableNullTests {
+public class FlowableNullTests extends RxJavaTest {
 
     Flowable<Integer> just1 = Flowable.just(1);
 
@@ -1300,27 +1300,6 @@ public class FlowableNullTests {
                 return just1;
             }
         });
-    }
-
-    @Test(expected = NullPointerException.class)
-    @Ignore("No longer crashes with NPE but signals it; tested elsewhere.")
-    public void flatMapNotificationOnErrorReturnsNull() {
-        Flowable.error(new TestException()).flatMap(new Function<Object, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Object v) {
-                return just1;
-            }
-        }, new Function<Throwable, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Throwable e) {
-                return null;
-            }
-        }, new Supplier<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> get() {
-                return just1;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)

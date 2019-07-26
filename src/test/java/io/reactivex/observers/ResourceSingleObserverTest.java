@@ -13,6 +13,7 @@
 
 package io.reactivex.observers;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceSingleObserverTest {
+public class ResourceSingleObserverTest extends RxJavaTest {
     static final class TestResourceSingleObserver<T> extends ResourceSingleObserver<T> {
         T value;
 

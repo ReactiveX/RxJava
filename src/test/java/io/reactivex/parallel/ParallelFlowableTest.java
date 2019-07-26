@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class ParallelFlowableTest {
+public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void sequentialMode() {

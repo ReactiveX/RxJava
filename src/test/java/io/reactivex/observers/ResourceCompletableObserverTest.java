@@ -13,6 +13,7 @@
 
 package io.reactivex.observers;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceCompletableObserverTest {
+public class ResourceCompletableObserverTest extends RxJavaTest {
     static final class TestResourceCompletableObserver extends ResourceCompletableObserver {
         final List<Throwable> errors = new ArrayList<Throwable>();
 

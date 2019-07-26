@@ -28,7 +28,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public final class FlowableCollectTest {
+public final class FlowableCollectTest extends RxJavaTest {
 
     @Test
     public void collectToListFlowable() {

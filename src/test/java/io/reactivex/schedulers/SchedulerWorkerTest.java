@@ -18,13 +18,14 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 
-public class SchedulerWorkerTest {
+public class SchedulerWorkerTest extends RxJavaTest {
 
     static final class CustomDriftScheduler extends Scheduler {
         public volatile long drift;

@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class ParallelSortedJoinTest {
+public class ParallelSortedJoinTest extends RxJavaTest {
 
     @Test
     public void cancel() {

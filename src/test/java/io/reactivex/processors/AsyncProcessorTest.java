@@ -73,22 +73,6 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
-    @Ignore("Null values not allowed")
-    public void nullValues() {
-        AsyncProcessor<String> processor = AsyncProcessor.create();
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        processor.subscribe(subscriber);
-
-        processor.onNext(null);
-        processor.onComplete();
-
-        verify(subscriber, times(1)).onNext(null);
-        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-    }
-
-    @Test
     public void subscribeAfterCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
@@ -190,7 +174,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     /**
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
-    @Test(timeout = 10000)
+    @Test
     public void subscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
@@ -275,52 +259,6 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
             }
         }
     }
-
-    // FIXME subscriber methods are not allowed to throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        AsyncSubject<String> ps = AsyncSubject.create();
-//
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
-
-    // FIXME subscriber methods are not allowed to throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        AsyncSubject<String> ps = AsyncSubject.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
 
     @Test
     public void currentStateMethodsNormal() {

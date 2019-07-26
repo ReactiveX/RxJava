@@ -32,55 +32,9 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
     }
 
     @Test
-    @Ignore("Unhandled errors are no longer thrown")
-    public final void unhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.unhandledErrorIsDeliveredToThreadHandler(getScheduler());
-    }
-
-    @Test
     public final void handledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
-
-    // FIXME no longer testable due to internal changes
-//    @Test(timeout = 3000)
-//    public void testNoSelfInterrupt() throws InterruptedException {
-//        Scheduler.Worker worker = Schedulers.newThread().createWorker();
-//        try {
-//            final CountDownLatch run = new CountDownLatch(1);
-//            final CountDownLatch done = new CountDownLatch(1);
-//            final AtomicReference<Throwable> exception = new AtomicReference<T>();
-//            final AtomicBoolean interruptFlag = new AtomicBoolean();
-//
-//            ScheduledRunnable sa = (ScheduledRunnable)worker.schedule(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        run.await();
-//                    } catch (InterruptedException ex) {
-//                        exception.set(ex);
-//                    }
-//                }
-//            });
-//
-//            sa.add(new Disposable() {
-//                @Override
-//                public void dispose() {
-//                    interruptFlag.set(Thread.currentThread().isInterrupted());
-//                    done.countDown();
-//                }
-//            });
-//
-//            run.countDown();
-//
-//            done.await();
-//
-//            Assert.assertEquals(null, exception.get());
-//            Assert.assertFalse("Interrupted?!", interruptFlag.get());
-//        } finally {
-//            worker.dispose();
-//        }
-//    }
 
     @Test
     public void shutdownRejects() {

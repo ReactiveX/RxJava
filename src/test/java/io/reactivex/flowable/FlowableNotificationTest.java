@@ -17,7 +17,7 @@ import org.junit.*;
 
 import io.reactivex.*;
 
-public class FlowableNotificationTest {
+public class FlowableNotificationTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void onNextIntegerNotificationDoesNotEqualNullNotification() {
@@ -45,22 +45,6 @@ public class FlowableNotificationTest {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
         Assert.assertNotEquals(integerNotification, integerNotification2);
-    }
-
-    @Test
-    @Ignore("Nulls are not allowed")
-    public void onErrorIntegerNotificationDoesNotEqualNullNotification() {
-        final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
-        final Notification<Integer> nullNotification = Notification.createOnError(null);
-        Assert.assertNotEquals(integerNotification, nullNotification);
-    }
-
-    @Test
-    @Ignore("Nulls are not allowed")
-    public void onErrorNullNotificationDoesNotEqualIntegerNotification() {
-        final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
-        final Notification<Integer> nullNotification = Notification.createOnError(null);
-        Assert.assertNotEquals(nullNotification, integerNotification);
     }
 
     @Test

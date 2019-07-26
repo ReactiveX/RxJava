@@ -297,7 +297,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     private final Throwable testException = new Throwable();
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscriptionCase() {
         PublishProcessor<String> src = PublishProcessor.create();
 
@@ -337,52 +337,6 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
             verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
-
-    // FIXME RS subscribers are not allowed to throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        PublishSubject<String> ps = PublishSubject.create();
-//
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
-
-    // FIXME RS subscribers are not allowed to throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        PublishSubject<String> ps = PublishSubject.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
 
     @Test
     public void currentStateMethodsNormal() {
@@ -679,7 +633,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void subscriberCancelOfferRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();

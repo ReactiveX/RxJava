@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Supplier;
 import io.reactivex.observable.ObservableCovarianceTest.*;
 
-public class ObservableMergeTests {
+public class ObservableMergeTests extends RxJavaTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics.
