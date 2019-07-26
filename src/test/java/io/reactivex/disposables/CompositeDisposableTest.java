@@ -20,13 +20,14 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Action;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompositeDisposableTest {
+public class CompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void success() {
@@ -54,7 +55,7 @@ public class CompositeDisposableTest {
         assertEquals(2, counter.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void shouldUnsubscribeAll() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
         final CompositeDisposable cd = new CompositeDisposable();
@@ -235,7 +236,7 @@ public class CompositeDisposableTest {
         assertEquals(1, counter.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscribeIdempotenceConcurrently()
             throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();

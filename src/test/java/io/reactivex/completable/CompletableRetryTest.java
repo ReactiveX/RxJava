@@ -14,6 +14,7 @@
 package io.reactivex.completable;
 
 import io.reactivex.Completable;
+import io.reactivex.RxJavaTest;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
@@ -22,7 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class CompletableRetryTest {
+public class CompletableRetryTest extends RxJavaTest {
     @Test
     public void retryTimesPredicateWithMatchingPredicate() {
         final AtomicInteger atomicInteger = new AtomicInteger(3);

@@ -20,11 +20,12 @@ import static org.junit.Assert.*;
 import java.io.*;
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.CompositeException.CompositeExceptionCausalChain;
 
-public class CompositeExceptionTest {
+public class CompositeExceptionTest extends RxJavaTest {
 
     private final Throwable ex1 = new Throwable("Ex1");
     private final Throwable ex2 = new Throwable("Ex2", ex1);
@@ -38,7 +39,7 @@ public class CompositeExceptionTest {
         return new CompositeException(throwables);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void multipleWithSameCause() {
         Throwable rootCause = new Throwable("RootCause");
         Throwable e1 = new Throwable("1", rootCause);
@@ -72,7 +73,7 @@ public class CompositeExceptionTest {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionFromParentThenChild() {
         CompositeException cex = new CompositeException(ex1, ex2);
 
@@ -87,7 +88,7 @@ public class CompositeExceptionTest {
         cex.getCause().printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionFromChildThenParent() {
         CompositeException cex = new CompositeException(ex2, ex1);
 
@@ -102,7 +103,7 @@ public class CompositeExceptionTest {
         cex.getCause().printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionFromChildAndComposite() {
         CompositeException cex = new CompositeException(ex1, getNewCompositeExceptionWithEx123());
 
@@ -117,7 +118,7 @@ public class CompositeExceptionTest {
         cex.getCause().printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionFromCompositeAndChild() {
         CompositeException cex = new CompositeException(getNewCompositeExceptionWithEx123(), ex1);
 
@@ -132,7 +133,7 @@ public class CompositeExceptionTest {
         cex.getCause().printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionFromTwoDuplicateComposites() {
         List<Throwable> exs = new ArrayList<Throwable>();
         exs.add(getNewCompositeExceptionWithEx123());
@@ -190,7 +191,7 @@ public class CompositeExceptionTest {
         composite.printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionWithUnsupportedInitCause() {
         Throwable t = new Throwable() {
 
@@ -214,7 +215,7 @@ public class CompositeExceptionTest {
         cex.getCause().printStackTrace();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void compositeExceptionWithNullInitCause() {
         Throwable t = new Throwable("ThrowableWithNullInitCause") {
 

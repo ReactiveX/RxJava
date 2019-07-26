@@ -22,20 +22,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
-import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.util.ExceptionHelper;
-import io.reactivex.observables.GroupedObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ExceptionsTest {
+public class ExceptionsTest extends RxJavaTest {
 
-    @Ignore("Exceptions is not an enum")
     @Test
     public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(ExceptionHelper.class);
@@ -57,35 +54,6 @@ public class ExceptionsTest {
         TestHelper.assertError(errors, 0, RuntimeException.class);
         assertTrue(errors.get(0).toString(), errors.get(0).getMessage().contains("hello"));
         RxJavaPlugins.reset();
-    }
-
-    /**
-     * Outdated test: Observer should not suppress errors from onCompleted.
-     * https://github.com/ReactiveX/RxJava/issues/3885
-     */
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onCompletedExceptionIsThrown() {
-        Observable.empty()
-            .subscribe(new Observer<Object>() {
-                @Override
-                public void onComplete() {
-                    throw new RuntimeException();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                }
-
-                @Override
-                public void onNext(Object o) {
-                }
-
-                @Override
-                public void onSubscribe(Disposable d) {
-
-                }
-            });
     }
 
     @Test
@@ -199,247 +167,6 @@ public class ExceptionsTest {
             }
 
         });
-    }
-
-    /**
-     * Outdated test: throwing from onError handler.
-     * https://github.com/ReactiveX/RxJava/issues/969
-     */
-    @Ignore("v2 components should not throw")
-    @Test
-    public void onErrorExceptionIsThrown() {
-        try {
-            Observable.error(new IllegalArgumentException("original exception")).subscribe(new Observer<Object>() {
-
-                @Override
-                public void onSubscribe(Disposable d) {
-
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    throw new IllegalStateException("This should be thrown");
-                }
-
-                @Override
-                public void onNext(Object o) {
-
-                }
-            });
-            fail("expecting an exception to be thrown");
-        } catch (RuntimeException t) {
-            CompositeException cause = (CompositeException) t.getCause();
-            assertTrue(cause.getExceptions().get(0) instanceof IllegalArgumentException);
-            assertTrue(cause.getExceptions().get(1) instanceof IllegalStateException);
-        }
-    }
-
-    /**
-     * Outdated test: throwing from onError.
-     * https://github.com/ReactiveX/RxJava/issues/2998
-     * @throws Exception on arbitrary errors
-     */
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromGroupBy() throws Exception {
-        Observable
-            .just(1)
-            .groupBy(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer integer) {
-                    throw new RuntimeException();
-                }
-            })
-            .subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
-
-                @Override
-                public void onSubscribe(Disposable d) {
-
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    throw new RuntimeException();
-                }
-
-                @Override
-                public void onNext(GroupedObservable<Integer, Integer> integerIntegerGroupedObservable) {
-
-                }
-            });
-    }
-
-    /**
-     * Outdated test: throwing from onError.
-     * https://github.com/ReactiveX/RxJava/issues/2998
-     * @throws Exception on arbitrary errors
-     */
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromOnNext() throws Exception {
-        Observable
-            .just(1)
-            .doOnNext(new Consumer<Integer>() {
-                @Override
-                public void accept(Integer integer) {
-                    throw new RuntimeException();
-                }
-            })
-            .subscribe(new Observer<Integer>() {
-
-                @Override
-                public void onSubscribe(Disposable d) {
-
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    throw new RuntimeException();
-                }
-
-                @Override
-                public void onNext(Integer integer) {
-
-                }
-            });
-    }
-
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromSubscribe() {
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-                              @Override
-                              public void subscribe(Observer<? super Integer> observer1) {
-                                  Observable.unsafeCreate(new ObservableSource<Integer>() {
-                                      @Override
-                                      public void subscribe(Observer<? super Integer> observer2) {
-                                          throw new IllegalArgumentException("original exception");
-                                      }
-                                  }).subscribe(observer1);
-                              }
-                          }
-        ).subscribe(new OnErrorFailedSubscriber());
-    }
-
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromUnsafeSubscribe() {
-        Observable.unsafeCreate(new ObservableSource<Integer>() {
-                              @Override
-                              public void subscribe(Observer<? super Integer> observer1) {
-                                  Observable.unsafeCreate(new ObservableSource<Integer>() {
-                                      @Override
-                                      public void subscribe(Observer<? super Integer> observer2) {
-                                          throw new IllegalArgumentException("original exception");
-                                      }
-                                  }).subscribe(observer1);
-                              }
-                          }
-        ).subscribe(new OnErrorFailedSubscriber());
-    }
-
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromSingleDoOnSuccess() throws Exception {
-        Single.just(1)
-                .doOnSuccess(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) {
-                        throw new RuntimeException();
-                    }
-                })
-                .toObservable().subscribe(new OnErrorFailedSubscriber());
-    }
-
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromSingleSubscribe() {
-        Single.unsafeCreate(new SingleSource<Integer>() {
-                          @Override
-                          public void subscribe(SingleObserver<? super Integer> observer1) {
-                              Single.unsafeCreate(new SingleSource<Integer>() {
-                                  @Override
-                                  public void subscribe(SingleObserver<? super Integer> observer2) {
-                                      throw new IllegalArgumentException("original exception");
-                                  }
-                              }).subscribe(observer1);
-                          }
-                      }
-        ).toObservable().subscribe(new OnErrorFailedSubscriber());
-    }
-
-    @Ignore("v2 components should not throw")
-    @Test(expected = RuntimeException.class)
-    public void onErrorExceptionIsThrownFromSingleUnsafeSubscribe() {
-        Single.unsafeCreate(new SingleSource<Integer>() {
-                          @Override
-                          public void subscribe(final SingleObserver<? super Integer> observer1) {
-                              Single.unsafeCreate(new SingleSource<Integer>() {
-                                  @Override
-                                  public void subscribe(SingleObserver<? super Integer> observer2) {
-                                      throw new IllegalArgumentException("original exception");
-                                  }
-                              }).toFlowable().subscribe(new FlowableSubscriber<Integer>() {
-
-                                  @Override
-                                  public void onSubscribe(Subscription s) {
-                                      s.request(Long.MAX_VALUE);
-                                  }
-
-                                  @Override
-                                  public void onComplete() {
-                                  }
-
-                                  @Override
-                                  public void onError(Throwable e) {
-                                      observer1.onError(e);
-                                  }
-
-                                  @Override
-                                  public void onNext(Integer v) {
-                                      observer1.onSuccess(v);
-                                  }
-
-                              });
-                          }
-                      }
-        ).toObservable().subscribe(new OnErrorFailedSubscriber());
-    }
-
-    private class OnErrorFailedSubscriber implements Observer<Integer> {
-
-        @Override
-        public void onSubscribe(Disposable d) {
-
-        }
-
-        @Override
-        public void onComplete() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            throw new RuntimeException();
-        }
-
-        @Override
-        public void onNext(Integer value) {
-        }
     }
 
     @Test

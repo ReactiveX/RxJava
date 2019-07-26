@@ -16,11 +16,13 @@ package io.reactivex.disposables;
 import java.util.concurrent.FutureTask;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.functions.Functions;
 
-public class FutureDisposableTest {
+public class FutureDisposableTest extends RxJavaTest {
 
     @Test
     public void normal() {
