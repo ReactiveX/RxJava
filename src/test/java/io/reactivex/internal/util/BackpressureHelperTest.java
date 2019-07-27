@@ -20,13 +20,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class BackpressureHelperTest {
-    @Ignore("BackpressureHelper is an enum")
+public class BackpressureHelperTest extends RxJavaTest {
     @Test
     public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(BackpressureHelper.class);

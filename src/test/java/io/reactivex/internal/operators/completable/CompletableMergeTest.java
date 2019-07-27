@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.*;
 
-public class CompletableMergeTest {
+public class CompletableMergeTest extends RxJavaTest {
     @Test
     public void invalidPrefetch() {
         try {

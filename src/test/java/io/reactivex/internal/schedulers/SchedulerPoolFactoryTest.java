@@ -20,13 +20,14 @@ import static org.junit.Assert.*;
 
 import java.util.Properties;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.schedulers.SchedulerPoolFactory.PurgeProperties;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class SchedulerPoolFactoryTest {
+public class SchedulerPoolFactoryTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

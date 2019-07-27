@@ -30,9 +30,9 @@ import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestObserverEx;
 
-public class ReplaySubjectBoundedConcurrencyTest {
+public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
 
-    @Test(timeout = 4000)
+    @Test
     public void replaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.createUnbounded();
         Thread source = new Thread(new Runnable() {
@@ -229,7 +229,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
-    @Test(timeout = 10000)
+    @Test
     public void subscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplaySubject<String> subject = ReplaySubject.createUnbounded();
@@ -411,7 +411,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void concurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -466,7 +466,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         t.join();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void concurrentSizeAndHasAnyValueBounded() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createWithSize(3);
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -510,7 +510,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         t.join();
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void concurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
         final CyclicBarrier cb = new CyclicBarrier(2);

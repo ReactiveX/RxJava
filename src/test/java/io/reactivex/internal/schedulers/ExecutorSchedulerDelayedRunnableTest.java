@@ -17,12 +17,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.schedulers.ExecutorScheduler.DelayedRunnable;
 
-public class ExecutorSchedulerDelayedRunnableTest {
+public class ExecutorSchedulerDelayedRunnableTest extends RxJavaTest {
 
     @Test(expected = TestException.class)
     public void delayedRunnableCrash() {

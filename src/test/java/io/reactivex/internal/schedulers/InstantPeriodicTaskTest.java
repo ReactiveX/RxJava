@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
@@ -28,7 +29,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class InstantPeriodicTaskTest {
+public class InstantPeriodicTaskTest extends RxJavaTest {
 
     @Test
     public void taskCrash() throws Exception {

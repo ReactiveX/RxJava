@@ -29,7 +29,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableDisposeOnTest {
+public class CompletableDisposeOnTest extends RxJavaTest {
 
     @Test
     public void cancelDelayed() {

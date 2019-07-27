@@ -15,13 +15,14 @@ package io.reactivex.internal.subscriptions;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class ScalarSubscriptionTest {
+public class ScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void badRequest() {

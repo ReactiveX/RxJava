@@ -13,6 +13,7 @@
 
 package io.reactivex.single;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.Single;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
@@ -22,7 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleRetryTest {
+public class SingleRetryTest extends RxJavaTest {
     @Test
     public void retryTimesPredicateWithMatchingPredicate() {
         final AtomicInteger atomicInteger = new AtomicInteger(3);

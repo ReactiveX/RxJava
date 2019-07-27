@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.parallel.*;
 
-public final class ConverterTest {
+public final class ConverterTest extends RxJavaTest {
 
     @Test
     public void flowableConverterThrows() {

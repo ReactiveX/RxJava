@@ -27,7 +27,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ResourceSubscriberTest {
+public class ResourceSubscriberTest extends RxJavaTest {
 
     static class TestResourceSubscriber<T> extends ResourceSubscriber<T> {
         final List<T> values = new ArrayList<T>();

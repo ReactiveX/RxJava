@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.functions.*;
 import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.testsupport.TestHelper;
 
-public class MiscUtilTest {
+public class MiscUtilTest extends RxJavaTest {
     @Test
     public void pow2UtilityClass() {
         TestHelper.checkUtilityClass(Pow2.class);

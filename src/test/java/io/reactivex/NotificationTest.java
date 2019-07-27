@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
 
-public class NotificationTest {
+public class NotificationTest extends RxJavaTest {
 
     @Test
     public void valueOfOnErrorIsNull() {

@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.internal.functions.Functions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public final class ConsumerSingleObserverTest {
+public final class ConsumerSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {

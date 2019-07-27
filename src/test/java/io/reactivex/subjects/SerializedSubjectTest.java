@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -27,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class SerializedSubjectTest {
+public class SerializedSubjectTest extends RxJavaTest {
 
     @Test
     public void basic() {

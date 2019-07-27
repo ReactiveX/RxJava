@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.annotations.Nullable;
@@ -20,7 +21,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestObserverEx;
 
-public class BasicFuseableObserverTest {
+public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer() {

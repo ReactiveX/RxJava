@@ -17,12 +17,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Completable;
 import io.reactivex.exceptions.TestException;
 
-public class CompletableFromRunnableTest {
+public class CompletableFromRunnableTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromRunnableNull() {
         Completable.fromRunnable(null);

@@ -18,13 +18,14 @@ import static org.junit.Assert.*;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingSubscriberTest {
+public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
@@ -51,7 +52,7 @@ public class BlockingSubscriberTest {
         TestHelper.doubleOnSubscribe(new BlockingFirstSubscriber<Integer>());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void blockingFirstTimeout() {
         BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
 
@@ -65,7 +66,7 @@ public class BlockingSubscriberTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void blockingFirstTimeout2() {
         BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
 

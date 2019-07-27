@@ -31,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class SingleTest {
+public class SingleTest extends RxJavaTest {
 
     @Test
     public void helloWorld() {
@@ -494,12 +494,12 @@ public class SingleTest {
         assertEquals(1, atomicInteger.get());
     }
 
-    @Test//(timeout = 5000)
+    @Test
     public void toFuture() throws Exception {
         assertEquals(1, Single.just(1).toFuture().get().intValue());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void toFutureThrows() throws Exception {
         try {
             Single.error(new TestException()).toFuture().get();

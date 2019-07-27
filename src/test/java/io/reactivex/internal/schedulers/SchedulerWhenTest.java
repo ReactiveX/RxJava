@@ -33,7 +33,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class SchedulerWhenTest {
+public class SchedulerWhenTest extends RxJavaTest {
     @Test
     public void asyncMaxConcurrent() {
         TestScheduler tSched = new TestScheduler();
@@ -211,7 +211,7 @@ public class SchedulerWhenTest {
         return sched;
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void raceConditions() {
         Scheduler comp = Schedulers.computation();
         Scheduler limited = comp.when(new Function<Flowable<Flowable<Completable>>, Completable>() {

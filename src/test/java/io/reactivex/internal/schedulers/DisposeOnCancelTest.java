@@ -17,11 +17,12 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 
-public class DisposeOnCancelTest {
+public class DisposeOnCancelTest extends RxJavaTest {
 
     @Test
     public void basicCoverage() throws Exception {

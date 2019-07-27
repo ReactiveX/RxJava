@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.Disposables;
@@ -27,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableLambdaObserverTest {
+public class DisposableLambdaObserverTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {

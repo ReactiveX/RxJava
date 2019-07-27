@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.testsupport.TestHelper;
 
@@ -20,7 +21,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class QueueSubscriptionTest {
+public class QueueSubscriptionTest extends RxJavaTest {
     static final class EmptyQS extends BasicQueueSubscription<Integer> {
 
         private static final long serialVersionUID = -5312809687598840520L;

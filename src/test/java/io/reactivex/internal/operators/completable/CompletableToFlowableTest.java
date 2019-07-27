@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableToFlowableTest {
+public class CompletableToFlowableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {

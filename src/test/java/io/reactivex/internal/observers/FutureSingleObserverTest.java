@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class FutureSingleObserverTest {
+public class FutureSingleObserverTest extends RxJavaTest {
 
     @Test
     public void cancel() {

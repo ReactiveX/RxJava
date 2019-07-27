@@ -30,9 +30,9 @@ import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestObserverEx;
 
-public class ReplaySubjectConcurrencyTest {
+public class ReplaySubjectConcurrencyTest extends RxJavaTest {
 
-    @Test(timeout = 4000)
+    @Test
     public void replaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
         Thread source = new Thread(new Runnable() {
@@ -229,7 +229,7 @@ public class ReplaySubjectConcurrencyTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
-    @Test(timeout = 10000)
+    @Test
     public void subscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplaySubject<String> subject = ReplaySubject.create();
@@ -399,7 +399,7 @@ public class ReplaySubjectConcurrencyTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void concurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.create();
         final CyclicBarrier cb = new CyclicBarrier(2);

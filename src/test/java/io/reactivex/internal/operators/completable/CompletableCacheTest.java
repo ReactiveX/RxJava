@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableCacheTest implements Consumer<Object>, Action {
+public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>, Action {
 
     volatile int count;
 

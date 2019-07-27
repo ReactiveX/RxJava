@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -26,7 +27,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class HalfSerializerSubscriberTest {
+public class HalfSerializerSubscriberTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

@@ -13,6 +13,7 @@
 
 package io.reactivex.single;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,7 @@ import io.reactivex.schedulers.TestScheduler;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleTimerTest {
+public class SingleTimerTest extends RxJavaTest {
     @Test
     public void timer() {
         final TestScheduler testScheduler = new TestScheduler();

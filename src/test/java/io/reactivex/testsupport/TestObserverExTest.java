@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
@@ -36,7 +37,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 
-public class TestObserverExTest {
+public class TestObserverExTest extends RxJavaTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -571,7 +572,7 @@ public class TestObserverExTest {
 
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void await() throws Exception {
         TestObserverEx<Integer> to = new TestObserverEx<Integer>();
 

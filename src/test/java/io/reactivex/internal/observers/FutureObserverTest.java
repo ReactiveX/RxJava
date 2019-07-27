@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.disposables.*;
@@ -30,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class FutureObserverTest {
+public class FutureObserverTest extends RxJavaTest {
     FutureObserver<Integer> fo;
 
     @Before

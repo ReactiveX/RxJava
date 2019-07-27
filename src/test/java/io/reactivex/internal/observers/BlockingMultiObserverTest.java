@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.schedulers.Schedulers;
 
-public class BlockingMultiObserverTest {
+public class BlockingMultiObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {

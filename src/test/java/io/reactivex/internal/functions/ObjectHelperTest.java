@@ -13,13 +13,14 @@
 
 package io.reactivex.internal.functions;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
 import static org.junit.Assert.*;
 
-public class ObjectHelperTest {
+public class ObjectHelperTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

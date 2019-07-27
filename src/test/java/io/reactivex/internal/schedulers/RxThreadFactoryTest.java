@@ -14,11 +14,13 @@
 package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.functions.Functions;
 
-public class RxThreadFactoryTest {
+public class RxThreadFactoryTest extends RxJavaTest {
 
     @Test
     public void normal() {

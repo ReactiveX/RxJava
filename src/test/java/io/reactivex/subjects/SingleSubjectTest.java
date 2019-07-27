@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleSubjectTest {
+public class SingleSubjectTest extends RxJavaTest {
 
     @Test
     public void success() {

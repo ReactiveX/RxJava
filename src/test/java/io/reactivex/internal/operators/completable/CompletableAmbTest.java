@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableAmbTest {
+public class CompletableAmbTest extends RxJavaTest {
 
     @Test
     public void ambLots() {

@@ -296,7 +296,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
     private final Throwable testException = new Throwable();
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscriptionCase() {
         PublishSubject<String> src = PublishSubject.create();
 
@@ -337,52 +337,6 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
             verify(o, never()).onError(any(Throwable.class));
         }
     }
-
-    // FIXME RS subscribers are not allowed to throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        PublishSubject<String> ps = PublishSubject.create();
-//
-//        ps.subscribe();
-//        TestObserver<String> to = new TestObserver<String>();
-//        ps.subscribe(to);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, to.getOnErrorEvents().size());
-//    }
-
-    // FIXME RS subscribers are not allowed to throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        PublishSubject<String> ps = PublishSubject.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestObserver<String> to = new TestObserver<String>();
-//        ps.subscribe(to);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, to.getOnErrorEvents().size());
-//    }
 
     @Test
     public void currentStateMethodsNormal() {
@@ -433,12 +387,6 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
-    }
-
-    @Ignore("Observable doesn't do backpressure")
-    @Test
-    public void requestValidation() {
-//        TestHelper.assertBadRequestReported(PublishSubject.create());
     }
 
     @Test
@@ -508,21 +456,6 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         to2.assertComplete();
 
         to1.assertNotComplete();
-    }
-
-    @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void backpressureOverflow() {
-//        PublishSubject<Integer> ps = PublishSubject.create();
-//
-//        TestObserver<Integer> to = ps.test(0L);
-//
-//        ps.onNext(1);
-//
-//        to.assertNoValues()
-//        .assertNotComplete()
-//        .assertError(MissingBackpressureException.class)
-//        ;
     }
 
     @Test

@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
@@ -27,7 +28,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class FunctionsTest {
+public class FunctionsTest extends RxJavaTest {
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(Functions.class);

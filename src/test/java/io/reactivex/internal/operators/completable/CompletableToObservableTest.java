@@ -25,7 +25,7 @@ import io.reactivex.internal.operators.completable.CompletableToObservable.Obser
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableToObservableTest {
+public class CompletableToObservableTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {

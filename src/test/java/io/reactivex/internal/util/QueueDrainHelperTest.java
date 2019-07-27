@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -32,7 +33,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class QueueDrainHelperTest {
+public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void isCancelled() {

@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableTakeUntilTest {
+public class CompletableTakeUntilTest extends RxJavaTest {
 
     @Test
     public void consumerDisposes() {

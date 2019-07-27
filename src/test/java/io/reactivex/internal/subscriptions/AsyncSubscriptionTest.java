@@ -16,12 +16,13 @@ package io.reactivex.internal.subscriptions;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
 
-public class AsyncSubscriptionTest {
+public class AsyncSubscriptionTest extends RxJavaTest {
     @Test
     public void noResource() {
         AsyncSubscription as = new AsyncSubscription();

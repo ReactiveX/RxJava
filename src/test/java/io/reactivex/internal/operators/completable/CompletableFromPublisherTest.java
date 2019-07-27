@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableFromPublisherTest {
+public class CompletableFromPublisherTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromPublisherNull() {
         Completable.fromPublisher(null);

@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableDelayTest {
+public class CompletableDelayTest extends RxJavaTest {
 
     @Test
     public void delayCustomScheduler() {

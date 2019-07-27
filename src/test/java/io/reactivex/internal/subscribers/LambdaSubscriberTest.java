@@ -30,7 +30,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class LambdaSubscriberTest {
+public class LambdaSubscriberTest extends RxJavaTest {
 
     @Test
     public void onSubscribeThrows() {

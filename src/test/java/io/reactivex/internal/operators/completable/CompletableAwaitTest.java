@@ -17,11 +17,12 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.processors.PublishProcessor;
 
-public class CompletableAwaitTest {
+public class CompletableAwaitTest extends RxJavaTest {
 
     @Test
     public void awaitInterrupted() {

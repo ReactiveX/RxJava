@@ -18,13 +18,14 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableHelperTest {
+public class DisposableHelperTest extends RxJavaTest {
     @Test
     public void enumMethods() {
         assertEquals(1, DisposableHelper.values().length);

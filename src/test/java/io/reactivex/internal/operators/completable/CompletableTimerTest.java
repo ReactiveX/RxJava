@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableTimerTest {
+public class CompletableTimerTest extends RxJavaTest {
 
     @Test
     public void dispose() {

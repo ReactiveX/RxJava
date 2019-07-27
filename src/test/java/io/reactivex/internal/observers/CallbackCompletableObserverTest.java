@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.internal.functions.Functions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public final class CallbackCompletableObserverTest {
+public final class CallbackCompletableObserverTest extends RxJavaTest {
 
     @Test
     public void emptyActionShouldReportNoCustomOnError() {

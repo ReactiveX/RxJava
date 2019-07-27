@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -30,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class SerializedSubscriberTest {
+public class SerializedSubscriberTest extends RxJavaTest {
 
     Subscriber<String> subscriber;
 
@@ -87,7 +88,7 @@ public class SerializedSubscriberTest {
         assertEquals(1, busySubscriber.maxConcurrentThreads.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void multiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
         Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
@@ -841,125 +842,6 @@ public class SerializedSubscriberTest {
             }
         }
 
-    }
-
-    @Test
-    @Ignore("Null values not permitted")
-    public void serializeNull() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                if (t != null && t == 0) {
-                    serial.get().onNext(null);
-                }
-                super.onNext(t);
-            }
-        };
-
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-        serial.set(sobs);
-
-        sobs.onNext(0);
-
-        ts.assertValues(0, null);
-    }
-
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void serializeAllowsOnError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-        };
-
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-
-        try {
-            sobs.onNext(0);
-        } catch (TestException ex) {
-            sobs.onError(ex);
-        }
-
-        ts.assertError(TestException.class);
-    }
-
-    @Test
-    @Ignore("Null values no longer permitted")
-    public void serializeReentrantNullAndComplete() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                serial.get().onComplete();
-                throw new TestException();
-            }
-        };
-
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-        serial.set(sobs);
-
-        try {
-            sobs.onNext(0);
-        } catch (TestException ex) {
-            sobs.onError(ex);
-        }
-
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
-    }
-
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void serializeReentrantNullAndError() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                serial.get().onError(new RuntimeException());
-                throw new TestException();
-            }
-        };
-
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-        serial.set(sobs);
-
-        try {
-            sobs.onNext(0);
-        } catch (TestException ex) {
-            sobs.onError(ex);
-        }
-
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
-    }
-
-    @Test
-    @Ignore("Null values no longer permitted")
-    public void serializeDrainPhaseThrows() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                if (t != null && t == 0) {
-                    serial.get().onNext(null);
-                } else
-                if (t == null) {
-                    throw new TestException();
-                }
-                super.onNext(t);
-            }
-        };
-
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-        serial.set(sobs);
-
-        sobs.onNext(0);
-
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
     }
 
     @Test

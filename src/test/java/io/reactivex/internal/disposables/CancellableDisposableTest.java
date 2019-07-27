@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
@@ -25,7 +26,7 @@ import io.reactivex.functions.Cancellable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class CancellableDisposableTest {
+public class CancellableDisposableTest extends RxJavaTest {
 
     @Test
     public void normal() {

@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Scheduler.Worker;
@@ -29,7 +30,7 @@ import io.reactivex.internal.schedulers.TrampolineScheduler.*;
 import io.reactivex.schedulers.Schedulers;
 import static org.mockito.Mockito.*;
 
-public class TrampolineSchedulerInternalTest {
+public class TrampolineSchedulerInternalTest extends RxJavaTest {
 
     @Test
     public void scheduleDirectInterrupt() {
@@ -142,7 +143,7 @@ public class TrampolineSchedulerInternalTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void reentrantScheduleInterrupt() {
         final Worker w = Schedulers.trampoline().createWorker();
         try {

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class SubscriptionHelperTest {
+public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void checkEnum() {

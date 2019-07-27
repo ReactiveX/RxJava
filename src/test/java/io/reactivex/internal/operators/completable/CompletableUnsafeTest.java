@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableUnsafeTest {
+public class CompletableUnsafeTest extends RxJavaTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void unsafeCreateRejectsCompletable() {

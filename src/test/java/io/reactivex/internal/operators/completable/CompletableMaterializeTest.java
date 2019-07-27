@@ -21,7 +21,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableMaterializeTest {
+public class CompletableMaterializeTest extends RxJavaTest {
 
     @Test
     @SuppressWarnings("unchecked")

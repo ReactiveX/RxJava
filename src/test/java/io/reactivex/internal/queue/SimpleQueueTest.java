@@ -22,9 +22,10 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class SimpleQueueTest {
+public class SimpleQueueTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void spscArrayQueueNull() {

@@ -15,9 +15,10 @@ package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public abstract class SubjectTest<T> {
+public abstract class SubjectTest<T> extends RxJavaTest {
 
     protected abstract Subject<T> create();
 

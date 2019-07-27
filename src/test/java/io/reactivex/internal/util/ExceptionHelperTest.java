@@ -17,12 +17,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.exceptions.TestException;
 import io.reactivex.testsupport.TestHelper;
 
-public class ExceptionHelperTest {
+public class ExceptionHelperTest extends RxJavaTest {
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(ExceptionHelper.class);

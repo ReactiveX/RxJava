@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Scheduler.Worker;
@@ -26,7 +27,7 @@ import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallba
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class SchedulerMultiWorkerSupportTest {
+public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
     final int max = ComputationScheduler.MAX_THREADS;
 

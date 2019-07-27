@@ -29,7 +29,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class SafeSubscriberTest {
+public class SafeSubscriberTest extends RxJavaTest {
 
     /**
      * Ensure onNext can not be called after onError.
@@ -209,45 +209,6 @@ public class SafeSubscriberTest {
     }
 
     @Test
-    @Ignore("Observers can't throw")
-    public void onErrorFailureSafe() {
-        try {
-            new SafeSubscriber<String>(subscriberOnErrorFail()).onError(new SafeSubscriberTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Subscriber.onError", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeSubscriberTestException);
-            assertEquals("error!", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeSubscriberTestException);
-            assertEquals("onErrorFail", e4.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorNotImplementedFailureSafe() {
-        try {
-            new SafeSubscriber<String>(subscriberOnErrorNotImplemented()).onError(new SafeSubscriberTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-//            assertTrue(e instanceof OnErrorNotImplementedException);
-            assertTrue(e.getCause() instanceof SafeSubscriberTestException);
-            assertEquals("error!", e.getCause().getMessage());
-        }
-    }
-
-    @Test
     public void onNextOnErrorFailure() {
         try {
             OBSERVER_ONNEXT_ONERROR_FAIL().onNext("one");
@@ -256,32 +217,6 @@ public class SafeSubscriberTest {
             e.printStackTrace();
             assertTrue(e instanceof SafeSubscriberTestException);
             assertEquals("onNextFail", e.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onNextOnErrorFailureSafe() {
-        try {
-            new SafeSubscriber<String>(OBSERVER_ONNEXT_ONERROR_FAIL()).onNext("one");
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Subscriber.onError", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeSubscriberTestException);
-            assertEquals("onNextFail", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeSubscriberTestException);
-            assertEquals("onErrorFail", e4.getMessage());
         }
     }
 
@@ -298,165 +233,6 @@ public class SafeSubscriberTest {
             // ignored
         }
     };
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onCompleteSuccessWithUnsubscribeFailure() {
-        Subscriber<String> subscriber = subscriberSuccess();
-        try {
-            subscriber.onSubscribe(THROWING_DISPOSABLE);
-            new SafeSubscriber<String>(subscriber).onComplete();
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-//            assertTrue(e instanceof UnsubscribeFailedException);
-            assertTrue(e.getCause() instanceof SafeSubscriberTestException);
-            assertEquals("failure from unsubscribe", e.getMessage());
-            // expected since onError fails so SafeSubscriber can't help
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorSuccessWithUnsubscribeFailure() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        Subscriber<String> subscriber = subscriberSuccess(onError);
-        try {
-            subscriber.onSubscribe(THROWING_DISPOSABLE);
-            new SafeSubscriber<String>(subscriber).onError(new SafeSubscriberTestException("failed"));
-            fail("we expect the unsubscribe failure to cause an exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // we still expect onError to have received something before unsubscribe blew up
-            assertNotNull(onError.get());
-            assertTrue(onError.get() instanceof SafeSubscriberTestException);
-            assertEquals("failed", onError.get().getMessage());
-
-            // now assert the exception that was thrown
-            RuntimeException onErrorFailedException = (RuntimeException) e;
-            assertTrue(onErrorFailedException.getCause() instanceof SafeSubscriberTestException);
-            assertEquals("failure from unsubscribe", e.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorFailureWithUnsubscribeFailure() {
-        Subscriber<String> subscriber = subscriberOnErrorFail();
-        try {
-            subscriber.onSubscribe(THROWING_DISPOSABLE);
-            new SafeSubscriber<String>(subscriber).onError(new SafeSubscriberTestException("onError failure"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // assertions for what is expected for the actual failure propagated to onError which then fails
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Error occurred when trying to propagate error to Subscriber.onError and during unsubscription.", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(3, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeSubscriberTestException);
-            assertEquals("onError failure", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeSubscriberTestException);
-            assertEquals("onErrorFail", e4.getMessage());
-
-            Throwable e5 = innerExceptions.get(2);
-            assertTrue(e5 instanceof SafeSubscriberTestException);
-            assertEquals("failure from unsubscribe", e5.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onErrorNotImplementedFailureWithUnsubscribeFailure() {
-        Subscriber<String> subscriber = subscriberOnErrorNotImplemented();
-        try {
-            subscriber.onSubscribe(THROWING_DISPOSABLE);
-            new SafeSubscriber<String>(subscriber).onError(new SafeSubscriberTestException("error!"));
-            fail("expects exception to be thrown");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // FIXME no longer assertable
-//            assertTrue(o.isUnsubscribed());
-
-            // assertions for what is expected for the actual failure propagated to onError which then fails
-            assertTrue(e instanceof RuntimeException);
-            assertEquals("Subscriber.onError not implemented and error while unsubscribing.", e.getMessage());
-
-            Throwable e2 = e.getCause();
-            assertTrue(e2 instanceof CompositeException);
-            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
-            assertEquals(2, innerExceptions.size());
-
-            Throwable e3 = innerExceptions.get(0);
-            assertTrue(e3 instanceof SafeSubscriberTestException);
-            assertEquals("error!", e3.getMessage());
-
-            Throwable e4 = innerExceptions.get(1);
-            assertTrue(e4 instanceof SafeSubscriberTestException);
-            assertEquals("failure from unsubscribe", e4.getMessage());
-        }
-    }
-
-    private static Subscriber<String> subscriberSuccess() {
-        return new DefaultSubscriber<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-        };
-
-    }
-
-    private static Subscriber<String> subscriberSuccess(final AtomicReference<Throwable> onError) {
-        return new DefaultSubscriber<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                onError.set(e);
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-        };
-
-    }
 
     private static Subscriber<String> OBSERVER_ONNEXT_FAIL(final AtomicReference<Throwable> onError) {
         return new DefaultSubscriber<String>() {
@@ -521,28 +297,6 @@ public class SafeSubscriberTest {
         };
     }
 
-    private static Subscriber<String> subscriberOnErrorNotImplemented() {
-        return new DefaultSubscriber<String>() {
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-//                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public void onNext(String args) {
-
-            }
-
-        };
-    }
-
     private static Subscriber<String> OBSERVER_ONCOMPLETED_FAIL(final AtomicReference<Throwable> onError) {
         return new DefaultSubscriber<String>() {
 
@@ -568,35 +322,6 @@ public class SafeSubscriberTest {
     private static class SafeSubscriberTestException extends RuntimeException {
         SafeSubscriberTestException(String message) {
             super(message);
-        }
-    }
-
-    @Test
-    @Ignore("Observers can't throw")
-    public void onCompletedThrows() {
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new DefaultSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                error.set(e);
-            }
-
-            @Override
-            public void onComplete() {
-                throw new TestException();
-            }
-        });
-
-        try {
-            s.onComplete();
-            Assert.fail();
-        } catch (RuntimeException e) {
-           assertNull(error.get());
         }
     }
 

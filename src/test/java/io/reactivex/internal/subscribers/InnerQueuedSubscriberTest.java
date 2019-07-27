@@ -16,10 +16,12 @@ package io.reactivex.internal.subscribers;
 import java.util.*;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-public class InnerQueuedSubscriberTest {
+public class InnerQueuedSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestInBatches() {
