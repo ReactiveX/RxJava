@@ -20,7 +20,7 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableReduceWithSingleTest {
+public class FlowableReduceWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {

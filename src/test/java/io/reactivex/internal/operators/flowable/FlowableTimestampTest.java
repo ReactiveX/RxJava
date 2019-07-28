@@ -28,7 +28,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTimestampTest {
+public class FlowableTimestampTest extends RxJavaTest {
     Subscriber<Object> subscriber;
 
     @Before

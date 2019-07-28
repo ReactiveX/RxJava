@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSequenceEqualTest {
+public class FlowableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void flowable1() {
@@ -107,22 +107,6 @@ public class FlowableSequenceEqualTest {
     public void withEmpty3Flowable() {
         Flowable<Boolean> flowable = Flowable.sequenceEqual(
                 Flowable.<String> empty(), Flowable.<String> empty()).toFlowable();
-        verifyResult(flowable, true);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull1Flowable() {
-        Flowable<Boolean> flowable = Flowable.sequenceEqual(
-                Flowable.just((String) null), Flowable.just("one")).toFlowable();
-        verifyResult(flowable, false);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull2Flowable() {
-        Flowable<Boolean> flowable = Flowable.sequenceEqual(
-                Flowable.just((String) null), Flowable.just((String) null)).toFlowable();
         verifyResult(flowable, true);
     }
 
@@ -211,22 +195,6 @@ public class FlowableSequenceEqualTest {
     public void withEmpty3() {
         Single<Boolean> single = Flowable.sequenceEqual(
                 Flowable.<String> empty(), Flowable.<String> empty());
-        verifyResult(single, true);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull1() {
-        Single<Boolean> single = Flowable.sequenceEqual(
-                Flowable.just((String) null), Flowable.just("one"));
-        verifyResult(single, false);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull2() {
-        Single<Boolean> single = Flowable.sequenceEqual(
-                Flowable.just((String) null), Flowable.just((String) null));
         verifyResult(single, true);
     }
 

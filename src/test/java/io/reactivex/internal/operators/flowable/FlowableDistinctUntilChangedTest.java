@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -34,7 +35,7 @@ import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableDistinctUntilChangedTest {
+public class FlowableDistinctUntilChangedTest extends RxJavaTest {
 
     Subscriber<String> w;
     Subscriber<String> w2;
@@ -108,37 +109,6 @@ public class FlowableDistinctUntilChangedTest {
         inOrder.verify(w, times(1)).onComplete();
         inOrder.verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctUntilChangedOfSourceWithNulls() {
-        Flowable<String> src = Flowable.just(null, "a", "a", null, null, "b", null, null);
-        src.distinctUntilChanged().subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onNext("b");
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onComplete();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
-        Flowable<String> src = Flowable.just("a", "b", null, "c");
-        src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("b");
-        verify(w, times(1)).onError(any(NullPointerException.class));
-        inOrder.verify(w, never()).onNext(anyString());
-        inOrder.verify(w, never()).onComplete();
     }
 
     @Test

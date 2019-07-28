@@ -41,7 +41,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableRefCountTest {
+public class FlowableRefCountTest extends RxJavaTest {
 
     @Test
     public void refCountAsync() {
@@ -531,7 +531,7 @@ public class FlowableRefCountTest {
         ts2.assertValue(30);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void upstreamErrorAllowsRetry() throws InterruptedException {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1020,7 +1020,7 @@ public class FlowableRefCountTest {
         }
     }
 
-    @Test(timeout = 7500)
+    @Test
     public void blockingSourceAsnycCancel() throws Exception {
         BehaviorProcessor<Integer> bp = BehaviorProcessor.createDefault(1);
 

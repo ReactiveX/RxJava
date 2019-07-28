@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -28,7 +29,7 @@ import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableDoAfterNextTest {
+public class FlowableDoAfterNextTest extends RxJavaTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 

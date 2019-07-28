@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -33,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableUsingTest {
+public class FlowableUsingTest extends RxJavaTest {
 
     private interface Resource {
         String getTextFromWeb();
@@ -223,52 +224,6 @@ public class FlowableUsingTest {
 
         try {
             Flowable.using(resourceFactory, observableFactory, disposeSubscription).blockingLast();
-            fail("Should throw a TestException when the observableFactory throws it");
-        } catch (TestException e) {
-            // Make sure that unsubscribe is called so that users can close
-            // the resource if some error happens.
-            verify(unsubscribe, times(1)).run();
-        }
-    }
-
-    @Test
-    @Ignore("subscribe() can't throw")
-    public void usingWithFlowableFactoryErrorInOnSubscribe() {
-        performTestUsingWithFlowableFactoryErrorInOnSubscribe(false);
-    }
-
-    @Test
-    @Ignore("subscribe() can't throw")
-    public void usingWithFlowableFactoryErrorInOnSubscribeDisposeEagerly() {
-        performTestUsingWithFlowableFactoryErrorInOnSubscribe(true);
-    }
-
-    private void performTestUsingWithFlowableFactoryErrorInOnSubscribe(boolean disposeEagerly) {
-        final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                return Disposables.fromRunnable(unsubscribe);
-            }
-        };
-
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Disposable subscription) {
-                return Flowable.unsafeCreate(new Publisher<Integer>() {
-                    @Override
-                    public void subscribe(Subscriber<? super Integer> t1) {
-                        throw new TestException();
-                    }
-                });
-            }
-        };
-
-        try {
-            Flowable
-            .using(resourceFactory, observableFactory, disposeSubscription, disposeEagerly)
-            .blockingLast();
-
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close

@@ -29,7 +29,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSkipLastTimedTest {
+public class FlowableSkipLastTimedTest extends RxJavaTest {
 
     @Test
     public void skipLastTimed() {

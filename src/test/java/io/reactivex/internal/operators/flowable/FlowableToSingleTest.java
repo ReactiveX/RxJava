@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableToSingleTest {
+public class FlowableToSingleTest extends RxJavaTest {
 
     @Test
     public void justSingleItemObservable() {

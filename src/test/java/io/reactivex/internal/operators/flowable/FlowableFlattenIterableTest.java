@@ -35,7 +35,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableFlattenIterableTest {
+public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void normal0() {

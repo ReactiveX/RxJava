@@ -27,7 +27,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableDetachTest {
+public class FlowableDetachTest extends RxJavaTest {
 
     Object o;
 

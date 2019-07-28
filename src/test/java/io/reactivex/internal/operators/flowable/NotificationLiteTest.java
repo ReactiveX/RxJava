@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.Disposables;
@@ -23,7 +24,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.testsupport.TestHelper;
 
-public class NotificationLiteTest {
+public class NotificationLiteTest extends RxJavaTest {
 
     @Test
     public void complete() {

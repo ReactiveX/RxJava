@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -29,7 +30,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
-public class FlowableSwitchIfEmptyTest {
+public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void switchWhenNotEmpty() throws Exception {
@@ -172,7 +173,7 @@ public class FlowableSwitchIfEmptyTest {
         ts.assertNoValues();
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void requestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.unsafeCreate(new Publisher<Long>() {

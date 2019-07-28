@@ -38,7 +38,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableMergeTest {
+public class FlowableMergeTest extends RxJavaTest {
 
     Subscriber<String> stringSubscriber;
 
@@ -127,7 +127,7 @@ public class FlowableMergeTest {
         verify(stringSubscriber, times(2)).onNext("hello");
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unSubscribeFlowableOfFlowables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
@@ -354,25 +354,6 @@ public class FlowableMergeTest {
         verify(stringSubscriber, times(0)).onNext("nine");
     }
 
-    @Test
-    @Ignore("Subscribe should not throw")
-    public void thrownErrorHandling() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
-        Flowable<String> f1 = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                throw new RuntimeException("fail");
-            }
-
-        });
-
-        Flowable.merge(f1, f1).subscribe(ts);
-        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
-        ts.assertTerminated();
-        System.out.println("Error: " + ts.errors());
-    }
-
     private static class TestSynchronousFlowable implements Publisher<String> {
 
         @Override
@@ -555,7 +536,7 @@ public class FlowableMergeTest {
         });
     }
 
-    @Test//(timeout = 10000)
+    @Test
     public void concurrency() {
         Flowable<Integer> f = Flowable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
@@ -747,7 +728,7 @@ public class FlowableMergeTest {
      * This requires merge to also obey the Product.request values coming from it's child subscriber.
      * @throws InterruptedException if the test is interrupted
      */
-    @Test(timeout = 10000)
+    @Test
     public void backpressureDownstreamWithConcurrentStreams() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Integer> f1 = createInfiniteFlowable(generated1).subscribeOn(Schedulers.computation());
@@ -838,7 +819,7 @@ public class FlowableMergeTest {
      *
      * @throws InterruptedException if the await is interrupted
      */
-    @Test(timeout = 5000)
+    @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> f1 = createInfiniteFlowable(generated1).map(new Function<Integer, Flowable<Integer>>() {
@@ -881,47 +862,6 @@ public class FlowableMergeTest {
         System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularFlowables ");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= Flowable.bufferSize() && generated1.get() <= Flowable.bufferSize() * 4);
-    }
-
-    @Test
-    @Ignore("Null values not permitted")
-    public void mergeWithNullValues() {
-        System.out.println("mergeWithNullValues");
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
-        Flowable.merge(Flowable.just(null, "one"), Flowable.just("two", null)).subscribe(ts);
-        ts.assertTerminated();
-        ts.assertNoErrors();
-        ts.assertValues(null, "one", "two", null);
-    }
-
-    @Test
-    @Ignore("Null values are no longer permitted")
-    public void mergeWithTerminalEventAfterUnsubscribe() {
-        System.out.println("mergeWithTerminalEventAfterUnsubscribe");
-        TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable<String> bad = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                s.onNext("two");
-                // FIXME can't cancel downstream
-//                s.unsubscribe();
-//                s.onComplete();
-            }
-
-        });
-        Flowable.merge(Flowable.just(null, "one"), bad).subscribe(ts);
-        ts.assertNoErrors();
-        ts.assertValues(null, "one", "two");
-    }
-
-    @Test
-    @Ignore("Null values are not permitted")
-    public void mergingNullFlowable() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.merge(Flowable.just("one"), null).subscribe(ts);
-        ts.assertNoErrors();
-        ts.assertValue("one");
     }
 
     @Test
@@ -1426,24 +1366,6 @@ public class FlowableMergeTest {
     }
 
     @Test
-    @Ignore("Nulls are not allowed with RS")
-    public void mergeJustNull() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-
-        Flowable.range(1, 2).flatMap(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t) {
-                return Flowable.just(null);
-            }
-        }).subscribe(ts);
-
-        ts.request(2);
-        ts.assertValues(null, null);
-        ts.assertNoErrors();
-        ts.assertComplete();
-    }
-
-    @Test
     public void mergeConcurrentJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -1463,32 +1385,6 @@ public class FlowableMergeTest {
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
         ts.assertComplete();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    @Ignore("No 2-9 argument merge()")
-    public void mergeMany() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
-
-            Flowable<Integer>[] obs = new Flowable[i];
-            Arrays.fill(obs, Flowable.just(1));
-
-            Integer[] expected = new Integer[i];
-            Arrays.fill(expected, 1);
-
-            Method m = Flowable.class.getMethod("merge", clazz);
-
-            TestSubscriber<Integer> ts = TestSubscriber.create();
-
-            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-
-            ts.assertValues(expected);
-            ts.assertNoErrors();
-            ts.assertComplete();
-        }
     }
 
     @SuppressWarnings("unchecked")

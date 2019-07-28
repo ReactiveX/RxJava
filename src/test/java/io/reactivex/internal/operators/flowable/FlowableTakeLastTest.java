@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -31,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTakeLastTest {
+public class FlowableTakeLastTest extends RxJavaTest {
 
     @Test
     public void takeLastEmpty() {
@@ -84,22 +85,6 @@ public class FlowableTakeLastTest {
         take.subscribe(subscriber);
 
         verify(subscriber, never()).onNext("one");
-        verify(subscriber, never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void takeLastWithNull() {
-        Flowable<String> w = Flowable.just("one", null, "three");
-        Flowable<String> take = w.takeLast(2);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        take.subscribe(subscriber);
-
-        verify(subscriber, never()).onNext("one");
-        verify(subscriber, times(1)).onNext(null);
-        verify(subscriber, times(1)).onNext("three");
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber, times(1)).onComplete();
     }
@@ -216,7 +201,7 @@ public class FlowableTakeLastTest {
         });
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void ignoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
         Flowable.range(0, 100000).takeLast(100000).subscribe(new DefaultSubscriber<Integer>() {
@@ -296,7 +281,7 @@ public class FlowableTakeLastTest {
         assertEquals(1, count.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void requestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
         Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {

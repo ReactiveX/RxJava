@@ -32,7 +32,7 @@ import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableMergeWithSingleTest {
+public class FlowableMergeWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {

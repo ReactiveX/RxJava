@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -26,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableTakeUntilTest {
+public class FlowableTakeUntilTest extends RxJavaTest {
 
     @Test
     public void takeUntil() {

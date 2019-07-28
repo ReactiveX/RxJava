@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -29,9 +30,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
-;
 
-public class FlowableTakeUntilPredicateTest {
+public class FlowableTakeUntilPredicateTest extends RxJavaTest {
     @Test
     public void takeEmpty() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();

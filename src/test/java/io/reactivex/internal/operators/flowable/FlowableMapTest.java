@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableMapTest {
+public class FlowableMapTest extends RxJavaTest {
 
     Subscriber<String> stringSubscriber;
     Subscriber<String> stringSubscriber2;
@@ -264,79 +265,6 @@ public class FlowableMapTest {
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;
-    }
-
-    @Test//(expected = OnErrorNotImplementedException.class)
-    @Ignore("RS subscribers can't throw")
-    public void shouldNotSwallowOnErrorNotImplementedException() {
-//        Flowable.just("a", "b").flatMap(new Function<String, Flowable<String>>() {
-//            @Override
-//            public Flowable<String> apply(String s) {
-//                return Flowable.just(s + "1", s + "2");
-//            }
-//        }).flatMap(new Function<String, Flowable<String>>() {
-//            @Override
-//            public Flowable<String> apply(String s) {
-//                return Flowable.error(new Exception("test"));
-//            }
-//        }).forEach(new Consumer<String>() {
-//            @Override
-//            public void accept(String s) {
-//                System.out.println(s);
-//            }
-//        });
-    }
-
-    @Test//(expected = OnErrorNotImplementedException.class)
-    @Ignore("RS subscribers can't throw")
-    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
-//
-//        Flowable.OnSubscribe<Object> creator = new Flowable.OnSubscribe<Object>() {
-//
-//            @Override
-//            public void call(Subscriber<? super Object> subscriber) {
-//                subscriber.onNext("a");
-//                subscriber.onNext("b");
-//                subscriber.onNext("c");
-//                subscriber.onComplete();
-//            }
-//        };
-//
-//        Func1<Object, Flowable<Object>> manyMapper = new Func1<Object, Flowable<Object>>() {
-//
-//            @Override
-//            public Flowable<Object> call(Object object) {
-//                return Flowable.just(object);
-//            }
-//        };
-//
-//        Func1<Object, Object> mapper = new Func1<Object, Object>() {
-//            private int count = 0;
-//
-//            @Override
-//            public Object call(Object object) {
-//                ++count;
-//                if (count > 2) {
-//                    throw new RuntimeException();
-//                }
-//                return object;
-//            }
-//        };
-//
-//        Action1<Object> onNext = new Action1<Object>() {
-//
-//            @Override
-//            public void call(Object object) {
-//                System.out.println(object.toString());
-//            }
-//        };
-//
-//        try {
-//            Flowable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
-//        } catch (RuntimeException e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
     }
 
     @Test

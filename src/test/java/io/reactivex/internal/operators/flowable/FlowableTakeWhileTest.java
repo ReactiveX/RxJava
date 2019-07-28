@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -31,7 +32,7 @@ import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableTakeWhileTest {
+public class FlowableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void takeWhile1() {

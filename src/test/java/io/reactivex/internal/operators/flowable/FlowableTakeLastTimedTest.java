@@ -29,7 +29,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTakeLastTimedTest {
+public class FlowableTakeLastTimedTest extends RxJavaTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void takeLastTimedWithNegativeCount() {

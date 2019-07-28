@@ -33,7 +33,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableDelayTest {
+public class FlowableDelayTest extends RxJavaTest {
     private Subscriber<Long> subscriber;
     private Subscriber<Long> subscriber2;
 

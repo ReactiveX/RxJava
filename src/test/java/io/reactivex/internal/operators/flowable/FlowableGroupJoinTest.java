@@ -34,7 +34,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableGroupJoinTest {
+public class FlowableGroupJoinTest extends RxJavaTest {
 
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 

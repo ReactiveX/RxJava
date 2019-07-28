@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSkipLastTest {
+public class FlowableSkipLastTest extends RxJavaTest {
 
     @Test
     public void skipLastEmpty() {
@@ -81,21 +82,6 @@ public class FlowableSkipLastTest {
 
         verify(subscriber, times(1)).onNext("one");
         verify(subscriber, times(1)).onNext("two");
-        verify(subscriber, never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void skipLastWithNull() {
-        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        flowable.subscribe(subscriber);
-
-        verify(subscriber, times(1)).onNext("one");
-        verify(subscriber, times(1)).onNext(null);
-        verify(subscriber, never()).onNext("two");
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber, times(1)).onComplete();
     }

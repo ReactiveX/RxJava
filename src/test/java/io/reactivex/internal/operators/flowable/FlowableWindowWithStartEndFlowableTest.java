@@ -33,7 +33,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableWindowWithStartEndFlowableTest {
+public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

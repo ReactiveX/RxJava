@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableFlatMapCompletableTest {
+public class FlowableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalFlowable() {

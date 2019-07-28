@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -32,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableCacheTest {
+public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void coldReplayNoBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
@@ -260,36 +261,6 @@ public class FlowableCacheTest {
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts2.assertNotComplete();
         ts2.assertError(TestException.class);
-    }
-
-    @Test
-    @Ignore("RS subscribers should not throw")
-    public void unsafeChildThrows() {
-        final AtomicInteger count = new AtomicInteger();
-
-        Flowable<Integer> source = Flowable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
-        .cache();
-
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-        };
-
-        source.subscribe(ts);
-
-        Assert.assertEquals(100, count.get());
-
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
     }
 
     @Test

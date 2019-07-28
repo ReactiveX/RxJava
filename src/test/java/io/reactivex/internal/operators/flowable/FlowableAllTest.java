@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableAllTest {
+public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void all() {
@@ -125,7 +125,7 @@ public class FlowableAllTest {
         assertFalse(allOdd.blockingGet());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1)
             .all(new Predicate<Integer>() {
@@ -142,22 +142,6 @@ public class FlowableAllTest {
             });
 
         assertEquals((Object)2, source.blockingFirst());
-    }
-
-    @Test
-    @Ignore("No backpressure in Single")
-    public void backpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
-        Flowable.empty().all(new Predicate<Object>() {
-            @Override
-            public boolean test(Object t1) {
-                return false;
-            }
-        }).subscribe(to);
-
-        to.assertNoValues();
-        to.assertNoErrors();
-        to.assertNotComplete();
     }
 
     @Test
@@ -299,7 +283,7 @@ public class FlowableAllTest {
         assertFalse(allOdd.blockingFirst());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1)
             .all(new Predicate<Integer>() {

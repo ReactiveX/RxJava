@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.mockito.Mockito.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.Subscriber;
 
@@ -23,7 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableDefaultIfEmptyTest {
+public class FlowableDefaultIfEmptyTest extends RxJavaTest {
 
     @Test
     public void defaultIfEmpty() {
@@ -54,33 +55,6 @@ public class FlowableDefaultIfEmptyTest {
         verify(subscriber).onNext(10);
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Subscribers should not throw")
-    public void emptyButClientThrows() {
-        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
-
-        Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onComplete() {
-                subscriber.onComplete();
-            }
-        });
-
-        verify(subscriber).onError(any(TestException.class));
-        verify(subscriber, never()).onNext(any(Integer.class));
-        verify(subscriber, never()).onComplete();
     }
 
     @Test

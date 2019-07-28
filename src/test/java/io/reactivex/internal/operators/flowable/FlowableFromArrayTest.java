@@ -25,7 +25,7 @@ import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFromArrayTest {
+public class FlowableFromArrayTest extends RxJavaTest {
 
     Flowable<Integer> create(int n) {
         Integer[] array = new Integer[n];

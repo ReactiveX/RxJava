@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.*;
 import org.reactivestreams.*;
@@ -37,7 +38,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableRetryTest {
+public class FlowableRetryTest extends RxJavaTest {
 
     @Test
     public void iterativeBackoff() {
@@ -664,7 +665,7 @@ public class FlowableRetryTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void unsubscribeAfterError() {
 
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
@@ -688,7 +689,7 @@ public class FlowableRetryTest {
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
     }
 
-    @Test//(timeout = 10000)
+    @Test
     public void timeoutWithRetry() {
 
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
@@ -711,7 +712,7 @@ public class FlowableRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, sf.efforts.get());
     }
 
-    @Test//(timeout = 15000)
+    @Test
     public void retryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
         for (int j = 0; j < NUM_LOOPS; j++) {
@@ -737,7 +738,7 @@ public class FlowableRetryTest {
         }
     }
 
-    @Test//(timeout = 15000)
+    @Test
     public void retryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
         final int numRetries = Flowable.bufferSize() * 2;
@@ -837,7 +838,7 @@ public class FlowableRetryTest {
         return sb;
     }
 
-    @Test//(timeout = 3000)
+    @Test
     public void issue1900() throws InterruptedException {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         final int NUM_MSG = 1034;
@@ -878,7 +879,7 @@ public class FlowableRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test//(timeout = 3000)
+    @Test
     public void issue1900SourceNotSupportingBackpressure() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         final int NUM_MSG = 1034;

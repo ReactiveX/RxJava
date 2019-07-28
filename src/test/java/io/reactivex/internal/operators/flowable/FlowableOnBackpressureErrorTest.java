@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableOnBackpressureErrorTest {
+public class FlowableOnBackpressureErrorTest extends RxJavaTest {
 
     @Test
     public void dispose() {

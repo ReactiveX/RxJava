@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableToMapTest {
+public class FlowableToMapTest extends RxJavaTest {
     Subscriber<Object> objectSubscriber;
     SingleObserver<Object> singleObserver;
 

@@ -25,7 +25,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFirstTest {
+public class FlowableFirstTest extends RxJavaTest {
 
     Subscriber<String> w;
 

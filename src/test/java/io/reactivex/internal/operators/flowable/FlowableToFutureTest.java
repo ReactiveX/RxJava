@@ -26,7 +26,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableToFutureTest {
+public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void success() throws Exception {

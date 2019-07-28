@@ -31,7 +31,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSampleTest {
+public class FlowableSampleTest extends RxJavaTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
     private Subscriber<Long> subscriber;

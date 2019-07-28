@@ -30,7 +30,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSingleTest {
+public class FlowableSingleTest extends RxJavaTest {
 
     @Test
     public void singleFlowable() {
@@ -634,7 +634,7 @@ public class FlowableSingleTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
@@ -686,7 +686,7 @@ public class FlowableSingleTest {
             .assertError(RuntimeException.class);
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1527Flowable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);

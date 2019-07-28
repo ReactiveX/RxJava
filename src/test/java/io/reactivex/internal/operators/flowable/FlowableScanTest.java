@@ -33,7 +33,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableScanTest {
+public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanIntegersWithInitialValue() {
@@ -366,44 +366,6 @@ public class FlowableScanTest {
 
         verify(producer.get(), never()).request(0);
         verify(producer.get(), times(1)).request(Flowable.bufferSize() - 1);
-    }
-
-    @Test
-    @Ignore("scanSeed no longer emits without upstream signal")
-    public void initialValueEmittedNoProducer() {
-        PublishProcessor<Integer> source = PublishProcessor.create();
-
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).subscribe(ts);
-
-        ts.assertNoErrors();
-        ts.assertNotComplete();
-        ts.assertValue(0);
-    }
-
-    @Test
-    @Ignore("scanSeed no longer emits without upstream signal")
-    public void initialValueEmittedWithProducer() {
-        Flowable<Integer> source = Flowable.never();
-
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        }).subscribe(ts);
-
-        ts.assertNoErrors();
-        ts.assertNotComplete();
-        ts.assertValue(0);
     }
 
     @Test

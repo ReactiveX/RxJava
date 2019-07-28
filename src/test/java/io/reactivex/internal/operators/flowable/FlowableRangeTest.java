@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -29,7 +30,7 @@ import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableRangeTest {
+public class FlowableRangeTest extends RxJavaTest {
 
     @Test
     public void rangeStartAt2Count3() {
@@ -254,7 +255,7 @@ public class FlowableRangeTest {
         assertTrue(completed.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void nearMaxValueWithoutBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
@@ -264,7 +265,7 @@ public class FlowableRangeTest {
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void nearMaxValueWithBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         Flowable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);

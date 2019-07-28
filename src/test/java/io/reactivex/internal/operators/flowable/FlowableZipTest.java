@@ -37,7 +37,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableZipTest {
+public class FlowableZipTest extends RxJavaTest {
     BiFunction<String, String, String> concat2Strings;
     PublishProcessor<String> s1;
     PublishProcessor<String> s2;
@@ -853,36 +853,6 @@ public class FlowableZipTest {
         assertEquals("5-5", list.get(4));
     }
 
-    @Test
-    @Ignore("Null values not allowed")
-    public void emitNull() {
-        Flowable<Integer> oi = Flowable.just(1, null, 3);
-        Flowable<String> os = Flowable.just("a", "b", null);
-        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
-
-        final ArrayList<String> list = new ArrayList<String>();
-        f.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
-        });
-
-        assertEquals(3, list.size());
-        assertEquals("1-a", list.get(0));
-        assertEquals("null-b", list.get(1));
-        assertEquals("3-null", list.get(2));
-    }
-
     @SuppressWarnings("rawtypes")
     static String kind(Notification notification) {
         if (notification.isOnError()) {
@@ -1199,7 +1169,7 @@ public class FlowableZipTest {
         });
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Flowable<Integer> zip1 = Flowable.zip(Flowable.range(0, 1026), Flowable.range(0, 1026),
@@ -1249,7 +1219,7 @@ public class FlowableZipTest {
         ts.assertValues(11, 22);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void zipRace() {
         long startTime = System.currentTimeMillis();
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());

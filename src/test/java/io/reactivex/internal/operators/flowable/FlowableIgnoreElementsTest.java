@@ -29,7 +29,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableIgnoreElementsTest {
+public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void withEmptyFlowable() {
@@ -95,7 +95,7 @@ public class FlowableIgnoreElementsTest {
         assertTrue(unsub.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void doesNotHangAndProcessesAllUsingBackpressureFlowable() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final AtomicInteger count = new AtomicInteger(0);
@@ -145,12 +145,12 @@ public class FlowableIgnoreElementsTest {
         assertEquals(0, count.get());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void withEmpty() {
         Flowable.empty().ignoreElements().blockingAwait();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void withNonEmpty() {
         Flowable.just(1, 2, 3).ignoreElements().blockingAwait();
     }
@@ -206,7 +206,7 @@ public class FlowableIgnoreElementsTest {
         assertTrue(unsub.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void doesNotHangAndProcessesAllUsingBackpressure() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final AtomicInteger count = new AtomicInteger(0);

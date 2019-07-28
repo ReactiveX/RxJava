@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -32,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableOnErrorReturnTest {
+public class FlowableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void resumeNext() {

@@ -26,7 +26,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableFromSourceTest {
+public class FlowableFromSourceTest extends RxJavaTest {
 
     PublishAsyncEmitter source;
 

@@ -38,7 +38,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowablePublishTest {
+public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void publish() throws InterruptedException {
@@ -189,7 +189,7 @@ public class FlowablePublishTest {
         System.out.println(ts.values());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void backpressureTwoConsumers() {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
@@ -730,7 +730,7 @@ public class FlowablePublishTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void selectorLatecommer() {
         Flowable.range(1, 5)
         .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
@@ -981,7 +981,6 @@ public class FlowablePublishTest {
     }
 
     @Test
-    @Ignore("publish() keeps consuming the upstream if there are no subscribers, 3.x should change this")
     public void subscriberSwap() {
         final ConnectableFlowable<Integer> cf = Flowable.range(1, 5).publish();
 

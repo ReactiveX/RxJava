@@ -26,7 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableDelaySubscriptionOtherTest {
+public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     @Test
     public void noPrematureSubscription() {
         PublishProcessor<Object> other = PublishProcessor.create();

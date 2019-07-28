@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTakeTest {
+public class FlowableTakeTest extends RxJavaTest {
 
     @Test
     public void take1() {
@@ -143,34 +143,6 @@ public class FlowableTakeTest {
     }
 
     @Test
-    @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
-    public void takeZeroDoesntLeakError() {
-        final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final BooleanSubscription bs = new BooleanSubscription();
-        Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscribed.set(true);
-                subscriber.onSubscribe(bs);
-                subscriber.onError(new Throwable("test failed"));
-            }
-        });
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-
-        source.take(0).subscribe(subscriber);
-
-        assertTrue("source subscribed", subscribed.get());
-        assertTrue("source unsubscribed", bs.isCancelled());
-
-        verify(subscriber, never()).onNext(anyString());
-        // even though onError is called we take(0) so shouldn't see it
-        verify(subscriber, never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-        verifyNoMoreInteractions(subscriber);
-    }
-
-    @Test
     public void unsubscribeAfterTake() {
         TestFlowableFunc f = new TestFlowableFunc("one", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
@@ -199,7 +171,7 @@ public class FlowableTakeTest {
         verifyNoMoreInteractions(subscriber);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void unsubscribeFromSynchronousInfiniteFlowable() {
         final AtomicLong count = new AtomicLong();
         INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
@@ -213,7 +185,7 @@ public class FlowableTakeTest {
         assertEquals(10, count.get());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -293,7 +265,7 @@ public class FlowableTakeTest {
 
     });
 
-    @Test(timeout = 2000)
+    @Test
     public void takeObserveOn() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);

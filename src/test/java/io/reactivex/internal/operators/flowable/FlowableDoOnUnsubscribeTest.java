@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -27,7 +28,7 @@ import io.reactivex.functions.*;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableDoOnUnsubscribeTest {
+public class FlowableDoOnUnsubscribeTest extends RxJavaTest {
 
     @Test
     public void doOnUnsubscribe() throws Exception {

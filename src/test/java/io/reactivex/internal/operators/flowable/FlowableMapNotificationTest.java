@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -26,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableMapNotificationTest {
+public class FlowableMapNotificationTest extends RxJavaTest {
     @Test
     public void just() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();

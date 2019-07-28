@@ -27,7 +27,7 @@ import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableIntervalRangeTest {
+public class FlowableIntervalRangeTest extends RxJavaTest {
     @Test
     public void simple() throws Exception {
         Flowable.intervalRange(5, 5, 50, 50, TimeUnit.MILLISECONDS)
@@ -111,7 +111,7 @@ public class FlowableIntervalRangeTest {
         .assertResult(1L);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void cancel() {
         Flowable.intervalRange(0, 20, 1, 1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
         .take(10)

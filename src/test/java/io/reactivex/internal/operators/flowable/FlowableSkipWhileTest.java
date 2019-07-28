@@ -26,7 +26,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSkipWhileTest {
+public class FlowableSkipWhileTest extends RxJavaTest {
 
     Subscriber<Integer> w = TestHelper.mockSubscriber();
 

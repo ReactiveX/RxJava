@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.Publisher;
 
@@ -27,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableOnBackpressureLatestTest {
+public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     @Test
     public void simple() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();

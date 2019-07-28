@@ -41,7 +41,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableGroupByTest {
+public class FlowableGroupByTest extends RxJavaTest {
 
     final Function<String, Integer> length = new Function<String, Integer>() {
         @Override
@@ -506,7 +506,7 @@ public class FlowableGroupByTest {
         assertEquals(100, eventCounter.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void completionIfInnerNotSubscribed() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();

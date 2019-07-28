@@ -22,7 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableConcatWithSingleTest {
+public class FlowableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {

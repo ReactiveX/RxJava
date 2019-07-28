@@ -38,7 +38,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableAmbTest {
+public class FlowableAmbTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -326,7 +326,7 @@ public class FlowableAmbTest {
 
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void multipleUse() {
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
         TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
@@ -392,132 +392,6 @@ public class FlowableAmbTest {
         ts.assertValue(2);
         ts.assertNoErrors();
         ts.assertComplete();
-    }
-
-    @Ignore("No 2-9 arg overloads")
-    @SuppressWarnings("unchecked")
-    @Test
-    public void ambMany() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Publisher.class);
-
-            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
-
-            for (int j = 0; j < i; j++) {
-
-                for (int k = 0; k < i; k++) {
-                    ps[k] = PublishProcessor.create();
-                }
-
-                Method m = Flowable.class.getMethod("amb", clazz);
-
-                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-
-                TestSubscriber<Integer> ts = TestSubscriber.create();
-
-                obs.subscribe(ts);
-
-                for (int k = 0; k < i; k++) {
-                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
-                }
-
-                ps[j].onNext(j);
-                ps[j].onComplete();
-
-                for (int k = 0; k < i; k++) {
-                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
-                }
-
-                ts.assertValue(j);
-                ts.assertNoErrors();
-                ts.assertComplete();
-            }
-        }
-    }
-
-    @Ignore("No 2-9 arg overloads")
-    @SuppressWarnings("unchecked")
-    @Test
-    public void ambManyError() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Publisher.class);
-
-            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
-
-            for (int j = 0; j < i; j++) {
-
-                for (int k = 0; k < i; k++) {
-                    ps[k] = PublishProcessor.create();
-                }
-
-                Method m = Flowable.class.getMethod("amb", clazz);
-
-                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-
-                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-
-                obs.subscribe(ts);
-
-                for (int k = 0; k < i; k++) {
-                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
-                }
-
-                ps[j].onError(new TestException(Integer.toString(j)));
-
-                for (int k = 0; k < i; k++) {
-                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
-                }
-
-                ts.assertNoValues();
-                ts.assertError(TestException.class);
-                ts.assertNotComplete();
-
-                assertEquals(Integer.toString(j), ts.errors().get(0).getMessage());
-            }
-        }
-    }
-
-    @Ignore("No 2-9 arg overloads")
-    @SuppressWarnings("unchecked")
-    @Test
-    public void ambManyComplete() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Publisher.class);
-
-            PublishProcessor<Integer>[] ps = new PublishProcessor[i];
-
-            for (int j = 0; j < i; j++) {
-
-                for (int k = 0; k < i; k++) {
-                    ps[k] = PublishProcessor.create();
-                }
-
-                Method m = Flowable.class.getMethod("amb", clazz);
-
-                Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-
-                TestSubscriber<Integer> ts = TestSubscriber.create();
-
-                obs.subscribe(ts);
-
-                for (int k = 0; k < i; k++) {
-                    assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
-                }
-
-                ps[j].onComplete();
-
-                for (int k = 0; k < i; k++) {
-                    assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
-                }
-
-                ts.assertNoValues();
-                ts.assertNoErrors();
-                ts.assertComplete();
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")

@@ -12,11 +12,12 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableInternalHelperTest {
+public class FlowableInternalHelperTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

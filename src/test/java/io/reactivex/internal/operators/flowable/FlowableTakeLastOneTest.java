@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -26,7 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableTakeLastOneTest {
+public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfManyReturnsLast() {

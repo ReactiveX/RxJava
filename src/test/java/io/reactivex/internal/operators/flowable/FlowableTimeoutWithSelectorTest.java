@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -38,8 +39,8 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableTimeoutWithSelectorTest {
-    @Test(timeout = 2000)
+public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
+    @Test
     public void timeoutSelectorNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();

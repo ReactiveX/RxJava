@@ -31,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableToListTest {
+public class FlowableToListTest extends RxJavaTest {
 
     @Test
     public void listFlowable() {
@@ -82,20 +82,6 @@ public class FlowableToListTest {
     }
 
     @Test
-    @Ignore("Null values are not allowed")
-    public void listWithNullValueFlowable() {
-        Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
-        Flowable<List<String>> flowable = w.toList().toFlowable();
-
-        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
-        flowable.subscribe(subscriber);
-
-        verify(subscriber, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-    }
-
-    @Test
     public void listWithBlockingFirstFlowable() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().toFlowable().blockingFirst();
@@ -124,42 +110,6 @@ public class FlowableToListTest {
         ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertNoErrors();
         ts.assertComplete();
-    }
-
-    @Test(timeout = 2000)
-    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void asyncRequestedFlowable() {
-        Scheduler.Worker w = Schedulers.newThread().createWorker();
-        try {
-            for (int i = 0; i < 1000; i++) {
-                if (i % 50 == 0) {
-                    System.out.println("testAsyncRequested -> " + i);
-                }
-                PublishProcessor<Integer> source = PublishProcessor.create();
-                Flowable<List<Integer>> sorted = source.toList().toFlowable();
-
-                final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<List<Integer>>(0L);
-                sorted.subscribe(ts);
-
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-                        ts.request(1);
-                    }
-                });
-                source.onNext(1);
-                await(cb);
-                source.onComplete();
-                ts.awaitDone(1, TimeUnit.SECONDS);
-                ts.assertTerminated();
-                ts.assertNoErrors();
-                ts.assertValue(Arrays.asList(1));
-            }
-        } finally {
-            w.dispose();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -215,84 +165,12 @@ public class FlowableToListTest {
     }
 
     @Test
-    @Ignore("Null values are not allowed")
-    public void listWithNullValue() {
-        Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
-        Single<List<String>> single = w.toList();
-
-        SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
-        single.subscribe(observer);
-        verify(observer, times(1)).onSuccess(Arrays.asList("one", null, "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-    }
-
-    @Test
     public void listWithBlockingFirst() {
         Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         List<String> actual = f.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
-    @Test
-    @Ignore("Single doesn't do backpressure")
-    public void backpressureHonored() {
-        Single<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList();
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
-
-        w.subscribe(to);
-
-        to.assertNoValues();
-        to.assertNoErrors();
-        to.assertNotComplete();
-
-//        ts.request(1);
-
-        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        to.assertNoErrors();
-        to.assertComplete();
-
-//        ts.request(1);
-
-        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        to.assertNoErrors();
-        to.assertComplete();
-    }
-
-    @Test(timeout = 2000)
-    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void asyncRequested() {
-        Scheduler.Worker w = Schedulers.newThread().createWorker();
-        try {
-            for (int i = 0; i < 1000; i++) {
-                if (i % 50 == 0) {
-                    System.out.println("testAsyncRequested -> " + i);
-                }
-                PublishProcessor<Integer> source = PublishProcessor.create();
-                Single<List<Integer>> sorted = source.toList();
-
-                final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserverEx<List<Integer>> to = new TestObserverEx<List<Integer>>();
-                sorted.subscribe(to);
-
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-//                        ts.request(1);
-                    }
-                });
-                source.onNext(1);
-                await(cb);
-                source.onComplete();
-                to.awaitDone(1, TimeUnit.SECONDS);
-                to.assertTerminated();
-                to.assertNoErrors();
-                to.assertValue(Arrays.asList(1));
-            }
-        } finally {
-            w.dispose();
-        }
-    }
     static void await(CyclicBarrier cb) {
         try {
             cb.await();

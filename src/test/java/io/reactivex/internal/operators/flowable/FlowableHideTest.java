@@ -25,7 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableHideTest {
+public class FlowableHideTest extends RxJavaTest {
     @Test
     public void hiding() {
         PublishProcessor<Integer> src = PublishProcessor.create();

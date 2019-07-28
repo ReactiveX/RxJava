@@ -42,7 +42,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableReplayTest {
+public class FlowableReplayTest extends RxJavaTest {
     @Test
     public void bufferedReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();

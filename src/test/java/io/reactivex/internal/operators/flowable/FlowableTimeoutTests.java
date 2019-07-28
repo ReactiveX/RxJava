@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableTimeoutTests {
+public class FlowableTimeoutTests extends RxJavaTest {
     private PublishProcessor<String> underlyingSubject;
     private TestScheduler testScheduler;
     private Flowable<String> withTimeout;
@@ -289,68 +290,6 @@ public class FlowableTimeoutTests {
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
         subscriber.assertFailureAndMessage(TimeoutException.class, timeoutMessage(1000, TimeUnit.MILLISECONDS));
-
-        verify(s, times(1)).cancel();
-    }
-
-    @Test
-    @Ignore("s should be considered cancelled upon executing onComplete and not expect downstream to call cancel")
-    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyComplete() {
-        // From https://github.com/ReactiveX/RxJava/pull/951
-        final Subscription s = mock(Subscription.class);
-
-        Flowable<String> immediatelyComplete = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(s);
-                subscriber.onComplete();
-            }
-        });
-
-        TestScheduler testScheduler = new TestScheduler();
-        Flowable<String> observableWithTimeout = immediatelyComplete.timeout(1000, TimeUnit.MILLISECONDS,
-                testScheduler);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
-        observableWithTimeout.subscribe(ts);
-
-        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
-
-        InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onComplete();
-        inOrder.verifyNoMoreInteractions();
-
-        verify(s, times(1)).cancel();
-    }
-
-    @Test
-    @Ignore("s should be considered cancelled upon executing onError and not expect downstream to call cancel")
-    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyErrored() throws InterruptedException {
-        // From https://github.com/ReactiveX/RxJava/pull/951
-        final Subscription s = mock(Subscription.class);
-
-        Flowable<String> immediatelyError = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                subscriber.onSubscribe(s);
-                subscriber.onError(new IOException("Error"));
-            }
-        });
-
-        TestScheduler testScheduler = new TestScheduler();
-        Flowable<String> observableWithTimeout = immediatelyError.timeout(1000, TimeUnit.MILLISECONDS,
-                testScheduler);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
-        observableWithTimeout.subscribe(ts);
-
-        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
-
-        InOrder inOrder = inOrder(subscriber);
-        inOrder.verify(subscriber).onError(isA(IOException.class));
-        inOrder.verifyNoMoreInteractions();
 
         verify(s, times(1)).cancel();
     }

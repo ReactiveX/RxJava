@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.testsupport.*;
 
-public class FlowableDoFinallyTest implements Action {
+public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
     int calls;
 

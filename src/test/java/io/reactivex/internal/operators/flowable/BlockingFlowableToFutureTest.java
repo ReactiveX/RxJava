@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.testsupport.TestHelper;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -28,11 +29,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 
 public class BlockingFlowableToFutureTest {
-    @Ignore("No separate file")
-    @Test
-    public void constructorShouldBePrivate() {
-//        TestHelper.checkUtilityClass(FlowableToFuture.class);
-    }
 
     @Test
     public void toFuture() throws InterruptedException, ExecutionException {
@@ -50,7 +46,7 @@ public class BlockingFlowableToFutureTest {
         assertEquals("three", f.get().get(2));
     }
 
-    @Test(/* timeout = 5000, */expected = IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void exceptionWithMoreThanOneElement() throws Throwable {
         Flowable<String> obs = Flowable.just("one", "two");
         Future<String> f = obs.toFuture();
@@ -113,13 +109,5 @@ public class BlockingFlowableToFutureTest {
         catch (ExecutionException e) {
             throw e.getCause();
         }
-    }
-
-    @Ignore("null value is not allowed")
-    @Test
-    public void getWithASingleNullItem() throws Exception {
-        Flowable<String> obs = Flowable.just((String)null);
-        Future<String> f = obs.toFuture();
-        assertNull(f.get());
     }
 }
