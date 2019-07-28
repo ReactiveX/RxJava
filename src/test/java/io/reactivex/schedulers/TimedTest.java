@@ -16,9 +16,11 @@ package io.reactivex.schedulers;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class TimedTest {
+public class TimedTest extends RxJavaTest {
 
     @Test
     public void properties() {

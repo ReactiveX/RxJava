@@ -26,7 +26,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableThrottleWithTimeoutTests {
+public class FlowableThrottleWithTimeoutTests extends RxJavaTest {
 
     @Test
     public void throttle() {

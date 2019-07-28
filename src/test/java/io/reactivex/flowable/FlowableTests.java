@@ -38,7 +38,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableTests {
+public class FlowableTests extends RxJavaTest {
 
     Subscriber<Number> w;
 
@@ -320,24 +320,6 @@ public class FlowableTests {
         // we should be called only once
         verify(wo, times(1)).onSuccess(anyInt());
         verify(wo).onSuccess(60);
-    }
-
-    @Ignore("Throwing is not allowed from the unsafeCreate?!")
-    @Test // FIXME throwing is not allowed from the create?!
-    public void onSubscribeFails() {
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-
-        final RuntimeException re = new RuntimeException("bad impl");
-        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> s) { throw re; }
-        });
-
-        f.subscribe(subscriber);
-
-        verify(subscriber, times(0)).onNext(anyString());
-        verify(subscriber, times(0)).onComplete();
-        verify(subscriber, times(1)).onError(re);
     }
 
     @Test
@@ -674,67 +656,6 @@ public class FlowableTests {
         assertEquals(1, counter.get());
     }
 
-    /**
-     * https://github.com/ReactiveX/RxJava/issues/198
-     *
-     * Rx Design Guidelines 5.2
-     *
-     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the Observable.
-     * The OnCompleted behavior in this case is to do nothing."
-     */
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void errorThrownWithoutErrorHandlerSynchronous() {
-        try {
-            Flowable.error(new RuntimeException("failure"))
-            .subscribe();
-            fail("expected exception");
-        } catch (Throwable e) {
-            assertEquals("failure", e.getMessage());
-        }
-    }
-
-    /**
-     * https://github.com/ReactiveX/RxJava/issues/198
-     *
-     * Rx Design Guidelines 5.2
-     *
-     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the Observable.
-     * The OnCompleted behavior in this case is to do nothing."
-     *
-     * @throws InterruptedException if the await is interrupted
-     */
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void errorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Flowable.unsafeCreate(new Publisher<Object>() {
-            @Override
-            public void subscribe(final Subscriber<? super Object> subscriber) {
-                subscriber.onSubscribe(new BooleanSubscription());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            subscriber.onError(new Error("failure"));
-                        } catch (Throwable e) {
-                            // without an onError handler it has to just throw on whatever thread invokes it
-                            exception.set(e);
-                        }
-                        latch.countDown();
-                    }
-                }).start();
-            }
-        }).subscribe();
-        // wait for exception
-        latch.await(3000, TimeUnit.MILLISECONDS);
-        assertNotNull(exception.get());
-        assertEquals("failure", exception.get().getMessage());
-    }
-
     @Test
     public void takeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
@@ -836,21 +757,6 @@ public class FlowableTests {
     }
 
     @Test
-    @Ignore("null values are not allowed")
-    public void containsWithNullFlowable() {
-        Flowable<Boolean> flowable = Flowable.just("a", "b", null).contains(null).toFlowable();
-
-        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
-
-        flowable.subscribe(subscriber);
-
-        verify(subscriber, times(1)).onNext(true);
-        verify(subscriber, never()).onNext(false);
-        verify(subscriber, never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-    }
-
-    @Test
     public void containsWithEmptyObservableFlowable() {
         Flowable<Boolean> flowable = Flowable.<String> empty().contains("a").toFlowable();
 
@@ -888,21 +794,6 @@ public class FlowableTests {
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("null values are not allowed")
-    public void containsWithNull() {
-        Single<Boolean> single = Flowable.just("a", "b", null).contains(null);
-
-        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
-
-        single.subscribe(observer);
-
-        verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
                 any(Throwable.class));
     }

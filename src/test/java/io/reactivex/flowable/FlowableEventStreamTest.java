@@ -16,11 +16,12 @@
 
 package io.reactivex.flowable;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableEventStreamTest {
+public class FlowableEventStreamTest extends RxJavaTest {
     @Test
     public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(FlowableEventStream.class);

@@ -17,6 +17,7 @@ import static org.junit.Assert.assertSame;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -25,7 +26,7 @@ import io.reactivex.observable.ObservableCovarianceTest.*;
 import io.reactivex.observable.ObservableEventStream.Event;
 import io.reactivex.observables.GroupedObservable;
 
-public class ObservableZipTests {
+public class ObservableZipTests extends RxJavaTest {
 
     @Test
     public void zipObservableOfObservables() throws Exception {

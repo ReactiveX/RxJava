@@ -14,13 +14,14 @@ package io.reactivex.flowable;
 
 import java.util.Arrays;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFuseableTest {
+public class FlowableFuseableTest extends RxJavaTest {
 
     @Test
     public void syncRange() {

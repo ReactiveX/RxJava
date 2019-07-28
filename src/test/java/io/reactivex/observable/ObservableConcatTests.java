@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -23,7 +24,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.observable.ObservableCovarianceTest.*;
 
-public class ObservableConcatTests {
+public class ObservableConcatTests extends RxJavaTest {
 
     @Test
     public void concatSimple() {

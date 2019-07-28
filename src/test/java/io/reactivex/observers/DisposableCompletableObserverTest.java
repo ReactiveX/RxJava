@@ -26,7 +26,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableCompletableObserverTest {
+public class DisposableCompletableObserverTest extends RxJavaTest {
 
     static final class TestCompletable extends DisposableCompletableObserver {
 

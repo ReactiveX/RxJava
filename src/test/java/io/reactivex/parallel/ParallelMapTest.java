@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ParallelMapTest {
+public class ParallelMapTest extends RxJavaTest {
 
     @Test
     public void subscriberCount() {

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.reactivestreams.*;
@@ -31,7 +32,7 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
-public class FlowableBackpressureTests {
+public class FlowableBackpressureTests extends RxJavaTest {
 
     static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
 
@@ -233,36 +234,6 @@ public class FlowableBackpressureTests {
         assertEquals(num, ts.values().size());
         // expect less than 1 buffer since the flatMap is emitting 10 each time, so it is num/10 that will be taken.
         assertTrue(c.get() < Flowable.bufferSize());
-    }
-
-    @Test
-    @Ignore("The test is non-deterministic and can't be made deterministic")
-    public void flatMapAsync() {
-        int num = (int) (Flowable.bufferSize() * 2.1);
-        AtomicInteger c = new AtomicInteger();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        incrementingIntegers(c)
-        .subscribeOn(Schedulers.computation())
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer i) {
-                return incrementingIntegers(new AtomicInteger())
-                        .take(10)
-                        .subscribeOn(Schedulers.computation());
-            }
-        }
-        )
-        .take(num).subscribe(ts);
-
-        ts.awaitDone(5, TimeUnit.SECONDS);
-        ts.assertNoErrors();
-        System.out.println("testFlatMapAsync => Received: " + ts.values().size() + "  Emitted: " + c.get() + " Size: " + Flowable.bufferSize());
-        assertEquals(num, ts.values().size());
-        // even though we only need 10, it will request at least Flowable.bufferSize(), and then as it drains keep requesting more
-        // and then it will be non-deterministic when the take() causes the unsubscribe as it is scheduled on 10 different schedulers (threads)
-        // normally this number is ~250 but can get up to ~1200 when Flowable.bufferSize() == 1024
-        assertTrue(c.get() <= Flowable.bufferSize() * 2);
     }
 
     @Test
@@ -479,7 +450,7 @@ public class FlowableBackpressureTests {
         assertEquals(20, batches.get());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void firehoseFailsAsExpected() {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -515,7 +486,7 @@ public class FlowableBackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void onBackpressureDrop() {
         long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
@@ -544,7 +515,7 @@ public class FlowableBackpressureTests {
         }
     }
 
-    @Test(timeout = 20000)
+    @Test
     public void onBackpressureDropWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger emitCount = new AtomicInteger();
@@ -586,7 +557,7 @@ public class FlowableBackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void onBackpressureDropSynchronous() {
         for (int i = 0; i < 100; i++) {
             int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
@@ -608,7 +579,7 @@ public class FlowableBackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void onBackpressureDropSynchronousWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger dropCount = new AtomicInteger();
@@ -639,7 +610,7 @@ public class FlowableBackpressureTests {
         }
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void onBackpressureBuffer() {
         int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();

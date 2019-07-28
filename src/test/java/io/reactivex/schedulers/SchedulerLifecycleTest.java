@@ -18,12 +18,13 @@ import static org.junit.Assert.fail;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.CompositeDisposable;
 
-public class SchedulerLifecycleTest {
+public class SchedulerLifecycleTest extends RxJavaTest {
     @Test
     public void shutdown() throws InterruptedException {
         tryOutSchedulers();

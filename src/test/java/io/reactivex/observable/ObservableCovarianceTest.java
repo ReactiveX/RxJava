@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -33,7 +34,7 @@ import io.reactivex.testsupport.TestObserverEx;
  *
  * See https://github.com/Netflix/RxJava/pull/331
  */
-public class ObservableCovarianceTest {
+public class ObservableCovarianceTest extends RxJavaTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics.

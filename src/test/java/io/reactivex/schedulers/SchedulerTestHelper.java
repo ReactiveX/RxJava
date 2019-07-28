@@ -26,40 +26,6 @@ final class SchedulerTestHelper {
     }
 
     /**
-     * Verifies that the given Scheduler delivers unhandled errors to its executing thread's
-     * {@link java.lang.Thread.UncaughtExceptionHandler}.
-     * <p>
-     * Schedulers which execute on a separate thread from their calling thread should exhibit this behavior. Schedulers
-     * which execute on their calling thread may not.
-     */
-    static void unhandledErrorIsDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
-        Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
-        try {
-            CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(handler);
-            IllegalStateException error = new IllegalStateException("Should be delivered to handler");
-            Flowable.error(error)
-                    .subscribeOn(scheduler)
-                    .subscribe();
-
-            if (!handler.completed.await(3, TimeUnit.SECONDS)) {
-                fail("timed out");
-            }
-
-            assertEquals("Should have received exactly 1 exception", 1, handler.count);
-            Throwable cause = handler.caught;
-            while (cause != null) {
-                if (error.equals(cause)) { break; }
-                if (cause == cause.getCause()) { break; }
-                cause = cause.getCause();
-            }
-            assertEquals("Our error should have been delivered to the handler", error, cause);
-        } finally {
-            Thread.setDefaultUncaughtExceptionHandler(originalHandler);
-        }
-    }
-
-    /**
      * Verifies that the given Scheduler does not deliver handled errors to its executing Thread's
      * {@link java.lang.Thread.UncaughtExceptionHandler}.
      * <p>

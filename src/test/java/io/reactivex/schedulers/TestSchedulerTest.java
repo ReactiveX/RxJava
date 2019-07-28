@@ -31,7 +31,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.schedulers.TestScheduler.*;
 
-public class TestSchedulerTest {
+public class TestSchedulerTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately

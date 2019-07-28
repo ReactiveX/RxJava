@@ -14,6 +14,7 @@
 package io.reactivex.maybe;
 
 import io.reactivex.Maybe;
+import io.reactivex.RxJavaTest;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.Functions;
 import java.util.concurrent.Callable;
@@ -22,7 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class MaybeRetryTest {
+public class MaybeRetryTest extends RxJavaTest {
     @Test
     public void retryTimesPredicateWithMatchingPredicate() {
         final AtomicInteger atomicInteger = new AtomicInteger(3);

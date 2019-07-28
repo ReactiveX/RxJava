@@ -23,7 +23,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
-public class FlowableDoOnTest {
+public class FlowableDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnEach() {

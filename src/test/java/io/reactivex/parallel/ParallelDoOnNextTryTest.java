@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -26,7 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ParallelDoOnNextTryTest implements Consumer<Object> {
+public class ParallelDoOnNextTryTest extends RxJavaTest implements Consumer<Object> {
 
     volatile int calls;
 

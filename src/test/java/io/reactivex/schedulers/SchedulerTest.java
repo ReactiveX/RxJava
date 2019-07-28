@@ -30,7 +30,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class SchedulerTest {
+public class SchedulerTest extends RxJavaTest {
 
     @Test
     public void defaultPeriodicTask() {

@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSubscriberTest {
+public class ObservableSubscriberTest extends RxJavaTest {
     @Test
     public void onStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();

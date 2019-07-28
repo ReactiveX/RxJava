@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 import io.reactivex.functions.BiFunction;
 
-public class FlowableReduceTests {
+public class FlowableReduceTests extends RxJavaTest {
 
     @Test
     public void reduceIntsFlowable() {

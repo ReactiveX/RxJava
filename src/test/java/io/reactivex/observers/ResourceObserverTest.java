@@ -13,6 +13,7 @@
 
 package io.reactivex.observers;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceObserverTest {
+public class ResourceObserverTest extends RxJavaTest {
 
     static final class TestResourceObserver<T> extends ResourceObserver<T> {
         final List<T> values = new ArrayList<T>();

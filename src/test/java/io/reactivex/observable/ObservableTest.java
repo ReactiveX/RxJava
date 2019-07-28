@@ -35,7 +35,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableTest {
+public class ObservableTest extends RxJavaTest {
 
     Observer<Number> w;
     SingleObserver<Number> wo;
@@ -337,23 +337,6 @@ public class ObservableTest {
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(60);
-    }
-
-    @Ignore("Throwing is not allowed from the unsafeCreate?!")
-    @Test // FIXME throwing is not allowed from the create?!
-    public void onSubscribeFails() {
-        Observer<String> observer = TestHelper.mockObserver();
-
-        final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) { throw re; }
-        });
-
-        o.subscribe(observer);
-        verify(observer, times(0)).onNext(anyString());
-        verify(observer, times(0)).onComplete();
-        verify(observer, times(1)).onError(re);
     }
 
     @Test
@@ -691,66 +674,6 @@ public class ObservableTest {
         assertEquals(1, counter.get());
     }
 
-    /**
-     * https://github.com/ReactiveX/RxJava/issues/198
-     *
-     * Rx Design Guidelines 5.2
-     *
-     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the Observable.
-     * The OnCompleted behavior in this case is to do nothing."
-     */
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void errorThrownWithoutErrorHandlerSynchronous() {
-        try {
-            Observable.error(new RuntimeException("failure"))
-            .subscribe();
-            fail("expected exception");
-        } catch (Throwable e) {
-            assertEquals("failure", e.getMessage());
-        }
-    }
-
-    /**
-     * https://github.com/ReactiveX/RxJava/issues/198
-     *
-     * Rx Design Guidelines 5.2
-     *
-     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the Observable.
-     * The OnCompleted behavior in this case is to do nothing."
-     *
-     * @throws InterruptedException if the await is interrupted
-     */
-    @Test
-    @Ignore("Subscribers can't throw")
-    public void errorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.unsafeCreate(new ObservableSource<Object>() {
-            @Override
-            public void subscribe(final Observer<? super Object> observer) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            observer.onError(new Error("failure"));
-                        } catch (Throwable e) {
-                            // without an onError handler it has to just throw on whatever thread invokes it
-                            exception.set(e);
-                        }
-                        latch.countDown();
-                    }
-                }).start();
-            }
-        }).subscribe();
-        // wait for exception
-        latch.await(3000, TimeUnit.MILLISECONDS);
-        assertNotNull(exception.get());
-        assertEquals("failure", exception.get().getMessage());
-    }
-
     @Test
     public void takeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
@@ -856,22 +779,6 @@ public class ObservableTest {
     }
 
     @Test
-    @Ignore("null values are not allowed")
-    public void containsWithNullObservable() {
-        Observable<Boolean> o = Observable.just("a", "b", null).contains(null).toObservable();
-
-        Observer<Object> observer = TestHelper.mockObserver();
-
-        o.subscribe(observer);
-
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-    }
-
-    @Test
     public void containsWithEmptyObservableObservable() {
         Observable<Boolean> o = Observable.<String> empty().contains("a").toObservable();
 
@@ -910,21 +817,6 @@ public class ObservableTest {
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("null values are not allowed")
-    public void containsWithNull() {
-        Single<Boolean> o = Observable.just("a", "b", null).contains(null);
-
-        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
-
-        o.subscribe(observer);
-
-        verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
                 any(Throwable.class));
     }

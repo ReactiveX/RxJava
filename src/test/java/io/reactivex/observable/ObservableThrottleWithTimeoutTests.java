@@ -25,7 +25,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableThrottleWithTimeoutTests {
+public class ObservableThrottleWithTimeoutTests extends RxJavaTest {
 
     @Test
     public void throttle() {

@@ -26,7 +26,7 @@ import io.reactivex.observers.DisposableMaybeObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableMaybeObserverTest {
+public class DisposableMaybeObserverTest extends RxJavaTest {
 
     static final class TestMaybe<T> extends DisposableMaybeObserver<T> {
 

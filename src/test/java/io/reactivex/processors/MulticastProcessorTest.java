@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class MulticastProcessorTest {
+public class MulticastProcessorTest extends RxJavaTest {
 
     @Test
     public void complete() {

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.inOrder;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -25,7 +26,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableThrottleLastTests {
+public class FlowableThrottleLastTests extends RxJavaTest {
 
     @Test
     public void throttle() {

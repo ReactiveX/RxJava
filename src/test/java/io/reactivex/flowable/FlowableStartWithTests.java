@@ -17,11 +17,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
 
-public class FlowableStartWithTests {
+public class FlowableStartWithTests extends RxJavaTest {
 
     @Test
     public void startWith1() {

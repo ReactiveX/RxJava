@@ -33,7 +33,7 @@ import io.reactivex.testsupport.TestSubscriberEx;
  *
  * See https://github.com/Netflix/RxJava/pull/331
  */
-public class FlowableCovarianceTest {
+public class FlowableCovarianceTest extends RxJavaTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics.

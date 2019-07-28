@@ -28,7 +28,7 @@ import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultSubscriber;
 
-public class FlowableConversionTest {
+public class FlowableConversionTest extends RxJavaTest {
 
     public static class Cylon { }
 

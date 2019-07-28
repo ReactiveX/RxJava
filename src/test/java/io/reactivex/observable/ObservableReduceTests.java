@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.observable.ObservableCovarianceTest.*;
 
-public class ObservableReduceTests {
+public class ObservableReduceTests extends RxJavaTest {
 
     @Test
     public void reduceIntsObservable() {

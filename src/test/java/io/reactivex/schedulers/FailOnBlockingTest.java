@@ -22,7 +22,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public class FailOnBlockingTest {
+public class FailOnBlockingTest extends RxJavaTest {
 
     @Test
     public void failComputationFlowableBlockingFirst() {

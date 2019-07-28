@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
-public class ObservableDoOnTest {
+public class ObservableDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnEach() {

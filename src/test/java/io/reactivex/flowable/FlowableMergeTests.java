@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
@@ -24,7 +25,7 @@ import io.reactivex.Flowable;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 import io.reactivex.functions.Supplier;
 
-public class FlowableMergeTests {
+public class FlowableMergeTests extends RxJavaTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics.

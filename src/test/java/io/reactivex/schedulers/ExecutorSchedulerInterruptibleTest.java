@@ -41,12 +41,6 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
     }
 
     @Test
-    @Ignore("Unhandled errors are no longer thrown")
-    public final void unhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTestHelper.unhandledErrorIsDeliveredToThreadHandler(getScheduler());
-    }
-
-    @Test
     public final void handledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
@@ -132,7 +126,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         }
     }
 
-    @Test(timeout = 60000)
+    @Test
     public void cancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         Scheduler s = Schedulers.from(exec, true);
@@ -227,75 +221,6 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         exec.executeAll();
         assertEquals(0, calls.get());
     }
-
-    // FIXME the internal structure changed and these can't be tested
-//
-//    @Test
-//    public void testNoTimedTaskAfterScheduleRetention() throws InterruptedException {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//                command.run();
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        w.schedule(Functions.emptyRunnable(), 50, TimeUnit.MILLISECONDS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        Thread.sleep(150);
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
-//
-//    @Test
-//    public void testNoTimedTaskPartRetention() {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        Disposable task = w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        task.dispose();
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
-//
-//    @Test
-//    public void testNoPeriodicTimedTaskPartRetention() throws InterruptedException {
-//        Executor e = new Executor() {
-//            @Override
-//            public void execute(Runnable command) {
-//                command.run();
-//            }
-//        };
-//        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e, true).createWorker();
-//
-//        final CountDownLatch cdl = new CountDownLatch(1);
-//        final Runnable action = new Runnable() {
-//            @Override
-//            public void run() {
-//                cdl.countDown();
-//            }
-//        };
-//
-//        Disposable task = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
-//
-//        assertTrue(w.tasks.hasSubscriptions());
-//
-//        cdl.await();
-//
-//        task.dispose();
-//
-//        assertFalse(w.tasks.hasSubscriptions());
-//    }
 
     @Test
     public void plainExecutor() throws Exception {
@@ -488,7 +413,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         assertTrue(d.isDisposed());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsync() throws Exception {
         final Scheduler s = Schedulers.from(new Executor() {
             @Override
@@ -503,7 +428,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsync2() throws Exception {
         final Scheduler s = Schedulers.from(executor, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
@@ -513,7 +438,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsyncCrash() throws Exception {
         final Scheduler s = Schedulers.from(new Executor() {
             @Override
@@ -533,7 +458,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsyncTimed() throws Exception {
         final Scheduler s = Schedulers.from(new Executor() {
             @Override
@@ -548,7 +473,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsyncTimed2() throws Exception {
         ExecutorService executorScheduler = Executors.newScheduledThreadPool(1, new RxThreadFactory("TestCustomPoolTimed"));
         try {
@@ -581,7 +506,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         assertSame(Functions.EMPTY_RUNNABLE, wrapper.getWrappedRunnable());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void interruptibleDirectTask() throws Exception {
         Scheduler scheduler = getScheduler();
 
@@ -619,7 +544,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         assertTrue("Interruption did not propagate", isInterrupted.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void interruptibleWorkerTask() throws Exception {
         Scheduler scheduler = getScheduler();
 

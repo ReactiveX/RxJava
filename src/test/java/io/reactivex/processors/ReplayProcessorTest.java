@@ -255,7 +255,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         verify(subscriber, Mockito.never()).onComplete();
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
         final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
@@ -366,7 +366,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(0, replaySubject.subscriberCount());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscriptionCase() {
         ReplayProcessor<String> src = ReplayProcessor.create();
 
@@ -541,52 +541,6 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         verify(subscriber).onNext(3);
         verify(subscriber).onComplete();
     }
-
-    // FIXME RS subscribers can't throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        ReplayProcessor<String> ps = ReplayProcessor.create();
-//
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.errors().size());
-//    }
-
-    // FIXME RS subscribers can't throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        ReplayProcessor<String> ps = ReplayProcessor.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
 
     @Test
     public void currentStateMethodsNormal() {

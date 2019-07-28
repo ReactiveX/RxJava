@@ -243,7 +243,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscriptionCase() {
         BehaviorProcessor<String> src = BehaviorProcessor.createDefault("null"); // FIXME was plain null which is not allowed
 
@@ -361,52 +361,6 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasSubscribers());
     }
-
-    // FIXME RS subscribers are not allowed to throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        BehaviorProcessor<String> ps = BehaviorProcessor.create();
-//
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
-
-    // FIXME RS subscribers are not allowed to throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        BehaviorProcessor<String> ps = BehaviorProcessor.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
-//        ps.subscribe(ts);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
-//    }
 
     @Test
     public void emissionSubscriptionRace() throws Exception {
@@ -811,7 +765,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void subscriberCancelOfferRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();

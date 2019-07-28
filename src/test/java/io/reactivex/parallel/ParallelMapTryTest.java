@@ -15,6 +15,7 @@ package io.reactivex.parallel;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -24,7 +25,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ParallelMapTryTest implements Consumer<Object> {
+public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
 
     volatile int calls;
 

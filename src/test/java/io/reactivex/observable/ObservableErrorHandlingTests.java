@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class ObservableErrorHandlingTests {
+public class ObservableErrorHandlingTests extends RxJavaTest {
 
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError.

@@ -39,7 +39,7 @@ import io.reactivex.subscribers.DefaultSubscriber;
 /**
  * Base tests for all schedulers including Immediate/Current.
  */
-public abstract class AbstractSchedulerTests {
+public abstract class AbstractSchedulerTests extends RxJavaTest {
 
     /**
      * The scheduler to test.
@@ -538,7 +538,7 @@ public abstract class AbstractSchedulerTests {
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
     }
 
-    @Test(timeout = 7000)
+    @Test
     public void scheduleDirectPeriodic() throws Exception {
         Scheduler s = getScheduler();
         if (s instanceof TrampolineScheduler) {
@@ -563,7 +563,7 @@ public abstract class AbstractSchedulerTests {
         assertTrue(d.isDisposed());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void schedulePeriodicallyDirectZeroPeriod() throws Exception {
         Scheduler s = getScheduler();
         if (s instanceof TrampolineScheduler) {
@@ -596,7 +596,7 @@ public abstract class AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void schedulePeriodicallyZeroPeriod() throws Exception {
         Scheduler s = getScheduler();
         if (s instanceof TrampolineScheduler) {
@@ -657,7 +657,7 @@ public abstract class AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 6000)
+    @Test
     public void scheduleDirectDecoratesRunnable() throws InterruptedException {
         assertRunnableDecorated(new Runnable() {
             @Override
@@ -667,7 +667,7 @@ public abstract class AbstractSchedulerTests {
         });
     }
 
-    @Test(timeout = 6000)
+    @Test
     public void scheduleDirectWithDelayDecoratesRunnable() throws InterruptedException {
         assertRunnableDecorated(new Runnable() {
             @Override
@@ -677,7 +677,7 @@ public abstract class AbstractSchedulerTests {
         });
     }
 
-    @Test(timeout = 6000)
+    @Test
     public void schedulePeriodicallyDirectDecoratesRunnable() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         if (scheduler instanceof TrampolineScheduler) {
@@ -699,7 +699,7 @@ public abstract class AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void unwrapDefaultPeriodicTask() throws InterruptedException {
         Scheduler s = getScheduler();
         if (s instanceof TrampolineScheduler) {

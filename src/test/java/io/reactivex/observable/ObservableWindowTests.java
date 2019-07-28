@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.*;
 
-public class ObservableWindowTests {
+public class ObservableWindowTests extends RxJavaTest {
 
     @Test
     public void window() {

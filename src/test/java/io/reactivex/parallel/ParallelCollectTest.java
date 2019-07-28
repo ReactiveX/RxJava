@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class ParallelCollectTest {
+public class ParallelCollectTest extends RxJavaTest {
 
     @Test
     public void subscriberCount() {

@@ -28,7 +28,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ParallelPeekTest {
+public class ParallelPeekTest extends RxJavaTest {
 
     @Test
     public void subscriberCount() {

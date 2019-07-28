@@ -15,12 +15,13 @@ package io.reactivex.observable;
 
 import java.util.HashMap;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.functions.*;
 import io.reactivex.observable.ObservableEventStream.Event;
 
-public class ObservableScanTests {
+public class ObservableScanTests extends RxJavaTest {
 
     @Test
     public void unsubscribeScan() throws Exception {

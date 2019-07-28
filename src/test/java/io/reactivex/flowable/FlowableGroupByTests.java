@@ -13,6 +13,7 @@
 
 package io.reactivex.flowable;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
@@ -22,7 +23,7 @@ import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableGroupByTests {
+public class FlowableGroupByTests extends RxJavaTest {
 
     @Test
     public void takeUnsubscribesOnGroupBy() {
