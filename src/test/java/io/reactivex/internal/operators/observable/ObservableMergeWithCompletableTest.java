@@ -156,7 +156,7 @@ public class ObservableMergeWithCompletableTest {
     }
 
     @Test
-    public void cancelMainOnOhterError() {
+    public void cancelMainOnOtherError() {
         PublishSubject<Integer> ps = PublishSubject.create();
         CompletableSubject cs = CompletableSubject.create();
 

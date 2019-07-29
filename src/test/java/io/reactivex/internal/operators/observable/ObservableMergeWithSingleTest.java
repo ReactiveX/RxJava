@@ -284,7 +284,7 @@ public class ObservableMergeWithSingleTest {
     }
 
     @Test
-    public void cancelMainOnOhterError() {
+    public void cancelMainOnOtherError() {
         PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ss = SingleSubject.create();
 

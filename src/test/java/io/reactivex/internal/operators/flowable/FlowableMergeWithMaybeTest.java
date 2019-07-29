@@ -422,7 +422,7 @@ public class FlowableMergeWithMaybeTest {
     }
 
     @Test
-    public void cancelMainOnOhterError() {
+    public void cancelMainOnOtherError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 

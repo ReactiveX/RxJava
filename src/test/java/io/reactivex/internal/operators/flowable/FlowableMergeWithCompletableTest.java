@@ -157,7 +157,7 @@ public class FlowableMergeWithCompletableTest {
     }
 
     @Test
-    public void cancelMainOnOhterError() {
+    public void cancelMainOnOtherError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         CompletableSubject cs = CompletableSubject.create();
 

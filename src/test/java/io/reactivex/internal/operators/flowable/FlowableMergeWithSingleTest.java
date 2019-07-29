@@ -418,7 +418,7 @@ public class FlowableMergeWithSingleTest {
     }
 
     @Test
-    public void cancelMainOnOhterError() {
+    public void cancelMainOnOtherError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         SingleSubject<Integer> ss = SingleSubject.create();
 
