@@ -80,7 +80,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
 
         @Override
         public void onError(Throwable ex) {
-            DisposableHelper.dispose(mainDisposable);
+            DisposableHelper.dispose(otherObserver);
             HalfSerializer.onError(downstream, ex, this, error);
         }
 

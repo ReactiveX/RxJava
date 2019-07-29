@@ -106,7 +106,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         @Override
         public void onError(Throwable ex) {
             if (error.addThrowable(ex)) {
-                DisposableHelper.dispose(mainDisposable);
+                DisposableHelper.dispose(otherObserver);
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);
