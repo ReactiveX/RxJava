@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class BasicFuseableSubscriberTest {
+public class BasicFuseableSubscriberTest extends RxJavaTest {
 
     @Test
     public void offerThrows() {

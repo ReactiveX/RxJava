@@ -15,13 +15,14 @@ package io.reactivex.internal.util;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.testsupport.TestObserverEx;
 
-public class NotificationLiteTest {
+public class NotificationLiteTest extends RxJavaTest {
 
     @Test
     public void acceptFullObserver() {

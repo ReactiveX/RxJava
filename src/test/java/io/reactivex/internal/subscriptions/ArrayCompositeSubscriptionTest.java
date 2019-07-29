@@ -15,11 +15,12 @@ package io.reactivex.internal.subscriptions;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
-public class ArrayCompositeSubscriptionTest {
+public class ArrayCompositeSubscriptionTest extends RxJavaTest {
 
     @Test
     public void set() {

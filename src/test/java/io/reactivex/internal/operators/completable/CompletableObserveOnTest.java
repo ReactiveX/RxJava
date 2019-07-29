@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableObserveOnTest {
+public class CompletableObserveOnTest extends RxJavaTest {
 
     @Test
     public void dispose() {

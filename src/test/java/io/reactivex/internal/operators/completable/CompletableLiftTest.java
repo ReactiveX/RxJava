@@ -22,7 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableLiftTest {
+public class CompletableLiftTest extends RxJavaTest {
 
     @Test
     public void callbackThrows() {

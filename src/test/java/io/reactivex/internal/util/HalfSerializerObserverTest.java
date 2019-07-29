@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observer;
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.*;
 
-public class HalfSerializerObserverTest {
+public class HalfSerializerObserverTest extends RxJavaTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })

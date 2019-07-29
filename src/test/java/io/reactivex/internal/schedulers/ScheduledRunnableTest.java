@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,7 +29,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ScheduledRunnableTest {
+public class ScheduledRunnableTest extends RxJavaTest {
 
     @Test
     public void dispose() {

@@ -25,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletablePeekTest {
+public class CompletablePeekTest extends RxJavaTest {
 
     @Test
     public void onAfterTerminateCrashes() {

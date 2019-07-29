@@ -15,12 +15,13 @@ package io.reactivex.internal.disposables;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class EmptyDisposableTest {
+public class EmptyDisposableTest extends RxJavaTest {
 
     @Test
     public void noOffer() {

@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
@@ -23,7 +24,7 @@ import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.testsupport.TestHelper;
 
-public class BasicFuseableConditionalSubscriberTest {
+public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
 
     @Test
     public void offerThrows() {

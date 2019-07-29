@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class EndConsumerHelperTest {
+public class EndConsumerHelperTest extends RxJavaTest {
 
     List<Throwable> errors;
 

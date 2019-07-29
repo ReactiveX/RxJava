@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ListCompositeDisposableTest {
+public class ListCompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void constructorAndAddVarargs() {

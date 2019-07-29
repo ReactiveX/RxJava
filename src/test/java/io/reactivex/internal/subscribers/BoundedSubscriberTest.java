@@ -14,6 +14,7 @@
 package io.reactivex.internal.subscribers;
 
 import io.reactivex.Flowable;
+import io.reactivex.RxJavaTest;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BoundedSubscriberTest {
+public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onSubscribeThrows() {

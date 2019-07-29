@@ -15,13 +15,14 @@ package io.reactivex.internal.subscriptions;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class DeferredScalarSubscriptionTest {
+public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void queueSubscriptionSyncRejected() {

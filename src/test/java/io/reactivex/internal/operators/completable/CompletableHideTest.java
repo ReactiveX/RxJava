@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public class CompletableHideTest {
+public class CompletableHideTest extends RxJavaTest {
 
     @Test
     public void never() {

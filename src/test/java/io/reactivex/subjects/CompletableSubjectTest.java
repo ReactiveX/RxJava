@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableSubjectTest {
+public class CompletableSubjectTest extends RxJavaTest {
 
     @Test
     public void once() {

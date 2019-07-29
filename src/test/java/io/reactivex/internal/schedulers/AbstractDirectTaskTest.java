@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.FutureTask;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.testsupport.TestHelper;
 
-public class AbstractDirectTaskTest {
+public class AbstractDirectTaskTest extends RxJavaTest {
 
     @Test
     public void cancelSetFuture() {

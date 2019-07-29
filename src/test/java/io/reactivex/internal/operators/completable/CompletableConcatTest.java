@@ -32,7 +32,7 @@ import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableConcatTest {
+public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void overflowReported() {

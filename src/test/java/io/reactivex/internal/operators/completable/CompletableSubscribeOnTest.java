@@ -28,7 +28,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableSubscribeOnTest {
+public class CompletableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void normal() {

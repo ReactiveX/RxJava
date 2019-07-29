@@ -14,9 +14,11 @@
 package io.reactivex.internal.util;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class OpenHashSetTest {
+public class OpenHashSetTest extends RxJavaTest {
 
     static class Value {
 

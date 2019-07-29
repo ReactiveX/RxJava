@@ -31,7 +31,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableFromSupplierTest {
+public class CompletableFromSupplierTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromSupplierNull() {

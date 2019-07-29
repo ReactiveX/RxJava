@@ -14,10 +14,11 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.Completable;
+import io.reactivex.RxJavaTest;
 import io.reactivex.Single;
 import org.junit.Test;
 
-public class CompletableFromSingleTest {
+public class CompletableFromSingleTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromSingleNull() {
         Completable.fromSingle(null);

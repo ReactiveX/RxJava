@@ -19,7 +19,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 
-public class CompletableOnErrorXTest {
+public class CompletableOnErrorXTest extends RxJavaTest {
 
     @Test
     public void normalReturn() {

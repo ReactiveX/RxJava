@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Completable;
@@ -27,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.CompletableSubject;
 
-public class CompletableDelaySubscriptionTest {
+public class CompletableDelaySubscriptionTest extends RxJavaTest {
 
     @Test
     public void normal() {

@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.internal.functions.Functions;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class LambdaObserverTest {
+public class LambdaObserverTest extends RxJavaTest {
 
     @Test
     public void onSubscribeThrows() {

@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.internal.functions.Functions;
 
-public class ImmediateThinSchedulerTest {
+public class ImmediateThinSchedulerTest extends RxJavaTest {
 
     @Test
     public void scheduleDirect() {

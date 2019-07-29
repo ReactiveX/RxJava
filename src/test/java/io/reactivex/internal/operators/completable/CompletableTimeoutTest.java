@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Completable;
@@ -33,7 +34,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class CompletableTimeoutTest {
+public class CompletableTimeoutTest extends RxJavaTest {
 
     @Test
     public void timeoutException() throws Exception {

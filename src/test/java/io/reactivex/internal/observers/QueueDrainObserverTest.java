@@ -21,7 +21,7 @@ import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class QueueDrainObserverTest {
+public class QueueDrainObserverTest extends RxJavaTest {
 
     static final QueueDrainObserver<Integer, Integer, Integer> createUnordered(TestObserver<Integer> to, final Disposable d) {
         return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<Integer>(4)) {

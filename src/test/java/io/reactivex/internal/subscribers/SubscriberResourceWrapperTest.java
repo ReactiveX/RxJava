@@ -26,7 +26,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class SubscriberResourceWrapperTest {
+public class SubscriberResourceWrapperTest extends RxJavaTest {
 
     TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 

@@ -17,9 +17,10 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class BlockingObserverTest {
+public class BlockingObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {

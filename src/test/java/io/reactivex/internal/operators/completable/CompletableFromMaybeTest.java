@@ -15,9 +15,10 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class CompletableFromMaybeTest {
+public class CompletableFromMaybeTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromMaybeNull() {
         Completable.fromMaybe(null);

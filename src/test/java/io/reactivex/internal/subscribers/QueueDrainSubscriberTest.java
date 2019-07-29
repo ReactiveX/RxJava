@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -28,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class QueueDrainSubscriberTest {
+public class QueueDrainSubscriberTest extends RxJavaTest {
 
     static final QueueDrainSubscriber<Integer, Integer, Integer> createUnordered(TestSubscriber<Integer> ts, final Disposable d) {
         return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<Integer>(4)) {

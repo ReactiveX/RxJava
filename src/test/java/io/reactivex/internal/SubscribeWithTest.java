@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class SubscribeWithTest {
+public class SubscribeWithTest extends RxJavaTest {
 
     @Test
     public void withFlowable() {

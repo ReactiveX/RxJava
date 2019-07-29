@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.annotations.BackpressureKind;
 
-public class BackpressureEnumTest {
+public class BackpressureEnumTest extends RxJavaTest {
 
     @Test
     public void backpressureOverflowStrategy() {

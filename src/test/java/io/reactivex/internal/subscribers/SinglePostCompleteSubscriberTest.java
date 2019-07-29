@@ -13,13 +13,14 @@
 
 package io.reactivex.internal.subscribers;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class SinglePostCompleteSubscriberTest {
+public class SinglePostCompleteSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestCompleteRace() {

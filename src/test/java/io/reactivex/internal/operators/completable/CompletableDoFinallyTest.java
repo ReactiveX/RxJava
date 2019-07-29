@@ -26,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableDoFinallyTest implements Action {
+public class CompletableDoFinallyTest extends RxJavaTest implements Action {
 
     int calls;
 

@@ -83,7 +83,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsync() throws Exception {
         final Scheduler s = Schedulers.single();
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
@@ -93,7 +93,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsyncCrash() throws Exception {
         final Scheduler s = Schedulers.single();
 
@@ -109,7 +109,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void runnableDisposedAsyncTimed() throws Exception {
         final Scheduler s = Schedulers.single();
 

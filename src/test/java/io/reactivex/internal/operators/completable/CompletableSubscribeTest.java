@@ -14,12 +14,14 @@
 package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.PublishSubject;
 
-public class CompletableSubscribeTest {
+public class CompletableSubscribeTest extends RxJavaTest {
     @Test
     public void subscribeAlreadyCancelled() {
 

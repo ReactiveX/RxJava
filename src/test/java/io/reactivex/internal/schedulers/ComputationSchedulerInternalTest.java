@@ -16,9 +16,11 @@
 package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class ComputationSchedulerInternalTest {
+public class ComputationSchedulerInternalTest extends RxJavaTest {
 
     @Test
     public void capPoolSize() {

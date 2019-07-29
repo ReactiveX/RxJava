@@ -36,7 +36,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class TestSubscriberTest {
+public class TestSubscriberTest extends RxJavaTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -660,7 +660,7 @@ public class TestSubscriberTest {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void onCompletedCrashCountsDownLatch() {
         TestSubscriber<Integer> ts0 = new TestSubscriber<Integer>() {
             @Override
@@ -679,7 +679,7 @@ public class TestSubscriberTest {
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void onErrorCrashCountsDownLatch() {
         TestSubscriber<Integer> ts0 = new TestSubscriber<Integer>() {
             @Override
@@ -898,7 +898,7 @@ public class TestSubscriberTest {
 
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void await() throws Exception {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 

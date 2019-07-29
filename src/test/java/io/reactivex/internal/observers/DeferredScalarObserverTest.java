@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observer;
@@ -27,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class DeferredScalarObserverTest {
+public class DeferredScalarObserverTest extends RxJavaTest {
 
     static final class TakeFirst extends DeferredScalarObserver<Integer, Integer> {
 

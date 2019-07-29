@@ -27,7 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class CompletableDoOnTest {
+public class CompletableDoOnTest extends RxJavaTest {
 
     @Test
     public void successAcceptThrows() {

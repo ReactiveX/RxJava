@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class XFlatMapTest {
+public class XFlatMapTest extends RxJavaTest {
 
     @Rule
     public Retry retry = new Retry(5, 1000, true);

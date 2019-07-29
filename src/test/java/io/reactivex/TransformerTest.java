@@ -19,7 +19,7 @@ import org.reactivestreams.Publisher;
 
 import static org.junit.Assert.*;
 
-public class TransformerTest {
+public class TransformerTest extends RxJavaTest {
 
     @Test
     public void flowableTransformerThrows() {

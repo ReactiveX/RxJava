@@ -24,7 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableMergeIterableTest {
+public class CompletableMergeIterableTest extends RxJavaTest {
 
     @Test
     public void errorRace() {

@@ -242,7 +242,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unsubscriptionCase() {
         BehaviorSubject<String> src = BehaviorSubject.createDefault("null"); // FIXME was plain null which is not allowed
 
@@ -361,52 +361,6 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasObservers());
     }
-
-    // FIXME RS subscribers are not allowed to throw
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        BehaviorSubject<String> ps = BehaviorSubject.create();
-//
-//        ps.subscribe();
-//        TestObserver<String> to = new TestObserver<T>();
-//        ps.subscribe(to);
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (OnErrorNotImplementedException e) {
-//            // ignore
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, to.getOnErrorEvents().size());
-//    }
-
-    // FIXME RS subscribers are not allowed to throw
-//    /**
-//     * This one has multiple failures so should get a CompositeException
-//     */
-//    @Test
-//    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        BehaviorSubject<String> ps = BehaviorSubject.create();
-//
-//        ps.subscribe();
-//        ps.subscribe();
-//        TestObserver<String> to = new TestObserver<String>();
-//        ps.subscribe(to);
-//        ps.subscribe();
-//        ps.subscribe();
-//        ps.subscribe();
-//
-//        try {
-//            ps.onError(new RuntimeException("an exception"));
-//            fail("expect OnErrorNotImplementedException");
-//        } catch (CompositeException e) {
-//            // we should have 5 of them
-//            assertEquals(5, e.getExceptions().size());
-//        }
-//        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, to.getOnErrorEvents().size());
-//    }
 
     @Test
     public void emissionSubscriptionRace() throws Exception {

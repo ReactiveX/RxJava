@@ -27,7 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 
-public class SingleNullTests {
+public class SingleNullTests extends RxJavaTest {
 
     Single<Integer> just1 = Single.just(1);
 

@@ -13,10 +13,11 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
-public class BasicQueueDisposableTest {
+public class BasicQueueDisposableTest extends RxJavaTest {
 
     BasicQueueDisposable<Integer> q = new BasicQueueDisposable<Integer>() {
 

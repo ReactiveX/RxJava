@@ -20,7 +20,7 @@ import org.reactivestreams.Publisher;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 
-public class CompletableRepeatWhenTest {
+public class CompletableRepeatWhenTest extends RxJavaTest {
     @Test
     public void whenCounted() {
 

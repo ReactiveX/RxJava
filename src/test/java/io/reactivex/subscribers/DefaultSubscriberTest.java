@@ -17,11 +17,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
 
-public class DefaultSubscriberTest {
+public class DefaultSubscriberTest extends RxJavaTest {
 
     static final class RequestEarly extends DefaultSubscriber<Integer> {
 

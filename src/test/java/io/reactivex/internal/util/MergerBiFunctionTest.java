@@ -17,9 +17,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
-public class MergerBiFunctionTest {
+public class MergerBiFunctionTest extends RxJavaTest {
 
     @Test
     public void firstEmpty() throws Exception {

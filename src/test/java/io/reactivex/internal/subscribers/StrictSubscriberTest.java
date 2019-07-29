@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.testsupport.TestSubscriberEx;
 
-public class StrictSubscriberTest {
+public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void strictMode() {

@@ -25,7 +25,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class DisposableSubscriberTest {
+public class DisposableSubscriberTest extends RxJavaTest {
 
     static final class TestDisposableSubscriber<T> extends DisposableSubscriber<T> {
 

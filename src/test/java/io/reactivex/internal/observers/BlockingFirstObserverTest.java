@@ -15,12 +15,13 @@ package io.reactivex.internal.observers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 
-public class BlockingFirstObserverTest {
+public class BlockingFirstObserverTest extends RxJavaTest {
 
     @Test
     public void firstValueOnly() {

@@ -15,12 +15,13 @@ package io.reactivex.internal.disposables;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ArrayCompositeDisposableTest {
+public class ArrayCompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void normal() {

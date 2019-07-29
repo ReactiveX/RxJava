@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleSubscribeTest {
+public class SingleSubscribeTest extends RxJavaTest {
 
     @Test
     public void consumer() {

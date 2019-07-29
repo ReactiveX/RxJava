@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingHelperTest {
+public class BlockingHelperTest extends RxJavaTest {
 
     @Test
     public void emptyEnum() {
