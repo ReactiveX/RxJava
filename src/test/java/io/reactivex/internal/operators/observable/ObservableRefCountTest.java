@@ -722,7 +722,7 @@ public class ObservableRefCountTest {
     @Test
     public void publishNoLeak() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -738,7 +738,7 @@ public class ObservableRefCountTest {
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -749,7 +749,7 @@ public class ObservableRefCountTest {
     @Test
     public void publishNoLeak2() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -772,7 +772,7 @@ public class ObservableRefCountTest {
         d2 = null;
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
