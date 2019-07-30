@@ -716,10 +716,19 @@ public class ObservableRefCountAltTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
-        Thread.sleep(250);
+        long after = 0L;
 
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        for (int i = 0; i < 10; i++) {
+            System.gc();
+
+            after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+            if (start + 20 * 1000 * 1000 > after) {
+                break;
+            }
+
+            Thread.sleep(100);
+        }
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
