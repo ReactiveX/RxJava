@@ -630,7 +630,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void replayNoLeak() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -646,7 +646,7 @@ public class ObservableRefCountAltTest {
         source.subscribe();
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -657,7 +657,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void replayNoLeak2() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -680,7 +680,7 @@ public class ObservableRefCountAltTest {
         d2 = null;
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
