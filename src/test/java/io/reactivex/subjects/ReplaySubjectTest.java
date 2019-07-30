@@ -1342,4 +1342,79 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
                     + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.onNext(1);
+        rs.cleanupBuffer();
+        rs.onComplete();
+
+        to.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange2() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.onNext(1);
+        rs.cleanupBuffer();
+        rs.onNext(2);
+        rs.cleanupBuffer();
+        rs.onComplete();
+
+        to.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange3() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onComplete();
+
+        to.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange4() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 10);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onComplete();
+
+        to.assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void timeAndSizeRemoveCorrectNumberOfOld() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(3); // remove 1 due to maxSize, size == 2
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        rs.onNext(4); // remove 2 due to maxSize, remove 3 due to age, size == 1
+        rs.onNext(5); // size == 2
+
+        rs.test().assertValuesOnly(4, 5);
+    }
 }
