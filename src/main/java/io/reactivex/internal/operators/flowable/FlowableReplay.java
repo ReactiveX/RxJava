@@ -773,6 +773,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             }
 
             setFirst(head);
+            // correct the tail if all items have been removed
+            head = get();
+            if (head.get() == null) {
+                tail = head;
+            }
         }
         /**
          * Arranges the given node is the new head from now on.
@@ -1015,7 +1020,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             int e = 0;
             for (;;) {
                 if (next != null) {
-                    if (size > limit) {
+                    if (size > limit && size > 1) { // never truncate the very last item just added
                         e++;
                         size--;
                         prev = next;
