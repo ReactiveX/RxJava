@@ -272,4 +272,39 @@ public class ObservableMergeWithMaybeTest {
         to.assertResult(0, 1, 2, 3, 4);
     }
 
+    @Test
+    public void cancelOtherOnMainError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(ms).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(ms.hasObservers());
+
+        ps.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", ms.hasObservers());
+    }
+
+    @Test
+    public void cancelMainOnOtherError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(ms).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(ms.hasObservers());
+
+        ms.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", ms.hasObservers());
+    }
 }

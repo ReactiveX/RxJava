@@ -136,4 +136,40 @@ public class FlowableMergeWithCompletableTest {
             ts.assertResult(1);
         }
     }
+
+    @Test
+    public void cancelOtherOnMainError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
+
+        assertTrue(pp.hasSubscribers());
+        assertTrue(cs.hasObservers());
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", pp.hasSubscribers());
+        assertFalse("other has observers", cs.hasObservers());
+    }
+
+    @Test
+    public void cancelMainOnOtherError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestSubscriber<Integer> ts = pp.mergeWith(cs).test();
+
+        assertTrue(pp.hasSubscribers());
+        assertTrue(cs.hasObservers());
+
+        cs.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", pp.hasSubscribers());
+        assertFalse("other has observers", cs.hasObservers());
+    }
 }

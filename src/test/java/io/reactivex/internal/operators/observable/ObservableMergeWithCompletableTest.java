@@ -135,4 +135,40 @@ public class ObservableMergeWithCompletableTest {
         .test()
         .assertResult(1);
     }
+
+    @Test
+    public void cancelOtherOnMainError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(cs).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(cs.hasObservers());
+
+        ps.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", cs.hasObservers());
+    }
+
+    @Test
+    public void cancelMainOnOtherError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(cs).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(cs.hasObservers());
+
+        cs.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", cs.hasObservers());
+    }
 }
