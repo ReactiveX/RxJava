@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeMapTest {
+public class MaybeMapTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {

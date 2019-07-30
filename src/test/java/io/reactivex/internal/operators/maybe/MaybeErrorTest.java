@@ -13,13 +13,14 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Supplier;
 
-public class MaybeErrorTest {
+public class MaybeErrorTest extends RxJavaTest {
 
     @Test
     public void errorSupplierThrows() {

@@ -24,7 +24,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeSwitchIfEmptyTest {
+public class MaybeSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void nonEmpty() {

@@ -31,7 +31,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class SingleFlatMapIterableFlowableTest {
+public class SingleFlatMapIterableFlowableTest extends RxJavaTest {
 
     @Test
     public void normal() {

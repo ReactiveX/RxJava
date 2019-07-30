@@ -35,7 +35,7 @@ import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableConcatMapSingleTest {
+public class FlowableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void simple() {
@@ -284,7 +284,7 @@ public class FlowableConcatMapSingleTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void cancelNoConcurrentClean() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ConcatMapSingleSubscriber<Integer, Integer> operator =

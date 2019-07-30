@@ -23,7 +23,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeMergeTest {
+public class MaybeMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorWithMaxConcurrency() {

@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeDelayTest {
+public class MaybeDelayTest extends RxJavaTest {
 
     @Test
     public void success() {

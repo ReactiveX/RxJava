@@ -22,7 +22,7 @@ import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeToSingleTest {
+public class MaybeToSingleTest extends RxJavaTest {
 
     @Test
     public void source() {

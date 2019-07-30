@@ -21,7 +21,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleHideTest {
+public class SingleHideTest extends RxJavaTest {
 
     @Test
     public void error() {

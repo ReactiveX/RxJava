@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleDoAfterSuccessTest {
+public class SingleDoAfterSuccessTest extends RxJavaTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 

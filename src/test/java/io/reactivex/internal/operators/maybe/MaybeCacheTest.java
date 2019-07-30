@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeCacheTest {
+public class MaybeCacheTest extends RxJavaTest {
 
     @Test
     public void offlineSuccess() {

@@ -32,7 +32,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.testsupport.*;
 
-public class FlowableConcatMapCompletableTest {
+public class FlowableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void simple() {

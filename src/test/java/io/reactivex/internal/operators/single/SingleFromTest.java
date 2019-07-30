@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.schedulers.Schedulers;
 
-public class SingleFromTest {
+public class SingleFromTest extends RxJavaTest {
 
     @Test
     public void fromFuture() throws Exception {

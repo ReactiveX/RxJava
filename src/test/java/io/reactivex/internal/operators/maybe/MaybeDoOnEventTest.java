@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeDoOnEventTest {
+public class MaybeDoOnEventTest extends RxJavaTest {
 
     @Test
     public void dispose() {

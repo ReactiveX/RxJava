@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -20,7 +21,7 @@ import io.reactivex.Maybe;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 
-public class AbstractMaybeWithUpstreamTest {
+public class AbstractMaybeWithUpstreamTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

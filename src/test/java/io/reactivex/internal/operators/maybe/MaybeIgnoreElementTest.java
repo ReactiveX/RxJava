@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeIgnoreElementTest {
+public class MaybeIgnoreElementTest extends RxJavaTest {
 
     @Test
     public void dispose() {

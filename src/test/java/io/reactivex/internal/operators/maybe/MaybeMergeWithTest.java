@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
 
-public class MaybeMergeWithTest {
+public class MaybeMergeWithTest extends RxJavaTest {
 
     @Test
     public void normal() {

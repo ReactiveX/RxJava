@@ -20,7 +20,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFlatMapCompletableTest {
+public class MaybeFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void dispose() {

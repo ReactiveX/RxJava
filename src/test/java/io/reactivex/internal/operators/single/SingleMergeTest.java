@@ -24,7 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleMergeTest {
+public class SingleMergeTest extends RxJavaTest {
 
     @Test
     public void mergeSingleSingle() {

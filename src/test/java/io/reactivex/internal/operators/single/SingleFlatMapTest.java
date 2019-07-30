@@ -25,7 +25,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.*;
 
-public class SingleFlatMapTest {
+public class SingleFlatMapTest extends RxJavaTest {
 
     @Test
     public void normal() {

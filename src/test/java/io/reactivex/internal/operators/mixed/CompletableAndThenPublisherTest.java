@@ -25,7 +25,7 @@ import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableAndThenPublisherTest {
+public class CompletableAndThenPublisherTest extends RxJavaTest {
 
     @Test
     public void cancelMain() {

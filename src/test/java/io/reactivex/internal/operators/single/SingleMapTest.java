@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Single;
@@ -20,7 +21,7 @@ import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleMapTest {
+public class SingleMapTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void mapNull() {

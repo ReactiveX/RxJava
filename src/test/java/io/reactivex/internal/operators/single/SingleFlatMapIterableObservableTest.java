@@ -30,7 +30,7 @@ import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class SingleFlatMapIterableObservableTest {
+public class SingleFlatMapIterableObservableTest extends RxJavaTest {
 
     @Test
     public void normal() {

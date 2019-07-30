@@ -22,7 +22,7 @@ import io.reactivex.testsupport.TestHelper;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-public class MaybeFromCompletableTest {
+public class MaybeFromCompletableTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromCompletableNull() {
         Maybe.fromCompletable(null);

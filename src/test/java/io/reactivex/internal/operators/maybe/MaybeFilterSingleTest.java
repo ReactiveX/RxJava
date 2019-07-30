@@ -22,7 +22,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFilterSingleTest {
+public class MaybeFilterSingleTest extends RxJavaTest {
 
     @Test
     public void error() {

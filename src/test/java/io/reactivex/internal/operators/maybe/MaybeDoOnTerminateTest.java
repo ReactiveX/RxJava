@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
 import io.reactivex.testsupport.*;
 
-public class MaybeDoOnTerminateTest {
+public class MaybeDoOnTerminateTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void doOnTerminate() {

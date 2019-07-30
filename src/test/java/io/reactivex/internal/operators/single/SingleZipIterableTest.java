@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleZipIterableTest {
+public class SingleZipIterableTest extends RxJavaTest {
 
     final Function<Object[], Object> addString = new Function<Object[], Object>() {
         @Override

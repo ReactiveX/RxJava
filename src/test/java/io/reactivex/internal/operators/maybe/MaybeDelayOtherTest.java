@@ -28,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.*;
 
-public class MaybeDelayOtherTest {
+public class MaybeDelayOtherTest extends RxJavaTest {
 
     @Test
     public void justWithOnNext() {

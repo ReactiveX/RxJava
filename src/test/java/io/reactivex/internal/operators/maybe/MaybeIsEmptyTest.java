@@ -22,7 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeIsEmptyTest {
+public class MaybeIsEmptyTest extends RxJavaTest {
 
     @Test
     public void normal() {

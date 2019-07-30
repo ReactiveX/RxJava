@@ -20,7 +20,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeEqualTest {
+public class MaybeEqualTest extends RxJavaTest {
 
     @Test
     public void dispose() {

@@ -18,7 +18,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
-public class SingleLiftTest {
+public class SingleLiftTest extends RxJavaTest {
 
     @Test
     public void normal() {

@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableSwitchMapSingleTest {
+public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void simple() {

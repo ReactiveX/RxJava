@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeDoFinallyTest implements Action {
+public class MaybeDoFinallyTest extends RxJavaTest implements Action {
 
     int calls;
 

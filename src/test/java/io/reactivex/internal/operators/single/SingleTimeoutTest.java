@@ -31,7 +31,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleTimeoutTest {
+public class SingleTimeoutTest extends RxJavaTest {
 
     @Test
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnDispose() {

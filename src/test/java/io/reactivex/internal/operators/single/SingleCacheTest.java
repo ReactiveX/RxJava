@@ -21,7 +21,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleCacheTest {
+public class SingleCacheTest extends RxJavaTest {
 
     @Test
     public void cancelImmediately() {

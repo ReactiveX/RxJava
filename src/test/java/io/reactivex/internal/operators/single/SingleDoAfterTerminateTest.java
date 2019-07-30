@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleDoAfterTerminateTest {
+public class SingleDoAfterTerminateTest extends RxJavaTest {
 
     private final int[] call = { 0 };
 

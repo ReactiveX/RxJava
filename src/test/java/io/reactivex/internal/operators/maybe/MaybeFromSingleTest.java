@@ -23,7 +23,7 @@ import io.reactivex.internal.fuseable.HasUpstreamSingleSource;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFromSingleTest {
+public class MaybeFromSingleTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromSingleNull() {
         Maybe.fromSingle(null);

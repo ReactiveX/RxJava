@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeContainsTest {
+public class MaybeContainsTest extends RxJavaTest {
 
     @Test
     public void doesContain() {

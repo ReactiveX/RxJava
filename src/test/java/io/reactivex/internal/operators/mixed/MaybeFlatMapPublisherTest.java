@@ -27,7 +27,7 @@ import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFlatMapPublisherTest {
+public class MaybeFlatMapPublisherTest extends RxJavaTest {
 
     @Test
     public void cancelMain() {

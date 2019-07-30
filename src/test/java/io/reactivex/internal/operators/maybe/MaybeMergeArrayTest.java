@@ -30,7 +30,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class MaybeMergeArrayTest {
+public class MaybeMergeArrayTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

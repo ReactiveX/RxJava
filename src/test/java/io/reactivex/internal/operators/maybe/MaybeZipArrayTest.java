@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeZipArrayTest {
+public class MaybeZipArrayTest extends RxJavaTest {
 
     final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
         @Override

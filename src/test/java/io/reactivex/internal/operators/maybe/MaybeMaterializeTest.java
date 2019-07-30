@@ -21,7 +21,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeMaterializeTest {
+public class MaybeMaterializeTest extends RxJavaTest {
 
     @Test
     @SuppressWarnings("unchecked")

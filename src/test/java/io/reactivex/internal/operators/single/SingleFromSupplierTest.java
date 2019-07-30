@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleFromSupplierTest {
+public class SingleFromSupplierTest extends RxJavaTest {
 
     @Test
     public void fromSupplierValue() {

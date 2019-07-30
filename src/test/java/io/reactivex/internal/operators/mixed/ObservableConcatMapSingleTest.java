@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableConcatMapSingleTest {
+public class ObservableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void simple() {
@@ -311,7 +311,7 @@ public class ObservableConcatMapSingleTest {
         assertFalse(ss.hasObservers());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void cancelNoConcurrentClean() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         ConcatMapSingleMainObserver<Integer, Integer> operator =

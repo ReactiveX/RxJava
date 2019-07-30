@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeCountTest {
+public class MaybeCountTest extends RxJavaTest {
 
     @Test
     public void one() {

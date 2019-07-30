@@ -33,7 +33,7 @@ import io.reactivex.subjects.SingleSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableSwitchMapSingleTest {
+public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void simple() {
