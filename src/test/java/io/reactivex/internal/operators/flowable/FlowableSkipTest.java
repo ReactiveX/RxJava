@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
@@ -28,7 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableSkipTest {
+public class FlowableSkipTest extends RxJavaTest {
 
     @Test
     public void skipNegativeElements() {

@@ -15,13 +15,14 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertSame;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 
-public class AbstractFlowableWithUpstreamTest {
+public class AbstractFlowableWithUpstreamTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

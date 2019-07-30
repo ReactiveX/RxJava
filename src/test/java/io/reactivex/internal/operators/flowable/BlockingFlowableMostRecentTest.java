@@ -26,7 +26,7 @@ import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingFlowableMostRecentTest {
+public class BlockingFlowableMostRecentTest extends RxJavaTest {
     @Test
     public void mostRecentNull() {
         assertNull(Flowable.<Void>never().blockingMostRecent(null).iterator().next());
@@ -73,7 +73,7 @@ public class BlockingFlowableMostRecentTest {
         it.next();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void singleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
@@ -96,12 +96,6 @@ public class BlockingFlowableMostRecentTest {
             Assert.assertFalse(it.hasNext());
         }
 
-    }
-
-    @Ignore("The target is an enum")
-    @Test
-    public void constructorshouldbeprivate() {
-        TestHelper.checkUtilityClass(BlockingFlowableMostRecent.class);
     }
 
     @Test

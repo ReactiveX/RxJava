@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableConcatMapTest {
+public class FlowableConcatMapTest extends RxJavaTest {
 
     @Test
     public void weakSubscriptionRequest() {

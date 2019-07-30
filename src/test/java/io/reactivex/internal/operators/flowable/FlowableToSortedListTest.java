@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableToSortedListTest {
+public class FlowableToSortedListTest extends RxJavaTest {
 
     @Test
     public void sortedListFlowable() {
@@ -93,41 +93,6 @@ public class FlowableToSortedListTest {
         ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertNoErrors();
         ts.assertComplete();
-    }
-
-    @Test(timeout = 2000)
-    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void asyncRequestedFlowable() {
-        Scheduler.Worker w = Schedulers.newThread().createWorker();
-        try {
-            for (int i = 0; i < 1000; i++) {
-                if (i % 50 == 0) {
-                    System.out.println("testAsyncRequested -> " + i);
-                }
-                PublishProcessor<Integer> source = PublishProcessor.create();
-                Flowable<List<Integer>> sorted = source.toSortedList().toFlowable();
-
-                final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestSubscriberEx<List<Integer>> ts = new TestSubscriberEx<List<Integer>>(0L);
-                sorted.subscribe(ts);
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-                        ts.request(1);
-                    }
-                });
-                source.onNext(1);
-                await(cb);
-                source.onComplete();
-                ts.awaitDone(1, TimeUnit.SECONDS);
-                ts.assertTerminated();
-                ts.assertNoErrors();
-                ts.assertValue(Arrays.asList(1));
-            }
-        } finally {
-            w.dispose();
-        }
     }
 
     @Test
@@ -205,65 +170,6 @@ public class FlowableToSortedListTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().blockingGet());
     }
 
-    @Test
-    @Ignore("Single doesn't do backpressure")
-    public void backpressureHonored() {
-        Single<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
-
-        w.subscribe(to);
-
-        to.assertNoValues();
-        to.assertNoErrors();
-        to.assertNotComplete();
-
-//        ts.request(1);
-
-        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        to.assertNoErrors();
-        to.assertComplete();
-
-//        ts.request(1);
-
-        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        to.assertNoErrors();
-        to.assertComplete();
-    }
-
-    @Test(timeout = 2000)
-    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void asyncRequested() {
-        Scheduler.Worker w = Schedulers.newThread().createWorker();
-        try {
-            for (int i = 0; i < 1000; i++) {
-                if (i % 50 == 0) {
-                    System.out.println("testAsyncRequested -> " + i);
-                }
-                PublishProcessor<Integer> source = PublishProcessor.create();
-                Single<List<Integer>> sorted = source.toSortedList();
-
-                final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserverEx<List<Integer>> to = new TestObserverEx<List<Integer>>();
-                sorted.subscribe(to);
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        await(cb);
-//                        ts.request(1);
-                    }
-                });
-                source.onNext(1);
-                await(cb);
-                source.onComplete();
-                to.awaitDone(1, TimeUnit.SECONDS);
-                to.assertTerminated();
-                to.assertNoErrors();
-                to.assertValue(Arrays.asList(1));
-            }
-        } finally {
-            w.dispose();
-        }
-    }
     static void await(CyclicBarrier cb) {
         try {
             cb.await();

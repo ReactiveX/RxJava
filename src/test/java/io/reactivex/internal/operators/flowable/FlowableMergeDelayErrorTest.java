@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -32,7 +33,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableMergeDelayErrorTest {
+public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     Subscriber<String> stringSubscriber;
 
@@ -290,7 +291,7 @@ public class FlowableMergeDelayErrorTest {
         verify(stringSubscriber, times(1)).onComplete();
     }
 
-    @Test(timeout = 1000L)
+    @Test
     public void synchronousError() {
         final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
@@ -435,62 +436,6 @@ public class FlowableMergeDelayErrorTest {
 
         }
 
-    }
-
-    @Test
-    @Ignore("Subscribers should not throw")
-    public void mergeSourceWhichDoesntPropagateExceptionBack() {
-        Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> t1) {
-                t1.onSubscribe(new BooleanSubscription());
-                try {
-                    t1.onNext(0);
-                } catch (Throwable swallow) {
-
-                }
-                t1.onNext(1);
-                t1.onComplete();
-            }
-        });
-
-        Flowable<Integer> result = Flowable.mergeDelayError(source, Flowable.just(2));
-
-        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(subscriber);
-
-        result.subscribe(new DefaultSubscriber<Integer>() {
-            int calls;
-            @Override
-            public void onNext(Integer t) {
-                if (calls++ == 0) {
-                    throw new TestException();
-                }
-                subscriber.onNext(t);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onComplete() {
-                subscriber.onComplete();
-            }
-
-        });
-
-        /*
-         * If the child onNext throws, why would we keep accepting values from
-         * other sources?
-         */
-        inOrder.verify(subscriber).onNext(2);
-        inOrder.verify(subscriber, never()).onNext(0);
-        inOrder.verify(subscriber, never()).onNext(1);
-        inOrder.verify(subscriber, never()).onNext(anyInt());
-        inOrder.verify(subscriber).onError(any(TestException.class));
-        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -659,66 +604,8 @@ public class FlowableMergeDelayErrorTest {
         assertEquals(2, ce.getExceptions().size());
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    @Ignore("No 2-9 parameter mergeDelayError() overloads")
-    public void mergeMany() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
-
-            Flowable<Integer>[] obs = new Flowable[i];
-            Arrays.fill(obs, Flowable.just(1));
-
-            Integer[] expected = new Integer[i];
-            Arrays.fill(expected, 1);
-
-            Method m = Flowable.class.getMethod("mergeDelayError", clazz);
-
-            TestSubscriber<Integer> ts = TestSubscriber.create();
-
-            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-
-            ts.assertValues(expected);
-            ts.assertNoErrors();
-            ts.assertComplete();
-        }
-    }
-
     static <T> Flowable<T> withError(Flowable<T> source) {
         return source.concatWith(Flowable.<T>error(new TestException()));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    @Ignore("No 2-9 parameter mergeDelayError() overloads")
-    public void mergeManyError() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
-
-            Flowable<Integer>[] obs = new Flowable[i];
-            for (int j = 0; j < i; j++) {
-                obs[j] = withError(Flowable.just(1));
-            }
-
-            Integer[] expected = new Integer[i];
-            Arrays.fill(expected, 1);
-
-            Method m = Flowable.class.getMethod("mergeDelayError", clazz);
-
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-
-            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-
-            ts.assertValues(expected);
-            ts.assertError(CompositeException.class);
-            ts.assertNotComplete();
-
-            CompositeException ce = (CompositeException)ts.errors().get(0);
-
-            assertEquals(i, ce.getExceptions().size());
-        }
     }
 
     @Test

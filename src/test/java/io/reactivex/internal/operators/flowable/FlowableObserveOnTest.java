@@ -40,7 +40,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableObserveOnTest {
+public class FlowableObserveOnTest extends RxJavaTest {
 
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
@@ -58,8 +58,6 @@ public class FlowableObserveOnTest {
 
     @Test
     public void ordering() throws InterruptedException {
-//        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
-        // FIXME null values not allowed
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -89,8 +87,6 @@ public class FlowableObserveOnTest {
     @Test
     public void threadName() throws InterruptedException {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
-        // FIXME null values not allowed
-//        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();

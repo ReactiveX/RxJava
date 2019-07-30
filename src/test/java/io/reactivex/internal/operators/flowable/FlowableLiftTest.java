@@ -25,7 +25,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableLiftTest {
+public class FlowableLiftTest extends RxJavaTest {
 
     @Test
     public void callbackCrash() {

@@ -23,9 +23,9 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableIntervalTest {
+public class FlowableIntervalTest extends RxJavaTest {
 
-    @Test(timeout = 2000)
+    @Test
     public void cancel() {
         Flowable.interval(1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
         .take(10)

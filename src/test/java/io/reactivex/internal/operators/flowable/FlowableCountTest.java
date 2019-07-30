@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableCountTest {
+public class FlowableCountTest extends RxJavaTest {
     @Test
     public void simpleFlowable() {
         Assert.assertEquals(0, Flowable.empty().count().toFlowable().blockingLast().intValue());

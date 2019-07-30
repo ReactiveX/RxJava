@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -34,7 +35,7 @@ import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableFilterTest {
+public class FlowableFilterTest extends RxJavaTest {
 
     @Test
     public void filter() {
@@ -63,7 +64,7 @@ public class FlowableFilterTest {
      * @throws InterruptedException if the test is interrupted
      * @throws InterruptedException if the test is interrupted
      */
-    @Test(timeout = 500)
+    @Test
     public void withBackpressure() throws InterruptedException {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> f = w.filter(new Predicate<String>() {
@@ -110,7 +111,7 @@ public class FlowableFilterTest {
      * Make sure we are adjusting subscriber.request() for filtered items.
      * @throws InterruptedException if the test is interrupted
      */
-    @Test(timeout = 500000)
+    @Test
     public void withBackpressure2() throws InterruptedException {
         Flowable<Integer> w = Flowable.range(1, Flowable.bufferSize() * 2);
         Flowable<Integer> f = w.filter(new Predicate<Integer>() {
@@ -150,32 +151,6 @@ public class FlowableFilterTest {
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
-    }
-
-    @Test
-    @Ignore("subscribers are not allowed to throw")
-    public void fatalError() {
-//        try {
-//            Flowable.just(1)
-//            .filter(new Predicate<Integer>() {
-//                @Override
-//                public boolean test(Integer t) {
-//                    return true;
-//                }
-//            })
-//            .first()
-//            .subscribe(new Consumer<Integer>() {
-//                @Override
-//                public void accept(Integer t) {
-//                    throw new TestException();
-//                }
-//            });
-//            Assert.fail("No exception was thrown");
-//        } catch (OnErrorNotImplementedException ex) {
-//            if (!(ex.getCause() instanceof TestException)) {
-//                Assert.fail("Failed to report the original exception, instead: " + ex.getCause());
-//            }
-//        }
     }
 
     @Test

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -27,7 +28,7 @@ import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowablePublishMulticastTest {
+public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void asyncFusedInput() {

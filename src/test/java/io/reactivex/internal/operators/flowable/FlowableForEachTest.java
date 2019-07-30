@@ -17,13 +17,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
-public class FlowableForEachTest {
+public class FlowableForEachTest extends RxJavaTest {
 
     @Test
     public void forEachWile() {

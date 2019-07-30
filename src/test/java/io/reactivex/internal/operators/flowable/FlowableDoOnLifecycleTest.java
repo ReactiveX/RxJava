@@ -28,7 +28,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableDoOnLifecycleTest {
+public class FlowableDoOnLifecycleTest extends RxJavaTest {
 
     @Test
     public void onSubscribeCrashed() {

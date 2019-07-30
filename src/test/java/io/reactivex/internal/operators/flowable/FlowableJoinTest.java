@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Subscriber;
@@ -33,7 +34,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableJoinTest {
+public class FlowableJoinTest extends RxJavaTest {
     Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
     BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {

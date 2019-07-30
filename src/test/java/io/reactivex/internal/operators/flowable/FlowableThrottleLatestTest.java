@@ -28,7 +28,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableThrottleLatestTest {
+public class FlowableThrottleLatestTest extends RxJavaTest {
 
     @Test
     public void just() {

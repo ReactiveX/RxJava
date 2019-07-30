@@ -31,9 +31,9 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableOnBackpressureBufferStrategyTest {
+public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
 
-    @Test(timeout = 2000)
+    @Test
     public void backpressureWithBufferDropOldest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
@@ -79,7 +79,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         }, 0L);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void backpressureWithBufferDropLatest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);

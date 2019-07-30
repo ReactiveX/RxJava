@@ -25,7 +25,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableAsObservableTest {
+public class FlowableAsObservableTest extends RxJavaTest {
     @Test
     public void hiding() {
         PublishProcessor<Integer> src = PublishProcessor.create();

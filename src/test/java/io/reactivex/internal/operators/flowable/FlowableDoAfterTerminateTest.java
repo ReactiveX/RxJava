@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableDoAfterTerminateTest {
+public class FlowableDoAfterTerminateTest extends RxJavaTest {
 
     private Action aAction0;
     private Subscriber<String> subscriber;

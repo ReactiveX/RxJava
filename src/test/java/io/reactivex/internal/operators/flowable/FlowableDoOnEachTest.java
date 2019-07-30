@@ -35,7 +35,7 @@ import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableDoOnEachTest {
+public class FlowableDoOnEachTest extends RxJavaTest {
 
     Subscriber<String> subscribedSubscriber;
     Subscriber<String> sideEffectSubscriber;
@@ -168,37 +168,6 @@ public class FlowableDoOnEachTest {
                     .subscribe();
         }
         assertEquals(expectedCount, count.get());
-    }
-
-    @Test
-    @Ignore("crashing publisher can't propagate to a subscriber")
-    public void fatalError() {
-//        try {
-//            Flowable.just(1, 2, 3)
-//                    .flatMap(new Function<Integer, Flowable<?>>() {
-//                        @Override
-//                        public Flowable<?> apply(Integer integer) {
-//                            return Flowable.create(new Publisher<Object>() {
-//                                @Override
-//                                public void subscribe(Subscriber<Object> subscriber) {
-//                                    throw new NullPointerException("Test NPE");
-//                                }
-//                            });
-//                        }
-//                    })
-//                    .doOnNext(new Consumer<Object>() {
-//                        @Override
-//                        public void accept(Object o) {
-//                            System.out.println("Won't come here");
-//                        }
-//                    })
-//                    .subscribe();
-//            fail("should have thrown an exception");
-//        } catch (OnErrorNotImplementedException e) {
-//            assertTrue(e.getCause() instanceof NullPointerException);
-//            assertEquals(e.getCause().getMessage(), "Test NPE");
-//            System.out.println("Received exception: " + e);
-//        }
     }
 
     @Test

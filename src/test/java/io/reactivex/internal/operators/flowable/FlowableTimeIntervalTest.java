@@ -29,7 +29,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTimeIntervalTest {
+public class FlowableTimeIntervalTest extends RxJavaTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 

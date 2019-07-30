@@ -25,7 +25,7 @@ import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableScalarXMapTest {
+public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

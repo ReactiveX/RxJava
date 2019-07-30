@@ -25,7 +25,7 @@ import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableMergeWithCompletableTest {
+public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

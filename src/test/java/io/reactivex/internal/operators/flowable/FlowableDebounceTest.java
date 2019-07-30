@@ -37,7 +37,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableDebounceTest {
+public class FlowableDebounceTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Subscriber<String> Subscriber;

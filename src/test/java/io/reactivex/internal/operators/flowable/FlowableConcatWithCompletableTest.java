@@ -29,7 +29,7 @@ import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableConcatWithCompletableTest {
+public class FlowableConcatWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

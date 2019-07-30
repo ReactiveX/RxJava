@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -35,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFromSupplierTest {
+public class FlowableFromSupplierTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test
@@ -243,7 +244,7 @@ public class FlowableFromSupplierTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void undeliverableUponCancellation() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

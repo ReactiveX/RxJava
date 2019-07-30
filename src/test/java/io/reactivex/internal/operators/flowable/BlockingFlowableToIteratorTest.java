@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.internal.operators.flowable.BlockingFlowableIterable.BlockingFlowableIterator;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 
-public class BlockingFlowableToIteratorTest {
+public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test
     public void toIterator() {
@@ -65,28 +66,6 @@ public class BlockingFlowableToIteratorTest {
 
         assertTrue(it.hasNext());
         it.next();
-    }
-
-    @Ignore("subscribe() should not throw")
-    @Test(expected = TestException.class)
-    public void exceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Flowable.unsafeCreate(new Publisher<String>() {
-            @Override
-            public void subscribe(Subscriber<? super String> subscriber) {
-                throw new TestException("intentional");
-            }
-        }).blockingIterable();
-
-        for (String string : strings) {
-            // never reaches here
-            System.out.println(string);
-        }
-    }
-
-    @Ignore("This is not a separate class anymore")
-    @Test
-    public void constructorShouldBePrivate() {
-        // TestHelper.checkUtilityClass(BlockingOperatorToIterator.class);
     }
 
     @Test

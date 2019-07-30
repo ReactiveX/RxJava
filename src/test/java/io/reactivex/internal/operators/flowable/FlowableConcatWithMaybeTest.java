@@ -23,7 +23,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableConcatWithMaybeTest {
+public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalEmpty() {

@@ -37,7 +37,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableCombineLatestTest {
+public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void combineLatestWithFunctionThatThrowsAnException() {
@@ -455,7 +455,7 @@ public class FlowableCombineLatestTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void oneToNSourcesScheduled() throws InterruptedException {
         int n = 10;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
@@ -743,7 +743,7 @@ public class FlowableCombineLatestTest {
         }
     }
 
-    @Test//(timeout = 2000)
+    @Test
     public void backpressure() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
@@ -799,7 +799,7 @@ public class FlowableCombineLatestTest {
         assertEquals(SIZE, count.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void combineLatestRequestOverflow() throws InterruptedException {
         @SuppressWarnings("unchecked")
         List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
@@ -861,39 +861,6 @@ public class FlowableCombineLatestTest {
           .combineLatest(Collections.singletonList(source), THROW_NON_FATAL)
           .subscribe(ts);
         assertFalse(errorOccurred.get());
-    }
-
-    @Ignore("Nulls are not allowed")
-    @Test
-    public void combineManyNulls() {
-        int n = Flowable.bufferSize() * 3;
-
-        Flowable<Integer> source = Flowable.just((Integer)null);
-
-        List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
-
-        for (int i = 0; i < n; i++) {
-            sources.add(source);
-        }
-
-        TestSubscriber<Integer> ts = TestSubscriber.create();
-
-        Flowable.combineLatest(sources, new Function<Object[], Integer>() {
-            @Override
-            public Integer apply(Object[] args) {
-                int sum = 0;
-                for (Object o : args) {
-                    if (o == null) {
-                        sum ++;
-                    }
-                }
-                return sum;
-            }
-        }).subscribe(ts);
-
-        ts.assertValue(n);
-        ts.assertNoErrors();
-        ts.assertComplete();
     }
 
     @SuppressWarnings("unchecked")

@@ -37,7 +37,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableSwitchTest {
+public class FlowableSwitchTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -547,7 +547,7 @@ public class FlowableSwitchTest {
         Assert.assertEquals(250, ts.values().size());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void initialRequestsAreAdditive() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
@@ -566,7 +566,7 @@ public class FlowableSwitchTest {
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void initialRequestsDontOverflow() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
@@ -583,7 +583,7 @@ public class FlowableSwitchTest {
         assertTrue(ts.values().size() > 0);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void secondaryRequestsDontOverflow() throws InterruptedException {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
@@ -601,38 +601,6 @@ public class FlowableSwitchTest {
         ts.request(Long.MAX_VALUE - 1);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertValueCount(7);
-    }
-
-    @Test(timeout = 10000)
-    @Ignore("Request pattern changed and I can't decide if this is okay or not")
-    public void secondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
-            throws InterruptedException {
-        final List<Long> requests = new CopyOnWriteArrayList<Long>();
-
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(1L);
-        Flowable.switchOnNext(
-                Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
-                            @Override
-                            public Flowable<Long> apply(Long t) {
-                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L))
-                                        .doOnRequest(new LongConsumer() {
-                                            @Override
-                                            public void accept(long v) {
-                                                requests.add(v);
-                                            }
-                                        });
-                            }
-                        }).take(3)).subscribe(ts);
-        // we will miss two of the first observables
-        Thread.sleep(250);
-        ts.request(Long.MAX_VALUE - 1);
-        ts.request(Long.MAX_VALUE - 1);
-        ts.awaitDone(5, TimeUnit.SECONDS);
-        assertTrue(ts.values().size() > 0);
-        System.out.println(requests);
-        assertEquals(5, requests.size());
-        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size() - 1));
     }
 
     @Test

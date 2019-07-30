@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableConcatMapEagerTest {
+public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -642,21 +643,6 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    @Ignore("Null values are not allowed in RS")
-    public void innerNull() {
-        Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> apply(Integer t) {
-                return Flowable.just(null);
-            }
-        }).subscribe(ts);
-
-        ts.assertNoErrors();
-        ts.assertComplete();
-        ts.assertValue(null);
-    }
-
-    @Test
     public void maxConcurrent5() {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.range(1, 100).doOnRequest(new LongConsumer() {
@@ -676,32 +662,6 @@ public class FlowableConcatMapEagerTest {
         Assert.assertEquals(1, (long) requests.get(3));
         Assert.assertEquals(1, (long) requests.get(4));
         Assert.assertEquals(1, (long) requests.get(5));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    @Ignore("Currently there are no 2-9 argument variants, use concatArrayEager()")
-    public void many() throws Exception {
-        for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Flowable.class);
-
-            Flowable<Integer>[] obs = new Flowable[i];
-            Arrays.fill(obs, Flowable.just(1));
-
-            Integer[] expected = new Integer[i];
-            Arrays.fill(expected, 1);
-
-            Method m = Flowable.class.getMethod("concatEager", clazz);
-
-            TestSubscriber<Integer> ts = TestSubscriber.create();
-
-            ((Flowable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-
-            ts.assertValues(expected);
-            ts.assertNoErrors();
-            ts.assertComplete();
-        }
     }
 
     @SuppressWarnings("unchecked")

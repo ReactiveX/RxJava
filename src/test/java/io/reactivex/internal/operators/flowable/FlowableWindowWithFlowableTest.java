@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -33,7 +34,7 @@ import io.reactivex.processors.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableWindowWithFlowableTest {
+public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void windowViaFlowableNormal1() {

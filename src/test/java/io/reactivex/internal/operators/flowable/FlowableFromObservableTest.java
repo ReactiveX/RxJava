@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFromObservableTest {
+public class FlowableFromObservableTest extends RxJavaTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).toFlowable(BackpressureStrategy.MISSING));

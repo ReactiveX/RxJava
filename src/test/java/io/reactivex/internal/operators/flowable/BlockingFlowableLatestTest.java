@@ -28,8 +28,8 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingFlowableLatestTest {
-    @Test(timeout = 1000)
+public class BlockingFlowableLatestTest extends RxJavaTest {
+    @Test
     public void simple() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -53,7 +53,7 @@ public class BlockingFlowableLatestTest {
         Assert.assertFalse(it.hasNext());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void sameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -79,7 +79,7 @@ public class BlockingFlowableLatestTest {
         }
     }
 
-    @Test(timeout = 1000, expected = NoSuchElementException.class)
+    @Test(expected = NoSuchElementException.class)
     public void empty() {
         Flowable<Long> source = Flowable.<Long> empty();
 
@@ -92,7 +92,7 @@ public class BlockingFlowableLatestTest {
         it.next();
     }
 
-    @Test(timeout = 1000, expected = NoSuchElementException.class)
+    @Test(expected = NoSuchElementException.class)
     public void simpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -111,7 +111,7 @@ public class BlockingFlowableLatestTest {
         }
     }
 
-    @Test(/* timeout = 1000, */expected = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void hasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -126,7 +126,7 @@ public class BlockingFlowableLatestTest {
         it.hasNext();
     }
 
-    @Test(timeout = 1000, expected = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void nextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -140,7 +140,7 @@ public class BlockingFlowableLatestTest {
         it.next();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void fasterSource() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         Flowable<Integer> blocker = source;
@@ -167,12 +167,6 @@ public class BlockingFlowableLatestTest {
         source.onComplete();
 
         Assert.assertFalse(it.hasNext());
-    }
-
-    @Ignore("THe target is an enum")
-    @Test
-    public void constructorshouldbeprivate() {
-        TestHelper.checkUtilityClass(BlockingFlowableLatest.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)

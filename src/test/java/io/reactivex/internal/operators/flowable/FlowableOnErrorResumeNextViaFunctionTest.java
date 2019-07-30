@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableOnErrorResumeNextViaFunctionTest {
+public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {
@@ -144,94 +144,6 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         // we should have received an onError call on the Observer since the resume function threw an exception
         verify(subscriber, times(1)).onError(any(Throwable.class));
         verify(subscriber, times(0)).onComplete();
-    }
-
-    /**
-     * Test that we receive the onError if an exception is thrown from an operator that
-     * does not have manual try/catch handling like map does.
-     */
-    @Test
-    @Ignore("Failed operator may leave the child subscriber in an inconsistent state which prevents further error delivery.")
-    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
-        Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
-
-            @Override
-            public Subscriber<? super Integer> apply(Subscriber<? super String> t1) {
-                throw new RuntimeException("failed");
-            }
-
-        }).onErrorResumeNext(new Function<Throwable, Flowable<String>>() {
-
-            @Override
-            public Flowable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return Flowable.just("success");
-                } else {
-                    return Flowable.error(t1);
-                }
-            }
-
-        }).subscribe(ts);
-
-        ts.assertTerminated();
-        System.out.println(ts.values());
-        ts.assertValue("success");
-    }
-
-    /**
-     * Test that we receive the onError if an exception is thrown from an operator that
-     * does not have manual try/catch handling like map does.
-     */
-    @Test
-    @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
-    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
-        Flowable.just(1).lift(new FlowableOperator<String, Integer>() {
-
-            @Override
-            public Subscriber<? super Integer> apply(final Subscriber<? super String> t1) {
-                return new FlowableSubscriber<Integer>() {
-
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        t1.onSubscribe(s);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        throw new RuntimeException("failed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        throw new RuntimeException("failed");
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        throw new RuntimeException("failed");
-                    }
-
-                };
-            }
-
-        }).onErrorResumeNext(new Function<Throwable, Flowable<String>>() {
-
-            @Override
-            public Flowable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return Flowable.just("success");
-                } else {
-                    return Flowable.error(t1);
-                }
-            }
-
-        }).subscribe(ts);
-
-        ts.assertTerminated();
-        System.out.println(ts.values());
-        ts.assertValue("success");
     }
 
     @Test

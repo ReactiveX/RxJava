@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -28,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableOnBackpressureDropTest {
+public class FlowableOnBackpressureDropTest extends RxJavaTest {
 
     @Test
     public void noBackpressureSupport() {
@@ -42,14 +43,14 @@ public class FlowableOnBackpressureDropTest {
         ts.assertNoErrors();
     }
 
-    @Test(timeout = 500)
+    @Test
     public void withObserveOn() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);

@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableMaterializeTest {
+public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void materialize1() {

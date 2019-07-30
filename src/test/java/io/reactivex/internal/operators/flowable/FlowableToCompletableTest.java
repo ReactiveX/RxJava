@@ -26,7 +26,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestSubscriberEx;
 
-public class FlowableToCompletableTest {
+public class FlowableToCompletableTest extends RxJavaTest {
 
     @Test
     public void justSingleItemObservable() {

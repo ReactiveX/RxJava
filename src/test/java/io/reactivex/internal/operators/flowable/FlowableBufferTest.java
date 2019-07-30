@@ -39,7 +39,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableBufferTest {
+public class FlowableBufferTest extends RxJavaTest {
 
     private Subscriber<List<String>> subscriber;
     private TestScheduler scheduler;
@@ -452,7 +452,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onNext(any());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithSizeTake1() {
         Flowable<Integer> source = Flowable.just(1).repeat();
 
@@ -467,7 +467,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithSizeSkipTake1() {
         Flowable<Integer> source = Flowable.just(1).repeat();
 
@@ -482,7 +482,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithTimeTake1() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -499,7 +499,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithTimeSkipTake2() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -518,7 +518,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithBoundaryTake2() {
         Flowable<Long> boundary = Flowable.interval(60, 60, TimeUnit.MILLISECONDS, scheduler);
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -539,7 +539,7 @@ public class FlowableBufferTest {
 
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithStartEndBoundaryTake2() {
         Flowable<Long> start = Flowable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
         Function<Long, Flowable<Long>> end = new Function<Long, Flowable<Long>>() {
@@ -953,7 +953,7 @@ public class FlowableBufferTest {
         assertEquals(Long.MAX_VALUE - 1, requested.get());
     }
 
-    @Test(timeout = 3000)
+    @Test
     public void bufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 

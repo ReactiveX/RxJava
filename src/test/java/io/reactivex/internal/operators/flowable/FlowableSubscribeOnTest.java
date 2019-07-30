@@ -32,9 +32,9 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableSubscribeOnTest {
+public class FlowableSubscribeOnTest extends RxJavaTest{
 
-    @Test(timeout = 2000)
+    @Test
     public void issue813() throws InterruptedException {
         // https://github.com/ReactiveX/RxJava/issues/813
         final CountDownLatch scheduled = new CountDownLatch(1);
@@ -75,22 +75,6 @@ public class FlowableSubscribeOnTest {
         doneLatch.await();
         ts.assertNoErrors();
         ts.assertComplete();
-    }
-
-    @Test
-    @Ignore("Publisher.subscribe can't throw")
-    public void thrownErrorHandling() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
-        Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> s) {
-                throw new RuntimeException("fail");
-            }
-
-        }).subscribeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitDone(1000, TimeUnit.MILLISECONDS);
-        ts.assertTerminated();
     }
 
     @Test
@@ -166,7 +150,7 @@ public class FlowableSubscribeOnTest {
 
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void unsubscribeInfiniteStream() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();

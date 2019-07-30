@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableFromIterableTest {
+public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullValue() {

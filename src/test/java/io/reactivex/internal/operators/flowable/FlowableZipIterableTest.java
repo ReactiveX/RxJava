@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableZipIterableTest {
+public class FlowableZipIterableTest extends RxJavaTest {
     BiFunction<String, String, String> concat2Strings;
     PublishProcessor<String> s1;
     PublishProcessor<String> s2;

@@ -30,7 +30,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableThrottleFirstTest {
+public class FlowableThrottleFirstTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

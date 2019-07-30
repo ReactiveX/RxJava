@@ -27,7 +27,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableSerializeTest {
+public class FlowableSerializeTest extends RxJavaTest {
 
     Subscriber<String> subscriber;
 

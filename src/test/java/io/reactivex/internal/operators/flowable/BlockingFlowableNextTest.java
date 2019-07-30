@@ -32,7 +32,7 @@ import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingFlowableNextTest {
+public class BlockingFlowableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final FlowableProcessor<String> o, final String value) {
         new Thread() {
@@ -307,7 +307,7 @@ public class BlockingFlowableNextTest {
         }
     }
 
-    @Test /* (timeout = 8000) */
+    @Test
     public void singleSourceManyIterators() throws InterruptedException {
         Flowable<Long> f = Flowable.interval(250, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
@@ -331,12 +331,6 @@ public class BlockingFlowableNextTest {
         assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
         assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
-    }
-
-    @Ignore("THe target is an enum")
-    @Test
-    public void constructorshouldbeprivate() {
-        TestHelper.checkUtilityClass(BlockingFlowableNext.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)

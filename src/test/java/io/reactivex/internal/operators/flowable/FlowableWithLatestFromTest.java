@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
@@ -33,7 +34,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableWithLatestFromTest {
+public class FlowableWithLatestFromTest extends RxJavaTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
         @Override
         public Integer apply(Integer t1, Integer t2) {

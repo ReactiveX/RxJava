@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowablePublishFunctionTest {
+public class FlowablePublishFunctionTest extends RxJavaTest {
     @Test
     public void concatTakeFirstLastCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

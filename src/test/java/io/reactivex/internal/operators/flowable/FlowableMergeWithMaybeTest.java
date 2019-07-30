@@ -32,7 +32,7 @@ import io.reactivex.subjects.*;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableMergeWithMaybeTest {
+public class FlowableMergeWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normal() {

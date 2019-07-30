@@ -15,11 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertTrue;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.processors.PublishProcessor;
 
-public class FlowableAutoConnectTest {
+public class FlowableAutoConnectTest extends RxJavaTest {
 
     @Test
     public void autoConnectImmediately() {

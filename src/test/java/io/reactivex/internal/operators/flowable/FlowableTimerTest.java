@@ -33,7 +33,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableTimerTest {
+public class FlowableTimerTest extends RxJavaTest {
     @Mock
     Subscriber<Object> subscriber;
     @Mock

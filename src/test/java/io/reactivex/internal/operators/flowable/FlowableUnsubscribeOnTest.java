@@ -31,9 +31,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class FlowableUnsubscribeOnTest {
+public class FlowableUnsubscribeOnTest extends RxJavaTest {
 
-    @Test(timeout = 5000)
+    @Test
     public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
         UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
@@ -82,7 +82,7 @@ public class FlowableUnsubscribeOnTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
         UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {

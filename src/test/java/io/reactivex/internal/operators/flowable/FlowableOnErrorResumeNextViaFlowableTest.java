@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableOnErrorResumeNextViaFlowableTest {
+public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
 
     @Test
     public void resumeNext() {
@@ -100,53 +101,6 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         verify(subscriber, Mockito.never()).onNext("three");
         verify(subscriber, times(1)).onNext("twoResume");
         verify(subscriber, times(1)).onNext("threeResume");
-    }
-
-    @Test
-    @Ignore("Publishers should not throw")
-    public void resumeNextWithFailureOnSubscribe() {
-        Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-
-        });
-        Flowable<String> resume = Flowable.just("resume");
-        Flowable<String> flowable = testObservable.onErrorResumeWith(resume);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        flowable.subscribe(subscriber);
-
-        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-        verify(subscriber, times(1)).onNext("resume");
-    }
-
-    @Test
-    @Ignore("Publishers should not throw")
-    public void resumeNextWithFailureOnSubscribeAsync() {
-        Flowable<String> testObservable = Flowable.unsafeCreate(new Publisher<String>() {
-
-            @Override
-            public void subscribe(Subscriber<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-
-        });
-        Flowable<String> resume = Flowable.just("resume");
-        Flowable<String> flowable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeWith(resume);
-
-        Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
-        flowable.subscribe(ts);
-
-        ts.awaitDone(5, TimeUnit.SECONDS);
-
-        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(subscriber, times(1)).onComplete();
-        verify(subscriber, times(1)).onNext("resume");
     }
 
     static final class TestObservable implements Publisher<String> {

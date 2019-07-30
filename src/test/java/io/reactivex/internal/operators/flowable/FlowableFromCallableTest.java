@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableFromCallableTest {
+public class FlowableFromCallableTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test
@@ -243,7 +243,7 @@ public class FlowableFromCallableTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void undeliverableUponCancellation() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

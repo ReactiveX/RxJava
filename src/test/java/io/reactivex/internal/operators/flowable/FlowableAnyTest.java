@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableAnyTest {
+public class FlowableAnyTest extends RxJavaTest {
 
     @Test
     public void anyWithTwoItems() {
@@ -224,7 +224,7 @@ public class FlowableAnyTest {
         assertTrue(anyEven.blockingGet());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
             .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {
@@ -235,24 +235,6 @@ public class FlowableAnyTest {
             });
 
         assertEquals((Object)2, source.blockingFirst());
-    }
-
-    @Test
-    @Ignore("Single doesn't do backpressure")
-    public void backpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestObserver<Boolean> to = new TestObserver<Boolean>();
-
-        Flowable.just(1).any(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer t) {
-                return true;
-            }
-        })
-        .subscribe(to);
-
-        to.assertNoValues();
-        to.assertNoErrors();
-        to.assertNotComplete();
     }
 
     @Test
@@ -491,7 +473,7 @@ public class FlowableAnyTest {
         assertTrue(anyEven.blockingFirst());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
             .flatMapPublisher(new Function<Boolean, Publisher<Integer>>() {

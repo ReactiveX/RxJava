@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableElementAtTest {
+public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void elementAtFlowable() {

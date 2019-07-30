@@ -29,7 +29,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class FlowableCreateTest {
+public class FlowableCreateTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void sourceNull() {

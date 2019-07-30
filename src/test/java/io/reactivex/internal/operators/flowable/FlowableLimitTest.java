@@ -29,7 +29,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class FlowableLimitTest implements LongConsumer, Action {
+public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Action {
 
     final List<Long> requests = new ArrayList<Long>();
 

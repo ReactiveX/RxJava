@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -29,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestSubscriberEx;
 
-public class FlowableMergeMaxConcurrentTest {
+public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
     @Test
     public void whenMaxConcurrentIsOne() {
@@ -185,7 +186,7 @@ public class FlowableMergeMaxConcurrentTest {
         }
     }
 
-    @Test//(timeout = 20000)
+    @Test
     public void simpleAsyncLoop() {
         IoScheduler ios = (IoScheduler)Schedulers.io();
         int c = ios.size();
@@ -198,7 +199,7 @@ public class FlowableMergeMaxConcurrentTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void simpleAsync() {
         for (int i = 1; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -219,14 +220,14 @@ public class FlowableMergeMaxConcurrentTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void simpleOneLessAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             simpleOneLessAsync();
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void simpleOneLessAsync() {
         long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
@@ -251,7 +252,7 @@ public class FlowableMergeMaxConcurrentTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void backpressureHonored() throws Exception {
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
 
@@ -282,7 +283,7 @@ public class FlowableMergeMaxConcurrentTest {
         ts.cancel();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void take() throws Exception {
         List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
 

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -26,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestSubscriberEx;
 
-public class FlowableConcatDelayErrorTest {
+public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
     @Test
     public void mainCompletes() {

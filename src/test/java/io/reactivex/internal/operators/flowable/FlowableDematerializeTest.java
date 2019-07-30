@@ -28,7 +28,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class FlowableDematerializeTest {
+public class FlowableDematerializeTest extends RxJavaTest {
 
     @Test
     public void simpleSelector() {
