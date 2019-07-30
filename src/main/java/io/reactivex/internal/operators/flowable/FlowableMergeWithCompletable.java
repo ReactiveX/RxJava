@@ -86,7 +86,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         @Override
         public void onError(Throwable ex) {
-            SubscriptionHelper.cancel(mainSubscription);
+            DisposableHelper.dispose(otherObserver);
             HalfSerializer.onError(downstream, ex, this, error);
         }
 

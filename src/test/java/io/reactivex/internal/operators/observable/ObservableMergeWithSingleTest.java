@@ -263,4 +263,40 @@ public class ObservableMergeWithSingleTest {
 
         to.assertResult(0, 1, 2, 3, 4);
     }
+
+    @Test
+    public void cancelOtherOnMainError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(ss).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(ss.hasObservers());
+
+        ps.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", ss.hasObservers());
+    }
+
+    @Test
+    public void cancelMainOnOtherError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(ss).test();
+
+        assertTrue(ps.hasObservers());
+        assertTrue(ss.hasObservers());
+
+        ss.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", ps.hasObservers());
+        assertFalse("other has observers", ss.hasObservers());
+    }
 }

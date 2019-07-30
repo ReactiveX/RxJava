@@ -397,4 +397,40 @@ public class FlowableMergeWithSingleTest {
         ts.assertValueCount(Flowable.bufferSize());
         ts.assertComplete();
     }
+
+    @Test
+    public void cancelOtherOnMainError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        TestSubscriber<Integer> ts = pp.mergeWith(ss).test();
+
+        assertTrue(pp.hasSubscribers());
+        assertTrue(ss.hasObservers());
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", pp.hasSubscribers());
+        assertFalse("other has observers", ss.hasObservers());
+    }
+
+    @Test
+    public void cancelMainOnOtherError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        TestSubscriber<Integer> ts = pp.mergeWith(ss).test();
+
+        assertTrue(pp.hasSubscribers());
+        assertTrue(ss.hasObservers());
+
+        ss.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+
+        assertFalse("main has observers!", pp.hasSubscribers());
+        assertFalse("other has observers", ss.hasObservers());
+    }
 }

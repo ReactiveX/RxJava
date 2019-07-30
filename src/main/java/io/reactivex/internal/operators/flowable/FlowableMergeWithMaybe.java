@@ -143,7 +143,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         @Override
         public void onError(Throwable ex) {
             if (error.addThrowable(ex)) {
-                SubscriptionHelper.cancel(mainSubscription);
+                DisposableHelper.dispose(otherObserver);
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);

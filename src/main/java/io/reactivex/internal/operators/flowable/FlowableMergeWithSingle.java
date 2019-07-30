@@ -143,7 +143,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
         @Override
         public void onError(Throwable ex) {
             if (error.addThrowable(ex)) {
-                SubscriptionHelper.cancel(mainSubscription);
+                DisposableHelper.dispose(otherObserver);
                 drain();
             } else {
                 RxJavaPlugins.onError(ex);

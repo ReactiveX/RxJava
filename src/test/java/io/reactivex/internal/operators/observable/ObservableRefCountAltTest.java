@@ -630,7 +630,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void replayNoLeak() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -646,7 +646,7 @@ public class ObservableRefCountAltTest {
         source.subscribe();
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -657,7 +657,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void replayNoLeak2() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -680,7 +680,7 @@ public class ObservableRefCountAltTest {
         d2 = null;
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -701,7 +701,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void publishNoLeak() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -716,10 +716,19 @@ public class ObservableRefCountAltTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
-        Thread.sleep(100);
+        long after = 0L;
 
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        for (int i = 0; i < 10; i++) {
+            System.gc();
+
+            after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+            if (start + 20 * 1000 * 1000 > after) {
+                break;
+            }
+
+            Thread.sleep(100);
+        }
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -728,7 +737,7 @@ public class ObservableRefCountAltTest {
     @Test
     public void publishNoLeak2() throws Exception {
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
@@ -751,7 +760,7 @@ public class ObservableRefCountAltTest {
         d2 = null;
 
         System.gc();
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
