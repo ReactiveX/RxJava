@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.*;
 
-public class MaybeTimeoutPublisherTest {
+public class MaybeTimeoutPublisherTest extends RxJavaTest {
 
     @Test
     public void mainError() {

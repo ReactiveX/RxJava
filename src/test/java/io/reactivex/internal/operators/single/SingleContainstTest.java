@@ -13,13 +13,14 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Single;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.BiPredicate;
 
-public class SingleContainstTest {
+public class SingleContainstTest extends RxJavaTest {
 
     @Test
     public void comparerThrows() {

@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class MaybeTimeoutTest {
+public class MaybeTimeoutTest extends RxJavaTest {
 
     @Test
     public void normal() {

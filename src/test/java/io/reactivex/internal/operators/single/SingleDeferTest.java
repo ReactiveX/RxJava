@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Single;
 import io.reactivex.functions.Supplier;
 
-public class SingleDeferTest {
+public class SingleDeferTest extends RxJavaTest {
 
     @Test
     public void normal() {

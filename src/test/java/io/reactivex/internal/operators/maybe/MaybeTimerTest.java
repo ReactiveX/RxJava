@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeTimerTest {
+public class MaybeTimerTest extends RxJavaTest {
 
     @Test
     public void dispose() {

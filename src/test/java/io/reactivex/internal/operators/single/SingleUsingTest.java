@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.*;
 
-public class SingleUsingTest {
+public class SingleUsingTest extends RxJavaTest {
 
     Function<Disposable, Single<Integer>> mapper = new Function<Disposable, Single<Integer>>() {
         @Override

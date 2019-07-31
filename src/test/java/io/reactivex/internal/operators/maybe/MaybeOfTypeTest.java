@@ -22,7 +22,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeOfTypeTest {
+public class MaybeOfTypeTest extends RxJavaTest {
 
     @Test
     public void normal() {

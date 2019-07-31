@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeConcatArrayTest {
+public class MaybeConcatArrayTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

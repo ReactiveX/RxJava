@@ -15,12 +15,13 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
 import io.reactivex.internal.fuseable.ScalarSupplier;
 
-public class MaybeJustTest {
+public class MaybeJustTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

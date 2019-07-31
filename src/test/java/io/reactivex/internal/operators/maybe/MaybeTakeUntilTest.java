@@ -28,7 +28,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeTakeUntilTest {
+public class MaybeTakeUntilTest extends RxJavaTest {
 
     @Test
     public void normalPublisher() {

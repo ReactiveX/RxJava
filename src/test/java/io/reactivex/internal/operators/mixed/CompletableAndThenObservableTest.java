@@ -23,7 +23,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class CompletableAndThenObservableTest {
+public class CompletableAndThenObservableTest extends RxJavaTest {
 
     @Test
     public void cancelMain() {

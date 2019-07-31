@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.*;
 
-public class MaybePeekTest {
+public class MaybePeekTest extends RxJavaTest {
 
     @Test
     public void disposed() {

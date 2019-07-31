@@ -22,7 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleEqualsTest {
+public class SingleEqualsTest extends RxJavaTest {
 
     @Test
     public void bothError() {

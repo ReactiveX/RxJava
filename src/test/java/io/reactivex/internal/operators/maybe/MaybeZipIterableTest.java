@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
@@ -29,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeZipIterableTest {
+public class MaybeZipIterableTest extends RxJavaTest {
 
     final Function<Object[], Object> addString = new Function<Object[], Object>() {
         @Override

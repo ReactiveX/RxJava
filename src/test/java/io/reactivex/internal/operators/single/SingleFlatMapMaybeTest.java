@@ -20,7 +20,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleFlatMapMaybeTest {
+public class SingleFlatMapMaybeTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void flatMapMaybeNull() {
         Single.just(1)

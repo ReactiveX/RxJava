@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
@@ -25,7 +26,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MaybeFromFutureTest {
+public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void cancelImmediately() {

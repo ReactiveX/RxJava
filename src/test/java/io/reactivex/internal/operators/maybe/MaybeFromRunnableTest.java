@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFromRunnableTest {
+public class MaybeFromRunnableTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromRunnableNull() {
         Maybe.fromRunnable(null);

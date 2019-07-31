@@ -22,7 +22,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.*;
 
-public class SingleOnErrorXTest {
+public class SingleOnErrorXTest extends RxJavaTest {
 
     @Test
     public void returnSuccess() {

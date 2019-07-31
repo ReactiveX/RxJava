@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableConcatMapMaybeTest {
+public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void simple() {
@@ -371,7 +371,7 @@ public class ObservableConcatMapMaybeTest {
         assertFalse(ms.hasObservers());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void cancelNoConcurrentClean() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         ConcatMapMaybeMainObserver<Integer, Integer> operator =

@@ -23,7 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleObserveOnTest {
+public class SingleObserveOnTest extends RxJavaTest {
 
     @Test
     public void dispose() {

@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.operators.mixed;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
-public class ScalarXMapZHelperTest {
+public class ScalarXMapZHelperTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

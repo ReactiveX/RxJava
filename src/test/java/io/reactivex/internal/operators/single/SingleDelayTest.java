@@ -33,7 +33,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleDelayTest {
+public class SingleDelayTest extends RxJavaTest {
     @Test
     public void delayOnSuccess() {
         final TestScheduler scheduler = new TestScheduler();

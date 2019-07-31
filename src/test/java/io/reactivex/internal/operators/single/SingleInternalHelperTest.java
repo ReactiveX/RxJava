@@ -22,7 +22,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleInternalHelperTest {
+public class SingleInternalHelperTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

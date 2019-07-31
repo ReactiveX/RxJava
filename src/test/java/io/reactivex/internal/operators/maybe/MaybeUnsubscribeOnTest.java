@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeUnsubscribeOnTest {
+public class MaybeUnsubscribeOnTest extends RxJavaTest {
 
     @Test
     public void normal() throws Exception {

@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeSubscribeOnTest {
+public class MaybeSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void dispose() {

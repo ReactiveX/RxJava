@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleToObservableTest {
+public class SingleToObservableTest extends RxJavaTest {
 
     @Test
     public void dispose() {

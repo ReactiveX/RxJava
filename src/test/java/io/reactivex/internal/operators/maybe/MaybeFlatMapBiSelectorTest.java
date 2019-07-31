@@ -24,7 +24,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFlatMapBiSelectorTest {
+public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
 
     BiFunction<Integer, Integer, String> stringCombine() {
         return new BiFunction<Integer, Integer, String>() {

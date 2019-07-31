@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 
-public class SingleConcatTest {
+public class SingleConcatTest extends RxJavaTest {
     @Test
     public void concatWith() {
         Single.just(1).concatWith(Single.just(2))

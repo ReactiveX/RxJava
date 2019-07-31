@@ -23,7 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.testsupport.*;
 
-public class MaybeFlatMapNotificationTest {
+public class MaybeFlatMapNotificationTest extends RxJavaTest {
 
     @Test
     public void dispose() {

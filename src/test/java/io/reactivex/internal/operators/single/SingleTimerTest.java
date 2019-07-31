@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleTimerTest {
+public class SingleTimerTest extends RxJavaTest {
 
     @Test
     public void disposed() {

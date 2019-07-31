@@ -26,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleDoFinallyTest implements Action {
+public class SingleDoFinallyTest extends RxJavaTest implements Action {
 
     int calls;
 

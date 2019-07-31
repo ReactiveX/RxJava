@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFlatMapObservableTest {
+public class MaybeFlatMapObservableTest extends RxJavaTest {
 
     @Test
     public void cancelMain() {

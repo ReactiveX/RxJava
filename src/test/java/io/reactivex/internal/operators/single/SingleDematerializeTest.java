@@ -22,7 +22,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.subjects.SingleSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleDematerializeTest {
+public class SingleDematerializeTest extends RxJavaTest {
 
     @Test
     public void success() {

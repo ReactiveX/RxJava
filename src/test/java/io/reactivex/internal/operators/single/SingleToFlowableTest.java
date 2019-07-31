@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
@@ -21,7 +22,7 @@ import io.reactivex.testsupport.TestHelper;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-public class SingleToFlowableTest {
+public class SingleToFlowableTest extends RxJavaTest {
 
     @Test
     public void dispose() {

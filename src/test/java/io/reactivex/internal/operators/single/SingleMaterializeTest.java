@@ -21,7 +21,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.SingleSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleMaterializeTest {
+public class SingleMaterializeTest extends RxJavaTest {
 
     @Test
     @SuppressWarnings("unchecked")

@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableConcatMapCompletableTest {
+public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void simple() {

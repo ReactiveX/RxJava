@@ -31,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleAmbTest {
+public class SingleAmbTest extends RxJavaTest {
     @Test
     public void ambWithFirstFires() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -72,7 +72,7 @@ public class SingleAmbTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(timeout = 1000)
+    @Test
     public void ambIterableWithFirstFires() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
@@ -94,7 +94,7 @@ public class SingleAmbTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(timeout = 1000)
+    @Test
     public void ambIterableWithSecondFires() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();

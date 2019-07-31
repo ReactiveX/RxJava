@@ -30,7 +30,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class SingleTakeUntilTest {
+public class SingleTakeUntilTest extends RxJavaTest {
 
     @Test
     public void mainSuccessPublisher() {

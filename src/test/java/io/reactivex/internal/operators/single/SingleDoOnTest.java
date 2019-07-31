@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class SingleDoOnTest {
+public class SingleDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnDispose() {

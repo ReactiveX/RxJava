@@ -31,7 +31,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.testsupport.*;
 
-public class FlowableSwitchMapCompletableTest {
+public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

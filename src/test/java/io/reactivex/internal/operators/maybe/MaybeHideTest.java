@@ -24,7 +24,7 @@ import io.reactivex.internal.fuseable.ScalarSupplier;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeHideTest {
+public class MaybeHideTest extends RxJavaTest {
 
     @Test
     public void normal() {

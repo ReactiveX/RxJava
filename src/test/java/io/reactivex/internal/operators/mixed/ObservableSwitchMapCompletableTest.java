@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableSwitchMapCompletableTest {
+public class ObservableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

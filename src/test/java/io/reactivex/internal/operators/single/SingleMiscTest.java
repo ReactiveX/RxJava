@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
-public class SingleMiscTest {
+public class SingleMiscTest extends RxJavaTest {
     @Test
     public void never() {
         Single.never()

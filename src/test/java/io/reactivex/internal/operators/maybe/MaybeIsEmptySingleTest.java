@@ -14,12 +14,14 @@
 package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 
-public class MaybeIsEmptySingleTest {
+public class MaybeIsEmptySingleTest extends RxJavaTest {
 
     @Test
     public void source() {

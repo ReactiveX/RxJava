@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import io.reactivex.RxJavaTest;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -26,7 +27,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class MaybeCallbackObserverTest {
+public class MaybeCallbackObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {

@@ -37,7 +37,7 @@ import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 
-public class FlowableConcatMapMaybeTest {
+public class FlowableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void simple() {
@@ -366,7 +366,7 @@ public class FlowableConcatMapMaybeTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void cancelNoConcurrentClean() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ConcatMapMaybeSubscriber<Integer, Integer> operator =

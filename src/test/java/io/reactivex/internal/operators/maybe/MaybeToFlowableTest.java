@@ -23,7 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeToFlowableTest {
+public class MaybeToFlowableTest extends RxJavaTest {
 
     @Test
     public void source() {

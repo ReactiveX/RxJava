@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class MaybeUsingTest {
+public class MaybeUsingTest extends RxJavaTest {
 
     @Test
     public void resourceSupplierThrows() {

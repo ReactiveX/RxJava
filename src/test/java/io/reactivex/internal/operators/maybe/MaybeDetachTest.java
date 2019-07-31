@@ -28,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeDetachTest {
+public class MaybeDetachTest extends RxJavaTest {
 
     @Test
     public void doubleSubscribe() {

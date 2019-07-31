@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 
-public class SingleConcatPublisherTest {
+public class SingleConcatPublisherTest extends RxJavaTest {
 
     @Test
     public void scalar() {

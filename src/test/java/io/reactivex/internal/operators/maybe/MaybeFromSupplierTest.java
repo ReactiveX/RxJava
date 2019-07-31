@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFromSupplierTest {
+public class MaybeFromSupplierTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromSupplierNull() {

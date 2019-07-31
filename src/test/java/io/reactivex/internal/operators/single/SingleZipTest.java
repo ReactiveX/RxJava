@@ -17,12 +17,14 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Single;
 import io.reactivex.functions.*;
 
-public class SingleZipTest {
+public class SingleZipTest extends RxJavaTest {
 
     @Test
     public void zip2() {

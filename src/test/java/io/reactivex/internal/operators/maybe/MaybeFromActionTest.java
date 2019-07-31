@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeFromActionTest {
+public class MaybeFromActionTest extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void fromActionNull() {
         Maybe.fromAction(null);

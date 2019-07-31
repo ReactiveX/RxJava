@@ -24,7 +24,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.testsupport.TestHelper;
 
-public class MaybeOnErrorXTest {
+public class MaybeOnErrorXTest extends RxJavaTest {
 
     @Test
     public void onErrorReturnConst() {
