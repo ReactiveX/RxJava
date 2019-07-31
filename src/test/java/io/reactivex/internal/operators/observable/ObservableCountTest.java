@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableCountTest {
+public class ObservableCountTest extends RxJavaTest {
 
     @Test
     public void dispose() {

@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -33,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableCacheTest {
+public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void coldReplayNoBackpressure() {
         ObservableCache<Integer> source = new ObservableCache<Integer>(Observable.range(0, 1000), 16);
@@ -235,36 +236,6 @@ public class ObservableCacheTest {
         to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to2.assertNotComplete();
         to2.assertError(TestException.class);
-    }
-
-    @Test
-    @Ignore("2.x consumers are not allowed to throw")
-    public void unsafeChildThrows() {
-        final AtomicInteger count = new AtomicInteger();
-
-        Observable<Integer> source = Observable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
-        .cache();
-
-        TestObserver<Integer> to = new TestObserver<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-        };
-
-        source.subscribe(to);
-
-        Assert.assertEquals(100, count.get());
-
-        to.assertNoValues();
-        to.assertNotComplete();
-        to.assertError(TestException.class);
     }
 
     @Test

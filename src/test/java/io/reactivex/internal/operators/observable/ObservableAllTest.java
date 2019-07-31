@@ -29,7 +29,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ObservableAllTest {
+public class ObservableAllTest extends RxJavaTest {
 
     @Test
     public void allObservable() {
@@ -124,7 +124,7 @@ public class ObservableAllTest {
         assertFalse(allOdd.blockingFirst());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1)
             .all(new Predicate<Integer>() {
@@ -255,7 +255,7 @@ public class ObservableAllTest {
         assertFalse(allOdd.blockingGet());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1)
             .all(new Predicate<Integer>() {

@@ -27,7 +27,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTakeLastTimedTest {
+public class ObservableTakeLastTimedTest extends RxJavaTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void takeLastTimedWithNegativeCount() {

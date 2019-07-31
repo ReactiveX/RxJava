@@ -27,7 +27,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableDoOnSubscribeTest {
+public class ObservableDoOnSubscribeTest extends RxJavaTest {
 
     @Test
     public void doOnSubscribe() throws Exception {

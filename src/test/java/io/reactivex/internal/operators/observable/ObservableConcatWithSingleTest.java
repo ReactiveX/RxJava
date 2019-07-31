@@ -23,7 +23,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.SingleSubject;
 
-public class ObservableConcatWithSingleTest {
+public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {

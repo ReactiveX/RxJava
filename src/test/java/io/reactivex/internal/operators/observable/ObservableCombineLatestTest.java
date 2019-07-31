@@ -36,7 +36,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableCombineLatestTest {
+public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void combineLatestWithFunctionThatThrowsAnException() {
@@ -454,7 +454,7 @@ public class ObservableCombineLatestTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void oneToNSourcesScheduled() throws InterruptedException {
         int n = 10;
         Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -30,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableDoFinallyTest implements Action {
+public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     int calls;
 

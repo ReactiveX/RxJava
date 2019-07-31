@@ -30,7 +30,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ObservableAnyTest {
+public class ObservableAnyTest extends RxJavaTest {
 
     @Test
     public void anyWithTwoItemsObservable() {
@@ -231,7 +231,7 @@ public class ObservableAnyTest {
         assertTrue(anyEven.blockingFirst());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
             .flatMap(new Function<Boolean, Observable<Integer>>() {
@@ -453,7 +453,7 @@ public class ObservableAnyTest {
         assertTrue(anyEven.blockingGet());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void issue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
             .flatMapObservable(new Function<Boolean, Observable<Integer>>() {

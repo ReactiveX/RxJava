@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.disposables.*;
@@ -22,7 +23,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableResourceWrapperTest {
+public class ObservableResourceWrapperTest extends RxJavaTest {
 
     @Test
     public void disposed() {

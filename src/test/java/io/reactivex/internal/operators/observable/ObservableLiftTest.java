@@ -19,7 +19,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 
-public class ObservableLiftTest {
+public class ObservableLiftTest extends RxJavaTest {
 
     @Test
     public void callbackCrash() {

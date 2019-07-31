@@ -35,7 +35,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableFromCallableTest {
+public class ObservableFromCallableTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

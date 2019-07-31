@@ -304,7 +304,7 @@ public class ObservableConcatMapSchedulerTest {
         assertTrue(to.values().toString(), to.values().get(0).startsWith("RxSingleScheduler-"));
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
@@ -355,7 +355,7 @@ public class ObservableConcatMapSchedulerTest {
         assertEquals(n, counter.get());
     }
 
-    @Test//(timeout = 100000)
+    @Test
     public void concatMapRangeAsyncLoopIssue2876() {
         final long durationSeconds = 2;
         final long startTime = System.currentTimeMillis();
@@ -387,23 +387,19 @@ public class ObservableConcatMapSchedulerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore("concat(a, b, ...) replaced by concatArray(T...)")
-    public void concatMany() throws Exception {
+    public void concatArray() throws Exception {
         for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Observable.class);
-
             Observable<Integer>[] obs = new Observable[i];
             Arrays.fill(obs, Observable.just(1));
 
             Integer[] expected = new Integer[i];
             Arrays.fill(expected, 1);
 
-            Method m = Observable.class.getMethod("concat", clazz);
+            Method m = Observable.class.getMethod("concatArray", ObservableSource[].class);
 
             TestObserver<Integer> to = TestObserver.create();
 
-            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(to);
+            ((Observable<Integer>)m.invoke(null, new Object[]{obs})).subscribe(to);
 
             to.assertValues(expected);
             to.assertNoErrors();
@@ -461,23 +457,19 @@ public class ObservableConcatMapSchedulerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore("startWith(a, b, ...) replaced by startWithArray(T...)")
-    public void startWith() throws Exception {
+    public void startWithArray() throws Exception {
         for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Object.class);
-
             Object[] obs = new Object[i];
             Arrays.fill(obs, 1);
 
             Integer[] expected = new Integer[i];
             Arrays.fill(expected, 1);
 
-            Method m = Observable.class.getMethod("startWith", clazz);
+            Method m = Observable.class.getMethod("startWithArray", Object[].class);
 
             TestObserver<Integer> to = TestObserver.create();
 
-            ((Observable<Integer>)m.invoke(Observable.empty(), obs)).subscribe(to);
+            ((Observable<Integer>)m.invoke(Observable.empty(), new Object[]{obs})).subscribe(to);
 
             to.assertValues(expected);
             to.assertNoErrors();

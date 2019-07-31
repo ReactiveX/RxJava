@@ -23,14 +23,14 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableIntervalTest {
+public class ObservableIntervalTest extends RxJavaTest {
 
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.interval(1, TimeUnit.MILLISECONDS, new TestScheduler()));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void cancel() {
         Observable.interval(1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
         .take(10)

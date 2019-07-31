@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -28,7 +29,7 @@ import io.reactivex.observers.*;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableDoAfterNextTest {
+public class ObservableDoAfterNextTest extends RxJavaTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 

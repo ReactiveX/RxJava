@@ -24,7 +24,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableTakeLastOneTest {
+public class ObservableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfManyReturnsLast() {
@@ -33,8 +33,6 @@ public class ObservableTakeLastOneTest {
         to.assertValue(10);
         to.assertNoErrors();
         to.assertTerminated();
-        // NO longer assertable
-//        s.assertUnsubscribed();
     }
 
     @Test
@@ -44,8 +42,6 @@ public class ObservableTakeLastOneTest {
         to.assertNoValues();
         to.assertNoErrors();
         to.assertTerminated();
-        // NO longer assertable
-//      s.assertUnsubscribed();
     }
 
     @Test
@@ -55,8 +51,6 @@ public class ObservableTakeLastOneTest {
         to.assertValue(1);
         to.assertNoErrors();
         to.assertTerminated();
-        // NO longer assertable
-//      s.assertUnsubscribed();
     }
 
     @Test

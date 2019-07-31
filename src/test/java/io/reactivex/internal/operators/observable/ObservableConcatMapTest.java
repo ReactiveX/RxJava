@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableConcatMapTest {
+public class ObservableConcatMapTest extends RxJavaTest {
 
     @Test
     public void asyncFused() {

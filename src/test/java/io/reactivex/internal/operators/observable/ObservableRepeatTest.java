@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -34,9 +35,9 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableRepeatTest {
+public class ObservableRepeatTest extends RxJavaTest {
 
-    @Test(timeout = 2000)
+    @Test
     public void repetition() {
         int num = 10;
         final AtomicInteger count = new AtomicInteger();
@@ -53,14 +54,14 @@ public class ObservableRepeatTest {
         assertEquals(num, value);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatTake() {
         Observable<Integer> xs = Observable.just(1, 2);
         Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().blockingGet().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
-    @Test(timeout = 20000)
+    @Test
     public void noStackOverFlow() {
         Observable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).blockingLast();
     }
@@ -99,7 +100,7 @@ public class ObservableRepeatTest {
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatAndTake() {
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -110,7 +111,7 @@ public class ObservableRepeatTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatLimited() {
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -121,7 +122,7 @@ public class ObservableRepeatTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatError() {
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -133,7 +134,7 @@ public class ObservableRepeatTest {
 
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatZero() {
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -144,7 +145,7 @@ public class ObservableRepeatTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void repeatOne() {
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -173,7 +174,7 @@ public class ObservableRepeatTest {
     }
 
     /** Issue #2844: wrong target of request. */
-    @Test(timeout = 3000)
+    @Test
     public void repeatRetarget() {
         final List<Integer> concatBase = new ArrayList<Integer>();
         TestObserver<Integer> to = new TestObserver<Integer>();

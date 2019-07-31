@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableFirstTest {
+public class ObservableFirstTest extends RxJavaTest {
 
     Observer<String> w;
     SingleObserver<Object> wo;

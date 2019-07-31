@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -35,7 +36,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableRetryWithPredicateTest {
+public class ObservableRetryWithPredicateTest extends RxJavaTest {
     BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
         @Override
         public boolean test(Integer t1, Throwable t2) {
@@ -223,7 +224,7 @@ public class ObservableRetryWithPredicateTest {
         assertEquals(1, count.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void unsubscribeAfterError() {
 
         Observer<Long> observer = TestHelper.mockObserver();
@@ -249,7 +250,7 @@ public class ObservableRetryWithPredicateTest {
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void timeoutWithRetry() {
 
         Observer<Long> observer = TestHelper.mockObserver();

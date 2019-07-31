@@ -29,7 +29,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 ;
 
-public class ObservableTakeUntilPredicateTest {
+public class ObservableTakeUntilPredicateTest extends RxJavaTest {
     @Test
     public void takeEmpty() {
         Observer<Object> o = TestHelper.mockObserver();

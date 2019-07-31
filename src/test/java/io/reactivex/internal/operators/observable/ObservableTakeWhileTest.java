@@ -27,7 +27,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableTakeWhileTest {
+public class ObservableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void takeWhile1() {

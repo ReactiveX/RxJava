@@ -27,7 +27,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableToSortedListTest {
+public class ObservableToSortedListTest extends RxJavaTest {
 
     @Test
     public void sortedListObservable() {

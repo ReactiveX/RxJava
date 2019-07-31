@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -33,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableConcatMapEagerTest {
+public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void normal() {
@@ -46,33 +47,6 @@ public class ObservableConcatMapEagerTest {
         })
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
-    }
-
-    @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void normalBackpressured() {
-//        TestObserver<Integer> to = Observable.range(1, 5)
-//        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
-//            @Override
-//            public ObservableSource<Integer> apply(Integer t) {
-//                return Observable.range(t, 2);
-//            }
-//        })
-//        .test(3);
-//
-//        to.assertValues(1, 2, 2);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3, 3);
-//
-//        to.request(5);
-//
-//        to.assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
 
     @Test
@@ -89,33 +63,6 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void normalDelayBoundaryBackpressured() {
-//        TestObserver<Integer> to = Observable.range(1, 5)
-//        .concatMapEagerDelayError(new Function<Integer, ObservableSource<Integer>>() {
-//            @Override
-//            public ObservableSource<Integer> apply(Integer t) {
-//                return Observable.range(t, 2);
-//            }
-//        }, false)
-//        .test(3);
-//
-//        to.assertValues(1, 2, 2);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3, 3);
-//
-//        to.request(5);
-//
-//        to.assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
-    }
-
-    @Test
     public void normalDelayEnd() {
         Observable.range(1, 5)
         .concatMapEagerDelayError(new Function<Integer, ObservableSource<Integer>>() {
@@ -126,33 +73,6 @@ public class ObservableConcatMapEagerTest {
         }, true)
         .test()
         .assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
-    }
-
-    @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void normalDelayEndBackpressured() {
-//        TestObserver<Integer> to = Observable.range(1, 5)
-//        .concatMapEagerDelayError(new Function<Integer, ObservableSource<Integer>>() {
-//            @Override
-//            public ObservableSource<Integer> apply(Integer t) {
-//                return Observable.range(t, 2);
-//            }
-//        }, true)
-//        .test(3);
-//
-//        to.assertValues(1, 2, 2);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 2, 3, 3);
-//
-//        to.request(5);
-//
-//        to.assertResult(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
     }
 
     @Test
@@ -520,27 +440,6 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test
-//    @SuppressWarnings("unchecked")
-    @Ignore("Observable doesn't do backpressure")
-    public void backpressure() {
-//        Observable.concatArrayEager(Observable.just(1), Observable.just(1)).subscribe(ts);
-//
-//        ts.assertNoErrors();
-//        ts.assertNoValues();
-//        ts.assertNotComplete();
-//
-//        ts.request(1);
-//        ts.assertValue(1);
-//        ts.assertNoErrors();
-//        ts.assertNotComplete();
-//
-//        ts.request(1);
-//        ts.assertValues(1, 1);
-//        ts.assertNoErrors();
-//        ts.assertComplete();
-    }
-
-    @Test
     public void asynchronousRun() {
         Observable.range(1, 2).concatMapEager(new Function<Integer, Observable<Integer>>() {
             @Override
@@ -583,89 +482,21 @@ public class ObservableConcatMapEagerTest {
         to.assertValues(1, 2);
     }
 
-    @Test
-    @Ignore("Observable doesn't do backpressure so it can't bound its input count")
-    public void prefetchIsBounded() {
-        final AtomicInteger count = new AtomicInteger();
-
-        TestObserver<Object> to = TestObserver.create();
-
-        Observable.just(1).concatMapEager(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return Observable.range(1, Observable.bufferSize() * 2)
-                        .doOnNext(new Consumer<Integer>() {
-                            @Override
-                            public void accept(Integer t) {
-                                count.getAndIncrement();
-                            }
-                        }).hide();
-            }
-        }).subscribe(to);
-
-        to.assertNoErrors();
-        to.assertNoValues();
-        to.assertNotComplete();
-        Assert.assertEquals(Observable.bufferSize(), count.get());
-    }
-
-    @Test
-    @Ignore("Null values are not allowed in RS")
-    public void innerNull() {
-        Observable.just(1).concatMapEager(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer t) {
-                return Observable.just(null);
-            }
-        }).subscribe(to);
-
-        to.assertNoErrors();
-        to.assertComplete();
-        to.assertValue(null);
-    }
-
-    @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void maxConcurrent5() {
-//        final List<Long> requests = new ArrayList<Long>();
-//        Observable.range(1, 100).doOnRequest(new LongConsumer() {
-//            @Override
-//            public void accept(long reqCount) {
-//                requests.add(reqCount);
-//            }
-//        }).concatMapEager(toJust, 5, Observable.bufferSize()).subscribe(ts);
-//
-//        ts.assertNoErrors();
-//        ts.assertValueCount(100);
-//        ts.assertComplete();
-//
-//        Assert.assertEquals(5, (long) requests.get(0));
-//        Assert.assertEquals(1, (long) requests.get(1));
-//        Assert.assertEquals(1, (long) requests.get(2));
-//        Assert.assertEquals(1, (long) requests.get(3));
-//        Assert.assertEquals(1, (long) requests.get(4));
-//        Assert.assertEquals(1, (long) requests.get(5));
-    }
-
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore("Currently there are no 2-9 argument variants, use concatArrayEager()")
-    public void many() throws Exception {
+    public void concatArrayEager() throws Exception {
         for (int i = 2; i < 10; i++) {
-            Class<?>[] clazz = new Class[i];
-            Arrays.fill(clazz, Observable.class);
-
             Observable<Integer>[] obs = new Observable[i];
             Arrays.fill(obs, Observable.just(1));
 
             Integer[] expected = new Integer[i];
             Arrays.fill(expected, 1);
 
-            Method m = Observable.class.getMethod("concatEager", clazz);
+            Method m = Observable.class.getMethod("concatArrayEager", ObservableSource[].class);
 
             TestObserver<Integer> to = TestObserver.create();
 
-            ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(to);
+            ((Observable<Integer>)m.invoke(null, new Object[]{obs})).subscribe(to);
 
             to.assertValues(expected);
             to.assertNoErrors();

@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -35,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTakeTest {
+public class ObservableTakeTest extends RxJavaTest {
 
     @Test
     public void take1() {
@@ -133,33 +134,6 @@ public class ObservableTakeTest {
     }
 
     @Test
-    @Ignore("take(0) is now empty() and doesn't even subscribe to the original source")
-    public void takeZeroDoesntLeakError() {
-        final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final Disposable bs = Disposables.empty();
-        Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                subscribed.set(true);
-                observer.onSubscribe(bs);
-                observer.onError(new Throwable("test failed"));
-            }
-        });
-
-        Observer<String> observer = TestHelper.mockObserver();
-
-        source.take(0).subscribe(observer);
-        assertTrue("source subscribed", subscribed.get());
-        assertTrue("source unsubscribed", bs.isDisposed());
-
-        verify(observer, never()).onNext(anyString());
-        // even though onError is called we take(0) so shouldn't see it
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verifyNoMoreInteractions(observer);
-    }
-
-    @Test
     public void unsubscribeAfterTake() {
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
@@ -183,12 +157,10 @@ public class ObservableTakeTest {
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
         verify(observer, times(1)).onComplete();
-        // FIXME no longer assertable
-//        verify(s, times(1)).unsubscribe();
         verifyNoMoreInteractions(observer);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void unsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
         INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
@@ -202,7 +174,7 @@ public class ObservableTakeTest {
         assertEquals(10, count.get());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void multiTake() {
         final AtomicInteger count = new AtomicInteger();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -282,7 +254,7 @@ public class ObservableTakeTest {
 
     });
 
-    @Test(timeout = 2000)
+    @Test
     public void takeObserveOn() {
         Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> to = new TestObserver<Object>(o);

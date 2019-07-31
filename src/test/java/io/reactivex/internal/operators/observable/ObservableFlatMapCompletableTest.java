@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableFlatMapCompletableTest {
+public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void normalObservable() {

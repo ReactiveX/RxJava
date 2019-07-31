@@ -28,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableOnErrorResumeWithTest {
+public class ObservableOnErrorResumeWithTest extends RxJavaTest {
 
     @Test
     public void resumeNext() {
@@ -98,53 +98,6 @@ public class ObservableOnErrorResumeWithTest {
         verify(observer, Mockito.never()).onNext("three");
         verify(observer, times(1)).onNext("twoResume");
         verify(observer, times(1)).onNext("threeResume");
-    }
-
-    @Test
-    @Ignore("Publishers should not throw")
-    public void resumeNextWithFailureOnSubscribe() {
-        Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-
-        });
-        Observable<String> resume = Observable.just("resume");
-        Observable<String> observable = testObservable.onErrorResumeWith(resume);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        observable.subscribe(observer);
-
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("resume");
-    }
-
-    @Test
-    @Ignore("Publishers should not throw")
-    public void resumeNextWithFailureOnSubscribeAsync() {
-        Observable<String> testObservable = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> t1) {
-                throw new RuntimeException("force failure");
-            }
-
-        });
-        Observable<String> resume = Observable.just("resume");
-        Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeWith(resume);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
-        observable.subscribe(to);
-
-        to.awaitDone(5, TimeUnit.SECONDS);
-
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("resume");
     }
 
     static class TestObservable implements ObservableSource<String> {

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -32,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableDistinctTest {
+public class ObservableDistinctTest extends RxJavaTest {
 
     Observer<String> w;
 
@@ -100,35 +101,6 @@ public class ObservableDistinctTest {
         inOrder.verify(w, times(1)).onComplete();
         inOrder.verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctOfSourceWithNulls() {
-        Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null);
-        src.distinct().subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("b");
-        inOrder.verify(w, times(1)).onComplete();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctOfSourceWithExceptionsFromKeySelector() {
-        Observable<String> src = Observable.just("a", "b", null, "c");
-        src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("b");
-        inOrder.verify(w, times(1)).onError(any(NullPointerException.class));
-        inOrder.verify(w, never()).onNext(anyString());
-        inOrder.verify(w, never()).onComplete();
     }
 
     @Test

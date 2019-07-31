@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingObservableNextTest {
+public class BlockingObservableNextTest extends RxJavaTest {
 
     private void fireOnNextInNewThread(final Subject<String> o, final String value) {
         new Thread() {
@@ -312,7 +312,7 @@ public class BlockingObservableNextTest {
         }
     }
 
-    @Test /* (timeout = 8000) */
+    @Test
     public void singleSourceManyIterators() throws InterruptedException {
         Observable<Long> o = Observable.interval(250, TimeUnit.MILLISECONDS);
         PublishSubject<Integer> terminal = PublishSubject.create();

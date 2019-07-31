@@ -19,7 +19,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class ObservableToXTest {
+public class ObservableToXTest extends RxJavaTest {
 
     @Test
     public void toFlowableBuffer() {

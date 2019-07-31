@@ -33,7 +33,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableTimeoutTests {
+public class ObservableTimeoutTests extends RxJavaTest {
     private PublishSubject<String> underlyingSubject;
     private TestScheduler testScheduler;
     private Observable<String> withTimeout;
@@ -286,68 +286,6 @@ public class ObservableTimeoutTests {
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
         observer.assertFailureAndMessage(TimeoutException.class, timeoutMessage(1000, TimeUnit.MILLISECONDS));
-
-        verify(upstream, times(1)).dispose();
-    }
-
-    @Test
-    @Ignore("s should be considered cancelled upon executing onComplete and not expect downstream to call cancel")
-    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyComplete() {
-        // From https://github.com/ReactiveX/RxJava/pull/951
-        final Disposable upstream = mock(Disposable.class);
-
-        Observable<String> immediatelyComplete = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(upstream);
-                observer.onComplete();
-            }
-        });
-
-        TestScheduler testScheduler = new TestScheduler();
-        Observable<String> observableWithTimeout = immediatelyComplete.timeout(1000, TimeUnit.MILLISECONDS,
-                testScheduler);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
-        observableWithTimeout.subscribe(to);
-
-        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onComplete();
-        inOrder.verifyNoMoreInteractions();
-
-        verify(upstream, times(1)).dispose();
-    }
-
-    @Test
-    @Ignore("s should be considered cancelled upon executing onError and not expect downstream to call cancel")
-    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyErrored() throws InterruptedException {
-        // From https://github.com/ReactiveX/RxJava/pull/951
-        final Disposable upstream = mock(Disposable.class);
-
-        Observable<String> immediatelyError = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(upstream);
-                observer.onError(new IOException("Error"));
-            }
-        });
-
-        TestScheduler testScheduler = new TestScheduler();
-        Observable<String> observableWithTimeout = immediatelyError.timeout(1000, TimeUnit.MILLISECONDS,
-                testScheduler);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
-        observableWithTimeout.subscribe(to);
-
-        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onError(isA(IOException.class));
-        inOrder.verifyNoMoreInteractions();
 
         verify(upstream, times(1)).dispose();
     }

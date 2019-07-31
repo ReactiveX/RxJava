@@ -41,7 +41,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableRefCountTest {
+public class ObservableRefCountTest extends RxJavaTest {
 
     @Test
     public void refCountAsync() {
@@ -512,7 +512,7 @@ public class ObservableRefCountTest {
         to2.assertValue(30);
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void upstreamErrorAllowsRetry() throws InterruptedException {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
@@ -973,7 +973,7 @@ public class ObservableRefCountTest {
         }
     }
 
-    @Test(timeout = 7500)
+    @Test
     public void blockingSourceAsnycCancel() throws Exception {
         BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
 

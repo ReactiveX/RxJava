@@ -25,7 +25,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableDetachTest {
+public class ObservableDetachTest extends RxJavaTest {
 
     Object o;
 
@@ -86,33 +86,6 @@ public class ObservableDetachTest {
     }
 
     @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void backpressured() throws Exception {
-//        o = new Object();
-//
-//        WeakReference<Object> wr = new WeakReference<Object>(o);
-//
-//        TestObserver<Object> to = new TestObserver<Object>(0L);
-//
-//        Observable.just(o).count().onTerminateDetach().subscribe(ts);
-//
-//        to.assertNoValues();
-//
-//        to.request(1);
-//
-//        to.assertValue(1L);
-//        to.assertComplete();
-//        to.assertNoErrors();
-//
-//        o = null;
-//
-//        System.gc();
-//        Thread.sleep(200);
-//
-//        Assert.assertNull("Object retained!", wr.get());
-    }
-
-    @Test
     public void justUnsubscribed() throws Exception {
         o = new Object();
 
@@ -128,33 +101,6 @@ public class ObservableDetachTest {
 
         Assert.assertNull("Object retained!", wr.get());
 
-    }
-
-    @Test
-    @Ignore("Observable doesn't do backpressure")
-    public void deferredUpstreamProducer() {
-//        final AtomicReference<Subscriber<? super Object>> subscriber = new AtomicReference<Subscriber<? super Object>>();
-//
-//        TestObserver<Object> to = new TestObserver<Object>(0);
-//
-//        Observable.unsafeCreate(new ObservableSource<Object>() {
-//            @Override
-//            public void subscribe(Subscriber<? super Object> t) {
-//                subscriber.set(t);
-//            }
-//        }).onTerminateDetach().subscribe(to);
-//
-//        to.request(2);
-//
-//        new ObservableRange(1, 3).subscribe(subscriber.get());
-//
-//        to.assertValues(1, 2);
-//
-//        to.request(1);
-//
-//        to.assertValues(1, 2, 3);
-//        to.assertComplete();
-//        to.assertNoErrors();
     }
 
     @Test

@@ -24,7 +24,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.CompletableSubject;
 
-public class ObservableConcatWithCompletableTest {
+public class ObservableConcatWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

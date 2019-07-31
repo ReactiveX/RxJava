@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableFlatMapMaybeTest {
+public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void normal() {

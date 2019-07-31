@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -26,7 +27,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableIgnoreElementsTest {
+public class ObservableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void withEmptyObservable() {
@@ -63,8 +64,6 @@ public class ObservableIgnoreElementsTest {
         to.assertNoErrors();
         to.assertNoValues();
         to.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
     }
 
     @Test
@@ -74,8 +73,6 @@ public class ObservableIgnoreElementsTest {
         Observable.error(ex).ignoreElements().toObservable().subscribe(to);
         to.assertNoValues();
         to.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
         to.assertError(TestException.class);
         to.assertErrorMessage("boo");
     }
@@ -129,8 +126,6 @@ public class ObservableIgnoreElementsTest {
         to.assertNoErrors();
         to.assertNoValues();
         to.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
     }
 
     @Test
@@ -140,8 +135,6 @@ public class ObservableIgnoreElementsTest {
         Observable.error(ex).ignoreElements().subscribe(to);
         to.assertNoValues();
         to.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
         to.assertError(TestException.class);
         to.assertErrorMessage("boo");
     }

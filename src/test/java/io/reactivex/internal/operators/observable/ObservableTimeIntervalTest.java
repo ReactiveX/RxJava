@@ -28,7 +28,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTimeIntervalTest {
+public class ObservableTimeIntervalTest extends RxJavaTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 

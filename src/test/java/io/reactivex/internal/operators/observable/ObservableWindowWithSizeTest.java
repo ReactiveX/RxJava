@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -32,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableWindowWithSizeTest {
+public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 

@@ -29,7 +29,7 @@ import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTakeLastTest {
+public class ObservableTakeLastTest extends RxJavaTest {
 
     @Test
     public void takeLastEmpty() {
@@ -78,21 +78,6 @@ public class ObservableTakeLastTest {
         Observer<String> observer = TestHelper.mockObserver();
         take.subscribe(observer);
         verify(observer, never()).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void takeLastWithNull() {
-        Observable<String> w = Observable.just("one", null, "three");
-        Observable<String> take = w.takeLast(2);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        take.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, times(1)).onNext(null);
-        verify(observer, times(1)).onNext("three");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }

@@ -36,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableGroupByTest {
+public class ObservableGroupByTest extends RxJavaTest {
 
     final Function<String, Integer> length = new Function<String, Integer>() {
         @Override
@@ -499,7 +499,7 @@ public class ObservableGroupByTest {
         assertEquals(100, eventCounter.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void completionIfInnerNotSubscribed() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();

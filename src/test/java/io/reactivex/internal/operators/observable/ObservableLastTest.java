@@ -26,7 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableLastTest {
+public class ObservableLastTest extends RxJavaTest {
 
     @Test
     public void lastWithElements() {

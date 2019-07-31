@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -24,7 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
-public class ObservableBufferUntilSubscriberTest {
+public class ObservableBufferUntilSubscriberTest extends RxJavaTest {
 
     @Test
     public void issue1677() throws InterruptedException {

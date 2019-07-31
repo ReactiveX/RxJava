@@ -25,7 +25,7 @@ import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDis
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableScalarXMapTest {
+public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

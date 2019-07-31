@@ -13,11 +13,13 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableInternalHelperTest {
+public class ObservableInternalHelperTest extends RxJavaTest {
 
     @Test
     public void utilityClass() {

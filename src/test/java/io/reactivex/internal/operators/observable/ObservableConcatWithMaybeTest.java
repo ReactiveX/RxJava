@@ -24,7 +24,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.MaybeSubject;
 
-public class ObservableConcatWithMaybeTest {
+public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalEmpty() {

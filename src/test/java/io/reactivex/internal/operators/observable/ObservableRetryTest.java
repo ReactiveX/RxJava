@@ -38,7 +38,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableRetryTest {
+public class ObservableRetryTest extends RxJavaTest {
 
     @Test
     public void iterativeBackoff() {
@@ -615,7 +615,7 @@ public class ObservableRetryTest {
         }
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void unsubscribeAfterError() {
 
         Observer<Long> observer = TestHelper.mockObserver();
@@ -639,7 +639,7 @@ public class ObservableRetryTest {
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void timeoutWithRetry() {
 
         Observer<Long> observer = TestHelper.mockObserver();
@@ -662,7 +662,7 @@ public class ObservableRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
 
-    @Test//(timeout = 15000)
+    @Test
     public void retryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
         for (int j = 0; j < NUM_LOOPS; j++) {
@@ -688,7 +688,7 @@ public class ObservableRetryTest {
         }
     }
 
-    @Test//(timeout = 15000)
+    @Test
     public void retryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
         final int NUM_RETRIES = Flowable.bufferSize() * 2;
@@ -788,7 +788,7 @@ public class ObservableRetryTest {
         return sb;
     }
 
-    @Test//(timeout = 3000)
+    @Test
     public void issue1900() throws InterruptedException {
         Observer<String> observer = TestHelper.mockObserver();
         final int NUM_MSG = 1034;
@@ -829,7 +829,7 @@ public class ObservableRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test//(timeout = 3000)
+    @Test
     public void issue1900SourceNotSupportingBackpressure() {
         Observer<String> observer = TestHelper.mockObserver();
         final int NUM_MSG = 1034;

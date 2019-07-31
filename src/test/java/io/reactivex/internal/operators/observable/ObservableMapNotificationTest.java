@@ -24,7 +24,7 @@ import io.reactivex.internal.operators.observable.ObservableMapNotification.MapN
 import io.reactivex.observers.TestObserver;
 import io.reactivex.testsupport.*;
 
-public class ObservableMapNotificationTest {
+public class ObservableMapNotificationTest extends RxJavaTest {
     @Test
     public void just() {
         TestObserver<Object> to = new TestObserver<Object>();

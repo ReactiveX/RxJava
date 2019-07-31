@@ -14,13 +14,15 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.HasUpstreamObservableSource;
 
-public class AbstractObservableWithUpstreamTest {
+public class AbstractObservableWithUpstreamTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test

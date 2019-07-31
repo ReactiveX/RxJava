@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableZipIterableTest {
+public class ObservableZipIterableTest extends RxJavaTest {
     BiFunction<String, String, String> concat2Strings;
     PublishSubject<String> s1;
     PublishSubject<String> s2;

@@ -463,39 +463,6 @@ public class FlowableSubscriberTest {
         assertEquals(1, c.get());
     }
 
-    @Ignore("Non-positive requests are relayed to the plugin and is a no-op otherwise")
-    @Test
-    public void negativeRequestThrowsIllegalArgumentException() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Flowable.just(1, 2, 3, 4).subscribe(new DefaultSubscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(1);
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-               exception.set(e);
-               latch.countDown();
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                request(-1);
-                request(1);
-            }});
-
-        Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
-        Assert.assertTrue(exception.get() instanceof IllegalArgumentException);
-    }
-
     @Test
     public void onStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();

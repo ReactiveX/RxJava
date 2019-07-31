@@ -23,7 +23,7 @@ import io.reactivex.functions.Supplier;
 import io.reactivex.testsupport.TestHelper;
 
 @SuppressWarnings("unchecked")
-public class ObservableDeferTest {
+public class ObservableDeferTest extends RxJavaTest {
 
     @Test
     public void defer() throws Throwable {

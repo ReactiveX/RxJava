@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableZipTest {
+public class ObservableZipTest extends RxJavaTest {
     BiFunction<String, String, String> concat2Strings;
     PublishSubject<String> s1;
     PublishSubject<String> s2;
@@ -851,36 +851,6 @@ public class ObservableZipTest {
         assertEquals("5-5", list.get(4));
     }
 
-    @Test
-    @Ignore("Null values not allowed")
-    public void emitNull() {
-        Observable<Integer> oi = Observable.just(1, null, 3);
-        Observable<String> os = Observable.just("a", "b", null);
-        Observable<String> o = Observable.zip(oi, os, new BiFunction<Integer, String, String>() {
-
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
-
-        final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
-        });
-
-        assertEquals(3, list.size());
-        assertEquals("1-a", list.get(0));
-        assertEquals("null-b", list.get(1));
-        assertEquals("3-null", list.get(2));
-    }
-
     @SuppressWarnings("rawtypes")
     static String kind(Notification notification) {
         if (notification.isOnError()) {
@@ -1099,7 +1069,7 @@ public class ObservableZipTest {
         });
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026),
@@ -1125,7 +1095,7 @@ public class ObservableZipTest {
         assertEquals(expected, zip2.toList().blockingGet());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void zipRace() {
         long startTime = System.currentTimeMillis();
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());

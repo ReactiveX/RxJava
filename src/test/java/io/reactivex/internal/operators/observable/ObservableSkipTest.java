@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.testsupport.*;
 
-public class ObservableSkipTest {
+public class ObservableSkipTest extends RxJavaTest {
 
     @Test
     public void skipNegativeElements() {

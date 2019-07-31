@@ -20,7 +20,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 
-public class ObservableRedoTest {
+public class ObservableRedoTest extends RxJavaTest {
 
     @Test
     public void redoCancel() {
