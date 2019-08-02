@@ -2,6 +2,19 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.11 - August 2, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.11%7C))
+
+#### Bugfixes
+
+  - [Pull 6560](https://github.com/ReactiveX/RxJava/pull/6560): Fix NPE when debouncing an empty source.
+  - [Pull 6599](https://github.com/ReactiveX/RxJava/pull/6599): Fix `mergeWith` not canceling other when the main fails.
+  - [Pull 6601](https://github.com/ReactiveX/RxJava/pull/6601): `ObservableBlockingSubscribe` compares with wrong object.
+  - [Pull 6602](https://github.com/ReactiveX/RxJava/pull/): Fix truncation bugs in `replay()` and `ReplaySubject`/`Processor`.
+
+#### Documentation changes
+
+  - [Pull 6565](https://github.com/ReactiveX/RxJava/pull/6565): Fix JavaDocs of `Single.doOnTerminate` refer to `onComplete` notification.
+
 ### Version 2.2.10 - June 21, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.10%7C))
 
 #### Bugfixes
