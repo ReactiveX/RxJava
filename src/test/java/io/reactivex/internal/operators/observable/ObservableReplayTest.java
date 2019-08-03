@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -42,7 +43,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableReplayTest {
+public class ObservableReplayTest extends RxJavaTest {
     @Test
     public void bufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -1064,36 +1065,6 @@ public class ObservableReplayTest {
         to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to2.assertNotComplete();
         Assert.assertEquals(1, to2.errors().size());
-    }
-
-    @Test
-    @Ignore("onNext should not throw")
-    public void unsafeChildThrows() {
-        final AtomicInteger count = new AtomicInteger();
-
-        Observable<Integer> source = Observable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
-        .replay().autoConnect();
-
-        TestObserver<Integer> to = new TestObserver<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-        };
-
-        source.subscribe(to);
-
-        Assert.assertEquals(100, count.get());
-
-        to.assertNoValues();
-        to.assertNotComplete();
-        to.assertError(TestException.class);
     }
 
     @Test

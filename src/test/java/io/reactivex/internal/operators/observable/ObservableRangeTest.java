@@ -27,7 +27,7 @@ import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableRangeTest {
+public class ObservableRangeTest extends RxJavaTest {
 
     @Test
     public void rangeStartAt2Count3() {
@@ -135,7 +135,7 @@ public class ObservableRangeTest {
         assertTrue(completed.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void nearMaxValueWithoutBackpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(to);

@@ -22,7 +22,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableFinallyTest {
+public class ObservableFinallyTest extends RxJavaTest {
 
     private Action aAction0;
     private Observer<String> observer;

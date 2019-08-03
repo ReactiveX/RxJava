@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableDoOnEachTest {
+public class ObservableDoOnEachTest extends RxJavaTest {
 
     Observer<String> subscribedObserver;
     Observer<String> sideEffectObserver;

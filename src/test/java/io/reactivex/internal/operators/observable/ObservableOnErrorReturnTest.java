@@ -30,7 +30,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableOnErrorReturnTest {
+public class ObservableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void resumeNext() {

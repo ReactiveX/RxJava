@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableMapTest {
+public class ObservableMapTest extends RxJavaTest {
 
     Observer<String> stringObserver;
     Observer<String> stringObserver2;

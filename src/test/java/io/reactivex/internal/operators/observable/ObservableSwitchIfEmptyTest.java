@@ -25,7 +25,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DefaultObserver;
 
-public class ObservableSwitchIfEmptyTest {
+public class ObservableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void switchWhenNotEmpty() throws Exception {

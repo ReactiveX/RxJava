@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -28,8 +29,8 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class BlockingObservableLatestTest {
-    @Test(timeout = 1000)
+public class BlockingObservableLatestTest extends RxJavaTest {
+    @Test
     public void simple() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -53,7 +54,7 @@ public class BlockingObservableLatestTest {
         Assert.assertFalse(it.hasNext());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void sameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -79,7 +80,7 @@ public class BlockingObservableLatestTest {
         }
     }
 
-    @Test(timeout = 1000, expected = NoSuchElementException.class)
+    @Test(expected = NoSuchElementException.class)
     public void empty() {
         Observable<Long> source = Observable.<Long> empty();
 
@@ -92,7 +93,7 @@ public class BlockingObservableLatestTest {
         it.next();
     }
 
-    @Test(timeout = 1000, expected = NoSuchElementException.class)
+    @Test(expected = NoSuchElementException.class)
     public void simpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -111,7 +112,7 @@ public class BlockingObservableLatestTest {
         }
     }
 
-    @Test(/* timeout = 1000, */expected = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void hasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -126,7 +127,7 @@ public class BlockingObservableLatestTest {
         it.hasNext();
     }
 
-    @Test(timeout = 1000, expected = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void nextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -140,7 +141,7 @@ public class BlockingObservableLatestTest {
         it.next();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void fasterSource() {
         PublishSubject<Integer> source = PublishSubject.create();
         Observable<Integer> blocker = source;

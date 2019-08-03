@@ -26,7 +26,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableTakeUntilTest {
+public class ObservableTakeUntilTest extends RxJavaTest {
 
     @Test
     public void takeUntil() {

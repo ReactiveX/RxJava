@@ -23,7 +23,7 @@ import io.reactivex.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableIntervalRangeTest {
+public class ObservableIntervalRangeTest extends RxJavaTest {
 
     @Test
     public void simple() throws Exception {
@@ -78,7 +78,7 @@ public class ObservableIntervalRangeTest {
         TestHelper.checkDisposed(Observable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void cancel() {
         Observable.intervalRange(0, 20, 1, 1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
         .take(10)

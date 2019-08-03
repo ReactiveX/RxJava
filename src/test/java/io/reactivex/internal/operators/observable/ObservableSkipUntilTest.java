@@ -22,7 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSkipUntilTest {
+public class ObservableSkipUntilTest extends RxJavaTest {
     Observer<Object> observer;
 
     @Before

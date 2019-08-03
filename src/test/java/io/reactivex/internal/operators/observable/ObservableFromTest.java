@@ -25,7 +25,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class ObservableFromTest {
+public class ObservableFromTest extends RxJavaTest {
 
     @Test
     public void fromFutureTimeout() throws Exception {

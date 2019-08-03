@@ -26,7 +26,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTakeTimedTest {
+public class ObservableTakeTimedTest extends RxJavaTest {
 
     @Test
     public void takeTimed() {

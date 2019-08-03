@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -32,7 +33,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ObservableUsingTest {
+public class ObservableUsingTest extends RxJavaTest {
 
     interface Resource {
         String getTextFromWeb();
@@ -222,52 +223,6 @@ public class ObservableUsingTest {
 
         try {
             Observable.using(resourceFactory, observableFactory, disposeSubscription).blockingLast();
-            fail("Should throw a TestException when the observableFactory throws it");
-        } catch (TestException e) {
-            // Make sure that unsubscribe is called so that users can close
-            // the resource if some error happens.
-            verify(unsubscribe, times(1)).run();
-        }
-    }
-
-    @Test
-    @Ignore("subscribe() can't throw")
-    public void usingWithObservableFactoryErrorInOnSubscribe() {
-        performTestUsingWithObservableFactoryErrorInOnSubscribe(false);
-    }
-
-    @Test
-    @Ignore("subscribe() can't throw")
-    public void usingWithObservableFactoryErrorInOnSubscribeDisposeEagerly() {
-        performTestUsingWithObservableFactoryErrorInOnSubscribe(true);
-    }
-
-    private void performTestUsingWithObservableFactoryErrorInOnSubscribe(boolean disposeEagerly) {
-        final Runnable unsubscribe = mock(Runnable.class);
-        Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
-            @Override
-            public Disposable get() {
-                return Disposables.fromRunnable(unsubscribe);
-            }
-        };
-
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Disposable subscription) {
-                return Observable.unsafeCreate(new ObservableSource<Integer>() {
-                    @Override
-                    public void subscribe(Observer<? super Integer> t1) {
-                        throw new TestException();
-                    }
-                });
-            }
-        };
-
-        try {
-            Observable
-            .using(resourceFactory, observableFactory, disposeSubscription, disposeEagerly)
-            .blockingLast();
-
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close

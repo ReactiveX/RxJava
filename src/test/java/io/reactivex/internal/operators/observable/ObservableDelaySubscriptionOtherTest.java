@@ -27,7 +27,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableDelaySubscriptionOtherTest {
+public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     @Test
     public void noPrematureSubscription() {
         PublishSubject<Object> other = PublishSubject.create();

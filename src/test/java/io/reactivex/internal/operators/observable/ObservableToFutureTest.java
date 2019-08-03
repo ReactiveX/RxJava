@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableToFutureTest {
+public class ObservableToFutureTest extends RxJavaTest {
 
     @Test
     public void success() throws Exception {

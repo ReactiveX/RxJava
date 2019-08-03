@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
@@ -36,7 +37,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableGroupJoinTest {
+public class ObservableGroupJoinTest extends RxJavaTest {
 
     Observer<Object> observer = TestHelper.mockObserver();
 

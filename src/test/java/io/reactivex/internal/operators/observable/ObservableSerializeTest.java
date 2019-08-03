@@ -26,7 +26,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSerializeTest {
+public class ObservableSerializeTest extends RxJavaTest {
 
     Observer<String> observer;
 

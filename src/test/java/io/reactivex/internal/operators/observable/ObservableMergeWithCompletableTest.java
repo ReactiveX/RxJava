@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableMergeWithCompletableTest {
+public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {

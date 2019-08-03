@@ -24,7 +24,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableHideTest {
+public class ObservableHideTest extends RxJavaTest {
     @Test
     public void hiding() {
         PublishSubject<Integer> src = PublishSubject.create();

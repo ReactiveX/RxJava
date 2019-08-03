@@ -29,7 +29,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSkipLastTest {
+public class ObservableSkipLastTest extends RxJavaTest {
 
     @Test
     public void skipLastEmpty() {
@@ -76,20 +76,6 @@ public class ObservableSkipLastTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void skipLastWithNull() {
-        Observable<String> o = Observable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
-
-        Observer<String> observer = TestHelper.mockObserver();
-        o.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext(null);
-        verify(observer, never()).onNext("two");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }

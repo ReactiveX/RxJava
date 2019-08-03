@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -33,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableWithLatestFromTest {
+public class ObservableWithLatestFromTest extends RxJavaTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
         @Override
         public Integer apply(Integer t1, Integer t2) {
@@ -391,63 +392,6 @@ public class ObservableWithLatestFromTest {
                 to.assertComplete();
             }
         }
-    }
-
-    @Test
-    @Ignore("Observable doesn't support backpressure")
-    public void backpressureNoSignal() {
-//        PublishSubject<String> ps1 = PublishSubject.create();
-//        PublishSubject<String> ps2 = PublishSubject.create();
-//
-//        TestObserver<String> to = new TestObserver<String>();
-//
-//        Observable.range(1, 10).withLatestFrom(new Observable<?>[] { ps1, ps2 }, toArray)
-//        .subscribe(to);
-//
-//        to.assertNoValues();
-//
-//        to.request(1);
-//
-//        to.assertNoValues();
-//        to.assertNoErrors();
-//        to.assertComplete();
-//
-//        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-//        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
-    }
-
-    @Test
-    @Ignore("Observable doesn't support backpressure")
-    public void backpressureWithSignal() {
-//        PublishSubject<String> ps1 = PublishSubject.create();
-//        PublishSubject<String> ps2 = PublishSubject.create();
-//
-//        TestObserver<String> to = new TestObserver<String>();
-//
-//        Observable.range(1, 3).withLatestFrom(new Observable<?>[] { ps1, ps2 }, toArray)
-//        .subscribe(ts);
-//
-//        to.assertNoValues();
-//
-//        ps1.onNext("1");
-//        ps2.onNext("1");
-//
-//        to.request(1);
-//
-//        to.assertValue("[1, 1, 1]");
-//
-//        to.request(1);
-//
-//        to.assertValues("[1, 1, 1]", "[2, 1, 1]");
-//
-//        to.request(1);
-//
-//        to.assertValues("[1, 1, 1]", "[2, 1, 1]", "[3, 1, 1]");
-//        to.assertNoErrors();
-//        to.assertComplete();
-//
-//        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-//        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
     }
 
     @Test

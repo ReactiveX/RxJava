@@ -25,7 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSequenceEqualTest {
+public class ObservableSequenceEqualTest extends RxJavaTest {
 
     @Test
     public void observable1() {
@@ -99,22 +99,6 @@ public class ObservableSequenceEqualTest {
     public void withEmpty3Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(), Observable.<String> empty()).toObservable();
-        verifyResult(o, true);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull1Observable() {
-        Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.just((String) null), Observable.just("one")).toObservable();
-        verifyResult(o, false);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull2Observable() {
-        Observable<Boolean> o = Observable.sequenceEqual(
-                Observable.just((String) null), Observable.just((String) null)).toObservable();
         verifyResult(o, true);
     }
 
@@ -244,22 +228,6 @@ public class ObservableSequenceEqualTest {
     public void withEmpty3() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.<String> empty(), Observable.<String> empty());
-        verifyResult(o, true);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull1() {
-        Single<Boolean> o = Observable.sequenceEqual(
-                Observable.just((String) null), Observable.just("one"));
-        verifyResult(o, false);
-    }
-
-    @Test
-    @Ignore("Null values not allowed")
-    public void withNull2() {
-        Single<Boolean> o = Observable.sequenceEqual(
-                Observable.just((String) null), Observable.just((String) null));
         verifyResult(o, true);
     }
 

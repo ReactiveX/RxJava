@@ -32,7 +32,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class ObservableOnErrorResumeNextTest {
+public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {
@@ -142,94 +142,6 @@ public class ObservableOnErrorResumeNextTest {
         // we should have received an onError call on the Observer since the resume function threw an exception
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, times(0)).onComplete();
-    }
-
-    /**
-     * Test that we receive the onError if an exception is thrown from an operator that
-     * does not have manual try/catch handling like map does.
-     */
-    @Test
-    @Ignore("Failed operator may leave the child Observer in an inconsistent state which prevents further error delivery.")
-    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
-        Observable.just(1).lift(new ObservableOperator<String, Integer>() {
-
-            @Override
-            public Observer<? super Integer> apply(Observer<? super String> t1) {
-                throw new RuntimeException("failed");
-            }
-
-        }).onErrorResumeNext(new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return Observable.just("success");
-                } else {
-                    return Observable.error(t1);
-                }
-            }
-
-        }).subscribe(to);
-
-        to.assertTerminated();
-        System.out.println(to.values());
-        to.assertValue("success");
-    }
-
-    /**
-     * Test that we receive the onError if an exception is thrown from an operator that
-     * does not have manual try/catch handling like map does.
-     */
-    @Test
-    @Ignore("A crashing operator may leave the downstream in an inconsistent state and not suitable for event delivery")
-    public void onErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
-        Observable.just(1).lift(new ObservableOperator<String, Integer>() {
-
-            @Override
-            public Observer<? super Integer> apply(final Observer<? super String> t1) {
-                return new Observer<Integer>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        t1.onSubscribe(d);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        throw new RuntimeException("failed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        throw new RuntimeException("failed");
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        throw new RuntimeException("failed");
-                    }
-
-                };
-            }
-
-        }).onErrorResumeNext(new Function<Throwable, Observable<String>>() {
-
-            @Override
-            public Observable<String> apply(Throwable t1) {
-                if (t1.getMessage().equals("failed")) {
-                    return Observable.just("success");
-                } else {
-                    return Observable.error(t1);
-                }
-            }
-
-        }).subscribe(to);
-
-        to.assertTerminated();
-        System.out.println(to.values());
-        to.assertValue("success");
     }
 
     @Test

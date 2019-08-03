@@ -25,7 +25,7 @@ import io.reactivex.Observer;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableToMultimapTest {
+public class ObservableToMultimapTest extends RxJavaTest {
     Observer<Object> objectObserver;
     SingleObserver<Object> singleObserver;
 

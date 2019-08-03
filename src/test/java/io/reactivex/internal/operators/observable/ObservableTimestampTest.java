@@ -27,7 +27,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTimestampTest {
+public class ObservableTimestampTest extends RxJavaTest {
     Observer<Object> observer;
 
     @Before

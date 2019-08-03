@@ -34,7 +34,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableDelayTest {
+public class ObservableDelayTest extends RxJavaTest {
     private Observer<Long> observer;
     private Observer<Long> observer2;
 

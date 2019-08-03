@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableCastTest {
+public class ObservableCastTest extends RxJavaTest {
 
     @Test
     public void cast() {

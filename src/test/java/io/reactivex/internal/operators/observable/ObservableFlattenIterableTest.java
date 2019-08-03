@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -26,7 +27,7 @@ import io.reactivex.functions.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableFlattenIterableTest {
+public class ObservableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void dispose() {

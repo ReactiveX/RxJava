@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableDistinctUntilChangedTest {
+public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
     Observer<String> w;
     Observer<String> w2;
@@ -105,37 +105,6 @@ public class ObservableDistinctUntilChangedTest {
         inOrder.verify(w, times(1)).onComplete();
         inOrder.verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctUntilChangedOfSourceWithNulls() {
-        Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null, null);
-        src.distinctUntilChanged().subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onNext("b");
-        inOrder.verify(w, times(1)).onNext(null);
-        inOrder.verify(w, times(1)).onComplete();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values no longer allowed")
-    public void distinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
-        Observable<String> src = Observable.just("a", "b", null, "c");
-        src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("b");
-        verify(w, times(1)).onError(any(NullPointerException.class));
-        inOrder.verify(w, never()).onNext(anyString());
-        inOrder.verify(w, never()).onComplete();
     }
 
     @Test

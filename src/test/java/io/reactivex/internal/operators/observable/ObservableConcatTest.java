@@ -35,7 +35,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableConcatTest {
+public class ObservableConcatTest extends RxJavaTest {
 
     @Test
     public void concat() {
@@ -681,7 +681,7 @@ public class ObservableConcatTest {
         to.assertValues("hello", "hello");
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
@@ -732,7 +732,7 @@ public class ObservableConcatTest {
         assertEquals(n, counter.get());
     }
 
-    @Test//(timeout = 100000)
+    @Test
     public void concatMapRangeAsyncLoopIssue2876() {
         final long durationSeconds = 2;
         final long startTime = System.currentTimeMillis();

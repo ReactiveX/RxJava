@@ -40,7 +40,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableObserveOnTest {
+public class ObservableObserveOnTest extends RxJavaTest {
 
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.

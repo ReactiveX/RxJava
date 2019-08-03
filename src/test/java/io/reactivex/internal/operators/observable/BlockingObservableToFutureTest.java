@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -28,13 +29,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 
-public class BlockingObservableToFutureTest {
-    @Ignore("No separate file")
-    @Test
-    public void constructorShouldBePrivate() {
-//        TestHelper.checkUtilityClass(FlowableToFuture.class);
-    }
-
+public class BlockingObservableToFutureTest extends RxJavaTest {
     @Test
     public void toFuture() throws InterruptedException, ExecutionException {
         Observable<String> obs = Observable.just("one");
@@ -51,7 +46,7 @@ public class BlockingObservableToFutureTest {
         assertEquals("three", f.get().get(2));
     }
 
-    @Test(/* timeout = 5000, */expected = IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void exceptionWithMoreThanOneElement() throws Throwable {
         Observable<String> obs = Observable.just("one", "two");
         Future<String> f = obs.toFuture();
@@ -114,13 +109,5 @@ public class BlockingObservableToFutureTest {
         catch (ExecutionException e) {
             throw e.getCause();
         }
-    }
-
-    @Ignore("null value is not allowed")
-    @Test
-    public void getWithASingleNullItem() throws Exception {
-        Observable<String> obs = Observable.just((String)null);
-        Future<String> f = obs.toFuture();
-        assertNull(f.get());
     }
 }

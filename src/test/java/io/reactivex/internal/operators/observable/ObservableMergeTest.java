@@ -34,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableMergeTest {
+public class ObservableMergeTest extends RxJavaTest {
 
     Observer<String> stringObserver;
 
@@ -123,7 +123,7 @@ public class ObservableMergeTest {
         verify(stringObserver, times(2)).onNext("hello");
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void unSubscribeObservableOfObservables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
@@ -337,25 +337,6 @@ public class ObservableMergeTest {
         verify(stringObserver, times(0)).onNext("nine");
     }
 
-    @Test
-    @Ignore("Subscribe should not throw")
-    public void thrownErrorHandling() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
-        Observable<String> o1 = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                throw new RuntimeException("fail");
-            }
-
-        });
-
-        Observable.merge(o1, o1).subscribe(to);
-        to.awaitDone(1000, TimeUnit.MILLISECONDS);
-        to.assertTerminated();
-        System.out.println("Error: " + to.errors());
-    }
-
     private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
@@ -535,7 +516,7 @@ public class ObservableMergeTest {
         });
     }
 
-    @Test//(timeout = 10000)
+    @Test
     public void concurrency() {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
@@ -728,7 +709,7 @@ public class ObservableMergeTest {
      * This requires merge to also obey the Product.request values coming from it's child Observer.
      * @throws InterruptedException if the test is interrupted
      */
-    @Test(timeout = 10000)
+    @Test
     public void backpressureDownstreamWithConcurrentStreams() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
@@ -777,7 +758,7 @@ public class ObservableMergeTest {
      *
      * @throws InterruptedException if the await is interrupted
      */
-    @Test(timeout = 5000)
+    @Test
     public void backpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function<Integer, Observable<Integer>>() {
@@ -820,47 +801,6 @@ public class ObservableMergeTest {
         System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= Observable.bufferSize() && generated1.get() <= Observable.bufferSize() * 4);
-    }
-
-    @Test
-    @Ignore("Null values not permitted")
-    public void mergeWithNullValues() {
-        System.out.println("mergeWithNullValues");
-        TestObserverEx<String> to = new TestObserverEx<String>();
-        Observable.merge(Observable.just(null, "one"), Observable.just("two", null)).subscribe(to);
-        to.assertTerminated();
-        to.assertNoErrors();
-        to.assertValues(null, "one", "two", null);
-    }
-
-    @Test
-    @Ignore("Null values are no longer permitted")
-    public void mergeWithTerminalEventAfterUnsubscribe() {
-        System.out.println("mergeWithTerminalEventAfterUnsubscribe");
-        TestObserver<String> to = new TestObserver<String>();
-        Observable<String> bad = Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                observer.onNext("two");
-                // FIXME can't cancel downstream
-//                s.unsubscribe();
-//                s.onComplete();
-            }
-
-        });
-        Observable.merge(Observable.just(null, "one"), bad).subscribe(to);
-        to.assertNoErrors();
-        to.assertValues(null, "one", "two");
-    }
-
-    @Test
-    @Ignore("Null values are not permitted")
-    public void mergingNullObservable() {
-        TestObserver<String> to = new TestObserver<String>();
-        Observable.merge(Observable.just("one"), null).subscribe(to);
-        to.assertNoErrors();
-        to.assertValue("one");
     }
 
     @Test

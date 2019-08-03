@@ -26,7 +26,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableGenerateTest {
+public class ObservableGenerateTest extends RxJavaTest {
 
     @Test
     public void statefulBiconsumer() {

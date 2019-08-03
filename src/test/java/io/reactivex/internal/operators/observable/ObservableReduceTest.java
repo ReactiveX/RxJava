@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableReduceTest {
+public class ObservableReduceTest extends RxJavaTest {
     Observer<Object> observer;
     SingleObserver<Object> singleObserver;
 

@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -27,7 +28,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
-public class ObservableDoOnUnsubscribeTest {
+public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
 
     @Test
     public void doOnUnsubscribe() throws Exception {

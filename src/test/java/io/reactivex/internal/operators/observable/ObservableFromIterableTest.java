@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -33,7 +34,7 @@ import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.observers.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableFromIterableTest {
+public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullValue() {

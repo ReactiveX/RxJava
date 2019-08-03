@@ -27,7 +27,7 @@ import io.reactivex.functions.Cancellable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ObservableCreateTest {
+public class ObservableCreateTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullArgument() {

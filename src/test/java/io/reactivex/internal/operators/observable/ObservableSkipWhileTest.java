@@ -25,7 +25,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSkipWhileTest {
+public class ObservableSkipWhileTest extends RxJavaTest {
 
     Observer<Integer> w = TestHelper.mockObserver();
 

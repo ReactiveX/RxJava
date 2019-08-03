@@ -26,7 +26,7 @@ import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservableFilterTest {
+public class ObservableFilterTest extends RxJavaTest {
 
     @Test
     public void filter() {
@@ -49,32 +49,6 @@ public class ObservableFilterTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
-
-    // FIXME subscribers are not allowed to throw
-//    @Test
-//    public void testFatalError() {
-//        try {
-//            Observable.just(1)
-//            .filter(new Predicate<Integer>() {
-//                @Override
-//                public boolean test(Integer t) {
-//                    return true;
-//                }
-//            })
-//            .first()
-//            .subscribe(new Consumer<Integer>() {
-//                @Override
-//                public void accept(Integer t) {
-//                    throw new TestException();
-//                }
-//            });
-//            Assert.fail("No exception was thrown");
-//        } catch (OnErrorNotImplementedException ex) {
-//            if (!(ex.getCause() instanceof TestException)) {
-//                Assert.fail("Failed to report the original exception, instead: " + ex.getCause());
-//            }
-//        }
-//    }
 
     @Test
     public void dispose() {

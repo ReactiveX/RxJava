@@ -36,7 +36,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.*;
 
-public class ObservablePublishTest {
+public class ObservablePublishTest extends RxJavaTest {
 
     @Test
     public void publish() throws InterruptedException {
@@ -187,7 +187,7 @@ public class ObservablePublishTest {
         System.out.println(to.values());
     }
 
-    @Test(timeout = 10000)
+    @Test
     public void backpressureTwoConsumers() {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
@@ -664,7 +664,7 @@ public class ObservablePublishTest {
         assertFalse(ps.hasObservers());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void selectorLatecommer() {
         Observable.range(1, 5)
         .publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {

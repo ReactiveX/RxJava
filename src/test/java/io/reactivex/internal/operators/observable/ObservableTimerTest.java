@@ -34,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableTimerTest {
+public class ObservableTimerTest extends RxJavaTest {
     @Mock
     Observer<Object> observer;
     @Mock

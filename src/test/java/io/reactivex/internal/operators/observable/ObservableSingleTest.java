@@ -28,7 +28,7 @@ import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSingleTest {
+public class ObservableSingleTest extends RxJavaTest {
 
     @Test
     public void singleObservable() {
@@ -234,7 +234,7 @@ public class ObservableSingleTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1527Observable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
@@ -447,7 +447,7 @@ public class ObservableSingleTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void issue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);

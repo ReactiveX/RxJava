@@ -27,7 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.testsupport.*;
 
-public class ObservableDematerializeTest {
+public class ObservableDematerializeTest extends RxJavaTest {
 
     @Test
     public void simpleSelector() {

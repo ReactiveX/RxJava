@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -25,7 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
 
-public class BlockingObservableMostRecentTest {
+public class BlockingObservableMostRecentTest extends RxJavaTest {
     @Test
     public void mostRecentNull() {
         assertNull(Observable.<Void>never().blockingMostRecent(null).iterator().next());
@@ -76,7 +77,7 @@ public class BlockingObservableMostRecentTest {
         it.next();
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void singleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
         Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);

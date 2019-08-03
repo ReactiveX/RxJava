@@ -27,9 +27,9 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableSubscribeOnTest {
+public class ObservableSubscribeOnTest extends RxJavaTest {
 
-    @Test(timeout = 2000)
+    @Test
     public void issue813() throws InterruptedException {
         // https://github.com/ReactiveX/RxJava/issues/813
         final CountDownLatch scheduled = new CountDownLatch(1);
@@ -70,22 +70,6 @@ public class ObservableSubscribeOnTest {
         doneLatch.await();
         to.assertNoErrors();
         to.assertComplete();
-    }
-
-    @Test
-    @Ignore("ObservableSource.subscribe can't throw")
-    public void thrownErrorHandling() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
-        Observable.unsafeCreate(new ObservableSource<String>() {
-
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                throw new RuntimeException("fail");
-            }
-
-        }).subscribeOn(Schedulers.computation()).subscribe(to);
-        to.awaitDone(1000, TimeUnit.MILLISECONDS);
-        to.assertTerminated();
     }
 
     @Test
@@ -161,7 +145,7 @@ public class ObservableSubscribeOnTest {
 
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void unsubscribeInfiniteStream() throws InterruptedException {
         TestObserver<Integer> to = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();

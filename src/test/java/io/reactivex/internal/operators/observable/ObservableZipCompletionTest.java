@@ -28,7 +28,7 @@ import io.reactivex.testsupport.TestHelper;
  * the resulting Observable is finite.
  *
  */
-public class ObservableZipCompletionTest {
+public class ObservableZipCompletionTest extends RxJavaTest {
     BiFunction<String, String, String> concat2Strings;
 
     PublishSubject<String> s1;

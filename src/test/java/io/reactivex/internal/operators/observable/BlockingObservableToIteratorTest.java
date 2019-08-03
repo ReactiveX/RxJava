@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -26,7 +27,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.operators.observable.BlockingObservableIterable.BlockingObservableIterator;
 
-public class BlockingObservableToIteratorTest {
+public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     @Test
     public void toIterator() {
@@ -66,21 +67,6 @@ public class BlockingObservableToIteratorTest {
 
         assertTrue(it.hasNext());
         it.next();
-    }
-
-    @Ignore("subscribe() should not throw")
-    @Test(expected = TestException.class)
-    public void exceptionThrownFromOnSubscribe() {
-        Iterable<String> strings = Observable.unsafeCreate(new ObservableSource<String>() {
-            @Override
-            public void subscribe(Observer<? super String> observer) {
-                throw new TestException("intentional");
-            }
-        }).blockingIterable();
-        for (String string : strings) {
-            // never reaches here
-            System.out.println(string);
-        }
     }
 
     @Test

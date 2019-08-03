@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -30,7 +31,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.testsupport.*;
 
-public class ObservableMergeDelayErrorTest {
+public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     Observer<String> stringObserver;
 
@@ -284,7 +285,7 @@ public class ObservableMergeDelayErrorTest {
         verify(stringObserver, times(1)).onComplete();
     }
 
-    @Test(timeout = 1000L)
+    @Test
     public void synchronousError() {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
@@ -429,62 +430,6 @@ public class ObservableMergeDelayErrorTest {
 
         }
 
-    }
-
-    @Test
-    @Ignore("Subscribers should not throw")
-    public void mergeSourceWhichDoesntPropagateExceptionBack() {
-        Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
-            @Override
-            public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposables.empty());
-                try {
-                    t1.onNext(0);
-                } catch (Throwable swallow) {
-
-                }
-                t1.onNext(1);
-                t1.onComplete();
-            }
-        });
-
-        Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
-
-        final Observer<Integer> o = TestHelper.mockObserver();
-        InOrder inOrder = inOrder(o);
-
-        result.subscribe(new DefaultObserver<Integer>() {
-            int calls;
-            @Override
-            public void onNext(Integer t) {
-                if (calls++ == 0) {
-                    throw new TestException();
-                }
-                o.onNext(t);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
-            }
-
-            @Override
-            public void onComplete() {
-                o.onComplete();
-            }
-
-        });
-
-        /*
-         * If the child onNext throws, why would we keep accepting values from
-         * other sources?
-         */
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o, never()).onNext(0);
-        inOrder.verify(o, never()).onNext(1);
-        inOrder.verify(o, never()).onNext(anyInt());
-        inOrder.verify(o).onError(any(TestException.class));
-        verify(o, never()).onComplete();
     }
 
     @Test

@@ -22,7 +22,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableDefaultIfEmptyTest {
+public class ObservableDefaultIfEmptyTest extends RxJavaTest {
 
     @Test
     public void defaultIfEmpty() {
@@ -53,32 +53,5 @@ public class ObservableDefaultIfEmptyTest {
         verify(observer).onNext(10);
         verify(observer).onComplete();
         verify(observer, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Subscribers should not throw")
-    public void emptyButClientThrows() {
-        final Observer<Integer> o = TestHelper.mockObserver();
-
-        Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultObserver<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-                throw new TestException();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
-            }
-
-            @Override
-            public void onComplete() {
-                o.onComplete();
-            }
-        });
-
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onNext(any(Integer.class));
-        verify(o, never()).onComplete();
     }
 }

@@ -28,7 +28,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableSkipLastTimedTest {
+public class ObservableSkipLastTimedTest extends RxJavaTest {
 
     @Test
     public void skipLastTimed() {

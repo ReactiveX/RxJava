@@ -28,7 +28,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableToListTest {
+public class ObservableToListTest extends RxJavaTest {
 
     @Test
     public void listObservable() {
@@ -74,19 +74,6 @@ public class ObservableToListTest {
         verify(o2, times(1)).onNext(expected);
         verify(o2, Mockito.never()).onError(any(Throwable.class));
         verify(o2, times(1)).onComplete();
-    }
-
-    @Test
-    @Ignore("Null values are not allowed")
-    public void listWithNullValueObservable() {
-        Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
-        Observable<List<String>> observable = w.toList().toObservable();
-
-        Observer<List<String>> observer = TestHelper.mockObserver();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -146,18 +133,6 @@ public class ObservableToListTest {
 
         verify(o2, times(1)).onSuccess(expected);
         verify(o2, Mockito.never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    @Ignore("Null values are not allowed")
-    public void listWithNullValue() {
-        Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
-        Single<List<String>> single = w.toList();
-
-        SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
-        single.subscribe(observer);
-        verify(observer, times(1)).onSuccess(Arrays.asList("one", null, "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
 
     @Test

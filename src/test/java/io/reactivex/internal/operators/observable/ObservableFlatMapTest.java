@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.RxJavaTest;
 import org.junit.*;
 
 import io.reactivex.Observable;
@@ -35,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableFlatMapTest {
+public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void normal() {
         Observer<Object> o = TestHelper.mockObserver();
@@ -433,46 +434,7 @@ public class ObservableFlatMapTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Ignore("Don't care for any reordering")
-    @Test(timeout = 10000)
-    public void flatMapRangeAsyncLoop() {
-        for (int i = 0; i < 2000; i++) {
-            if (i % 10 == 0) {
-                System.out.println("flatMapRangeAsyncLoop > " + i);
-            }
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
-            Observable.range(0, 1000)
-            .flatMap(new Function<Integer, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> apply(Integer t) {
-                    return Observable.just(t);
-                }
-            })
-            .observeOn(Schedulers.computation())
-            .subscribe(to);
-
-            to.awaitDone(2500, TimeUnit.MILLISECONDS);
-            if (to.completions() == 0) {
-                System.out.println(to.values().size());
-            }
-            to.assertTerminated();
-            to.assertNoErrors();
-            List<Integer> list = to.values();
-            assertEquals(1000, list.size());
-            boolean f = false;
-            for (int j = 0; j < list.size(); j++) {
-                if (list.get(j) != j) {
-                    System.out.println(j + " " + list.get(j));
-                    f = true;
-                }
-            }
-            if (f) {
-                Assert.fail("Results are out of order!");
-            }
-        }
-    }
-
-    @Test(timeout = 30000)
+    @Test
     public void flatMapRangeMixedAsyncLoop() {
         for (int i = 0; i < 2000; i++) {
             if (i % 10 == 0) {

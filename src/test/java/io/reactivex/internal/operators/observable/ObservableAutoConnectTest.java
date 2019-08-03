@@ -14,11 +14,13 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+
+import io.reactivex.RxJavaTest;
 import org.junit.Test;
 
 import io.reactivex.subjects.PublishSubject;
 
-public class ObservableAutoConnectTest {
+public class ObservableAutoConnectTest extends RxJavaTest {
 
     @Test
     public void autoConnectImmediately() {

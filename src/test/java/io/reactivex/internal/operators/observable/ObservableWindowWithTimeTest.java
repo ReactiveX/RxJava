@@ -33,7 +33,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableWindowWithTimeTest {
+public class ObservableWindowWithTimeTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

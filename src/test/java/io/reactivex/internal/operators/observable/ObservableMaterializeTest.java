@@ -28,7 +28,7 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.testsupport.*;
 
-public class ObservableMaterializeTest {
+public class ObservableMaterializeTest extends RxJavaTest {
 
     @Test
     public void materialize1() {

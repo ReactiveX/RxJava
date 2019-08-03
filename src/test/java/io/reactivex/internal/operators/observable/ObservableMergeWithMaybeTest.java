@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableMergeWithMaybeTest {
+public class ObservableMergeWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normal() {

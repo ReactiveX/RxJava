@@ -36,7 +36,7 @@ import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.*;
 
-public class ObservableDebounceTest {
+public class ObservableDebounceTest extends RxJavaTest {
 
     private TestScheduler scheduler;
     private Observer<String> observer;

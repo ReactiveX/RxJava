@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableConcatMapCompletableTest {
+public class ObservableConcatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void asyncFused() throws Exception {

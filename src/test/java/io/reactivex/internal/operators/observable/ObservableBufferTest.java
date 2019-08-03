@@ -40,7 +40,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableBufferTest {
+public class ObservableBufferTest extends RxJavaTest {
 
     private Observer<List<String>> observer;
     private TestScheduler scheduler;
@@ -453,7 +453,7 @@ public class ObservableBufferTest {
         verify(o, never()).onNext(any());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithSizeTake1() {
         Observable<Integer> source = Observable.just(1).repeat();
 
@@ -468,7 +468,7 @@ public class ObservableBufferTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithSizeSkipTake1() {
         Observable<Integer> source = Observable.just(1).repeat();
 
@@ -483,7 +483,7 @@ public class ObservableBufferTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithTimeTake1() {
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -500,7 +500,7 @@ public class ObservableBufferTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithTimeSkipTake2() {
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
 
@@ -519,7 +519,7 @@ public class ObservableBufferTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithBoundaryTake2() {
         Observable<Long> boundary = Observable.interval(60, 60, TimeUnit.MILLISECONDS, scheduler);
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -540,7 +540,7 @@ public class ObservableBufferTest {
 
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void bufferWithStartEndBoundaryTake2() {
         Observable<Long> start = Observable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
         Function<Long, Observable<Long>> end = new Function<Long, Observable<Long>>() {
@@ -729,7 +729,7 @@ public class ObservableBufferTest {
         verify(o).onError(any(TestException.class));
     }
 
-    @Test(timeout = 3000)
+    @Test
     public void bufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Observer<Object> o = TestHelper.mockObserver();
 
