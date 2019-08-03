@@ -112,14 +112,15 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
     void terminated(RefConnection rc) {
         synchronized (this) {
-            if (connection != null && connection == rc) {
-                connection = null;
+            if (connection == rc) {
                 if (rc.timer != null) {
                     rc.timer.dispose();
+                    rc.timer = null;
                 }
-            }
-            if (--rc.subscriberCount == 0) {
-                source.reset();
+                if (--rc.subscriberCount == 0) {
+                    connection = null;
+                    source.reset();
+                }
             }
         }
     }

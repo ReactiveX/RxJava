@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -1454,4 +1455,22 @@ public class FlowableRefCountTest extends RxJavaTest {
             .assertComplete();
         }
     }
-}
+
+    @Test
+    public void upstreamTerminationTriggersAnotherCancel() throws Exception {
+        ReplayProcessor<Integer> rp = ReplayProcessor.create();
+        rp.onNext(1);
+        rp.onComplete();
+
+        Flowable<Integer> shared = rp.share();
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+    }}

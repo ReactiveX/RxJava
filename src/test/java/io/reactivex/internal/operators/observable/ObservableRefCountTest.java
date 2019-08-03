@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
@@ -1267,8 +1268,6 @@ public class ObservableRefCountTest extends RxJavaTest {
         .publish()
         .refCount();
 
-        o.cancel(null);
-
         o.cancel(new RefConnection(o));
 
         RefConnection rc = new RefConnection(o);
@@ -1411,5 +1410,24 @@ public class ObservableRefCountTest extends RxJavaTest {
             .assertNoErrors()
             .assertComplete();
         }
+    }
+
+    @Test
+    public void upstreamTerminationTriggersAnotherCancel() throws Exception {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onComplete();
+
+        Observable<Integer> shared = rs.share();
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
     }
 }
