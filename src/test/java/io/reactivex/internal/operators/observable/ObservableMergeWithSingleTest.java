@@ -300,4 +300,14 @@ public class ObservableMergeWithSingleTest extends RxJavaTest {
         assertFalse("main has observers!", ps.hasObservers());
         assertFalse("other has observers", ss.hasObservers());
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.mergeWith(Single.just(1).hide());
+            }
+        });
+    }
 }

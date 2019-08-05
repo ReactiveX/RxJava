@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -510,5 +511,35 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(CompositeException.class);
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.flatMapSingle(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                }, true, 2);
+            }
+        });
     }
 }

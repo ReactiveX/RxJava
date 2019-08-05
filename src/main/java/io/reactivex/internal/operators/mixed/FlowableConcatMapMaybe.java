@@ -167,6 +167,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             cancelled = true;
             upstream.cancel();
             inner.dispose();
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue.clear();
                 item = null;
@@ -225,8 +226,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                                 || (errorMode == ErrorMode.BOUNDARY && s == STATE_INACTIVE)) {
                             queue.clear();
                             item = null;
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -237,12 +237,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                         boolean empty = v == null;
 
                         if (d && empty) {
-                            Throwable ex = errors.terminate();
-                            if (ex == null) {
-                                downstream.onComplete();
-                            } else {
-                                downstream.onError(ex);
-                            }
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
 
@@ -267,8 +262,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                             upstream.cancel();
                             queue.clear();
                             errors.addThrowable(ex);
-                            ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
 

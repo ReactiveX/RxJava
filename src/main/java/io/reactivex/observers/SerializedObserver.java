@@ -74,6 +74,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
 
     @Override
     public void dispose() {
+        done = true;
         upstream.dispose();
     }
 

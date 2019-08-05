@@ -61,7 +61,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
 
         final OtherObserver<T> otherObserver;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final AtomicLong requested;
 
@@ -91,7 +91,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
             this.downstream = downstream;
             this.mainSubscription = new AtomicReference<Subscription>();
             this.otherObserver = new OtherObserver<T>(this);
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
             this.prefetch = bufferSize();
             this.limit = prefetch - (prefetch >> 2);
@@ -142,7 +142,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
 
         @Override
         public void onError(Throwable ex) {
-            if (error.addThrowable(ex)) {
+            if (errors.addThrowable(ex)) {
                 DisposableHelper.dispose(otherObserver);
                 drain();
             } else {
@@ -167,6 +167,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
             cancelled = true;
             SubscriptionHelper.cancel(mainSubscription);
             DisposableHelper.dispose(otherObserver);
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue = null;
                 singleItem = null;
@@ -199,7 +200,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
         }
 
         void otherError(Throwable ex) {
-            if (error.addThrowable(ex)) {
+            if (errors.addThrowable(ex)) {
                 SubscriptionHelper.cancel(mainSubscription);
                 drain();
             } else {
@@ -239,10 +240,10 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
                         return;
                     }
 
-                    if (error.get() != null) {
+                    if (errors.get() != null) {
                         singleItem = null;
                         queue = null;
-                        actual.onError(error.terminate());
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -290,10 +291,10 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
                         return;
                     }
 
-                    if (error.get() != null) {
+                    if (errors.get() != null) {
                         singleItem = null;
                         queue = null;
-                        actual.onError(error.terminate());
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 

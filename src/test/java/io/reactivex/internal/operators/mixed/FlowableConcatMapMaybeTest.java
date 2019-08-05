@@ -420,4 +420,48 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         }
     }
 
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapMaybeDelayError(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                }, false, 2);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapMaybeDelayError(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                }, true, 2);
+            }
+        });
+    }
 }

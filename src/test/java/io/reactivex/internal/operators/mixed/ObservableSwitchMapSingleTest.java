@@ -657,31 +657,31 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.switchMapSingle(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
 
-            Observable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    to.dispose();
-                    throw new TestException();
-                }
-            })
-            .switchMapSingle(new Function<Integer, Single<Integer>>() {
-                @Override
-                public Single<Integer> apply(Integer v) throws Throwable {
-                    return Single.just(v).hide();
-                }
-            })
-            .subscribe(to);
-
-            to.assertEmpty();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.switchMapSingleDelayError(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
     }
 }

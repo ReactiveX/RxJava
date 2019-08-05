@@ -522,4 +522,49 @@ public class ObservableConcatMapTest extends RxJavaTest {
 
         assertEquals(0, counter.get());
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.concatMap(new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer v) throws Throwable {
+                        return Observable.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.concatMapDelayError(new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer v) throws Throwable {
+                        return Observable.just(v).hide();
+                    }
+                }, 2, false);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.concatMapDelayError(new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer v) throws Throwable {
+                        return Observable.just(v).hide();
+                    }
+                }, 2, true);
+            }
+        });
+    }
 }

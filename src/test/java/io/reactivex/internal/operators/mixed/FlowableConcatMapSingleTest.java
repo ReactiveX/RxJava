@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
@@ -336,5 +336,50 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
 
             ts.assertNoErrors();
         }
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapSingle(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapSingleDelayError(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                }, false, 2);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapSingleDelayError(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                }, true, 2);
+            }
+        });
     }
 }

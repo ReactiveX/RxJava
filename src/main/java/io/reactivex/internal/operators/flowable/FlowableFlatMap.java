@@ -72,7 +72,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
         volatile boolean done;
 
-        final AtomicThrowable errs = new AtomicThrowable();
+        final AtomicThrowable errors = new AtomicThrowable();
 
         volatile boolean cancelled;
 
@@ -142,7 +142,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     u  = ((Supplier<U>)p).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    errs.addThrowable(ex);
+                    errors.addThrowable(ex);
                     drain();
                     return;
                 }
@@ -319,7 +319,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 RxJavaPlugins.onError(t);
                 return;
             }
-            if (errs.addThrowable(t)) {
+            if (errors.addThrowable(t)) {
                 done = true;
                 drain();
             } else {
@@ -419,14 +419,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 int n = inner.length;
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    Throwable ex = errs.terminate();
-                    if (ex != ExceptionHelper.TERMINATED) {
-                        if (ex == null) {
-                            child.onComplete();
-                        } else {
-                            child.onError(ex);
-                        }
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     return;
                 }
 
@@ -481,7 +474,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
                                     is.dispose();
-                                    errs.addThrowable(ex);
+                                    errors.addThrowable(ex);
                                     if (!delayErrors) {
                                         upstream.cancel();
                                     }
@@ -559,12 +552,9 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 clearScalarQueue();
                 return true;
             }
-            if (!delayErrors && errs.get() != null) {
+            if (!delayErrors && errors.get() != null) {
                 clearScalarQueue();
-                Throwable ex = errs.terminate();
-                if (ex != ExceptionHelper.TERMINATED) {
-                    downstream.onError(ex);
-                }
+                errors.tryTerminateConsumer(downstream);
                 return true;
             }
             return false;
@@ -585,13 +575,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     for (InnerSubscriber<?, ?> inner : a) {
                         inner.dispose();
                     }
-                    errs.tryTerminateAndReport();
+                    errors.tryTerminateAndReport();
                 }
             }
         }
 
         void innerError(InnerSubscriber<T, U> inner, Throwable t) {
-            if (errs.addThrowable(t)) {
+            if (errors.addThrowable(t)) {
                 inner.done = true;
                 if (!delayErrors) {
                     upstream.cancel();

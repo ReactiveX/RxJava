@@ -28,7 +28,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;

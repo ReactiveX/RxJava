@@ -606,31 +606,31 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.switchMapSingle(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
 
-            Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    ts.cancel();
-                    throw new TestException();
-                }
-            })
-            .switchMapSingle(new Function<Integer, Single<Integer>>() {
-                @Override
-                public Single<Integer> apply(Integer v) throws Throwable {
-                    return Single.just(v).hide();
-                }
-            })
-            .subscribe(ts);
-
-            ts.assertEmpty();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.switchMapSingleDelayError(new Function<Integer, Single<Integer>>() {
+                    @Override
+                    public Single<Integer> apply(Integer v) throws Throwable {
+                        return Single.just(v).hide();
+                    }
+                });
+            }
+        });
     }
 }

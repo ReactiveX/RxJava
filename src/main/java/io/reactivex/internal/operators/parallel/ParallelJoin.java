@@ -428,12 +428,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     }
 
                     if (d && empty) {
-                        Throwable ex = errors.get();
-                        if (ex != null) {
-                            a.onError(errors.terminate());
-                        } else {
-                            a.onComplete();
-                        }
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -463,12 +458,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     }
 
                     if (d && empty) {
-                        Throwable ex = errors.get();
-                        if (ex != null) {
-                            a.onError(errors.terminate());
-                        } else {
-                            a.onComplete();
-                        }
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
                 }

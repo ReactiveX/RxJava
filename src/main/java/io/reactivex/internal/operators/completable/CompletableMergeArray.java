@@ -32,7 +32,7 @@ public final class CompletableMergeArray extends Completable {
         final AtomicBoolean once = new AtomicBoolean();
 
         InnerCompletableObserver shared = new InnerCompletableObserver(observer, once, set, sources.length + 1);
-        observer.onSubscribe(set);
+        observer.onSubscribe(shared);
 
         for (CompletableSource c : sources) {
             if (set.isDisposed()) {
@@ -52,7 +52,7 @@ public final class CompletableMergeArray extends Completable {
         shared.onComplete();
     }
 
-    static final class InnerCompletableObserver extends AtomicInteger implements CompletableObserver {
+    static final class InnerCompletableObserver extends AtomicInteger implements CompletableObserver, Disposable {
         private static final long serialVersionUID = -8360547806504310570L;
 
         final CompletableObserver downstream;
@@ -90,6 +90,17 @@ public final class CompletableMergeArray extends Completable {
                     downstream.onComplete();
                 }
             }
+        }
+
+        @Override
+        public void dispose() {
+            set.dispose();
+            once.set(true);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return set.isDisposed();
         }
     }
 }

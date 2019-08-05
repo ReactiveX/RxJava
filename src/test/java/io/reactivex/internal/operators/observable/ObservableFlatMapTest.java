@@ -14,17 +14,17 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.RxJavaTest;
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
@@ -1046,5 +1046,35 @@ public class ObservableFlatMapTest extends RxJavaTest {
 
         assertFalse(ps3.hasObservers());
         assertFalse(ps4.hasObservers());
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.flatMap(new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer v) throws Throwable {
+                        return Observable.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.flatMap(new Function<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Integer v) throws Throwable {
+                        return Observable.just(v).hide();
+                    }
+                }, true);
+            }
+        });
     }
 }

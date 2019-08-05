@@ -157,6 +157,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             cancelled = true;
             upstream.cancel();
             set.dispose();
+            errors.tryTerminateAndReport();
         }
 
         @Override
@@ -177,12 +178,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     SpscLinkedArrayQueue<R> q = queue.get();
 
                     if (d && (q == null || q.isEmpty())) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
                     BackpressureHelper.produced(requested, 1);
@@ -250,12 +246,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 SpscLinkedArrayQueue<R> q = queue.get();
 
                 if (d && (q == null || q.isEmpty())) {
-                    Throwable ex = errors.terminate();
-                    if (ex != null) {
-                        downstream.onError(ex);
-                    } else {
-                        downstream.onComplete();
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     return;
                 }
 
@@ -307,9 +298,8 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     if (!delayErrors) {
                         Throwable ex = errors.get();
                         if (ex != null) {
-                            ex = errors.terminate();
                             clear();
-                            a.onError(ex);
+                            errors.tryTerminateConsumer(a);
                             return;
                         }
                     }
@@ -320,12 +310,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     boolean empty = v == null;
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            a.onError(ex);
-                        } else {
-                            a.onComplete();
-                        }
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -347,9 +332,8 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     if (!delayErrors) {
                         Throwable ex = errors.get();
                         if (ex != null) {
-                            ex = errors.terminate();
                             clear();
-                            a.onError(ex);
+                            errors.tryTerminateConsumer(a);
                             return;
                         }
                     }
@@ -359,12 +343,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     boolean empty = q == null || q.isEmpty();
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            a.onError(ex);
-                        } else {
-                            a.onComplete();
-                        }
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
                 }

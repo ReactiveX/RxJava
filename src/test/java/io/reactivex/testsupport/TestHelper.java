@@ -3255,4 +3255,140 @@ public enum TestHelper {
 
         return f;
     }
+
+    /**
+     * Cancels a flow before notifying a transformation and checks if an undeliverable exception
+     * has been signaled due to the cancellation.
+     * @param transform the operator to test
+     * @param <T> the output type of the transformation
+     */
+    public static <T> void checkUndeliverableUponCancel(FlowableConverter<Integer, T> transform) {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            final SerialDisposable disposable = new SerialDisposable();
+
+            T result = Flowable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    disposable.dispose();
+                    throw new TestException();
+                }
+            })
+            .to(transform);
+
+            if (result instanceof MaybeSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((MaybeSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof SingleSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((SingleSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof CompletableSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((CompletableSource)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof ObservableSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((ObservableSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof Publisher) {
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                disposable.set(Disposables.fromSubscription(ts));
+
+                ((Publisher<?>)result)
+                .subscribe(ts);
+                ts.assertEmpty();
+            } else {
+                fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
+            }
+
+            assertFalse("No undeliverable errors received", errors.isEmpty());
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Cancels a flow before notifying a transformation and checks if an undeliverable exception
+     * has been signaled due to the cancellation.
+     * @param transform the operator to test
+     * @param <T> the output type of the transformation
+     */
+    public static <T> void checkUndeliverableUponCancel(ObservableConverter<Integer, T> transform) {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            final SerialDisposable disposable = new SerialDisposable();
+
+            T result = Observable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    disposable.dispose();
+                    throw new TestException();
+                }
+            })
+            .to(transform);
+
+            if (result instanceof MaybeSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((MaybeSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof SingleSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((SingleSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof CompletableSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((CompletableSource)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof ObservableSource) {
+                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                disposable.set(to);
+
+                ((ObservableSource<?>)result)
+                .subscribe(to);
+                to.assertEmpty();
+            } else if (result instanceof Publisher) {
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                disposable.set(Disposables.fromSubscription(ts));
+
+                ((Publisher<?>)result)
+                .subscribe(ts);
+                ts.assertEmpty();
+            } else {
+                fail("Unsupported transformation output: " + result + " of class " + (result != null ? result.getClass() : " <null>"));
+            }
+
+            assertFalse("No undeliverable errors received", errors.isEmpty());
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

@@ -116,14 +116,14 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             if (errors.addThrowable(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
-                        Throwable ex = errors.terminate();
-                        downstream.onError(ex);
+                        errors.tryTerminateConsumer(downstream);
                     }
                 } else {
-                    dispose();
+                    disposed = true;
+                    upstream.dispose();
+                    set.dispose();
                     if (getAndSet(0) > 0) {
-                        Throwable ex = errors.terminate();
-                        downstream.onError(ex);
+                        errors.tryTerminateConsumer(downstream);
                     }
                 }
             } else {
@@ -134,12 +134,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                Throwable ex = errors.terminate();
-                if (ex != null) {
-                    downstream.onError(ex);
-                } else {
-                    downstream.onComplete();
-                }
+                errors.tryTerminateConsumer(downstream);
             }
         }
 
@@ -148,6 +143,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             disposed = true;
             upstream.dispose();
             set.dispose();
+            errors.tryTerminateAndReport();
         }
 
         @Override

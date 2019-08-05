@@ -17,7 +17,6 @@ import static io.reactivex.internal.util.ExceptionHelper.timeoutMessage;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 

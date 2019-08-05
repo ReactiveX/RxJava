@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import io.reactivex.testsupport.TestHelper;
 import org.junit.*;
 import org.reactivestreams.*;
 

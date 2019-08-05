@@ -221,8 +221,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
 
                     if (errors.get() != null) {
                         if (!delayErrors) {
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -232,12 +231,7 @@ public final class FlowableSwitchMapMaybe<T, R> extends Flowable<R> {
                     boolean empty = current == null;
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 

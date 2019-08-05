@@ -361,14 +361,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 }
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0 && nSources == 0) {
-                    Throwable ex = errors.terminate();
-                    if (ex != ExceptionHelper.TERMINATED) {
-                        if (ex == null) {
-                            child.onComplete();
-                        } else {
-                            child.onError(ex);
-                        }
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     return;
                 }
 
@@ -487,10 +480,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             Throwable e = errors.get();
             if (!delayErrors && (e != null)) {
                 disposeAll();
-                e = errors.terminate();
-                if (e != ExceptionHelper.TERMINATED) {
-                    downstream.onError(e);
-                }
+                errors.tryTerminateConsumer(downstream);
                 return true;
             }
             return false;

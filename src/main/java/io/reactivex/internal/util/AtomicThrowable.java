@@ -15,6 +15,9 @@ package io.reactivex.internal.util;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.reactivestreams.Subscriber;
+
+import io.reactivex.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -59,6 +62,84 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
         Throwable ex = terminate();
         if (ex != null && ex != ExceptionHelper.TERMINATED) {
             RxJavaPlugins.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(Subscriber<?> consumer) {
+        Throwable ex = terminate();
+        if (ex == null) {
+            consumer.onComplete();
+        } else if (ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(Observer<?> consumer) {
+        Throwable ex = terminate();
+        if (ex == null) {
+            consumer.onComplete();
+        } else if (ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(MaybeObserver<?> consumer) {
+        Throwable ex = terminate();
+        if (ex == null) {
+            consumer.onComplete();
+        } else if (ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(SingleObserver<?> consumer) {
+        Throwable ex = terminate();
+        if (ex != null && ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(CompletableObserver consumer) {
+        Throwable ex = terminate();
+        if (ex == null) {
+            consumer.onComplete();
+        } else if (ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
         }
     }
 }

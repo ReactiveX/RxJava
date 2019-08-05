@@ -553,4 +553,44 @@ public class CompletableMergeTest extends RxJavaTest {
 
         to.assertEmpty();
     }
+
+    @Test
+    public void arrayUndeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return Completable.mergeArray(upstream.ignoreElements(), Completable.complete().hide());
+            }
+        });
+    }
+
+    @Test
+    public void iterableUndeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return Completable.merge(Arrays.asList(upstream.ignoreElements(), Completable.complete().hide()));
+            }
+        });
+    }
+
+    @Test
+    public void arrayUndeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return Completable.mergeArrayDelayError(upstream.ignoreElements(), Completable.complete().hide());
+            }
+        });
+    }
+
+    @Test
+    public void iterableUndeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return Completable.mergeDelayError(Arrays.asList(upstream.ignoreElements(), Completable.complete().hide()));
+            }
+        });
+    }
 }

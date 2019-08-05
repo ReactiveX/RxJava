@@ -58,7 +58,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         final OtherObserver otherObserver;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final AtomicLong requested;
 
@@ -70,7 +70,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
             this.downstream = downstream;
             this.mainSubscription = new AtomicReference<Subscription>();
             this.otherObserver = new OtherObserver(this);
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
         }
 
@@ -81,20 +81,20 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         @Override
         public void onNext(T t) {
-            HalfSerializer.onNext(downstream, t, this, error);
+            HalfSerializer.onNext(downstream, t, this, errors);
         }
 
         @Override
         public void onError(Throwable ex) {
             DisposableHelper.dispose(otherObserver);
-            HalfSerializer.onError(downstream, ex, this, error);
+            HalfSerializer.onError(downstream, ex, this, errors);
         }
 
         @Override
         public void onComplete() {
             mainDone = true;
             if (otherDone) {
-                HalfSerializer.onComplete(downstream, this, error);
+                HalfSerializer.onComplete(downstream, this, errors);
             }
         }
 
@@ -107,17 +107,18 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
         public void cancel() {
             SubscriptionHelper.cancel(mainSubscription);
             DisposableHelper.dispose(otherObserver);
+            errors.tryTerminateAndReport();
         }
 
         void otherError(Throwable ex) {
             SubscriptionHelper.cancel(mainSubscription);
-            HalfSerializer.onError(downstream, ex, this, error);
+            HalfSerializer.onError(downstream, ex, this, errors);
         }
 
         void otherComplete() {
             otherDone = true;
             if (mainDone) {
-                HalfSerializer.onComplete(downstream, this, error);
+                HalfSerializer.onComplete(downstream, this, errors);
             }
         }
 

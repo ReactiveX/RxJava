@@ -87,6 +87,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
         @Override
         public void cancel() {
             disposables.dispose();
+            errors.tryTerminateAndReport();
         }
 
         @Override
@@ -155,12 +156,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                     if (goNextSource && !cancelled.isDisposed()) {
                         int i = index;
                         if (i == sources.length) {
-                            Throwable ex = errors.get();
-                            if (ex != null) {
-                                a.onError(errors.terminate());
-                            } else {
-                                a.onComplete();
-                            }
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                         index = i + 1;

@@ -129,18 +129,18 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
             if (errors.addThrowable(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
-                        Throwable ex = errors.terminate();
-                        downstream.onError(ex);
+                        errors.tryTerminateConsumer(downstream);
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             upstream.request(1);
                         }
                     }
                 } else {
-                    cancel();
+                    cancelled = true;
+                    upstream.cancel();
+                    set.dispose();
                     if (getAndSet(0) > 0) {
-                        Throwable ex = errors.terminate();
-                        downstream.onError(ex);
+                        errors.tryTerminateConsumer(downstream);
                     }
                 }
             } else {
@@ -151,12 +151,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                Throwable ex = errors.terminate();
-                if (ex != null) {
-                    downstream.onError(ex);
-                } else {
-                    downstream.onComplete();
-                }
+                errors.tryTerminateConsumer(downstream);
             } else {
                 if (maxConcurrency != Integer.MAX_VALUE) {
                     upstream.request(1);
@@ -169,6 +164,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
             cancelled = true;
             upstream.cancel();
             set.dispose();
+            errors.tryTerminateAndReport();
         }
 
         @Override

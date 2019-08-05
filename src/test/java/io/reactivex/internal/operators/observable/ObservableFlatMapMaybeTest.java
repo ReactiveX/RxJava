@@ -455,4 +455,34 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
         to
         .assertEmpty();
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> upstream) {
+                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                }, true);
+            }
+        });
+    }
 }

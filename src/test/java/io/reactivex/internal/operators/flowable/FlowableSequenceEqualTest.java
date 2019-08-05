@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
@@ -549,5 +549,45 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Single<Boolean>>() {
+            @Override
+            public Single<Boolean> apply(Flowable<Integer> upstream) {
+                return Flowable.sequenceEqual(Flowable.just(1).hide(), upstream);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelAsFlowable() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Boolean>>() {
+            @Override
+            public Flowable<Boolean> apply(Flowable<Integer> upstream) {
+                return Flowable.sequenceEqual(Flowable.just(1).hide(), upstream).toFlowable();
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancel2() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Single<Boolean>>() {
+            @Override
+            public Single<Boolean> apply(Flowable<Integer> upstream) {
+                return Flowable.sequenceEqual(upstream, Flowable.just(1).hide());
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelAsFlowable2() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Boolean>>() {
+            @Override
+            public Flowable<Boolean> apply(Flowable<Integer> upstream) {
+                return Flowable.sequenceEqual(upstream, Flowable.just(1).hide()).toFlowable();
+            }
+        });
     }
 }

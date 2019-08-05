@@ -15,16 +15,14 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.RxJavaTest;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -1326,5 +1324,50 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.cancel();
 
         assertFalse(pp1.hasSubscribers());
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapEagerDelayError(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                }, false);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapEagerDelayError(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                }, true);
+            }
+        });
     }
 }

@@ -21,7 +21,6 @@ import java.util.concurrent.*;
 
 import io.reactivex.RxJavaTest;
 import org.junit.*;
-import org.mockito.InOrder;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;

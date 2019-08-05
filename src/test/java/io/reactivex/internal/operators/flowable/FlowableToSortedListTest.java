@@ -24,9 +24,6 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 import io.reactivex.testsupport.*;
 

@@ -649,31 +649,31 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
 
-            Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    ts.cancel();
-                    throw new TestException();
-                }
-            })
-            .switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
-                @Override
-                public Maybe<Integer> apply(Integer v) throws Throwable {
-                    return Maybe.just(v).hide();
-                }
-            })
-            .subscribe(ts);
-
-            ts.assertEmpty();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.switchMapMaybeDelayError(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                });
+            }
+        });
     }
 }

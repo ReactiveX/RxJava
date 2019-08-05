@@ -70,6 +70,7 @@ public final class CompletableMerge extends Completable {
         public void dispose() {
             upstream.cancel();
             set.dispose();
+            error.tryTerminateAndReport();
         }
 
         @Override
@@ -106,7 +107,7 @@ public final class CompletableMerge extends Completable {
 
                 if (error.addThrowable(t)) {
                     if (getAndSet(0) > 0) {
-                        downstream.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -114,7 +115,7 @@ public final class CompletableMerge extends Completable {
             } else {
                 if (error.addThrowable(t)) {
                     if (decrementAndGet() == 0) {
-                        downstream.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -125,12 +126,7 @@ public final class CompletableMerge extends Completable {
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                Throwable ex = error.get();
-                if (ex != null) {
-                    downstream.onError(error.terminate());
-                } else {
-                    downstream.onComplete();
-                }
+                error.tryTerminateConsumer(downstream);
             }
         }
 
@@ -142,7 +138,7 @@ public final class CompletableMerge extends Completable {
 
                 if (error.addThrowable(t)) {
                     if (getAndSet(0) > 0) {
-                        downstream.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -150,7 +146,7 @@ public final class CompletableMerge extends Completable {
             } else {
                 if (error.addThrowable(t)) {
                     if (decrementAndGet() == 0) {
-                        downstream.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             upstream.request(1);
@@ -165,12 +161,7 @@ public final class CompletableMerge extends Completable {
         void innerComplete(MergeInnerObserver inner) {
             set.delete(inner);
             if (decrementAndGet() == 0) {
-                Throwable ex = error.get();
-                if (ex != null) {
-                    downstream.onError(ex);
-                } else {
-                    downstream.onComplete();
-                }
+                error.tryTerminateConsumer(downstream);
             } else {
                 if (maxConcurrency != Integer.MAX_VALUE) {
                     upstream.request(1);

@@ -386,4 +386,49 @@ public class FlowableConcatMapCompletableTest extends RxJavaTest {
 
         to.assertResult();
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.concatMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                }, false, 2);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.concatMapCompletableDelayError(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                }, true, 2);
+            }
+        });
+    }
 }

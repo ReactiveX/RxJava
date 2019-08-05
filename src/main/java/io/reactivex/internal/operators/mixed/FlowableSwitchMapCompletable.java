@@ -128,10 +128,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
                     onComplete();
                 } else {
                     disposeInner();
-                    Throwable ex = errors.terminate();
-                    if (ex != ExceptionHelper.TERMINATED) {
-                        downstream.onError(ex);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                 }
             } else {
                 RxJavaPlugins.onError(t);
@@ -142,12 +139,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
         public void onComplete() {
             done = true;
             if (inner.get() == null) {
-                Throwable ex = errors.terminate();
-                if (ex == null) {
-                    downstream.onComplete();
-                } else {
-                    downstream.onError(ex);
-                }
+                errors.tryTerminateConsumer(downstream);
             }
         }
 
@@ -175,16 +167,12 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
                 if (errors.addThrowable(error)) {
                     if (delayErrors) {
                         if (done) {
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                         }
                     } else {
                         upstream.cancel();
                         disposeInner();
-                        Throwable ex = errors.terminate();
-                        if (ex != ExceptionHelper.TERMINATED) {
-                            downstream.onError(ex);
-                        }
+                        errors.tryTerminateConsumer(downstream);
                     }
                     return;
                 }
@@ -195,12 +183,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
         void innerComplete(SwitchMapInnerObserver sender) {
             if (inner.compareAndSet(sender, null)) {
                 if (done) {
-                    Throwable ex = errors.terminate();
-                    if (ex == null) {
-                        downstream.onComplete();
-                    } else {
-                        downstream.onError(ex);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                 }
             }
         }

@@ -210,7 +210,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     } else {
                         Throwable ex = errors.get();
                         if (ex != null) {
-                            a.onError(errors.terminate());
+                            errors.tryTerminateConsumer(a);
                             return;
                         }
                         if (empty) {
@@ -236,7 +236,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                             } else {
                                 Throwable ex = errors.get();
                                 if (ex != null) {
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                                 if (empty) {
@@ -260,7 +260,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                             if (!delayErrors) {
                                 Throwable ex = errors.get();
                                 if (ex != null) {
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                             }

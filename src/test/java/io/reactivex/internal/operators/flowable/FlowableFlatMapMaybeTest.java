@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -610,5 +611,35 @@ public class FlowableFlatMapMaybeTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
+                    @Override
+                    public Maybe<Integer> apply(Integer v) throws Throwable {
+                        return Maybe.just(v).hide();
+                    }
+                }, true, 2);
+            }
+        });
     }
 }

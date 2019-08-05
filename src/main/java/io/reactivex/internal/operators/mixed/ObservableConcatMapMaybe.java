@@ -145,6 +145,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
             cancelled = true;
             upstream.dispose();
             inner.dispose();
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue.clear();
                 item = null;
@@ -206,8 +207,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                                 || (errorMode == ErrorMode.BOUNDARY && s == STATE_INACTIVE)) {
                             queue.clear();
                             item = null;
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -218,12 +218,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                         boolean empty = v == null;
 
                         if (d && empty) {
-                            Throwable ex = errors.terminate();
-                            if (ex == null) {
-                                downstream.onComplete();
-                            } else {
-                                downstream.onError(ex);
-                            }
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
 
@@ -240,8 +235,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                             upstream.dispose();
                             queue.clear();
                             errors.addThrowable(ex);
-                            ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
 

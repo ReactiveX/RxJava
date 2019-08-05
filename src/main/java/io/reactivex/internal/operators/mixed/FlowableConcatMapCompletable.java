@@ -127,10 +127,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
             if (errors.addThrowable(t)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     inner.dispose();
-                    t = errors.terminate();
-                    if (t != ExceptionHelper.TERMINATED) {
-                        downstream.onError(t);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     if (getAndIncrement() == 0) {
                         queue.clear();
                     }
@@ -154,6 +151,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
             disposed = true;
             upstream.cancel();
             inner.dispose();
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
@@ -168,10 +166,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
             if (errors.addThrowable(ex)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     upstream.cancel();
-                    ex = errors.terminate();
-                    if (ex != ExceptionHelper.TERMINATED) {
-                        downstream.onError(ex);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     if (getAndIncrement() == 0) {
                         queue.clear();
                     }
@@ -205,8 +200,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                     if (errorMode == ErrorMode.BOUNDARY) {
                         if (errors.get() != null) {
                             queue.clear();
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -216,12 +210,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                     boolean empty = v == null;
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -245,8 +234,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                             queue.clear();
                             upstream.cancel();
                             errors.addThrowable(ex);
-                            ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                         active = true;

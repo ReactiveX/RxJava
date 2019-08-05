@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.operators.completable.CompletableMergeDelayErrorArray.MergeInnerCompletableObserver;
+import io.reactivex.internal.operators.completable.CompletableMergeDelayErrorArray.*;
 import io.reactivex.internal.util.AtomicThrowable;
 
 public final class CompletableMergeDelayErrorIterable extends Completable {
@@ -50,6 +50,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
         final AtomicInteger wip = new AtomicInteger(1);
 
         final AtomicThrowable error = new AtomicThrowable();
+        set.add(new TryTerminateAndReportDisposable(error));
 
         for (;;) {
             if (set.isDisposed()) {
@@ -93,12 +94,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
         }
 
         if (wip.decrementAndGet() == 0) {
-            Throwable ex = error.terminate();
-            if (ex == null) {
-                observer.onComplete();
-            } else {
-                observer.onError(ex);
-            }
+            error.tryTerminateConsumer(observer);
         }
     }
 }

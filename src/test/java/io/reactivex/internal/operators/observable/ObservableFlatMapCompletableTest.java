@@ -476,4 +476,34 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
             }
         }, false, 1, null);
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Observable<Integer> upstream) {
+                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new ObservableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Observable<Integer> upstream) {
+                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                }, true);
+            }
+        });
+    }
 }

@@ -163,6 +163,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             }
             cancelled = true;
             upstream.cancel();
+            errors.tryTerminateAndReport();
 
             drainAndCancel();
         }
@@ -247,7 +248,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         if (ex != null) {
                             cancelAll();
 
-                            a.onError(errors.terminate());
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -257,12 +258,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                     inner = subscribers.poll();
 
                     if (outerDone && inner == null) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            a.onError(ex);
-                        } else {
-                            a.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -289,7 +285,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                     inner.cancel();
                                     cancelAll();
 
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(downstream);
                                     return;
                                 }
                             }
@@ -343,7 +339,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                     inner.cancel();
                                     cancelAll();
 
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(downstream);
                                     return;
                                 }
                             }
