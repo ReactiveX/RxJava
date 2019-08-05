@@ -32,8 +32,11 @@ public final class CompletableMergeIterable extends Completable {
     @Override
     public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
+        final AtomicInteger wip = new AtomicInteger(1);
 
-        observer.onSubscribe(set);
+        MergeCompletableObserver shared = new MergeCompletableObserver(observer, set, wip);
+
+        observer.onSubscribe(shared);
 
         Iterator<? extends CompletableSource> iterator;
 
@@ -45,9 +48,6 @@ public final class CompletableMergeIterable extends Completable {
             return;
         }
 
-        final AtomicInteger wip = new AtomicInteger(1);
-
-        MergeCompletableObserver shared = new MergeCompletableObserver(observer, set, wip);
         for (;;) {
             if (set.isDisposed()) {
                 return;
@@ -94,7 +94,7 @@ public final class CompletableMergeIterable extends Completable {
         shared.onComplete();
     }
 
-    static final class MergeCompletableObserver extends AtomicBoolean implements CompletableObserver {
+    static final class MergeCompletableObserver extends AtomicBoolean implements CompletableObserver, Disposable {
 
         private static final long serialVersionUID = -7730517613164279224L;
 
@@ -132,6 +132,17 @@ public final class CompletableMergeIterable extends Completable {
                     downstream.onComplete();
                 }
             }
+        }
+
+        @Override
+        public void dispose() {
+            set.dispose();
+            set(true);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return set.isDisposed();
         }
     }
 }

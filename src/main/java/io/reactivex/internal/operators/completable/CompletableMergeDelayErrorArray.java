@@ -34,6 +34,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
 
         final AtomicThrowable error = new AtomicThrowable();
+        set.add(new TryTerminateAndReportDisposable(error));
 
         observer.onSubscribe(set);
 
@@ -54,6 +55,23 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
         if (wip.decrementAndGet() == 0) {
             error.tryTerminateConsumer(observer);
+        }
+    }
+
+    static final class TryTerminateAndReportDisposable implements Disposable {
+        final AtomicThrowable errors;
+        TryTerminateAndReportDisposable(AtomicThrowable errors) {
+            this.errors = errors;
+        }
+
+        @Override
+        public void dispose() {
+            errors.tryTerminateAndReport();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return errors.isTerminated();
         }
     }
 
