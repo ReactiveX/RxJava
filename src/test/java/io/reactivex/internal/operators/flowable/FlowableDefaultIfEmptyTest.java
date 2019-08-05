@@ -20,8 +20,6 @@ import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.TestException;
-import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.testsupport.*;
 
 public class FlowableDefaultIfEmptyTest extends RxJavaTest {

@@ -438,4 +438,14 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         assertFalse("main has observers!", pp.hasSubscribers());
         assertFalse("other has observers", ms.hasObservers());
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.mergeWith(Maybe.just(1).hide());
+            }
+        });
+    }
 }

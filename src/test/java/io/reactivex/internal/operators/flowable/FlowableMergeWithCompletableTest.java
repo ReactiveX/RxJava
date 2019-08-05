@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Action;
+import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subscribers.TestSubscriber;
@@ -172,5 +172,15 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
         assertFalse("main has observers!", pp.hasSubscribers());
         assertFalse("other has observers", cs.hasObservers());
+    }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.mergeWith(Completable.complete().hide());
+            }
+        });
     }
 }

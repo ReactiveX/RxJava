@@ -1043,4 +1043,49 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
 
         assertTrue(ts.values().toString(), ts.values().get(0).startsWith("RxSingleScheduler-"));
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMap(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                }, 2, ImmediateThinScheduler.INSTANCE);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                }, 2, false, ImmediateThinScheduler.INSTANCE);
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayErrorTillEnd() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> upstream) {
+                return upstream.concatMapDelayError(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Integer v) throws Throwable {
+                        return Flowable.just(v).hide();
+                    }
+                }, 2, true, ImmediateThinScheduler.INSTANCE);
+            }
+        });
+    }
 }

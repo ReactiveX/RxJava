@@ -390,31 +390,31 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void undeliverableUponCancel() {
-        List<Throwable> errors = TestHelper.trackPluginErrors();
-        try {
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.switchMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                });
+            }
+        });
+    }
 
-            Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
-                @Override
-                public Integer apply(Integer v) throws Throwable {
-                    to.dispose();
-                    throw new TestException();
-                }
-            })
-            .switchMapCompletable(new Function<Integer, Completable>() {
-                @Override
-                public Completable apply(Integer v) throws Throwable {
-                    return Completable.complete().hide();
-                }
-            })
-            .subscribe(to);
-
-            to.assertEmpty();
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
-        } finally {
-            RxJavaPlugins.reset();
-        }
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.switchMapCompletableDelayError(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                });
+            }
+        });
     }
 }

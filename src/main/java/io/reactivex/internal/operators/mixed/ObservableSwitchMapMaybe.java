@@ -211,8 +211,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
                     if (errors.get() != null) {
                         if (!delayErrors) {
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -222,12 +221,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
                     boolean empty = current == null;
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 

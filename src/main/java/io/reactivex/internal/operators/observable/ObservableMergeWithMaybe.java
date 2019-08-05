@@ -58,7 +58,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
 
         final OtherObserver<T> otherObserver;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         volatile SimplePlainQueue<T> queue;
 
@@ -78,7 +78,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
             this.downstream = downstream;
             this.mainDisposable = new AtomicReference<Disposable>();
             this.otherObserver = new OtherObserver<T>(this);
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
         }
 
         @Override
@@ -105,7 +105,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
 
         @Override
         public void onError(Throwable ex) {
-            if (error.addThrowable(ex)) {
+            if (errors.addThrowable(ex)) {
                 DisposableHelper.dispose(otherObserver);
                 drain();
             } else {
@@ -129,6 +129,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
             disposed = true;
             DisposableHelper.dispose(mainDisposable);
             DisposableHelper.dispose(otherObserver);
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue = null;
                 singleItem = null;
@@ -150,7 +151,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         }
 
         void otherError(Throwable ex) {
-            if (error.addThrowable(ex)) {
+            if (errors.addThrowable(ex)) {
                 DisposableHelper.dispose(mainDisposable);
                 drain();
             } else {
@@ -190,10 +191,10 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
                         return;
                     }
 
-                    if (error.get() != null) {
+                    if (errors.get() != null) {
                         singleItem = null;
                         queue = null;
-                        actual.onError(error.terminate());
+                        errors.tryTerminateConsumer(actual);
                         return;
                     }
 

@@ -16,7 +16,6 @@ package io.reactivex.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;

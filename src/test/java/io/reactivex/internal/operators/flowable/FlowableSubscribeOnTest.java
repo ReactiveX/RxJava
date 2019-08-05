@@ -32,7 +32,7 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 import io.reactivex.testsupport.*;
 
-public class FlowableSubscribeOnTest extends RxJavaTest{
+public class FlowableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void issue813() throws InterruptedException {

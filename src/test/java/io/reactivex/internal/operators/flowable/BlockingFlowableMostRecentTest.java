@@ -24,7 +24,6 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.testsupport.TestHelper;
 
 public class BlockingFlowableMostRecentTest extends RxJavaTest {
     @Test

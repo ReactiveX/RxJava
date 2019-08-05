@@ -199,7 +199,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                 inner.cancel();
 
                 if (getAndIncrement() == 0) {
-                    downstream.onError(errors.terminate());
+                    errors.tryTerminateConsumer(downstream);
                     worker.dispose();
                 }
             } else {
@@ -214,7 +214,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                 if (compareAndSet(1, 0)) {
                     return;
                 }
-                downstream.onError(errors.terminate());
+                errors.tryTerminateConsumer(downstream);
                 worker.dispose();
             }
         }
@@ -225,7 +225,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                 upstream.cancel();
 
                 if (getAndIncrement() == 0) {
-                    downstream.onError(errors.terminate());
+                    errors.tryTerminateConsumer(downstream);
                     worker.dispose();
                 }
             } else {
@@ -246,6 +246,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                 inner.cancel();
                 upstream.cancel();
                 worker.dispose();
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -274,7 +275,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                         Exceptions.throwIfFatal(e);
                         upstream.cancel();
                         errors.addThrowable(e);
-                        downstream.onError(errors.terminate());
+                        errors.tryTerminateConsumer(downstream);
                         worker.dispose();
                         return;
                     }
@@ -297,7 +298,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
 
                             upstream.cancel();
                             errors.addThrowable(e);
-                            downstream.onError(errors.terminate());
+                            errors.tryTerminateConsumer(downstream);
                             worker.dispose();
                             return;
                         }
@@ -324,7 +325,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 Exceptions.throwIfFatal(e);
                                 upstream.cancel();
                                 errors.addThrowable(e);
-                                downstream.onError(errors.terminate());
+                                errors.tryTerminateConsumer(downstream);
                                 worker.dispose();
                                 return;
                             }
@@ -337,7 +338,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 if (get() == 0 && compareAndSet(0, 1)) {
                                     downstream.onNext(vr);
                                     if (!compareAndSet(1, 0)) {
-                                        downstream.onError(errors.terminate());
+                                        errors.tryTerminateConsumer(downstream);
                                         worker.dispose();
                                         return;
                                     }
@@ -425,6 +426,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                 inner.cancel();
                 upstream.cancel();
                 worker.dispose();
+                errors.tryTerminateAndReport();
             }
         }
 
@@ -450,7 +452,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                     if (d && !veryEnd) {
                         Throwable ex = errors.get();
                         if (ex != null) {
-                            downstream.onError(errors.terminate());
+                            errors.tryTerminateConsumer(downstream);
                             worker.dispose();
                             return;
                         }
@@ -464,7 +466,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                         Exceptions.throwIfFatal(e);
                         upstream.cancel();
                         errors.addThrowable(e);
-                        downstream.onError(errors.terminate());
+                        errors.tryTerminateConsumer(downstream);
                         worker.dispose();
                         return;
                     }
@@ -472,12 +474,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                     boolean empty = v == null;
 
                     if (d && empty) {
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         worker.dispose();
                         return;
                     }
@@ -492,7 +489,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
 
                             upstream.cancel();
                             errors.addThrowable(e);
-                            downstream.onError(errors.terminate());
+                            errors.tryTerminateConsumer(downstream);
                             worker.dispose();
                             return;
                         }
@@ -520,7 +517,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 errors.addThrowable(e);
                                 if (!veryEnd) {
                                     upstream.cancel();
-                                    downstream.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(downstream);
                                     worker.dispose();
                                     return;
                                 }

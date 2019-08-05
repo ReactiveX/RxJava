@@ -16,13 +16,11 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.RxJavaTest;
 import org.junit.*;
-import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;

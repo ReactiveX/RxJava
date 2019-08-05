@@ -140,10 +140,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     disposed = true;
                     inner.dispose();
-                    t = errors.terminate();
-                    if (t != ExceptionHelper.TERMINATED) {
-                        downstream.onError(t);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     if (getAndIncrement() == 0) {
                         queue.clear();
                     }
@@ -167,6 +164,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
             disposed = true;
             upstream.dispose();
             inner.dispose();
+            errors.tryTerminateAndReport();
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
@@ -182,10 +180,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     disposed = true;
                     upstream.dispose();
-                    ex = errors.terminate();
-                    if (ex != ExceptionHelper.TERMINATED) {
-                        downstream.onError(ex);
-                    }
+                    errors.tryTerminateConsumer(downstream);
                     if (getAndIncrement() == 0) {
                         queue.clear();
                     }
@@ -223,8 +218,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                         if (errors.get() != null) {
                             disposed = true;
                             queue.clear();
-                            Throwable ex = errors.terminate();
-                            downstream.onError(ex);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -243,20 +237,17 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                         disposed = true;
                         queue.clear();
                         upstream.dispose();
-                        errors.addThrowable(ex);
-                        ex = errors.terminate();
-                        downstream.onError(ex);
+                        if (errors.addThrowable(ex)) {
+                            errors.tryTerminateConsumer(downstream);
+                        } else {
+                            RxJavaPlugins.onError(ex);
+                        }
                         return;
                     }
 
                     if (d && empty) {
                         disposed = true;
-                        Throwable ex = errors.terminate();
-                        if (ex != null) {
-                            downstream.onError(ex);
-                        } else {
-                            downstream.onComplete();
-                        }
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 

@@ -70,7 +70,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         final ErrorMode errorMode;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final ArrayDeque<InnerQueuedObserver<R>> observers;
 
@@ -96,7 +96,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
             this.maxConcurrency = maxConcurrency;
             this.prefetch = prefetch;
             this.errorMode = errorMode;
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.observers = new ArrayDeque<InnerQueuedObserver<R>>();
         }
 
@@ -146,7 +146,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void onError(Throwable e) {
-            if (error.addThrowable(e)) {
+            if (errors.addThrowable(e)) {
                 done = true;
                 drain();
             } else {
@@ -167,6 +167,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
             }
             cancelled = true;
             upstream.dispose();
+            errors.tryTerminateAndReport();
 
             drainAndDispose();
         }
@@ -212,7 +213,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void innerError(InnerQueuedObserver<R> inner, Throwable e) {
-            if (error.addThrowable(e)) {
+            if (errors.addThrowable(e)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     upstream.dispose();
                 }
@@ -255,12 +256,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                     }
 
                     if (errorMode == ErrorMode.IMMEDIATE) {
-                        Throwable ex = error.get();
+                        Throwable ex = errors.get();
                         if (ex != null) {
                             q.clear();
                             disposeAll();
 
-                            a.onError(error.terminate());
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
                     }
@@ -281,8 +282,11 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         upstream.dispose();
                         q.clear();
                         disposeAll();
-                        error.addThrowable(ex);
-                        a.onError(error.terminate());
+                        if (errors.addThrowable(ex)) {
+                            errors.tryTerminateConsumer(downstream);
+                        } else {
+                            RxJavaPlugins.onError(ex);
+                        }
                         return;
                     }
 
@@ -304,12 +308,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                 }
 
                 if (errorMode == ErrorMode.IMMEDIATE) {
-                    Throwable ex = error.get();
+                    Throwable ex = errors.get();
                     if (ex != null) {
                         q.clear();
                         disposeAll();
 
-                        a.onError(error.terminate());
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
                 }
@@ -318,12 +322,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
                 if (active == null) {
                     if (errorMode == ErrorMode.BOUNDARY) {
-                        Throwable ex = error.get();
+                        Throwable ex = errors.get();
                         if (ex != null) {
                             q.clear();
                             disposeAll();
 
-                            a.onError(error.terminate());
+                            errors.tryTerminateConsumer(a);
                             return;
                         }
                     }
@@ -334,12 +338,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                     boolean empty = active == null;
 
                     if (d && empty) {
-                        Throwable ex = error.get();
+                        Throwable ex = errors.get();
                         if (ex != null) {
                             q.clear();
                             disposeAll();
 
-                            a.onError(error.terminate());
+                            errors.tryTerminateConsumer(a);
                         } else {
                             a.onComplete();
                         }
@@ -365,12 +369,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         boolean d = active.isDone();
 
                         if (errorMode == ErrorMode.IMMEDIATE) {
-                            Throwable ex = error.get();
+                            Throwable ex = errors.get();
                             if (ex != null) {
                                 q.clear();
                                 disposeAll();
 
-                                a.onError(error.terminate());
+                                errors.tryTerminateConsumer(a);
                                 return;
                             }
                         }
@@ -381,7 +385,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             w = aq.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            error.addThrowable(ex);
+                            errors.addThrowable(ex);
 
                             current = null;
                             activeCount--;

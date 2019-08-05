@@ -201,7 +201,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
-                        a.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -227,7 +227,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
-                        a.onError(error.terminate());
+                        error.tryTerminateConsumer(downstream);
                         return;
                     }
 

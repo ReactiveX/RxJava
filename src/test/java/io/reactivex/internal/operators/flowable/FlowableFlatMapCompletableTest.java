@@ -540,4 +540,34 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
             }
         }
     }
+
+    @Test
+    public void undeliverableUponCancel() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void undeliverableUponCancelDelayError() {
+        TestHelper.checkUndeliverableUponCancel(new FlowableConverter<Integer, Completable>() {
+            @Override
+            public Completable apply(Flowable<Integer> upstream) {
+                return upstream.flatMapCompletable(new Function<Integer, Completable>() {
+                    @Override
+                    public Completable apply(Integer v) throws Throwable {
+                        return Completable.complete().hide();
+                    }
+                }, true, 2);
+            }
+        });
+    }
 }

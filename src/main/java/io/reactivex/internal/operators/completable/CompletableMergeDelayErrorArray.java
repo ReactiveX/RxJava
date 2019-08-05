@@ -53,12 +53,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
         }
 
         if (wip.decrementAndGet() == 0) {
-            Throwable ex = error.terminate();
-            if (ex == null) {
-                observer.onComplete();
-            } else {
-                observer.onError(ex);
-            }
+            error.tryTerminateConsumer(observer);
         }
     }
 
@@ -98,12 +93,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
         void tryTerminate() {
             if (wip.decrementAndGet() == 0) {
-                Throwable ex = error.terminate();
-                if (ex == null) {
-                    downstream.onComplete();
-                } else {
-                    downstream.onError(ex);
-                }
+                error.tryTerminateConsumer(downstream);
             }
         }
     }
