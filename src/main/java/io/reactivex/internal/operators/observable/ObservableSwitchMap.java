@@ -314,6 +314,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             if (inner.index == unique && errors.addThrowable(ex)) {
                 if (!delayErrors) {
                     upstream.dispose();
+                    done = true;
                 }
                 inner.done = true;
                 drain();
