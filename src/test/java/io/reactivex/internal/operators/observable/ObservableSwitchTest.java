@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -25,6 +25,8 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -1225,5 +1227,33 @@ public class ObservableSwitchTest extends RxJavaTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void switchMapFusedIterable() {
+        Observable.range(1, 2)
+        .switchMap(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v)
+                    throws Throwable {
+                return Observable.fromIterable(Arrays.asList(v * 10));
+            }
+        })
+        .test()
+        .assertResult(10, 20);
+    }
+
+    @Test
+    public void switchMapHiddenIterable() {
+        Observable.range(1, 2)
+        .switchMap(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v)
+                    throws Throwable {
+                return Observable.fromIterable(Arrays.asList(v * 10)).hide();
+            }
+        })
+        .test()
+        .assertResult(10, 20);
     }
 }
