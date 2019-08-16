@@ -9507,7 +9507,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> elementAt(long index) {
         if (index < 0) {

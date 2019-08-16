@@ -26,6 +26,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -68,6 +69,22 @@ public class FlowableElementAtTest extends RxJavaTest {
     public void elementAt() {
         assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).blockingGet()
                 .intValue());
+    }
+    
+    @Test
+    public void elementAtConstrainsUpstreamRequests() {
+        final List<Long> requests = new ArrayList<Long>();
+        Flowable.fromArray(1, 2, 3, 4)
+            .doOnRequest(new LongConsumer() {
+                @Override
+                public void accept(long n) throws Throwable {
+                    requests.add(n);
+                }
+            })
+            .elementAt(2)
+            .blockingGet()
+                .intValue();
+        assertEquals(Arrays.asList(3L), requests);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
