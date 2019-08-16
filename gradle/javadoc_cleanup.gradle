@@ -1,19 +1,19 @@
 // remove the excessive whitespaces between method arguments in the javadocs
 task javadocCleanup(dependsOn: "javadoc") doLast {
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Flowable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Observable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Single.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Maybe.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Completable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Flowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Observable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Single.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Maybe.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/core/Completable.html'));
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/flowables/ConnectableFlowable.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/observables/ConnectableObservable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/flowables/ConnectableFlowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/observables/ConnectableObservable.html'));
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/subjects/ReplaySubject.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/processors/ReplayProcessor.html'));
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/plugins/RxJavaPlugins.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/subjects/ReplaySubject.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/processors/ReplayProcessor.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/plugins/RxJavaPlugins.html'));
 
-    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/parallel/ParallelFlowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/rxjava3/parallel/ParallelFlowable.html'));
 }
 
 def fixJavadocFile(file) {
