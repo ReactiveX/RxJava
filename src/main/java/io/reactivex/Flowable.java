@@ -9494,8 +9494,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9523,8 +9522,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9558,8 +9556,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAtOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9573,7 +9570,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> elementAtOrError(long index) {
         if (index < 0) {
@@ -9617,8 +9614,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstElement.m.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
-     *  unbounded manner (i.e., without applying backpressure).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9640,8 +9636,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
-     *  unbounded manner (i.e., without applying backpressure).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9666,8 +9661,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrError.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
-     *  unbounded manner (i.e., without applying backpressure).</dd>
+     *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
