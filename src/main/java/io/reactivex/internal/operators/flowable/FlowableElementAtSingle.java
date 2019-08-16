@@ -70,7 +70,7 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
                 downstream.onSubscribe(this);
-                s.request(Long.MAX_VALUE);
+                s.request(index + 1);
             }
         }
 
