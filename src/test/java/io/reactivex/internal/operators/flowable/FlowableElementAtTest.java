@@ -86,6 +86,22 @@ public class FlowableElementAtTest extends RxJavaTest {
                 .intValue();
         assertEquals(Arrays.asList(3L), requests);
     }
+    
+    @Test
+    public void elementAtWithDefaultConstrainsUpstreamRequests() {
+        final List<Long> requests = new ArrayList<Long>();
+        Flowable.fromArray(1, 2, 3, 4)
+            .doOnRequest(new LongConsumer() {
+                @Override
+                public void accept(long n) throws Throwable {
+                    requests.add(n);
+                }
+            })
+            .elementAt(2, 100)
+            .blockingGet()
+                .intValue();
+        assertEquals(Arrays.asList(3L), requests);
+    }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void elementAtWithMinusIndex() {

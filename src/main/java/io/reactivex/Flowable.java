@@ -9541,7 +9541,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @CheckReturnValue
     @NonNull
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
