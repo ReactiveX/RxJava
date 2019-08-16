@@ -51,7 +51,7 @@ public class NotificationLiteTest extends RxJavaTest {
     public void errorNotification() {
         Object o = NotificationLite.error(new TestException());
 
-        assertEquals("NotificationLite.Error[io.reactivex.exceptions.TestException]", o.toString());
+        assertEquals("NotificationLite.Error[io.reactivex.rxjava3.exceptions.TestException]", o.toString());
 
         assertTrue(NotificationLite.isError(o));
         assertFalse(NotificationLite.isComplete(o));

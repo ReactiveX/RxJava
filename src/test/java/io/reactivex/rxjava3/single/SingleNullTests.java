@@ -464,7 +464,7 @@ public class SingleNullTests extends RxJavaTest {
 
             Class<?>[] params = new Class[argCount + 1];
             Arrays.fill(params, SingleSource.class);
-            Class<?> fniClass = Class.forName("io.reactivex.functions.Function" + argCount);
+            Class<?> fniClass = Class.forName("io.reactivex.rxjava3.functions.Function" + argCount);
             params[argCount] = fniClass;
 
             Object[] values = new Object[argCount + 1];
