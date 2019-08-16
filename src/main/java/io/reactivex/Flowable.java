@@ -9627,7 +9627,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> firstElement() {
         return elementAt(0);
@@ -9653,7 +9653,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> first(T defaultItem) {
         return elementAt(0, defaultItem);
