@@ -11213,52 +11213,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Limits both the number of upstream items (after which the sequence completes)
-     * and the total downstream request amount requested from the upstream to
-     * possibly prevent the creation of excess items by the upstream.
-     * <p>
-     * The operator requests at most the given {@code count} of items from upstream even
-     * if the downstream requests more than that. For example, given a {@code limit(5)},
-     * if the downstream requests 1, a request of 1 is submitted to the upstream
-     * and the operator remembers that only 4 items can be requested now on. A request
-     * of 5 at this point will request 4 from the upstream and any subsequent requests will
-     * be ignored.
-     * <p>
-     * Note that requests are negotiated on an operator boundary and {@code limit}'s amount
-     * may not be preserved further upstream. For example,
-     * {@code source.observeOn(Schedulers.computation()).limit(5)} will still request the
-     * default (128) elements from the given {@code source}.
-     * <p>
-     * The main use of this operator is with sources that are async boundaries that
-     * don't interfere with request amounts, such as certain {@code Flowable}-based
-     * network endpoints that relay downstream request amounts unchanged and are, therefore,
-     * prone to trigger excessive item creation/transmission over the network.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator requests a total of the given {@code count} items from the upstream.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code limit} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * <p>History: 2.1.6 - experimental
-     * @param count the maximum number of items and the total request amount, non-negative.
-     *              Zero will immediately cancel the upstream on subscription and complete
-     *              the downstream.
-     * @return the new Flowable instance
-     * @see #take(long)
-     * @see #rebatchRequests(int)
-     * @since 2.2
-     */
-    @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    public final Flowable<T> limit(long count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 required but it was " + count);
-        }
-        return RxJavaPlugins.onAssembly(new FlowableLimit<T>(this, count));
-    }
-
-    /**
      * Returns a Flowable that applies a specified function to each item emitted by the source Publisher and
      * emits the results of these function applications.
      * <p>
@@ -15372,6 +15326,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapSingle<T, R>(this, mapper, true));
     }
 
+    
     /**
      * Returns a Flowable that emits only the first {@code count} items emitted by the source Publisher. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
@@ -15381,23 +15336,39 @@ public abstract class Flowable<T> implements Publisher<T> {
      * This method returns a Publisher that will invoke a subscribing {@link Subscriber}'s
      * {@link Subscriber#onNext onNext} function a maximum of {@code count} times before invoking
      * {@link Subscriber#onComplete onComplete}.
+     * <p>
+     * Limits both the number of upstream items (after which the sequence completes)
+     * and the total downstream request amount requested from the upstream to
+     * possibly prevent the creation of excess items by the upstream.
+     * <p>
+     * The operator requests at most the given {@code count} of items from upstream even
+     * if the downstream requests more than that. For example, given a {@code limit(5)},
+     * if the downstream requests 1, a request of 1 is submitted to the upstream
+     * and the operator remembers that only 4 items can be requested now on. A request
+     * of 5 at this point will request 4 from the upstream and any subsequent requests will
+     * be ignored.
+     * <p>
+     * Note that requests are negotiated on an operator boundary and {@code limit}'s amount
+     * may not be preserved further upstream. For example,
+     * {@code source.observeOn(Schedulers.computation()).limit(5)} will still request the
+     * default (128) elements from the given {@code source}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
-     *  behavior in case the first request is smaller than the {@code count}. Otherwise, the source {@code Publisher}
-     *  is consumed in an unbounded manner (i.e., without applying backpressure to it).</dd>
+     *  <dd>The source {@code Publisher} is consumed in a bounded manner.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param count
-     *            the maximum number of items to emit
+     *            the maximum number of items and the total request amount, non-negative.
+     *            Zero will immediately cancel the upstream on subscription and complete
+     *            the downstream.
      * @return a Flowable that emits only the first {@code count} items emitted by the source Publisher, or
      *         all of the items from the source Publisher if that Publisher emits fewer than {@code count} items
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.SPECIAL) // may trigger UNBOUNDED_IN
+    @BackpressureSupport(BackpressureKind.FULL) 
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> take(long count) {
         if (count < 0) {

@@ -88,7 +88,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                 return Single.just(v);
             }
         })
-        .limit(3)
+        .take(3)
         .test()
         .assertResult(1, 2, 3);
     }

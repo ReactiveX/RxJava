@@ -353,7 +353,7 @@ public class FlowableMergeWithSingleTest extends RxJavaTest {
         final SingleSubject<Integer> cs = SingleSubject.create();
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs)
-                .limit(2)
+                .take(2)
                 .subscribeWith(new TestSubscriber<Integer>(2) {
             @Override
             public void onNext(Integer t) {
