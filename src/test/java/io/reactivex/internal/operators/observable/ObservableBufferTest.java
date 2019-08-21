@@ -2137,6 +2137,7 @@ public class ObservableBufferTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void bufferExactFailingSupplier() {
         Observable.empty()
                 .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Callable<List<Object>>() {

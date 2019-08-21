@@ -31,7 +31,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
