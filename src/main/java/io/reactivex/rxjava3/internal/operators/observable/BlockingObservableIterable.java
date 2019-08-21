@@ -53,7 +53,7 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
         final Condition condition;
 
         volatile boolean done;
-        Throwable error;
+        volatile Throwable error;
 
         BlockingObservableIterator(int batchSize) {
             this.queue = new SpscLinkedArrayQueue<T>(batchSize);
