@@ -28,7 +28,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.operators.observable.BlockingObservableNext.NextObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.BehaviorProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -333,9 +332,9 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void synchronousNext() {
-        assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
-        assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
-        assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
+        assertEquals(1, BehaviorSubject.createDefault(1).take(1).blockingSingle().intValue());
+        assertEquals(2, BehaviorSubject.createDefault(2).blockingIterable().iterator().next().intValue());
+        assertEquals(3, BehaviorSubject.createDefault(3).blockingNext().iterator().next().intValue());
     }
 
     @Test

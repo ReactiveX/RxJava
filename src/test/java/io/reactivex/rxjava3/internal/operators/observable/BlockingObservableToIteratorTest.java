@@ -16,15 +16,18 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.operators.observable.BlockingObservableIterable.BlockingObservableIterator;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class BlockingObservableToIteratorTest extends RxJavaTest {
 
@@ -103,5 +106,29 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
     public void remove() {
         BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
         it.remove();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void disposedIteratorHasNextReturns() {
+        Iterator<Integer> it = PublishSubject.<Integer>create()
+                .blockingIterable().iterator();
+        ((Disposable)it).dispose();
+        assertFalse(it.hasNext());
+        it.next();
+    }
+
+    @Test
+    public void asyncDisposeUnblocks() {
+        final Iterator<Integer> it = PublishSubject.<Integer>create()
+                .blockingIterable().iterator();
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                ((Disposable)it).dispose();
+            }
+        }, 1, TimeUnit.SECONDS);
+
+        assertFalse(it.hasNext());
     }
 }
