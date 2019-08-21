@@ -2770,6 +2770,7 @@ public class FlowableBufferTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void bufferExactFailingSupplier() {
         Flowable.empty()
                 .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Callable<List<Object>>() {

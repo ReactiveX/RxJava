@@ -419,7 +419,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         public void cancel() {
             SubscriptionHelper.cancel(this);
         }
-        
+
         public void request(long n) {
             if (fusionMode != QueueSubscription.SYNC) {
                 get().request(n);

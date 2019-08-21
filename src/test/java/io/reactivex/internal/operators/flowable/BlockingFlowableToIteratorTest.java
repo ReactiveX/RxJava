@@ -16,14 +16,18 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.operators.flowable.BlockingFlowableIterable.BlockingFlowableIterator;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 
 public class BlockingFlowableToIteratorTest {
 
@@ -184,5 +188,29 @@ public class BlockingFlowableToIteratorTest {
         .iterator();
 
         it.next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void disposedIteratorHasNextReturns() {
+        Iterator<Integer> it = PublishProcessor.<Integer>create()
+                .blockingIterable().iterator();
+        ((Disposable)it).dispose();
+        assertFalse(it.hasNext());
+        it.next();
+    }
+
+    @Test
+    public void asyncDisposeUnblocks() {
+        final Iterator<Integer> it = PublishProcessor.<Integer>create()
+                .blockingIterable().iterator();
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                ((Disposable)it).dispose();
+            }
+        }, 1, TimeUnit.SECONDS);
+
+        assertFalse(it.hasNext());
     }
 }
