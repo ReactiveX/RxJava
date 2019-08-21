@@ -153,7 +153,7 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-            signalConsumer(); // just in case it is currently blocking in hasNext
+            signalConsumer(); // Just in case it is currently blocking in hasNext.
         }
 
         @Override
