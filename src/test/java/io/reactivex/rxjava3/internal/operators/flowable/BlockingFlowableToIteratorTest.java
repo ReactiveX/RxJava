@@ -16,14 +16,18 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.operators.flowable.BlockingFlowableIterable.BlockingFlowableIterator;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
@@ -162,5 +166,29 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
         .iterator();
 
         it.next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void disposedIteratorHasNextReturns() {
+        Iterator<Integer> it = PublishProcessor.<Integer>create()
+                .blockingIterable().iterator();
+        ((Disposable)it).dispose();
+        assertFalse(it.hasNext());
+        it.next();
+    }
+
+    @Test
+    public void asyncDisposeUnblocks() {
+        final Iterator<Integer> it = PublishProcessor.<Integer>create()
+                .blockingIterable().iterator();
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                ((Disposable)it).dispose();
+            }
+        }, 1, TimeUnit.SECONDS);
+
+        assertFalse(it.hasNext());
     }
 }
