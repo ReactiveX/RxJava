@@ -532,7 +532,7 @@ public class ObservableRefCountTest {
         to2.assertValue(30);
     }
 
-    @Test(timeout = 10000)
+    @Test//(timeout = 10000)
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
@@ -1379,5 +1379,24 @@ public class ObservableRefCountTest {
         subject.onNext(2);
 
         observable.take(1).test().assertResult(2);
+    }
+
+    @Test
+    public void upstreamTerminationTriggersAnotherCancel() throws Exception {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onComplete();
+
+        Observable<Integer> shared = rs.share();
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
     }
 }

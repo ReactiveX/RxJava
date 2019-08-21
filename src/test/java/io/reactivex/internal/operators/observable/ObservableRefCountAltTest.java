@@ -1399,4 +1399,23 @@ public class ObservableRefCountAltTest {
             .assertComplete();
         }
     }
+
+    @Test
+    public void upstreamTerminationTriggersAnotherCancel() throws Exception {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onComplete();
+
+        Observable<Integer> shared = rs.share();
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+
+        shared
+        .buffer(shared.debounce(5, TimeUnit.SECONDS))
+        .test()
+        .assertValueCount(2);
+    }
 }
