@@ -683,9 +683,6 @@ public class ObservableRefCountTest extends RxJavaTest {
         d1 = null;
         d2 = null;
 
-        System.gc();
-        Thread.sleep(100);
-
         long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
