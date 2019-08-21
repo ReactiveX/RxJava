@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.lang.management.*;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.util.*;
@@ -3390,5 +3391,32 @@ public enum TestHelper {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    /**
+     * Repeatedly calls System.gc() and sleeps until the current memory usage
+     * is less than the given expected usage or the given number of wait loop/time
+     * has passed.
+     * @param oneSleep how many milliseconds to sleep after a GC.
+     * @param maxLoop the maximum number of GC/sleep calls.
+     * @param expectedMemoryUsage the memory usage in bytes at max
+     * @return the actual memory usage after the loop
+     * @throws InterruptedException if the sleep is interrupted
+     */
+    public static long awaitGC(long oneSleep, int maxLoop, long expectedMemoryUsage) throws InterruptedException {
+        MemoryMXBean bean = ManagementFactory.getMemoryMXBean();
+
+        System.gc();
+
+        int i = maxLoop;
+        while (i-- != 0) {
+            long usage = bean.getHeapMemoryUsage().getUsed();
+            if (usage <= expectedMemoryUsage) {
+                return usage;
+            }
+            System.gc();
+            Thread.sleep(oneSleep);
+        }
+        return bean.getHeapMemoryUsage().getUsed();
     }
 }

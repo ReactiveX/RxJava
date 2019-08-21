@@ -676,11 +676,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         source.subscribe();
 
-        Thread.sleep(100);
-        System.gc();
-        Thread.sleep(100);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -712,11 +708,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         d1 = null;
         d2 = null;
 
-        Thread.sleep(100);
-        System.gc();
-        Thread.sleep(100);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -752,10 +744,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        System.gc();
-        Thread.sleep(GC_SLEEP_TIME);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
 
@@ -787,10 +776,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         d1 = null;
         d2 = null;
 
-        System.gc();
-        Thread.sleep(GC_SLEEP_TIME);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
