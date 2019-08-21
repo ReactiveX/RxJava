@@ -652,10 +652,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         source.subscribe();
 
-        System.gc();
-        Thread.sleep(100);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -689,7 +686,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         System.gc();
         Thread.sleep(100);
 
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -725,19 +722,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
-        long after = 0L;
-
-        for (int i = 0; i < 10; i++) {
-            System.gc();
-
-            after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-
-            if (start + 20 * 1000 * 1000 > after) {
-                break;
-            }
-
-            Thread.sleep(GC_SLEEP_TIME);
-        }
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
@@ -768,10 +753,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         d1 = null;
         d2 = null;
 
-        System.gc();
-        Thread.sleep(GC_SLEEP_TIME);
-
-        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+        long after = TestHelper.awaitGC(GC_SLEEP_TIME, 20, start + 20 * 1000 * 1000);
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
