@@ -532,7 +532,7 @@ public class ObservableRefCountTest {
         to2.assertValue(30);
     }
 
-    @Test//(timeout = 10000)
+    @Test(timeout = 10000)
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
