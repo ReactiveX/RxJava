@@ -44,7 +44,8 @@ public abstract class InputWithIncrementingInteger {
     }
 
     final class IncrementingIterable implements Iterable<Integer> {
-        private final class IncrementingIterator implements Iterator<Integer> {
+
+        final class IncrementingIterator implements Iterator<Integer> {
             int i;
 
             @Override
@@ -64,9 +65,9 @@ public abstract class InputWithIncrementingInteger {
             }
         }
 
-        private final int size;
+        final int size;
 
-        private IncrementingIterable(int size) {
+        IncrementingIterable(int size) {
             this.size = size;
         }
 
@@ -77,7 +78,8 @@ public abstract class InputWithIncrementingInteger {
     }
 
     final class IncrementingPublisher implements Publisher<Integer> {
-        private final int size;
+
+        final int size;
 
         IncrementingPublisher(int size) {
             this.size = size;
