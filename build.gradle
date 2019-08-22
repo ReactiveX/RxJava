@@ -1,4 +1,25 @@
 buildscript {
+
+  // Dependency versions
+  // ---------------------------------------
+  
+  ext.reactiveStreamsVersion = "1.0.3-RC1"
+  ext.junitVersion = "4.12"
+  ext.testNgVersion = "7.0.0"
+  ext.mockitoVersion = "3.0.0"
+  ext.jmhLibVersion = "1.21"
+  ext.jmhGradleVersion = "0.5.0-rc-2"
+  ext.guavaVersion = "28.0-jre"
+  ext.jacocoVersion = "0.8.4"
+  ext.animalSnifferVersion = "1.5.0"
+  ext.licenseVersion = "0.15.0"
+  ext.bintrayVersion = "1.7.3"
+  ext.jfrogExtractorVersion = "4.5.2"
+  ext.bndVersion = "4.2.0"
+  ext.checkstyleVersion = "6.19"
+
+  // --------------------------------------
+
   repositories { 
     jcenter()
     mavenCentral()
@@ -7,11 +28,12 @@ buildscript {
     }
   }
   dependencies {
-    classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
-    classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
-    classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
-    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
+    classpath "ru.vyarus:gradle-animalsniffer-plugin:$animalSnifferVersion"
+    classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:$licenseVersion"
+    classpath "me.champeau.gradle:jmh-gradle-plugin:$jmhGradleVersion"
+    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayVersion"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:$jfrogExtractorVersion"
+    classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:$bndVersion"
   }
 }
 
@@ -38,7 +60,6 @@ apply plugin: "checkstyle"
 apply plugin: "jacoco"
 apply plugin: "ru.vyarus.animalsniffer"
 apply plugin: "maven"
-apply plugin: "osgi"
 apply plugin: "me.champeau.gradle.jmh"
 apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
@@ -47,18 +68,6 @@ apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
-
-// Dependency versions
-// ---------------------------------------
-
-def junitVersion = "4.12"
-def reactiveStreamsVersion = "1.0.3-RC1"
-def mockitoVersion = "2.1.0"
-def jmhLibVersion = "1.20"
-def testNgVersion = "6.11"
-def guavaVersion = "24.0-jre"
-def jacocoVersion = "0.8.0"
-// --------------------------------------
 
 repositories {
   mavenCentral()
@@ -124,15 +133,17 @@ artifacts {
     archives javadocJar
 }
 
+apply plugin: 'biz.aQute.bnd.builder'
+
 jar {
-    manifest {
-        name = "rxjava"
-        instruction "Bundle-Vendor", "RxJava Contributors"
-        instruction "Bundle-DocURL", "https://github.com/ReactiveX/RxJava"
-        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
-        instruction "Eclipse-ExtensibleAPI", "true"
-        instruction "Automatic-Module-Name", "io.reactivex.rxjava3"
-    }
+    bnd ('Bundle-Name': 'rxjava',
+            'Bundle-Vendor': 'RxJava Contributors',
+            'Bundle-Description': 'Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.',
+            'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*',
+            'Bundle-DocURL': 'https://github.com/ReactiveX/RxJava',
+            'Eclipse-ExtensibleAPI': 'true',
+            'Automatic-Module-Name': 'io.reactivex.rxjava3'
+    )
 }
 
 license {
@@ -289,13 +300,6 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
-    
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: ["io/reactivex/tck/**"])
-        })
-    }
 }
 
 jacocoTestReport.dependsOn GCandMem
@@ -305,7 +309,7 @@ build.dependsOn jacocoTestReport
 checkstyle {
     configFile file("checkstyle.xml")
     ignoreFailures = true
-    toolVersion ="6.19" 
+    toolVersion = checkstyleVersion
 }
 
 if (rootProject.hasProperty("releaseMode")) {
