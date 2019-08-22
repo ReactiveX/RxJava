@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
