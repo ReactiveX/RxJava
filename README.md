@@ -51,7 +51,7 @@ The second is to write the **Hello World** program:
 ```java
 package rxjava.examples;
 
-import io.reactivex.*;
+import io.reactivex.rxjava3.core.*;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -63,7 +63,7 @@ public class HelloWorld {
 If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of `Consumer` manually:
 
 ```java
-import io.reactivex.functions.Consumer;
+import io.reactivex.rxjava3.functions.Consumer;
 
 Flowable.just("Hello world")
   .subscribe(new Consumer<String>() {
@@ -73,15 +73,17 @@ Flowable.just("Hello world")
   });
 ```
 
+Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base classes and interfaces live under `io.reactivex.rxjava3.core`.
+
 ### Base classes
 
 RxJava 3 features several base classes you can discover operators on:
 
-  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
-  - [`io.reactivex.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure,
-  - [`io.reactivex.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Single.html): a flow of exactly 1 item or an error,
-  - [`io.reactivex.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Completable.html): a flow without items but only a completion or error signal,
-  - [`io.reactivex.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/Maybe.html): a flow with no items, exactly one item or an error.
+  - [`io.reactivex.rxjava3.core.Flowable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.rxjava3.core.Observable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Observable.html): 0..N flows, no backpressure,
+  - [`io.reactivex.rxjava3.core.Single`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Single.html): a flow of exactly 1 item or an error,
+  - [`io.reactivex.rxjava3.core.Completable`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Completable.html): a flow without items but only a completion or error signal,
+  - [`io.reactivex.rxjava3.core.Maybe`](http://reactivex.io/RxJava/3.x/javadoc/io/reactivex/rxjava3/core/Maybe.html): a flow with no items, exactly one item or an error.
 
 ### Some terminology
 
@@ -164,7 +166,7 @@ Practically, this is when the body of the given example above executes.
 One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:
 
 ```java
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 Flowable.fromCallable(() -> {
     Thread.sleep(1000); //  imitate expensive computation
@@ -517,9 +519,9 @@ APIs marked with the [`@Experimental`][experimental source link] annotation at t
 
 APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
 
-#### io.reactivex.internal.*
+#### io.reactivex.rxjava3.internal.*
 
-All code inside the `io.reactivex.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `io.reactivex.rxjava3.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 
