@@ -3,7 +3,7 @@ buildscript {
   // Dependency versions
   // ---------------------------------------
   
-  ext.reactiveStreamsVersion = "1.0.3-RC1"
+  ext.reactiveStreamsVersion = "1.0.3"
   ext.junitVersion = "4.12"
   ext.testNgVersion = "7.0.0"
   ext.mockitoVersion = "3.0.0"
@@ -114,7 +114,7 @@ javadoc {
 }
 
 animalsniffer {
-    annotation = "io.reactivex.internal.util.SuppressAnimalSniffer"
+    annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
