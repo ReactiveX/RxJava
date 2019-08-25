@@ -2,6 +2,14 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.12 - August 25, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.12%7C))
+
+#### Bugfixes
+
+  - [Pull 6618](https://github.com/ReactiveX/RxJava/pull/6618): Fix `switchMap` incorrect sync-fusion & error management.
+  - [Pull 6627](https://github.com/ReactiveX/RxJava/pull/6627): Fix `blockingIterable` hang when force-disposed.
+  - [Pull 6629](https://github.com/ReactiveX/RxJava/pull/6629): Fix `refCount` not resetting when cross-canceled. 
+
 ### Version 2.2.11 - August 2, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.11%7C))
 
 #### Bugfixes
