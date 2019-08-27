@@ -1305,15 +1305,14 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Flowable.combineLatestDelayError(
+                new Publisher[] { Flowable.error(new TestException()), Flowable.just(1) },
                 new Function<Object[], Object>() {
                     @Override
                     public Object apply(Object[] a) throws Exception {
                         return a;
                     }
                 },
-                128,
-                Flowable.error(new TestException()),
-                Flowable.just(1)
+                128
         )
         .test()
         .assertFailure(TestException.class);
@@ -1323,15 +1322,14 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @Test
     public void errorDelayed2() {
         Flowable.combineLatestDelayError(
+                new Publisher[] { Flowable.error(new TestException()).startWithItem(1), Flowable.empty() },
                 new Function<Object[], Object>() {
                     @Override
                     public Object apply(Object[] a) throws Exception {
                         return a;
                     }
                 },
-                128,
-                Flowable.error(new TestException()).startWithItem(1),
-                Flowable.empty()
+                128
         )
         .test()
         .assertFailure(TestException.class);
