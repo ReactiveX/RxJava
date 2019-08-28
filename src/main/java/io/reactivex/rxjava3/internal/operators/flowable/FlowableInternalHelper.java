@@ -12,7 +12,6 @@
  */
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.*;
@@ -215,24 +214,6 @@ public final class FlowableInternalHelper {
         public void accept(Subscription t) throws Exception {
             t.request(Long.MAX_VALUE);
         }
-    }
-
-    static final class ZipIterableFunction<T, R>
-    implements Function<List<Publisher<? extends T>>, Publisher<? extends R>> {
-        private final Function<? super Object[], ? extends R> zipper;
-
-        ZipIterableFunction(Function<? super Object[], ? extends R> zipper) {
-            this.zipper = zipper;
-        }
-
-        @Override
-        public Publisher<? extends R> apply(List<Publisher<? extends T>> list) {
-            return Flowable.zipIterable(list, zipper, false, Flowable.bufferSize());
-        }
-    }
-
-    public static <T, R> Function<List<Publisher<? extends T>>, Publisher<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
-        return new ZipIterableFunction<T, R>(zipper);
     }
 
     static final class ReplaySupplier<T> implements Supplier<ConnectableFlowable<T>> {

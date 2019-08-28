@@ -1136,7 +1136,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         // unlike general sources, fromIterable can only throw on a boundary because it is consumed only there
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), 2, false);
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), false, 2);
     }
 
     /**
@@ -1510,7 +1510,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T> Flowable<T> concatArrayEagerDelayError(int maxConcurrency, int prefetch, Publisher<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, true);
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, prefetch);
     }
 
     /**
@@ -1586,7 +1586,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
-        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
+        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), tillTheEnd, prefetch);
     }
 
     /**
@@ -4547,29 +4547,29 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
-     * <i>n</i> items emitted, in sequence, by the <i>n</i> Publishers emitted by a specified Publisher.
+     * items emitted, in sequence, by an Iterable of other Publishers.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Publisher
-     * will be the result of the function applied to the first item emitted by each of the Publishers emitted
-     * by the source Publisher; the second item emitted by the new Publisher will be the result of the
-     * function applied to the second item emitted by each of those Publishers; and so forth.
+     * will be the result of the function applied to the first item emitted by each of the source Publishers;
+     * the second item emitted by the new Publisher will be the result of the function applied to the second
+     * item emitted by each of those Publishers; and so forth.
      * <p>
      * The resulting {@code Publisher<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in the order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while cancel the other sources. Therefore, it
+     * one of the sources is shorter than the rest while canceling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4579,25 +4579,32 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the value type of the inner Publishers
-     * @param <R> the zipped result type
+     *
      * @param sources
-     *            a Publisher of source Publishers
+     *            an Iterable of source Publishers
      * @param zipper
-     *            a function that, when applied to an item emitted by each of the Publishers emitted by
-     *            {@code ws}, results in an item that will be emitted by the resulting Publisher
+     *            a function that, when applied to an item emitted by each of the source Publishers, results in
+     *            an item that will be emitted by the resulting Publisher
+     * @param delayError
+     *            delay errors signaled by any of the source Publisher until all Publishers terminate
+     * @param bufferSize
+     *            the number of elements to prefetch from each source Publisher
+     * @param <T> the common source value type
+     * @param <R> the zipped result type
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
-            final Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Flowable<R> zip(Iterable<? extends Publisher<? extends T>> sources,
+            Function<? super Object[], ? extends R> zipper, boolean delayError,
+            int bufferSize) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMapPublisher((Function)FlowableInternalHelper.<T, R>zipIterable(zipper));
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     /**
@@ -5399,68 +5406,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(sources, null, zipper, bufferSize, delayError));
-    }
-
-    /**
-     * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
-     * items emitted, in sequence, by an Iterable of other Publishers.
-     * <p>
-     * {@code zip} applies this function in strict sequence, so the first item emitted by the new Publisher
-     * will be the result of the function applied to the first item emitted by each of the source Publishers;
-     * the second item emitted by the new Publisher will be the result of the function applied to the second
-     * item emitted by each of those Publishers; and so forth.
-     * <p>
-     * The resulting {@code Publisher<R>} returned from {@code zip} will invoke {@code onNext} as many times as
-     * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
-     * <p>
-     * The operator subscribes to its sources in the order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while canceling the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or cancellation.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
-     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
-     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zipIterable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     *
-     * @param sources
-     *            an Iterable of source Publishers
-     * @param zipper
-     *            a function that, when applied to an item emitted by each of the source Publishers, results in
-     *            an item that will be emitted by the resulting Publisher
-     * @param delayError
-     *            delay errors signaled by any of the source Publisher until all Publishers terminate
-     * @param bufferSize
-     *            the number of elements to prefetch from each source Publisher
-     * @param <T> the common source value type
-     * @param <R> the zipped result type
-     * @return a Flowable that emits the zipped results
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> zipIterable(Iterable<? extends Publisher<? extends T>> sources,
-            Function<? super Object[], ? extends R> zipper, boolean delayError,
-            int bufferSize) {
-        ObjectHelper.requireNonNull(zipper, "zipper is null");
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -7181,7 +7126,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 3.0.0
      * @see #concatMap(Function, int)
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @NonNull
@@ -7366,7 +7311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
@@ -7381,13 +7326,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        return concatMapDelayError(mapper, 2, true);
+        return concatMapDelayError(mapper, true, 2);
     }
 
     /**
@@ -7398,7 +7343,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -7413,20 +7358,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Flowable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner Publisher sources are delayed until the end,
      *            if false, an error from the main source is signaled when the current Publisher source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Flowable
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarSupplier) {
@@ -7446,7 +7391,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * while executing the mapper function on the designated scheduler, delaying any error from either this or any of the
      * inner Publishers till all of them terminate.
      * <p>
-     * The difference between {@link #concatMapDelayError(Function, int, boolean)} and this operator is that this operator guarantees the {@code mapper}
+     * The difference between {@link #concatMapDelayError(Function, boolean, int)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
      *
      * <dl>
@@ -7462,15 +7407,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Flowable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner Publisher sources are delayed until the end,
      *            if false, an error from the main source is signaled when the current Publisher source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Flowable
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean)
+     * @see #concatMapDelayError(Function, boolean, int)
      * @since 3.0.0
      */
     @CheckReturnValue
@@ -7478,7 +7423,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd, Scheduler scheduler) {
+            boolean tillTheEnd, int prefetch, Scheduler scheduler) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -7574,7 +7519,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
             boolean tillTheEnd) {
-        return concatMapEagerDelayError(mapper, bufferSize(), bufferSize(), tillTheEnd);
+        return concatMapEagerDelayError(mapper, tillTheEnd, bufferSize(), bufferSize());
     }
 
     /**
@@ -7594,13 +7539,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of Publishers that will be
      *               eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscribed Publishers
-     * @param prefetch
-     *               the number of elements to prefetch from each source Publisher
      * @param tillTheEnd
      *               if true, exceptions from the current Flowable and all the inner Publishers are delayed until
      *               all of them terminate, if false, exception from the current Flowable is delayed until the
      *               currently running Publisher terminates
+     * @param maxConcurrency the maximum number of concurrent subscribed Publishers
+     * @param prefetch
+     *               the number of elements to prefetch from each source Publisher
      * @return the new Publisher instance with the specified concatenation behavior
      * @since 2.0
      */
@@ -7609,7 +7554,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int maxConcurrency, int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int maxConcurrency, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(prefetch, "prefetch");

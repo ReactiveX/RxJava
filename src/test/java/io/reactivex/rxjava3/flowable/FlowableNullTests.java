@@ -652,33 +652,8 @@ public class FlowableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void zipPublisherNull() {
-        Flowable.zip((Publisher<Publisher<Object>>)null, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return 1;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipPublisherFunctionNull() {
-        Flowable.zip((Flowable.just(just1)), null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipPublisherFunctionReturnsNull() {
-        Flowable.zip((Flowable.just(just1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Flowable.zipIterable((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zip((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
@@ -688,7 +663,7 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2IteratorNull() {
-        Flowable.zipIterable(new Iterable<Publisher<Object>>() {
+        Flowable.zip(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
@@ -704,13 +679,13 @@ public class FlowableNullTests extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
-        Flowable.zipIterable(Arrays.asList(just1, just1), null, true, 128);
+        Flowable.zip(Arrays.asList(just1, just1), null, true, 128);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Flowable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
+        Flowable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return null;
@@ -2719,31 +2694,6 @@ public class FlowableNullTests extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionNull() {
         Flowable.combineLatestDelayError(Arrays.asList(just1), null, 128);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipFlowableNull() {
-        Flowable.zip((Flowable<Flowable<Object>>)null, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return 1;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipFlowableFunctionNull() {
-        Flowable.zip((Flowable.just(just1)), null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipFlowableFunctionReturnsNull() {
-        Flowable.zip((Flowable.just(just1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)

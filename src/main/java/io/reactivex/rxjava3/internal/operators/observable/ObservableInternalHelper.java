@@ -12,7 +12,6 @@
  */
 package io.reactivex.rxjava3.internal.operators.observable;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.core.*;
@@ -212,24 +211,6 @@ public final class ObservableInternalHelper {
 
     public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
         return new TimedReplayCallable<T>(parent, time, unit, scheduler, eagerTruncate);
-    }
-
-    static final class ZipIterableFunction<T, R>
-    implements Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> {
-        private final Function<? super Object[], ? extends R> zipper;
-
-        ZipIterableFunction(Function<? super Object[], ? extends R> zipper) {
-            this.zipper = zipper;
-        }
-
-        @Override
-        public ObservableSource<? extends R> apply(List<ObservableSource<? extends T>> list) {
-            return Observable.zipIterable(list, zipper, false, Observable.bufferSize());
-        }
-    }
-
-    public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
-        return new ZipIterableFunction<T, R>(zipper);
     }
 
     static final class ReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {

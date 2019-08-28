@@ -226,7 +226,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
             public ObservableSource<Integer> apply(Integer v) throws Exception {
                 return Observable.range(v, 2);
             }
-        }, 16, true)
+        }, true, 16)
         .test()
         .assertResult(1, 2);
     }
@@ -548,7 +548,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
                     public Observable<Integer> apply(Integer v) throws Throwable {
                         return Observable.just(v).hide();
                     }
-                }, 2, false);
+                }, false, 2);
             }
         });
     }
@@ -563,7 +563,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
                     public Observable<Integer> apply(Integer v) throws Throwable {
                         return Observable.just(v).hide();
                     }
-                }, 2, true);
+                }, true, 2);
             }
         });
     }

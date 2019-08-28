@@ -908,7 +908,7 @@ public class ObservableConcatTest extends RxJavaTest {
                     public ObservableSource<Integer> apply(Object v) throws Exception {
                         return Observable.just(1);
                     }
-                }, 16, true));
+                }, true, 16));
     }
 
     @Test
@@ -919,7 +919,7 @@ public class ObservableConcatTest extends RxJavaTest {
             public ObservableSource<Integer> apply(Object v) throws Exception {
                 return Observable.just(1);
             }
-        }, 16, true)
+        }, true, 16)
         .test()
         .assertResult(1);
 

@@ -86,7 +86,7 @@ public class ObservableConcatMapSchedulerTest {
                     throws Exception {
                 return Observable.just(v);
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE)
+        }, true, 2, ImmediateThinScheduler.INSTANCE)
         .observeOn(Schedulers.computation())
         .distinct()
         .test()
@@ -131,7 +131,7 @@ public class ObservableConcatMapSchedulerTest {
                     throws Exception {
                 return Observable.just(v);
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE)
+        }, true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -172,7 +172,7 @@ public class ObservableConcatMapSchedulerTest {
               }
             });
           }
-        }, 2, true, ImmediateThinScheduler.INSTANCE)
+        }, true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(CompositeException.class, 1, 2, 3, 23, 32);
     }
@@ -191,7 +191,7 @@ public class ObservableConcatMapSchedulerTest {
               }
             });
           }
-        }, 2, false, ImmediateThinScheduler.INSTANCE)
+        }, false, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);
     }
@@ -240,7 +240,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName());
             }
-        }, 2, false, Schedulers.single())
+        }, false, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -258,7 +258,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName()).hide();
             }
-        }, 2, false, Schedulers.single())
+        }, false, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -276,7 +276,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName());
             }
-        }, 2, true, Schedulers.single())
+        }, true, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -294,7 +294,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<String> apply(Integer t) throws Throwable {
                 return Observable.just(Thread.currentThread().getName()).hide();
             }
-        }, 2, true, Schedulers.single())
+        }, true, 2, Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertValueCount(1)
@@ -436,7 +436,7 @@ public class ObservableConcatMapSchedulerTest {
     public void concatMapDelayErrorJustJust() {
         TestObserver<Integer> to = TestObserver.create();
 
-        Observable.just(Observable.just(1)).concatMapDelayError((Function)Functions.identity(), 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        Observable.just(Observable.just(1)).concatMapDelayError((Function)Functions.identity(), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValue(1);
         to.assertNoErrors();
@@ -448,7 +448,7 @@ public class ObservableConcatMapSchedulerTest {
     public void concatMapDelayErrorJustRange() {
         TestObserver<Integer> to = TestObserver.create();
 
-        Observable.just(Observable.range(1, 5)).concatMapDelayError((Function)Functions.identity(), 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        Observable.just(Observable.range(1, 5)).concatMapDelayError((Function)Functions.identity(), true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2, 3, 4, 5);
         to.assertNoErrors();
@@ -504,7 +504,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void concatMapDelayError() {
         Observable.just(Observable.just(1), Observable.just(2))
-        .concatMapDelayError(Functions.<Observable<Integer>>identity(), 2, true, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.<Observable<Integer>>identity(), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1, 2);
     }
@@ -517,7 +517,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Object v) throws Exception {
                 return Observable.just(1);
             }
-        }, 16, true, ImmediateThinScheduler.INSTANCE)
+        }, true, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1);
 
@@ -544,7 +544,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Object v) throws Exception {
                 return Observable.just(1);
             }
-        }, 16, false, ImmediateThinScheduler.INSTANCE)
+        }, false, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult(1);
     }
@@ -560,7 +560,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void concatMapEmptyDelayError() {
         Observable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Observable.empty()), 2, true, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.justFunction(Observable.empty()), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertResult();
     }
@@ -576,7 +576,7 @@ public class ObservableConcatMapSchedulerTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Observable<Object> f) throws Exception {
-                return f.concatMapDelayError(Functions.justFunction(Observable.just(2)), 2, true, ImmediateThinScheduler.INSTANCE);
+                return f.concatMapDelayError(Functions.justFunction(Observable.just(2)), true, 2, ImmediateThinScheduler.INSTANCE);
             }
         });
     }
@@ -640,7 +640,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void concatMapInnerErrorDelayError() {
         Observable.just(1).hide()
-        .concatMapDelayError(Functions.justFunction(Observable.error(new TestException())), 2, true, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.justFunction(Observable.error(new TestException())), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -692,7 +692,7 @@ public class ObservableConcatMapSchedulerTest {
                 o.onSubscribe(Disposables.empty());
                 o.onError(new TestException("First"));
             }
-        }), 2, true, ImmediateThinScheduler.INSTANCE)
+        }), true, 2, ImmediateThinScheduler.INSTANCE)
         .to(TestHelper.<Integer>testConsumer());
 
         to.assertFailureAndMessage(TestException.class, "First");
@@ -712,7 +712,7 @@ public class ObservableConcatMapSchedulerTest {
         TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
             @Override
             public Object apply(Observable<Integer> f) throws Exception {
-                return f.concatMapDelayError(Functions.justFunction(Observable.just(1).hide()), 2, true, ImmediateThinScheduler.INSTANCE);
+                return f.concatMapDelayError(Functions.justFunction(Observable.just(1).hide()), true, 2, ImmediateThinScheduler.INSTANCE);
             }
         }, true, 1, 1, 1);
     }
@@ -736,7 +736,7 @@ public class ObservableConcatMapSchedulerTest {
             @Override
             public Object apply(Integer v) throws Exception { throw new TestException(); }
         })
-        .concatMapDelayError(Functions.justFunction(Observable.just(1)), 2, true, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.justFunction(Observable.just(1)), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -762,7 +762,7 @@ public class ObservableConcatMapSchedulerTest {
             public Object call() throws Exception {
                 throw new TestException();
             }
-        })), 2, true, ImmediateThinScheduler.INSTANCE)
+        })), true, 2, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -773,13 +773,13 @@ public class ObservableConcatMapSchedulerTest {
         .concatMap(Functions.justFunction(Observable.just(1)), 2, ImmediateThinScheduler.INSTANCE));
 
         TestHelper.checkDisposed(Observable.range(1, 2)
-        .concatMapDelayError(Functions.justFunction(Observable.just(1)), 2, true, ImmediateThinScheduler.INSTANCE));
+        .concatMapDelayError(Functions.justFunction(Observable.just(1)), true, 2, ImmediateThinScheduler.INSTANCE));
     }
 
     @Test
     public void notVeryEnd() {
         Observable.range(1, 2)
-        .concatMapDelayError(Functions.justFunction(Observable.error(new TestException())), 16, false, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.justFunction(Observable.error(new TestException())), false, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -787,7 +787,7 @@ public class ObservableConcatMapSchedulerTest {
     @Test
     public void error() {
         Observable.error(new TestException())
-        .concatMapDelayError(Functions.justFunction(Observable.just(2)), 16, false, ImmediateThinScheduler.INSTANCE)
+        .concatMapDelayError(Functions.justFunction(Observable.just(2)), false, 16, ImmediateThinScheduler.INSTANCE)
         .test()
         .assertFailure(TestException.class);
     }
@@ -816,7 +816,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return Observable.range(v, 2);
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         source.onNext(1);
         source.onNext(2);
@@ -839,7 +839,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return inner;
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2, 1, 2, 1, 2);
         to.assertError(CompositeException.class);
@@ -859,7 +859,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return inner;
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2);
         to.assertError(TestException.class);
@@ -877,7 +877,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return null;
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertNoValues();
         to.assertError(NullPointerException.class);
@@ -895,7 +895,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 throw new TestException();
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertNoValues();
         to.assertError(TestException.class);
@@ -912,7 +912,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return v == 2 ? Observable.<Integer>empty() : Observable.range(1, 2);
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2, 1, 2);
         to.assertNoErrors();
@@ -929,7 +929,7 @@ public class ObservableConcatMapSchedulerTest {
             public Observable<Integer> apply(Integer v) {
                 return v == 2 ? Observable.just(3) : Observable.range(1, 2);
             }
-        }, 2, true, ImmediateThinScheduler.INSTANCE).subscribe(to);
+        }, true, 2, ImmediateThinScheduler.INSTANCE).subscribe(to);
 
         to.assertValues(1, 2, 3, 1, 2);
         to.assertNoErrors();
@@ -971,7 +971,7 @@ public class ObservableConcatMapSchedulerTest {
                         .repeat(1000)
                         .observeOn(Schedulers.io());
             }
-        }, 2, false, Schedulers.single())
+        }, false, 2, Schedulers.single())
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -994,7 +994,7 @@ public class ObservableConcatMapSchedulerTest {
                         .repeat(1000)
                         .observeOn(Schedulers.io());
             }
-        }, 2, true, Schedulers.single())
+        }, true, 2, Schedulers.single())
         .distinct()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1030,7 +1030,7 @@ public class ObservableConcatMapSchedulerTest {
                     public Observable<Integer> apply(Integer v) throws Throwable {
                         return Observable.just(v).hide();
                     }
-                }, 2, false, ImmediateThinScheduler.INSTANCE);
+                }, false, 2, ImmediateThinScheduler.INSTANCE);
             }
         });
     }
@@ -1045,7 +1045,7 @@ public class ObservableConcatMapSchedulerTest {
                     public Observable<Integer> apply(Integer v) throws Throwable {
                         return Observable.just(v).hide();
                     }
-                }, 2, true, ImmediateThinScheduler.INSTANCE);
+                }, true, 2, ImmediateThinScheduler.INSTANCE);
             }
         });
     }

@@ -203,7 +203,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
               }
             });
           }
-        }, 2, false)
+        }, false, 2)
         .test()
         .assertFailure(NullPointerException.class, 1, 2, 3);
     }
@@ -233,7 +233,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
                     public Publisher<Integer> apply(Integer v) throws Throwable {
                         return Flowable.just(v).hide();
                     }
-                }, 2, false);
+                }, false, 2);
             }
         });
     }
@@ -248,7 +248,7 @@ public class FlowableConcatMapTest extends RxJavaTest {
                     public Publisher<Integer> apply(Integer v) throws Throwable {
                         return Flowable.just(v).hide();
                     }
-                }, 2, true);
+                }, true, 2);
             }
         });
     }
