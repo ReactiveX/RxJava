@@ -43,7 +43,7 @@ import io.reactivex.rxjava3.schedulers.*;
  * for such non-backpressured flows, which {@code Observable} itself implements as well.
  * <p>
  * The Observable's operators, by default, run with a buffer size of 128 elements (see {@link Flowable#bufferSize()}),
- * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
+ * that can be overridden globally via the system parameter {@code rx3.buffer-size}. Most operators, however, have
  * overloads that allow setting their internal buffer size explicitly.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -160,7 +160,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns the default 'island' size or capacity-increment hint for unbounded buffers.
      * <p>Delegates to {@link Flowable#bufferSize} but is public for convenience.
-     * <p>The value can be overridden via system parameter {@code rx2.buffer-size}
+     * <p>The value can be overridden via system parameter {@code rx3.buffer-size}
      * <em>before</em> the {@link Flowable} class is loaded.
      * @return the default 'island' size or capacity-increment hint
      */

@@ -35,7 +35,7 @@ public final class IoScheduler extends Scheduler {
     static final RxThreadFactory EVICTOR_THREAD_FACTORY;
 
     /** The name of the system property for setting the keep-alive time (in seconds) for this Scheduler workers. */
-    private static final String KEY_KEEP_ALIVE_TIME = "rx2.io-keep-alive-time";
+    private static final String KEY_KEEP_ALIVE_TIME = "rx3.io-keep-alive-time";
     public static final long KEEP_ALIVE_TIME_DEFAULT = 60;
 
     private static final long KEEP_ALIVE_TIME;
@@ -46,7 +46,7 @@ public final class IoScheduler extends Scheduler {
     final AtomicReference<CachedWorkerPool> pool;
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_IO_PRIORITY = "rx2.io-priority";
+    private static final String KEY_IO_PRIORITY = "rx3.io-priority";
 
     static final CachedWorkerPool NONE;
 

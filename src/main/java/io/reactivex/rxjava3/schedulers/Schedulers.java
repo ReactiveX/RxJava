@@ -30,14 +30,14 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <p>
  * <strong>Supported system properties ({@code System.getProperty()}):</strong>
  * <ul>
- * <li>{@code rx2.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
- * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
- * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx2.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx2.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
- * <li>{@code rx2.purge-enabled} (boolean): enables periodic purging of all Scheduler's backing thread pools, default is false</li>
- * <li>{@code rx2.purge-period-seconds} (int): specifies the periodic purge interval of all Scheduler's backing thread pools, default is 1 second</li>
+ * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+ * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
+ * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+ * <li>{@code rx3.purge-enabled} (boolean): enables periodic purging of all Scheduler's backing thread pools, default is false</li>
+ * <li>{@code rx3.purge-period-seconds} (int): specifies the periodic purge interval of all Scheduler's backing thread pools, default is 1 second</li>
  * </ul>
  */
 public final class Schedulers {
@@ -112,8 +112,8 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
-     * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
+     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -157,8 +157,8 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx2.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
-     * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -216,7 +216,7 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx2.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -265,7 +265,7 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx2.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
