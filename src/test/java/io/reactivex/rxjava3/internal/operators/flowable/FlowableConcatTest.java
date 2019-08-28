@@ -1183,7 +1183,7 @@ public class FlowableConcatTest {
                     public Flowable<Integer> apply(Object v) throws Exception {
                         return Flowable.just(1);
                     }
-                }, 16, true));
+                }, true, 16));
     }
 
     @Test
@@ -1194,7 +1194,7 @@ public class FlowableConcatTest {
             public Flowable<Integer> apply(Object v) throws Exception {
                 return Flowable.just(1);
             }
-        }, 16, true)
+        }, true, 16)
         .test()
         .assertResult(1);
 
@@ -1244,7 +1244,7 @@ public class FlowableConcatTest {
             public Flowable<Integer> apply(Object v) throws Exception {
                 return Flowable.just(1);
             }
-        }, 16, false)
+        }, false, 16)
         .test()
         .assertResult(1);
     }
@@ -1511,7 +1511,7 @@ public class FlowableConcatTest {
     @Test
     public void notVeryEnd() {
         Flowable.range(1, 2)
-        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())), 16, false)
+        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())), false, 16)
         .test()
         .assertFailure(TestException.class);
     }
@@ -1519,7 +1519,7 @@ public class FlowableConcatTest {
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .concatMapDelayError(Functions.justFunction(Flowable.just(2)), 16, false)
+        .concatMapDelayError(Functions.justFunction(Flowable.just(2)), false, 16)
         .test()
         .assertFailure(TestException.class);
     }
