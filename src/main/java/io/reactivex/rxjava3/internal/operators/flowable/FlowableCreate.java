@@ -88,7 +88,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         final BaseEmitter<T> emitter;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final SimplePlainQueue<T> queue;
 
@@ -96,7 +96,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         SerializedEmitter(BaseEmitter<T> emitter) {
             this.emitter = emitter;
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.queue = new SpscLinkedArrayQueue<T>(16);
         }
 
@@ -106,7 +106,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
             if (get() == 0 && compareAndSet(0, 1)) {
@@ -139,9 +139,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                return false;
            }
            if (t == null) {
-               t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+               t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
            }
-           if (error.addThrowable(t)) {
+           if (errors.tryAddThrowable(t)) {
                done = true;
                drain();
                return true;
@@ -167,7 +167,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         void drainLoop() {
             BaseEmitter<T> e = emitter;
             SimplePlainQueue<T> q = queue;
-            AtomicThrowable error = this.error;
+            AtomicThrowable errors = this.errors;
             int missed = 1;
             for (;;) {
 
@@ -177,9 +177,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         return;
                     }
 
-                    if (error.get() != null) {
+                    if (errors.get() != null) {
                         q.clear();
-                        e.onError(error.terminate());
+                        errors.tryTerminateConsumer(e);
                         return;
                     }
 
@@ -255,10 +255,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public void onComplete() {
-            complete();
+            completeDownstream();
         }
 
-        protected void complete() {
+        protected void completeDownstream() {
             if (isCancelled()) {
                 return;
             }
@@ -271,20 +271,27 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public final void onError(Throwable e) {
-            if (!tryOnError(e)) {
+            if (e == null) {
+                e = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
+            }
+            if (!signalError(e)) {
                 RxJavaPlugins.onError(e);
             }
         }
 
         @Override
-        public boolean tryOnError(Throwable e) {
-            return error(e);
+        public final boolean tryOnError(Throwable e) {
+            if (e == null) {
+                e = ExceptionHelper.createNullPointerException("tryOnError called with a null Throwable.");
+            }
+            return signalError(e);
         }
 
-        protected boolean error(Throwable e) {
-            if (e == null) {
-                e = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-            }
+        public boolean signalError(Throwable e) {
+            return errorDownstream(e);
+        }
+
+        protected boolean errorDownstream(Throwable e) {
             if (isCancelled()) {
                 return false;
             }
@@ -366,7 +373,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             if (t != null) {
                 downstream.onNext(t);
             } else {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
 
@@ -395,7 +402,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
 
@@ -464,7 +471,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
             queue.offer(t);
@@ -472,13 +479,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public boolean tryOnError(Throwable e) {
+        public boolean signalError(Throwable e) {
             if (done || isCancelled()) {
                 return false;
-            }
-
-            if (e == null) {
-                e = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
 
             error = e;
@@ -533,9 +536,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            error(ex);
+                            errorDownstream(ex);
                         } else {
-                            complete();
+                            completeDownstream();
                         }
                         return;
                     }
@@ -562,9 +565,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            error(ex);
+                            errorDownstream(ex);
                         } else {
-                            complete();
+                            completeDownstream();
                         }
                         return;
                     }
@@ -606,7 +609,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
             queue.set(t);
@@ -614,12 +617,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public boolean tryOnError(Throwable e) {
+        public boolean signalError(Throwable e) {
             if (done || isCancelled()) {
                 return false;
-            }
-            if (e == null) {
-                onError(new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources."));
             }
             error = e;
             done = true;
@@ -673,9 +673,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            error(ex);
+                            errorDownstream(ex);
                         } else {
-                            complete();
+                            completeDownstream();
                         }
                         return;
                     }
@@ -702,9 +702,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            error(ex);
+                            errorDownstream(ex);
                         } else {
-                            complete();
+                            completeDownstream();
                         }
                         return;
                     }

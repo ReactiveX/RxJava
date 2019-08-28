@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {
@@ -44,7 +45,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         Collection<? super K> collection;
 
         try {
-            collection = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            collection = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, subscriber);

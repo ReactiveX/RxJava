@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Concatenate values of each MaybeSource provided in an array and delays
@@ -104,10 +103,8 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
         @Override
         public void onError(Throwable e) {
             current.lazySet(NotificationLite.COMPLETE);
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

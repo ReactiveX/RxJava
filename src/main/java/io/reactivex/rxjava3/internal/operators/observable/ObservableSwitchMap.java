@@ -132,7 +132,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @Override
         public void onError(Throwable t) {
-            if (!done && errors.addThrowable(t)) {
+            if (!done && errors.tryAddThrowable(t)) {
                 if (!delayErrors) {
                     disposeInner();
                 }
@@ -272,7 +272,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                                 v = q.poll();
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
-                                errors.addThrowable(ex);
+                                errors.tryAddThrowableOrReport(ex);
                                 active.compareAndSet(inner, null);
                                 if (!delayErrors) {
                                     disposeInner();
@@ -313,7 +313,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         void innerError(SwitchMapInnerObserver<T, R> inner, Throwable ex) {
-            if (inner.index == unique && errors.addThrowable(ex)) {
+            if (inner.index == unique && errors.tryAddThrowable(ex)) {
                 if (!delayErrors) {
                     upstream.dispose();
                     done = true;

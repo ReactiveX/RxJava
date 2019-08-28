@@ -22,10 +22,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.FuseToFlowable;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava3.internal.util.ArrayListSupplier;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableToListSingle<T, U extends Collection<? super T>> extends Single<U> implements FuseToFlowable<U> {
@@ -48,7 +47,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     protected void subscribeActual(SingleObserver<? super U> observer) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            coll = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);

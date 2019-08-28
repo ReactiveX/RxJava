@@ -222,7 +222,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 u = value.get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                errors.addThrowable(ex);
+                errors.tryAddThrowableOrReport(ex);
                 drain();
                 return true;
             }
@@ -285,11 +285,9 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 RxJavaPlugins.onError(t);
                 return;
             }
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -407,7 +405,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
                                     is.dispose();
-                                    errors.addThrowable(ex);
+                                    errors.tryAddThrowableOrReport(ex);
                                     if (checkTerminate()) {
                                         return;
                                     }
@@ -553,14 +551,12 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         @Override
         public void onError(Throwable t) {
-            if (parent.errors.addThrowable(t)) {
+            if (parent.errors.tryAddThrowableOrReport(t)) {
                 if (!parent.delayErrors) {
                     parent.disposeAll();
                 }
                 done = true;
                 parent.drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 

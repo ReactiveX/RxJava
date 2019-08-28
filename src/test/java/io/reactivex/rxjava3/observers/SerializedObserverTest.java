@@ -26,6 +26,7 @@ import org.junit.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.*;
@@ -1139,6 +1140,6 @@ public class SerializedObserverTest extends RxJavaTest {
 
         so.onNext(null);
 
-        to.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        to.assertFailureAndMessage(NullPointerException.class, ExceptionHelper.nullWarning("onNext called with a null value."));
     }
 }

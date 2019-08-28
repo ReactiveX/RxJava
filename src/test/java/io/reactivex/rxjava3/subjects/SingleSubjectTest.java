@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -135,7 +136,7 @@ public class SingleSubjectTest extends RxJavaTest {
             ss.onSuccess(null);
             fail("No NullPointerException thrown");
         } catch (NullPointerException ex) {
-            assertEquals("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onSuccess called with a null value."), ex.getMessage());
         }
 
         ss.test().assertEmpty().dispose();
@@ -149,7 +150,7 @@ public class SingleSubjectTest extends RxJavaTest {
             ss.onError(null);
             fail("No NullPointerException thrown");
         } catch (NullPointerException ex) {
-            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onError called with a null Throwable."), ex.getMessage());
         }
 
         ss.test().assertEmpty().dispose();

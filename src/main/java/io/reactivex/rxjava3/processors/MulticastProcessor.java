@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -292,7 +293,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
             return;
         }
         if (fusionMode == QueueSubscription.NONE) {
-            ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+            ExceptionHelper.nullCheck(t, "onNext called with a null value.");
             if (!queue.offer(t)) {
                 SubscriptionHelper.cancel(upstream);
                 onError(new MissingBackpressureException());
@@ -312,7 +313,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         if (once.get()) {
             return false;
         }
-        ObjectHelper.requireNonNull(t, "offer called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
         if (fusionMode == QueueSubscription.NONE) {
             if (queue.offer(t)) {
                 drain();
@@ -324,7 +325,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onError(Throwable t) {
-        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             error = t;
             done = true;

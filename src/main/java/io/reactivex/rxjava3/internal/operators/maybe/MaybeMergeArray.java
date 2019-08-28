@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Run all MaybeSources of an array at once and signal their values as they become available.
@@ -56,7 +55,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         s.onSubscribe(parent);
 
-        AtomicThrowable e = parent.error;
+        AtomicThrowable e = parent.errors;
 
         for (MaybeSource<? extends T> source : maybes) {
             if (parent.isCancelled() || e.get() != null) {
@@ -80,7 +79,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         final SimpleQueueWithConsumerIndex<Object> queue;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final int sourceCount;
 
@@ -95,7 +94,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             this.sourceCount = sourceCount;
             this.set = new CompositeDisposable();
             this.requested = new AtomicLong();
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.queue = queue;
         }
 
@@ -162,12 +161,10 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         @Override
         public void onError(Throwable e) {
-            if (error.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 set.dispose();
                 queue.offer(NotificationLite.COMPLETE);
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -198,10 +195,10 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                         return;
                     }
 
-                    Throwable ex = error.get();
+                    Throwable ex = errors.get();
                     if (ex != null) {
                         q.clear();
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -224,10 +221,10 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                 }
 
                 if (e == r) {
-                    Throwable ex = error.get();
+                    Throwable ex = errors.get();
                     if (ex != null) {
                         q.clear();
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -260,7 +257,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                     q.clear();
                     return;
                 }
-                Throwable ex = error.get();
+                Throwable ex = errors.get();
                 if (ex != null) {
                     q.clear();
                     a.onError(ex);

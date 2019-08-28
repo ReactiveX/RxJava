@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.DeferredScalarDisposable;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -150,7 +150,7 @@ public final class AsyncSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         if (subscribers.get() == TERMINATED) {
             return;
         }
@@ -160,7 +160,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
             return;

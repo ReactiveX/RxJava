@@ -27,7 +27,6 @@ import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps each upstream item into a {@link MaybeSource}, subscribes to them one after the other terminates
@@ -139,14 +138,12 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     inner.dispose();
                 }
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -186,14 +183,12 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
         }
 
         void innerError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 if (errorMode != ErrorMode.END) {
                     upstream.cancel();
                 }
                 this.state = STATE_INACTIVE;
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 
@@ -261,7 +256,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                             Exceptions.throwIfFatal(ex);
                             upstream.cancel();
                             queue.clear();
-                            errors.addThrowable(ex);
+                            errors.tryAddThrowableOrReport(ex);
                             errors.tryTerminateConsumer(downstream);
                             return;
                         }

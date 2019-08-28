@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps a sequence of values into CompletableSources and awaits their termination.
@@ -108,7 +107,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         @Override
         public void onError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
                         errors.tryTerminateConsumer(downstream);
@@ -121,8 +120,6 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
                         errors.tryTerminateConsumer(downstream);
                     }
                 }
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

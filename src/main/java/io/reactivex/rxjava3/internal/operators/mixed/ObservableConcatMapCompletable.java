@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
@@ -136,7 +135,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     disposed = true;
                     inner.dispose();
@@ -148,8 +147,6 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     done = true;
                     drain();
                 }
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -176,7 +173,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
         }
 
         void innerError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     disposed = true;
                     upstream.dispose();
@@ -188,8 +185,6 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     active = false;
                     drain();
                 }
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 
@@ -237,11 +232,8 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                         disposed = true;
                         queue.clear();
                         upstream.dispose();
-                        if (errors.addThrowable(ex)) {
-                            errors.tryTerminateConsumer(downstream);
-                        } else {
-                            RxJavaPlugins.onError(ex);
-                        }
+                        errors.tryAddThrowableOrReport(ex);
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 

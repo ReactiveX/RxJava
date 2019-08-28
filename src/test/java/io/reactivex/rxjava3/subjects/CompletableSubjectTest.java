@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
@@ -129,7 +130,7 @@ public class CompletableSubjectTest extends RxJavaTest {
             cs.onError(null);
             fail("No NullPointerException thrown");
         } catch (NullPointerException ex) {
-            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onError called with a null Throwable."), ex.getMessage());
         }
 
         cs.test().assertEmpty().dispose();

@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.internal.disposables.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class SingleCreate<T> extends Single<T> {
@@ -62,7 +63,7 @@ public final class SingleCreate<T> extends Single<T> {
                 if (d != DisposableHelper.DISPOSED) {
                     try {
                         if (value == null) {
-                            downstream.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
+                            downstream.onError(ExceptionHelper.createNullPointerException("onSuccess called with a null value."));
                         } else {
                             downstream.onSuccess(value);
                         }
@@ -85,7 +86,7 @@ public final class SingleCreate<T> extends Single<T> {
         @Override
         public boolean tryOnError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+                t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }
             if (get() != DisposableHelper.DISPOSED) {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);

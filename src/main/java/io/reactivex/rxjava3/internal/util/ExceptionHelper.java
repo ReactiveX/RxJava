@@ -143,4 +143,41 @@ public final class ExceptionHelper {
             return this;
         }
     }
+
+    /**
+     * Composes a String with a null warning message.
+     * @param prefix the prefix to add to the message.
+     * @return the composed String
+     * @since 3.0.0
+     */
+    public static String nullWarning(String prefix) {
+        return prefix + " Null values are generally not allowed in 3.x operators and sources.";
+    }
+
+    /**
+     * Creates a NullPointerException with a composed message via {@link #nullWarning(String)}.
+     * @param prefix the prefix to add to the message.
+     * @return the composed String
+     * @since 3.0.0
+     */
+    public static NullPointerException createNullPointerException(String prefix) {
+        return new NullPointerException(nullWarning(prefix));
+    }
+
+    /**
+     * Similar to ObjectHelper.requireNonNull but composes the error message via
+     * {@link #nullWarning(String)}.
+     * @param <T> the value type
+     * @param value the value to check
+     * @param prefix the prefix to the error message
+     * @return the value
+     * @throws NullPointerException if value is null
+     * @since 3.0.0
+     */
+    public static <T> T nullCheck(T value, String prefix) {
+        if (value == null) {
+            throw createNullPointerException(prefix);
+        }
+        return value;
+    }
 }

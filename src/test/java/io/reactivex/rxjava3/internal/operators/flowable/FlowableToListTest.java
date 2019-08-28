@@ -26,6 +26,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -244,7 +245,7 @@ public class FlowableToListTest extends RxJavaTest {
         .toFlowable()
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
-        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+        .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
     @SuppressWarnings("unchecked")
@@ -273,7 +274,7 @@ public class FlowableToListTest extends RxJavaTest {
         })
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
-        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+        .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
     @Test

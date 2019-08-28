@@ -18,6 +18,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableGenerate<T, S> extends Observable<T> {
@@ -141,7 +142,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                     onError(new IllegalStateException("onNext already called in this generate turn"));
                 } else {
                     if (t == null) {
-                        onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                        onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                     } else {
                         hasNext = true;
                         downstream.onNext(t);
@@ -156,7 +157,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 RxJavaPlugins.onError(t);
             } else {
                 if (t == null) {
-                    t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+                    t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
                 }
                 terminate = true;
                 downstream.onError(t);

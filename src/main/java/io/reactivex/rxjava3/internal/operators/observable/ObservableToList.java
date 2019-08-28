@@ -20,7 +20,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.*;
+import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class ObservableToList<T, U extends Collection<? super T>>
 extends AbstractObservableWithUpstream<T, U> {
@@ -42,7 +43,7 @@ extends AbstractObservableWithUpstream<T, U> {
     public void subscribeActual(Observer<? super U> t) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.get(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+            coll = ExceptionHelper.nullCheck(collectionSupplier.get(), "The collectionSupplier returned a null Collection.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);

@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
     final ObservableSource<? extends T>[] sources;
@@ -168,7 +167,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     if (!delayError && errors.get() != null) {
                         cancelSources();
                         clear(q);
-                        a.onError(errors.terminate());
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -178,12 +177,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
                     if (d && empty) {
                         clear(q);
-                        Throwable ex = errors.terminate();
-                        if (ex == null) {
-                            a.onComplete();
-                        } else {
-                            a.onError(ex);
-                        }
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -197,11 +191,10 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                         v = ObjectHelper.requireNonNull(combiner.apply(s), "The combiner returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        errors.addThrowable(ex);
+                        errors.tryAddThrowableOrReport(ex);
                         cancelSources();
                         clear(q);
-                        ex = errors.terminate();
-                        a.onError(ex);
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -239,7 +232,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         void innerError(int index, Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 boolean cancelOthers = true;
                 if (delayError) {
                     synchronized (this) {
@@ -258,8 +251,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     cancelSources();
                 }
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 

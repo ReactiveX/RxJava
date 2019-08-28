@@ -122,15 +122,13 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 observers.dispose();
                 synchronized (this) {
                     buffers = null;
                 }
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -252,8 +250,7 @@ extends AbstractObservableWithUpstream<T, U> {
                     boolean d = done;
                     if (d && errors.get() != null) {
                         q.clear();
-                        Throwable ex = errors.terminate();
-                        a.onError(ex);
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 

@@ -107,11 +107,9 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
         @Override
         public void onError(Throwable e) {
             boundarySubscriber.dispose();
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -151,11 +149,9 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
         void innerError(Throwable e) {
             SubscriptionHelper.cancel(upstream);
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -248,7 +244,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                         } else {
                             SubscriptionHelper.cancel(upstream);
                             boundarySubscriber.dispose();
-                            errors.addThrowable(new MissingBackpressureException("Could not deliver a window due to lack of requests"));
+                            errors.tryAddThrowableOrReport(new MissingBackpressureException("Could not deliver a window due to lack of requests"));
                             done = true;
                         }
                     }
