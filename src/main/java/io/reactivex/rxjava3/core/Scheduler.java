@@ -74,7 +74,7 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
  * based on the relative time between it and {@link Worker#now(TimeUnit)}. However, drifts or changes in the
  * system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
- * {@code rx2.scheduler.drift-tolerance} in minutes) to detect a drift in {@link Worker#now(TimeUnit)} and
+ * {@code rx3.scheduler.drift-tolerance} in minutes) to detect a drift in {@link Worker#now(TimeUnit)} and
  * re-adjust the absolute/relative time calculation accordingly.
  * <p>
  * The default implementations of {@link #start()} and {@link #shutdown()} do nothing and should be overridden if the
@@ -92,17 +92,17 @@ public abstract class Scheduler {
     /**
      * The tolerance for a clock drift in nanoseconds where the periodic scheduler will rebase.
      * <p>
-     * The associated system parameter, {@code rx2.scheduler.drift-tolerance}, expects its value in minutes.
+     * The associated system parameter, {@code rx3.scheduler.drift-tolerance}, expects its value in minutes.
      */
     static final long CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
     static {
         CLOCK_DRIFT_TOLERANCE_NANOSECONDS = TimeUnit.MINUTES.toNanos(
-                Long.getLong("rx2.scheduler.drift-tolerance", 15));
+                Long.getLong("rx3.scheduler.drift-tolerance", 15));
     }
 
     /**
      * Returns the clock drift tolerance in nanoseconds.
-     * <p>Related system property: {@code rx2.scheduler.drift-tolerance} in minutes.
+     * <p>Related system property: {@code rx3.scheduler.drift-tolerance} in minutes.
      * @return the tolerance in nanoseconds
      * @since 2.0
      */
@@ -345,7 +345,7 @@ public abstract class Scheduler {
      * based on the relative time between it and {@link #now(TimeUnit)}. However, drifts or changes in the
      * system clock would affect this calculation either by scheduling subsequent runs too frequently or too far apart.
      * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
-     * {@code rx2.scheduler.drift-tolerance} in minutes) to detect a drift in {@link #now(TimeUnit)} and
+     * {@code rx3.scheduler.drift-tolerance} in minutes) to detect a drift in {@link #now(TimeUnit)} and
      * re-adjust the absolute/relative time calculation accordingly.
      * <p>
      * If the {@code Worker} is disposed, the {@code schedule} methods

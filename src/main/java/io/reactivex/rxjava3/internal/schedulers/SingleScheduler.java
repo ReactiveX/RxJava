@@ -31,7 +31,7 @@ public final class SingleScheduler extends Scheduler {
     final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<ScheduledExecutorService>();
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_SINGLE_PRIORITY = "rx2.single-priority";
+    private static final String KEY_SINGLE_PRIORITY = "rx3.single-priority";
 
     private static final String THREAD_NAME_PREFIX = "RxSingleScheduler";
 

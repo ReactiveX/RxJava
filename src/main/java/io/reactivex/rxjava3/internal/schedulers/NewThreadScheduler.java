@@ -32,7 +32,7 @@ public final class NewThreadScheduler extends Scheduler {
     private static final RxThreadFactory THREAD_FACTORY;
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
-    private static final String KEY_NEWTHREAD_PRIORITY = "rx2.newthread-priority";
+    private static final String KEY_NEWTHREAD_PRIORITY = "rx3.newthread-priority";
 
     static {
         int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
