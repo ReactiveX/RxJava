@@ -146,7 +146,7 @@ implements HasUpstreamObservableSource<T>, ResettableConnectable {
         Throwable error;
 
         @SuppressWarnings("unchecked")
-        public PublishConnection(AtomicReference<PublishConnection<T>> current) {
+        PublishConnection(AtomicReference<PublishConnection<T>> current) {
             this.connect = new AtomicBoolean();
             this.current = current;
             this.upstream = new AtomicReference<Disposable>();
@@ -261,7 +261,7 @@ implements HasUpstreamObservableSource<T>, ResettableConnectable {
 
         final Observer<? super T> downstream;
 
-        public InnerDisposable(Observer<? super T> downstream, PublishConnection<T> parent) {
+        InnerDisposable(Observer<? super T> downstream, PublishConnection<T> parent) {
             this.downstream = downstream;
             lazySet(parent);
         }

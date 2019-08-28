@@ -18,12 +18,11 @@ package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.util.Properties;
-
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
-import io.reactivex.internal.schedulers.SchedulerPoolFactory.PurgeProperties;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 
 public class SchedulerPoolFactoryTest {
@@ -78,53 +77,66 @@ public class SchedulerPoolFactoryTest {
     }
 
     @Test
-    public void loadPurgeProperties() {
-        Properties props1 = new Properties();
-
-        PurgeProperties pp = new PurgeProperties();
-        pp.load(props1);
-
-        assertTrue(pp.purgeEnable);
-        assertEquals(pp.purgePeriod, 1);
+    public void boolPropertiesDisabledReturnsDefaultDisabled() throws Throwable {
+        assertTrue(SchedulerPoolFactory.getBooleanProperty(false, "key", false, true, failingPropertiesAccessor));
+        assertFalse(SchedulerPoolFactory.getBooleanProperty(false, "key", true, false, failingPropertiesAccessor));
     }
 
     @Test
-    public void loadPurgePropertiesDisabled() {
-        Properties props1 = new Properties();
-        props1.setProperty(SchedulerPoolFactory.PURGE_ENABLED_KEY, "false");
-
-        PurgeProperties pp = new PurgeProperties();
-        pp.load(props1);
-
-        assertFalse(pp.purgeEnable);
-        assertEquals(pp.purgePeriod, 1);
+    public void boolPropertiesEnabledMissingReturnsDefaultMissing() throws Throwable {
+        assertTrue(SchedulerPoolFactory.getBooleanProperty(true, "key", true, false, missingPropertiesAccessor));
+        assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "key", false, true, missingPropertiesAccessor));
     }
 
     @Test
-    public void loadPurgePropertiesEnabledCustomPeriod() {
-        Properties props1 = new Properties();
-        props1.setProperty(SchedulerPoolFactory.PURGE_ENABLED_KEY, "true");
-        props1.setProperty(SchedulerPoolFactory.PURGE_PERIOD_SECONDS_KEY, "2");
-
-        PurgeProperties pp = new PurgeProperties();
-        pp.load(props1);
-
-        assertTrue(pp.purgeEnable);
-        assertEquals(pp.purgePeriod, 2);
+    public void boolPropertiesFailureReturnsDefaultMissing() throws Throwable {
+        assertTrue(SchedulerPoolFactory.getBooleanProperty(true, "key", true, false, failingPropertiesAccessor));
+        assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "key", false, true, failingPropertiesAccessor));
     }
 
     @Test
-    public void loadPurgePropertiesEnabledCustomPeriodNaN() {
-        Properties props1 = new Properties();
-        props1.setProperty(SchedulerPoolFactory.PURGE_ENABLED_KEY, "true");
-        props1.setProperty(SchedulerPoolFactory.PURGE_PERIOD_SECONDS_KEY, "abc");
-
-        PurgeProperties pp = new PurgeProperties();
-        pp.load(props1);
-
-        assertTrue(pp.purgeEnable);
-        assertEquals(pp.purgePeriod, 1);
+    public void boolPropertiesReturnsValue() throws Throwable {
+        assertTrue(SchedulerPoolFactory.getBooleanProperty(true, "true", true, false, Functions.<String>identity()));
+        assertFalse(SchedulerPoolFactory.getBooleanProperty(true, "false", false, true, Functions.<String>identity()));
     }
+
+    @Test
+    public void intPropertiesDisabledReturnsDefaultDisabled() throws Throwable {
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(false, "key", 0, -1, failingPropertiesAccessor));
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(false, "key", 1, -1, failingPropertiesAccessor));
+    }
+
+    @Test
+    public void intPropertiesEnabledMissingReturnsDefaultMissing() throws Throwable {
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 0, missingPropertiesAccessor));
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 1, missingPropertiesAccessor));
+    }
+
+    @Test
+    public void intPropertiesFailureReturnsDefaultMissing() throws Throwable {
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 0, failingPropertiesAccessor));
+        assertEquals(-1, SchedulerPoolFactory.getIntProperty(true, "key", -1, 1, failingPropertiesAccessor));
+    }
+
+    @Test
+    public void intPropertiesReturnsValue() throws Throwable {
+        assertEquals(1, SchedulerPoolFactory.getIntProperty(true, "1", 0, 4, Functions.<String>identity()));
+        assertEquals(2, SchedulerPoolFactory.getIntProperty(true, "2", 3, 5, Functions.<String>identity()));
+    }
+
+    static final Function<String, String> failingPropertiesAccessor = new Function<String, String>() {
+        @Override
+        public String apply(String v) throws Exception {
+            throw new SecurityException();
+        }
+    };
+
+    static final Function<String, String> missingPropertiesAccessor = new Function<String, String>() {
+        @Override
+        public String apply(String v) throws Exception {
+            return null;
+        }
+    };
 
     @Test
     public void putIntoPoolNoPurge() {

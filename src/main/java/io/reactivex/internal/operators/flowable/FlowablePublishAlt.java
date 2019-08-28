@@ -62,6 +62,7 @@ implements HasUpstreamPublisher<T>, ResettableConnectable {
     }
 
     /**
+     * The internal buffer size of this FloawblePublishAlt operator.
      * @return The internal buffer size of this FloawblePublishAlt operator.
      */
     public int publishBufferSize() {

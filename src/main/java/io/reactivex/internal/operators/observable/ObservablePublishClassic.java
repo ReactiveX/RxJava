@@ -30,6 +30,7 @@ import io.reactivex.ObservableSource;
 public interface ObservablePublishClassic<T> {
 
     /**
+     * The upstream source of this publish operator.
      * @return the upstream source of this publish operator
      */
     ObservableSource<T> publishSource();

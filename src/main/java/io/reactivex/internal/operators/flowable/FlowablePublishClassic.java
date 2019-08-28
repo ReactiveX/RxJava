@@ -30,11 +30,13 @@ import org.reactivestreams.Publisher;
 public interface FlowablePublishClassic<T> {
 
     /**
+     * The upstream source of this publish operator.
      * @return the upstream source of this publish operator
      */
     Publisher<T> publishSource();
 
     /**
+     * The internal buffer size of this publish operator.
      * @return the internal buffer size of this publish operator
      */
     int publishBufferSize();

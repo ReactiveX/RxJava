@@ -79,6 +79,7 @@ implements HasUpstreamPublisher<T>, FlowablePublishClassic<T> {
     }
 
     /**
+     * The internal buffer size of this FloawblePublish operator.
      * @return The internal buffer size of this FloawblePublish operator.
      */
     @Override

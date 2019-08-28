@@ -555,7 +555,6 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @return this
      * @since 2.2
      */
-    @SuppressWarnings("unchecked")
     public final U assertValuesOnly(T... values) {
         return assertSubscribed()
                 .assertValues(values)
