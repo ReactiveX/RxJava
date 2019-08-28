@@ -281,7 +281,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -298,9 +298,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources,
+    public static <T, R> Observable<R> combineLatestArray(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, bufferSize());
+        return combineLatestArray(sources, combiner, bufferSize());
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -343,7 +343,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources,
+    public static <T, R> Observable<R> combineLatestArray(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -394,7 +394,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
-        return combineLatest(new ObservableSource[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -439,7 +439,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -488,7 +488,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -542,7 +542,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -600,7 +600,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -663,7 +663,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -730,7 +730,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -802,7 +802,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
         ObjectHelper.requireNonNull(source9, "source9 is null");
-        return combineLatest(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**

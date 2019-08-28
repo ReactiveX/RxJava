@@ -773,7 +773,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void combineLatestArrayOfSources() {
 
-        Observable.combineLatest(new ObservableSource[] {
+        Observable.combineLatestArray(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
         }, new Function<Object[], Object>() {
             @Override
@@ -851,8 +851,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void combineLatestEmpty() {
-        assertSame(Observable.empty(), Observable.combineLatest(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+    public void combineLatestArrayEmpty() {
+        assertSame(Observable.empty(), Observable.combineLatestArray(new ObservableSource[0], Functions.<Object[]>identity(), 16));
     }
 
     @SuppressWarnings("unchecked")

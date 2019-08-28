@@ -1062,7 +1062,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void combineLatestNSources() {
+    public void combineLatestArrayNSources() {
         for (int i = 1; i < 100; i++) {
             Flowable<Integer>[] sources = new Flowable[i];
             Arrays.fill(sources, Flowable.just(1));
@@ -1071,7 +1071,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                 expected.add(1);
             }
 
-            Flowable.combineLatest(sources, new Function<Object[], List<Object>>() {
+            Flowable.combineLatestArray(sources, new Function<Object[], List<Object>>() {
                 @Override
                 public List<Object> apply(Object[] t) throws Exception {
                     return Arrays.asList(t);
@@ -1095,7 +1095,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @Test
     public void combineLatestArrayOfSources() {
 
-        Flowable.combineLatest(new Flowable[] {
+        Flowable.combineLatestArray(new Flowable[] {
                 Flowable.just(1), Flowable.just(2)
         }, new Function<Object[], Object>() {
             @Override
@@ -1173,8 +1173,8 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void combineLatestEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatest(new Flowable[0], Functions.<Object[]>identity(), 16));
+    public void combineLatestArrayEmpty() {
+        assertSame(Flowable.empty(), Flowable.combineLatestArray(new Flowable[0], Functions.<Object[]>identity(), 16));
     }
 
     @SuppressWarnings("unchecked")
