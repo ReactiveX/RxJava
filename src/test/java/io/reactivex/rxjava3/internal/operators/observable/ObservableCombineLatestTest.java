@@ -926,15 +926,14 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void errorDelayed() {
         Observable.combineLatestDelayError(
+                new ObservableSource[] { Observable.error(new TestException()), Observable.just(1) },
                 new Function<Object[], Object>() {
                     @Override
                     public Object apply(Object[] a) throws Exception {
                         return a;
                     }
                 },
-                128,
-                Observable.error(new TestException()),
-                Observable.just(1)
+                128
         )
         .test()
         .assertFailure(TestException.class);
@@ -944,15 +943,14 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @Test
     public void errorDelayed2() {
         Observable.combineLatestDelayError(
+                new ObservableSource[] { Observable.error(new TestException()).startWithItem(1), Observable.empty() },
                 new Function<Object[], Object>() {
                     @Override
                     public Object apply(Object[] a) throws Exception {
                         return a;
                     }
                 },
-                128,
-                Observable.error(new TestException()).startWithItem(1),
-                Observable.empty()
+                128
         )
         .test()
         .assertFailure(TestException.class);

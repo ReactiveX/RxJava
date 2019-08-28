@@ -77,27 +77,6 @@ public class FlowableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, (Publisher<Object>[])null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsOneIsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, Flowable.never(), null).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void combineLatestIterableNull() {
         Flowable.combineLatestDelayError((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
             @Override
@@ -131,23 +110,6 @@ public class FlowableNullTests extends RxJavaTest {
                 return 1;
             }
         }).blockingLast();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsFunctionNull() {
-        Flowable.combineLatestDelayError(null, Flowable.never());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, just1).blockingLast();
     }
 
     @SuppressWarnings("unchecked")
@@ -2759,12 +2721,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.combineLatestDelayError(Arrays.asList(just1), null, 128);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsFunctionNull() {
-        Flowable.combineLatestDelayError(null, 128, Flowable.never());
-    }
-
     @Test(expected = NullPointerException.class)
     public void zipFlowableNull() {
         Flowable.zip((Flowable<Flowable<Object>>)null, new Function<Object[], Object>() {
@@ -2793,27 +2749,6 @@ public class FlowableNullTests extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void concatFlowableNull() {
         Flowable.concat((Flowable<Flowable<Object>>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, (Flowable<Object>[])null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsOneIsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, Flowable.never(), null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2875,16 +2810,5 @@ public class FlowableNullTests extends RxJavaTest {
     @Test(expected = NullPointerException.class)
     public void sampleFlowableNull() {
         just1.sample(null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128, just1).blockingLast();
     }
 }
