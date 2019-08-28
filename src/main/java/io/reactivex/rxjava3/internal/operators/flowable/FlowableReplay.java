@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.rxjava3.internal.subscribers.SubscriberResourceWrapper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -1112,7 +1111,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         protected void subscribeActual(Subscriber<? super R> child) {
             ConnectableFlowable<U> cf;
             try {
-                cf = ObjectHelper.requireNonNull(connectableFactory.get(), "The connectableFactory returned null");
+                cf = ExceptionHelper.nullCheck(connectableFactory.get(), "The connectableFactory returned a null ConnectableFlowable.");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);
@@ -1121,7 +1120,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             Publisher<R> observable;
             try {
-                observable = ObjectHelper.requireNonNull(selector.apply(cf), "The selector returned a null Publisher");
+                observable = ExceptionHelper.nullCheck(selector.apply(cf), "The selector returned a null Publisher.");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);

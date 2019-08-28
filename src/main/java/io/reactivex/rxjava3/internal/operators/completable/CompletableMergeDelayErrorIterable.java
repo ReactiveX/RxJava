@@ -49,8 +49,8 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
 
         final AtomicInteger wip = new AtomicInteger(1);
 
-        final AtomicThrowable error = new AtomicThrowable();
-        set.add(new TryTerminateAndReportDisposable(error));
+        final AtomicThrowable errors = new AtomicThrowable();
+        set.add(new TryTerminateAndReportDisposable(errors));
 
         for (;;) {
             if (set.isDisposed()) {
@@ -62,7 +62,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
                 b = iterator.hasNext();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                error.addThrowable(e);
+                errors.tryAddThrowableOrReport(e);
                 break;
             }
 
@@ -80,7 +80,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
                 c = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null CompletableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                error.addThrowable(e);
+                errors.tryAddThrowableOrReport(e);
                 break;
             }
 
@@ -90,11 +90,11 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
 
             wip.getAndIncrement();
 
-            c.subscribe(new MergeInnerCompletableObserver(observer, set, error, wip));
+            c.subscribe(new MergeInnerCompletableObserver(observer, set, errors, wip));
         }
 
         if (wip.decrementAndGet() == 0) {
-            error.tryTerminateConsumer(observer);
+            errors.tryTerminateConsumer(observer);
         }
     }
 }

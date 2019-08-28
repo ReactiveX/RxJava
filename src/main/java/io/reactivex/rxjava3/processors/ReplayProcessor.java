@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -353,7 +353,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (done) {
             return;
@@ -370,7 +370,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
 
         if (done) {
             RxJavaPlugins.onError(t);

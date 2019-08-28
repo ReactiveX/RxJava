@@ -250,7 +250,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (terminalEvent.get() != null) {
             return;
@@ -264,7 +264,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     @Override
     public void onError(Throwable t) {
-        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
             return;

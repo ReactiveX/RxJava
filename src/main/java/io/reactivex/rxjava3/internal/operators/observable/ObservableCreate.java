@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.functions.Cancellable;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.rxjava3.internal.util.AtomicThrowable;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableCreate<T> extends Observable<T> {
@@ -59,7 +59,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public void onNext(T t) {
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
             if (!isDisposed()) {
@@ -77,7 +77,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public boolean tryOnError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+                t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }
             if (!isDisposed()) {
                 try {
@@ -145,7 +145,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         final ObservableEmitter<T> emitter;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final SpscLinkedArrayQueue<T> queue;
 
@@ -153,7 +153,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         SerializedEmitter(ObservableEmitter<T> emitter) {
             this.emitter = emitter;
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             this.queue = new SpscLinkedArrayQueue<T>(16);
         }
 
@@ -163,7 +163,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                 return;
             }
             if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                 return;
             }
             if (get() == 0 && compareAndSet(0, 1)) {
@@ -196,9 +196,9 @@ public final class ObservableCreate<T> extends Observable<T> {
                 return false;
             }
             if (t == null) {
-                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+                t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
             }
-            if (error.addThrowable(t)) {
+            if (errors.tryAddThrowable(t)) {
                 done = true;
                 drain();
                 return true;
@@ -224,7 +224,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         void drainLoop() {
             ObservableEmitter<T> e = emitter;
             SpscLinkedArrayQueue<T> q = queue;
-            AtomicThrowable error = this.error;
+            AtomicThrowable errors = this.errors;
             int missed = 1;
             for (;;) {
 
@@ -234,9 +234,9 @@ public final class ObservableCreate<T> extends Observable<T> {
                         return;
                     }
 
-                    if (error.get() != null) {
+                    if (errors.get() != null) {
                         q.clear();
-                        e.onError(error.terminate());
+                        errors.tryTerminateConsumer(e);
                         return;
                     }
 

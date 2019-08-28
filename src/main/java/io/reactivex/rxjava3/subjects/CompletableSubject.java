@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -119,7 +119,7 @@ public final class CompletableSubject extends Completable implements Completable
 
     @Override
     public void onError(Throwable e) {
-        ObjectHelper.requireNonNull(e, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(e, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (CompletableDisposable md : observers.getAndSet(TERMINATED)) {

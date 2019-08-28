@@ -146,11 +146,8 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                             } catch (Throwable exc) {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
-                                if (errors.addThrowable(exc)) {
-                                    errors.tryTerminateConsumer(downstream);
-                                } else {
-                                    RxJavaPlugins.onError(exc);
-                                }
+                                errors.tryAddThrowableOrReport(exc);
+                                errors.tryTerminateConsumer(downstream);
                                 return;
                             }
                             v1 = a;
@@ -165,11 +162,8 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                             } catch (Throwable exc) {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
-                                if (errors.addThrowable(exc)) {
-                                    errors.tryTerminateConsumer(downstream);
-                                } else {
-                                    RxJavaPlugins.onError(exc);
-                                }
+                                errors.tryAddThrowableOrReport(exc);
+                                errors.tryTerminateConsumer(downstream);
                                 return;
                             }
                             v2 = b;
@@ -198,7 +192,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();
-                            errors.addThrowable(exc);
+                            errors.tryAddThrowableOrReport(exc);
                             errors.tryTerminateConsumer(downstream);
                             return;
                         }
@@ -241,10 +235,8 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
         @Override
         public void innerError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
     }

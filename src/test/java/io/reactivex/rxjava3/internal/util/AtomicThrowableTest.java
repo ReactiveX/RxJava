@@ -248,4 +248,86 @@ public class AtomicThrowableTest extends RxJavaTest {
         ex.tryTerminateConsumer((CompletableObserver)to);
         to.assertEmpty();
     }
+
+    static <T> Emitter<T> wrapToEmitter(final Observer<T> observer) {
+        return new Emitter<T>() {
+            @Override
+            public void onNext(T value) {
+                observer.onNext(value);
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                observer.onError(error);
+            }
+
+            @Override
+            public void onComplete() {
+                observer.onComplete();
+            }
+        };
+    }
+
+    @Test
+    public void tryTerminateConsumerEmitterNoError() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        to.onSubscribe(Disposables.empty());
+
+        AtomicThrowable ex = new AtomicThrowable();
+        ex.tryTerminateConsumer(wrapToEmitter(to));
+        to.assertResult();
+    }
+
+    @Test
+    public void tryTerminateConsumerEmitterError() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        to.onSubscribe(Disposables.empty());
+
+        AtomicThrowable ex = new AtomicThrowable();
+        ex.set(new TestException());
+        ex.tryTerminateConsumer(wrapToEmitter(to));
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void tryTerminateConsumerEmitterTerminated() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        to.onSubscribe(Disposables.empty());
+
+        AtomicThrowable ex = new AtomicThrowable();
+        ex.terminate();
+        ex.tryTerminateConsumer(wrapToEmitter(to));
+        to.assertEmpty();
+    }
+
+    @Test
+    public void tryAddThrowableOrReportNull() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicThrowable ex = new AtomicThrowable();
+            ex.tryAddThrowableOrReport(new TestException());
+
+            assertTrue("" + errors, errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void tryAddThrowableOrReportTerminated() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicThrowable ex = new AtomicThrowable();
+            ex.terminate();
+
+            assertFalse(ex.tryAddThrowableOrReport(new TestException()));
+
+            assertFalse("" + errors, errors.isEmpty());
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

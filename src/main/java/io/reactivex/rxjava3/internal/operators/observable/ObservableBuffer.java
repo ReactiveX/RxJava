@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
     final int count;
@@ -184,7 +185,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+                    b = ExceptionHelper.nullCheck(bufferSupplier.get(), "The bufferSupplier returned a null Collection.");
                 } catch (Throwable e) {
                     buffers.clear();
                     upstream.dispose();

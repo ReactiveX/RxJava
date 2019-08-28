@@ -21,7 +21,6 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Merges an Observable and a Single by emitting the items of the Observable and the success
@@ -105,11 +104,9 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
         @Override
         public void onError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 DisposableHelper.dispose(otherObserver);
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 
@@ -151,11 +148,9 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
         }
 
         void otherError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 DisposableHelper.dispose(mainDisposable);
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 

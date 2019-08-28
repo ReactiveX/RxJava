@@ -133,7 +133,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
         @Override
         public void onError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
                         errors.tryTerminateConsumer(downstream);
@@ -150,8 +150,6 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
                         errors.tryTerminateConsumer(downstream);
                     }
                 }
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

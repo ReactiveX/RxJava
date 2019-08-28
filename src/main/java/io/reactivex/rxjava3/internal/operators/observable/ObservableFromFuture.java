@@ -17,8 +17,8 @@ import java.util.concurrent.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.DeferredScalarDisposable;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class ObservableFromFuture<T> extends Observable<T> {
     final Future<? extends T> future;
@@ -38,7 +38,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
         if (!d.isDisposed()) {
             T v;
             try {
-                v = ObjectHelper.requireNonNull(unit != null ? future.get(timeout, unit) : future.get(), "Future returned null");
+                v = ExceptionHelper.nullCheck(unit != null ? future.get(timeout, unit) : future.get(), "Future returned a null value.");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {

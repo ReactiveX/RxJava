@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subjects.UnicastSubject;
 import io.reactivex.rxjava3.testsupport.*;
@@ -194,7 +195,7 @@ public class ObservableDistinctTest extends RxJavaTest {
         })
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(NullPointerException.class)
-        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+        .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
     @Test

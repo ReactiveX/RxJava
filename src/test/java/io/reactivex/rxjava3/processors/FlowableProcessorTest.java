@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public abstract class FlowableProcessorTest<T>  extends RxJavaTest {
 
@@ -31,7 +32,7 @@ public abstract class FlowableProcessorTest<T>  extends RxJavaTest {
             p.onNext(null);
             fail("No NullPointerException thrown");
         } catch (NullPointerException ex) {
-            assertEquals("onNext called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onNext called with a null value."), ex.getMessage());
         }
 
         p.test().assertEmpty().cancel();
@@ -45,7 +46,7 @@ public abstract class FlowableProcessorTest<T>  extends RxJavaTest {
             p.onError(null);
             fail("No NullPointerException thrown");
         } catch (NullPointerException ex) {
-            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onError called with a null Throwable."), ex.getMessage());
         }
 
         p.test().assertEmpty().cancel();

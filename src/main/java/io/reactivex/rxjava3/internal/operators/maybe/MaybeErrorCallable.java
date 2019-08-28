@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 /**
  * Signals a Throwable returned by a Supplier.
@@ -38,7 +38,7 @@ public final class MaybeErrorCallable<T> extends Maybe<T> {
         Throwable ex;
 
         try {
-            ex = ObjectHelper.requireNonNull(errorSupplier.get(), "Supplier returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
+            ex = ExceptionHelper.nullCheck(errorSupplier.get(), "Supplier returned a null Throwable.");
         } catch (Throwable ex1) {
             Exceptions.throwIfFatal(ex1);
             ex = ex1;

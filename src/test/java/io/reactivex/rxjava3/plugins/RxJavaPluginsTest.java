@@ -45,6 +45,7 @@ import io.reactivex.rxjava3.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.rxjava3.internal.operators.single.SingleJust;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.ScalarSubscription;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -1534,7 +1535,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.onError(null);
 
             final Throwable throwable = t.get();
-            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", throwable.getMessage());
+            assertEquals(ExceptionHelper.nullWarning("onError called with a null Throwable."), throwable.getMessage());
             assertTrue(throwable instanceof NullPointerException);
         } finally {
             RxJavaPlugins.reset();

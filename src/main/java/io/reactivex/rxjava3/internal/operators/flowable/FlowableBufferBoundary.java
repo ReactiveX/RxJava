@@ -130,15 +130,13 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 subscribers.dispose();
                 synchronized (this) {
                     buffers = null;
                 }
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -264,8 +262,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                     boolean d = done;
                     if (d && errors.get() != null) {
                         q.clear();
-                        Throwable ex = errors.terminate();
-                        a.onError(ex);
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -294,8 +291,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                     if (done) {
                         if (errors.get() != null) {
                             q.clear();
-                            Throwable ex = errors.terminate();
-                            a.onError(ex);
+                            errors.tryTerminateConsumer(a);
                             return;
                         } else if (q.isEmpty()) {
                             a.onComplete();

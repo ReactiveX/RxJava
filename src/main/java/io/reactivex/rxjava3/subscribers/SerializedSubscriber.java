@@ -78,7 +78,7 @@ public final class SerializedSubscriber<T> implements FlowableSubscriber<T>, Sub
         }
         if (t == null) {
             upstream.cancel();
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
             return;
         }
         synchronized (this) {

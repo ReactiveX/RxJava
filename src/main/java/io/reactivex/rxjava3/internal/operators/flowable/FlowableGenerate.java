@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
-import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
@@ -167,7 +167,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     onError(new IllegalStateException("onNext already called in this generate turn"));
                 } else {
                     if (t == null) {
-                        onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                        onError(ExceptionHelper.createNullPointerException("onNext called with a null value."));
                     } else {
                         hasNext = true;
                         downstream.onNext(t);
@@ -182,7 +182,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                 RxJavaPlugins.onError(t);
             } else {
                 if (t == null) {
-                    t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+                    t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
                 }
                 terminate = true;
                 downstream.onError(t);

@@ -18,9 +18,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -238,7 +237,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         for (PublishSubscription<T> s : subscribers.get()) {
             s.onNext(t);
         }
@@ -247,7 +246,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
             return;
@@ -277,8 +276,8 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * This method should be called in a sequential manner just like the onXXX methods
      * of the PublishProcessor.
      * <p>
-     * Calling with null will terminate the PublishProcessor and a NullPointerException
-     * is signalled to the Subscribers.
+     * Calling with a null value will terminate the PublishProcessor and a NullPointerException
+     * is signaled to the Subscribers.
      * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
@@ -286,7 +285,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      */
     public boolean offer(T t) {
         if (t == null) {
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
             return true;
         }
         PublishSubscription<T>[] array = subscribers.get();

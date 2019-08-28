@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscribers.*;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
@@ -142,11 +141,9 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -209,14 +206,12 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         @Override
         public void innerError(InnerQueuedSubscriber<R> inner, Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 inner.setDone();
                 if (errorMode != ErrorMode.END) {
                     upstream.cancel();
                 }
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

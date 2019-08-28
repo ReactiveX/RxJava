@@ -18,8 +18,8 @@ import java.util.concurrent.Callable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.DeferredScalarDisposable;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -43,7 +43,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
         }
         T value;
         try {
-            value = ObjectHelper.requireNonNull(callable.call(), "Callable returned null");
+            value = ExceptionHelper.nullCheck(callable.call(), "Callable returned a null value.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
@@ -58,6 +58,6 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        return ExceptionHelper.nullCheck(callable.call(), "The Callable returned a null value.");
     }
 }

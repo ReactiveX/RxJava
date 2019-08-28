@@ -141,14 +141,12 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (!delayErrors) {
                     disposeInner();
                 }
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -182,16 +180,16 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
 
         void innerError(SwitchMapSingleObserver<R> sender, Throwable ex) {
             if (inner.compareAndSet(sender, null)) {
-                if (errors.addThrowable(ex)) {
+                if (errors.tryAddThrowableOrReport(ex)) {
                     if (!delayErrors) {
                         upstream.cancel();
                         disposeInner();
                     }
                     drain();
-                    return;
                 }
+            } else {
+                RxJavaPlugins.onError(ex);
             }
-            RxJavaPlugins.onError(ex);
         }
 
         void drain() {

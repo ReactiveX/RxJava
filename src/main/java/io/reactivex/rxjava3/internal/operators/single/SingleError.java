@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class SingleError<T> extends Single<T> {
 
@@ -32,7 +32,7 @@ public final class SingleError<T> extends Single<T> {
         Throwable error;
 
         try {
-            error = ObjectHelper.requireNonNull(errorSupplier.get(), "Supplier returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
+            error = ExceptionHelper.nullCheck(errorSupplier.get(), "Supplier returned a null Throwable.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             error = e;

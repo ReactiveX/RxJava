@@ -368,11 +368,9 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
 
         @Override
         public void onError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -441,11 +439,8 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
                         Exceptions.throwIfFatal(ex);
                         cancelled = true;
                         this.upstream.dispose();
-                        if (errors.addThrowable(ex)) {
-                            errors.tryTerminateConsumer(downstream);
-                        } else {
-                            RxJavaPlugins.onError(ex);
-                        }
+                        errors.tryAddThrowableOrReport(ex);
+                        errors.tryTerminateConsumer(downstream);
                         worker.dispose();
                         return;
                     }
@@ -470,11 +465,8 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
                             cancelled = true;
                             this.upstream.dispose();
                             queue.clear();
-                            if (errors.addThrowable(ex)) {
-                                errors.tryTerminateConsumer(downstream);
-                            } else {
-                                RxJavaPlugins.onError(ex);
-                            }
+                            errors.tryAddThrowableOrReport(ex);
+                            errors.tryTerminateConsumer(downstream);
                             worker.dispose();
                             return;
                         }
@@ -486,7 +478,7 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
                                 w = ((Supplier<R>)o).get();
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
-                                errors.addThrowable(ex);
+                                errors.tryAddThrowableOrReport(ex);
                                 continue;
                             }
 
@@ -533,14 +525,12 @@ public final class ObservableConcatMapScheduler<T, U> extends AbstractObservable
             @Override
             public void onError(Throwable e) {
                 ConcatMapDelayErrorObserver<?, R> p = parent;
-                if (p.errors.addThrowable(e)) {
+                if (p.errors.tryAddThrowableOrReport(e)) {
                     if (!p.tillTheEnd) {
                         p.upstream.dispose();
                     }
                     p.active = false;
                     p.drain();
-                } else {
-                    RxJavaPlugins.onError(e);
                 }
             }
 

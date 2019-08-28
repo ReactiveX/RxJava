@@ -100,11 +100,9 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
         @Override
         public void onError(Throwable e) {
             boundaryObserver.dispose();
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -144,11 +142,9 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
 
         void innerError(Throwable e) {
             DisposableHelper.dispose(upstream);
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

@@ -20,6 +20,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class FlowableFromFuture<T> extends Flowable<T> {
     final Future<? extends T> future;
@@ -48,7 +49,7 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
             return;
         }
         if (v == null) {
-            s.onError(new NullPointerException("The future returned null"));
+            s.onError(ExceptionHelper.createNullPointerException("The future returned a null value."));
         } else {
             deferred.complete(v);
         }

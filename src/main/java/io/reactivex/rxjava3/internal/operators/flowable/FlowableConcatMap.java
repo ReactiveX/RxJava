@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
@@ -196,14 +195,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 inner.cancel();
 
                 if (getAndIncrement() == 0) {
                     errors.tryTerminateConsumer(downstream);
                 }
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -220,14 +217,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void innerError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     errors.tryTerminateConsumer(downstream);
                 }
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -266,7 +261,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             upstream.cancel();
-                            errors.addThrowable(e);
+                            errors.tryAddThrowableOrReport(e);
                             errors.tryTerminateConsumer(downstream);
                             return;
                         }
@@ -287,7 +282,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 Exceptions.throwIfFatal(e);
 
                                 upstream.cancel();
-                                errors.addThrowable(e);
+                                errors.tryAddThrowableOrReport(e);
                                 errors.tryTerminateConsumer(downstream);
                                 return;
                             }
@@ -313,7 +308,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 } catch (Throwable e) {
                                     Exceptions.throwIfFatal(e);
                                     upstream.cancel();
-                                    errors.addThrowable(e);
+                                    errors.tryAddThrowableOrReport(e);
                                     errors.tryTerminateConsumer(downstream);
                                     return;
                                 }
@@ -400,11 +395,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -415,15 +408,13 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void innerError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (!veryEnd) {
                     upstream.cancel();
                     done = true;
                 }
                 active = false;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -472,11 +463,8 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             upstream.cancel();
-                            if (errors.addThrowable(e)) {
-                                errors.tryTerminateConsumer(downstream);
-                            } else {
-                                RxJavaPlugins.onError(e);
-                            }
+                            errors.tryAddThrowableOrReport(e);
+                            errors.tryTerminateConsumer(downstream);
                             return;
                         }
 
@@ -496,7 +484,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 Exceptions.throwIfFatal(e);
 
                                 upstream.cancel();
-                                errors.addThrowable(e);
+                                errors.tryAddThrowableOrReport(e);
                                 errors.tryTerminateConsumer(downstream);
                                 return;
                             }
@@ -521,7 +509,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     vr = supplier.get();
                                 } catch (Throwable e) {
                                     Exceptions.throwIfFatal(e);
-                                    errors.addThrowable(e);
+                                    errors.tryAddThrowableOrReport(e);
                                     if (!veryEnd) {
                                         upstream.cancel();
                                         errors.tryTerminateConsumer(downstream);

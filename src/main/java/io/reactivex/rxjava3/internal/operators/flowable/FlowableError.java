@@ -18,8 +18,8 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class FlowableError<T> extends Flowable<T> {
     final Supplier<? extends Throwable> errorSupplier;
@@ -31,7 +31,7 @@ public final class FlowableError<T> extends Flowable<T> {
     public void subscribeActual(Subscriber<? super T> s) {
         Throwable error;
         try {
-            error = ObjectHelper.requireNonNull(errorSupplier.get(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
+            error = ExceptionHelper.nullCheck(errorSupplier.get(), "Callable returned a null Throwable.");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             error = t;

@@ -142,7 +142,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     u  = ((Supplier<U>)p).get();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    errors.addThrowable(ex);
+                    errors.tryAddThrowableOrReport(ex);
                     drain();
                     return;
                 }
@@ -319,11 +319,9 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 RxJavaPlugins.onError(t);
                 return;
             }
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -474,7 +472,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
                                     is.dispose();
-                                    errors.addThrowable(ex);
+                                    errors.tryAddThrowableOrReport(ex);
                                     if (!delayErrors) {
                                         upstream.cancel();
                                     }
@@ -581,7 +579,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         }
 
         void innerError(InnerSubscriber<T, U> inner, Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 inner.done = true;
                 if (!delayErrors) {
                     upstream.cancel();
@@ -590,8 +588,6 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     }
                 }
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
     }

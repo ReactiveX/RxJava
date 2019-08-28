@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Utility methods to perform half-serialization: a form of serialization
@@ -37,14 +36,14 @@ public final class HalfSerializer {
      * @param subscriber the target Subscriber to emit to
      * @param value the value to emit
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
     public static <T> void onNext(Subscriber<? super T> subscriber, T value,
-            AtomicInteger wip, AtomicThrowable error) {
+            AtomicInteger wip, AtomicThrowable errors) {
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             subscriber.onNext(value);
             if (wip.decrementAndGet() != 0) {
-                error.tryTerminateConsumer(subscriber);
+                errors.tryTerminateConsumer(subscriber);
             }
         }
     }
@@ -56,16 +55,14 @@ public final class HalfSerializer {
      * @param subscriber the target Subscriber to emit to
      * @param ex the Throwable to emit
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
     public static void onError(Subscriber<?> subscriber, Throwable ex,
-            AtomicInteger wip, AtomicThrowable error) {
-        if (error.addThrowable(ex)) {
+            AtomicInteger wip, AtomicThrowable errors) {
+        if (errors.tryAddThrowableOrReport(ex)) {
             if (wip.getAndIncrement() == 0) {
-                error.tryTerminateConsumer(subscriber);
+                errors.tryTerminateConsumer(subscriber);
             }
-        } else {
-            RxJavaPlugins.onError(ex);
         }
     }
 
@@ -74,11 +71,11 @@ public final class HalfSerializer {
      * the concurrently running onNext should do that.
      * @param subscriber the target Subscriber to emit to
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
-    public static void onComplete(Subscriber<?> subscriber, AtomicInteger wip, AtomicThrowable error) {
+    public static void onComplete(Subscriber<?> subscriber, AtomicInteger wip, AtomicThrowable errors) {
         if (wip.getAndIncrement() == 0) {
-            error.tryTerminateConsumer(subscriber);
+            errors.tryTerminateConsumer(subscriber);
         }
     }
 
@@ -89,14 +86,14 @@ public final class HalfSerializer {
      * @param observer the target Observer to emit to
      * @param value the value to emit
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
     public static <T> void onNext(Observer<? super T> observer, T value,
-            AtomicInteger wip, AtomicThrowable error) {
+            AtomicInteger wip, AtomicThrowable errors) {
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             observer.onNext(value);
             if (wip.decrementAndGet() != 0) {
-                error.tryTerminateConsumer(observer);
+                errors.tryTerminateConsumer(observer);
             }
         }
     }
@@ -108,16 +105,14 @@ public final class HalfSerializer {
      * @param observer the target Subscriber to emit to
      * @param ex the Throwable to emit
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
     public static void onError(Observer<?> observer, Throwable ex,
-            AtomicInteger wip, AtomicThrowable error) {
-        if (error.addThrowable(ex)) {
+            AtomicInteger wip, AtomicThrowable errors) {
+        if (errors.tryAddThrowableOrReport(ex)) {
             if (wip.getAndIncrement() == 0) {
-                error.tryTerminateConsumer(observer);
+                errors.tryTerminateConsumer(observer);
             }
-        } else {
-            RxJavaPlugins.onError(ex);
         }
     }
 
@@ -126,11 +121,11 @@ public final class HalfSerializer {
      * the concurrently running onNext should do that.
      * @param observer the target Subscriber to emit to
      * @param wip the serialization work-in-progress counter/indicator
-     * @param error the holder of Throwables
+     * @param errors the holder of Throwables
      */
-    public static void onComplete(Observer<?> observer, AtomicInteger wip, AtomicThrowable error) {
+    public static void onComplete(Observer<?> observer, AtomicInteger wip, AtomicThrowable errors) {
         if (wip.getAndIncrement() == 0) {
-            error.tryTerminateConsumer(observer);
+            errors.tryTerminateConsumer(observer);
         }
     }
 

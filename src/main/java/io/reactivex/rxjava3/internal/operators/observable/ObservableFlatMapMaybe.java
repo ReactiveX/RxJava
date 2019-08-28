@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps upstream values into MaybeSources and merges their signals into one sequence.
@@ -117,13 +116,11 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         @Override
         public void onError(Throwable t) {
             active.decrementAndGet();
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (!delayErrors) {
                     set.dispose();
                 }
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -189,15 +186,13 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         void innerError(InnerObserver inner, Throwable e) {
             set.delete(inner);
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (!delayErrors) {
                     upstream.dispose();
                     set.dispose();
                 }
                 active.decrementAndGet();
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

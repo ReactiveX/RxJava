@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps a sequence of values into CompletableSources and awaits their termination.
@@ -126,7 +125,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         @Override
         public void onError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (delayErrors) {
                     if (decrementAndGet() == 0) {
                         errors.tryTerminateConsumer(downstream);
@@ -143,8 +142,6 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                         errors.tryTerminateConsumer(downstream);
                     }
                 }
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 

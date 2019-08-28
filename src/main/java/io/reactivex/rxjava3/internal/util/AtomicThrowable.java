@@ -35,8 +35,22 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
      * @param t the throwable to add
      * @return true if successful, false if the container has been terminated
      */
-    public boolean addThrowable(Throwable t) {
+    public boolean tryAddThrowable(Throwable t) {
         return ExceptionHelper.addThrowable(this, t);
+    }
+
+    /**
+     * Atomically adds a Throwable to this container (combining with a previous Throwable is necessary)
+     * or reports the error the global error handler and no changes are made.
+     * @param t the throwable to add
+     * @return true if successful, false if the container has been terminated
+     */
+    public boolean tryAddThrowableOrReport(Throwable t) {
+        if (tryAddThrowable(t)) {
+            return true;
+        }
+        RxJavaPlugins.onError(t);
+        return false;
     }
 
     /**
@@ -135,6 +149,22 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
      * @param consumer the consumer to notify
      */
     public void tryTerminateConsumer(CompletableObserver consumer) {
+        Throwable ex = terminate();
+        if (ex == null) {
+            consumer.onComplete();
+        } else if (ex != ExceptionHelper.TERMINATED) {
+            consumer.onError(ex);
+        }
+    }
+
+    /**
+     * Tries to terminate this atomic throwable (by swapping in the TERMINATED indicator)
+     * and notifies the consumer if there was no error (onComplete) or there was a
+     * non-null, non-indicator exception contained before (onError).
+     * If there was a terminated indicator, the consumer is not signaled.
+     * @param consumer the consumer to notify
+     */
+    public void tryTerminateConsumer(Emitter<?> consumer) {
         Throwable ex = terminate();
         if (ex == null) {
             consumer.onComplete();

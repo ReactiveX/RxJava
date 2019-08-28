@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class CompletableMergeDelayErrorArray extends Completable {
 
@@ -33,8 +32,8 @@ public final class CompletableMergeDelayErrorArray extends Completable {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
 
-        final AtomicThrowable error = new AtomicThrowable();
-        set.add(new TryTerminateAndReportDisposable(error));
+        final AtomicThrowable errors = new AtomicThrowable();
+        set.add(new TryTerminateAndReportDisposable(errors));
 
         observer.onSubscribe(set);
 
@@ -45,16 +44,16 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
             if (c == null) {
                 Throwable ex = new NullPointerException("A completable source is null");
-                error.addThrowable(ex);
+                errors.tryAddThrowableOrReport(ex);
                 wip.decrementAndGet();
                 continue;
             }
 
-            c.subscribe(new MergeInnerCompletableObserver(observer, set, error, wip));
+            c.subscribe(new MergeInnerCompletableObserver(observer, set, errors, wip));
         }
 
         if (wip.decrementAndGet() == 0) {
-            error.tryTerminateConsumer(observer);
+            errors.tryTerminateConsumer(observer);
         }
     }
 
@@ -79,14 +78,14 @@ public final class CompletableMergeDelayErrorArray extends Completable {
     implements CompletableObserver {
         final CompletableObserver downstream;
         final CompositeDisposable set;
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
         final AtomicInteger wip;
 
         MergeInnerCompletableObserver(CompletableObserver observer, CompositeDisposable set, AtomicThrowable error,
                 AtomicInteger wip) {
             this.downstream = observer;
             this.set = set;
-            this.error = error;
+            this.errors = error;
             this.wip = wip;
         }
 
@@ -97,10 +96,8 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
         @Override
         public void onError(Throwable e) {
-            if (error.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 tryTerminate();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -111,7 +108,7 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
         void tryTerminate() {
             if (wip.decrementAndGet() == 0) {
-                error.tryTerminateConsumer(downstream);
+                errors.tryTerminateConsumer(downstream);
             }
         }
     }

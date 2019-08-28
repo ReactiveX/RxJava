@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     final Publisher<? extends T> first;
@@ -146,11 +145,8 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             } catch (Throwable exc) {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
-                                if (errors.addThrowable(exc)) {
-                                    errors.tryTerminateConsumer(downstream);
-                                } else {
-                                    RxJavaPlugins.onError(exc);
-                                }
+                                errors.tryAddThrowableOrReport(exc);
+                                errors.tryTerminateConsumer(downstream);
                                 return;
                             }
                             v1 = a;
@@ -165,11 +161,8 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             } catch (Throwable exc) {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
-                                if (errors.addThrowable(exc)) {
-                                    errors.tryTerminateConsumer(downstream);
-                                } else {
-                                    RxJavaPlugins.onError(exc);
-                                }
+                                errors.tryAddThrowableOrReport(exc);
+                                errors.tryTerminateConsumer(downstream);
                                 return;
                             }
                             v2 = b;
@@ -198,7 +191,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();
-                            errors.addThrowable(exc);
+                            errors.tryAddThrowableOrReport(exc);
                             errors.tryTerminateConsumer(downstream);
                             return;
                         }
@@ -241,10 +234,8 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         @Override
         public void innerError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
     }

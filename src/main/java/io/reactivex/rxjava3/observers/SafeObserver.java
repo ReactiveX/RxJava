@@ -17,6 +17,7 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -84,7 +85,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         }
 
         if (t == null) {
-            Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+            Throwable ex = ExceptionHelper.createNullPointerException("onNext called with a null value.");
             try {
                 upstream.dispose();
             } catch (Throwable e1) {
@@ -163,7 +164,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         }
 
         if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+            t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
         }
 
         try {

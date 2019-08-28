@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableConcatMapEager<T, R> extends AbstractObservableWithUpstream<T, R> {
 
@@ -146,11 +145,9 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void onError(Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -213,14 +210,12 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void innerError(InnerQueuedObserver<R> inner, Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     upstream.dispose();
                 }
                 inner.setDone();
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -282,11 +277,8 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         upstream.dispose();
                         q.clear();
                         disposeAll();
-                        if (errors.addThrowable(ex)) {
-                            errors.tryTerminateConsumer(downstream);
-                        } else {
-                            RxJavaPlugins.onError(ex);
-                        }
+                        errors.tryAddThrowableOrReport(ex);
+                        errors.tryTerminateConsumer(downstream);
                         return;
                     }
 
@@ -385,7 +377,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             w = aq.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            errors.addThrowable(ex);
+                            errors.tryAddThrowableOrReport(ex);
 
                             current = null;
                             activeCount--;

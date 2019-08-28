@@ -27,6 +27,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ObservableToListTest extends RxJavaTest {
@@ -216,7 +217,7 @@ public class ObservableToListTest extends RxJavaTest {
         .toObservable()
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
-        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+        .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
     @SuppressWarnings("unchecked")
@@ -245,7 +246,7 @@ public class ObservableToListTest extends RxJavaTest {
         })
         .to(TestHelper.<Collection<Integer>>testConsumer())
         .assertFailure(NullPointerException.class)
-        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+        .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
     @Test

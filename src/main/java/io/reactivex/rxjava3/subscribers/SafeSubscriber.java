@@ -17,6 +17,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -74,7 +75,7 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
         }
 
         if (t == null) {
-            Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+            Throwable ex = ExceptionHelper.createNullPointerException("onNext called with a null Throwable.");
             try {
                 upstream.cancel();
             } catch (Throwable e1) {
@@ -152,7 +153,7 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
         }
 
         if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+            t = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
         }
 
         try {

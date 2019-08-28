@@ -123,15 +123,13 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (delayErrors) {
                     onComplete();
                 } else {
                     disposeInner();
                     errors.tryTerminateConsumer(downstream);
                 }
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -164,7 +162,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
 
         void innerError(SwitchMapInnerObserver sender, Throwable error) {
             if (inner.compareAndSet(sender, null)) {
-                if (errors.addThrowable(error)) {
+                if (errors.tryAddThrowableOrReport(error)) {
                     if (delayErrors) {
                         if (done) {
                             errors.tryTerminateConsumer(downstream);
@@ -174,10 +172,10 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
                         disposeInner();
                         errors.tryTerminateConsumer(downstream);
                     }
-                    return;
                 }
+            } else {
+                RxJavaPlugins.onError(error);
             }
-            RxJavaPlugins.onError(error);
         }
 
         void innerComplete(SwitchMapInnerObserver sender) {

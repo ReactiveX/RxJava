@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class CompletableMerge extends Completable {
     final Publisher<? extends CompletableSource> source;
@@ -51,7 +50,7 @@ public final class CompletableMerge extends Completable {
         final int maxConcurrency;
         final boolean delayErrors;
 
-        final AtomicThrowable error;
+        final AtomicThrowable errors;
 
         final CompositeDisposable set;
 
@@ -62,7 +61,7 @@ public final class CompletableMerge extends Completable {
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
             this.set = new CompositeDisposable();
-            this.error = new AtomicThrowable();
+            this.errors = new AtomicThrowable();
             lazySet(1);
         }
 
@@ -70,7 +69,7 @@ public final class CompletableMerge extends Completable {
         public void dispose() {
             upstream.cancel();
             set.dispose();
-            error.tryTerminateAndReport();
+            errors.tryTerminateAndReport();
         }
 
         @Override
@@ -105,20 +104,16 @@ public final class CompletableMerge extends Completable {
             if (!delayErrors) {
                 set.dispose();
 
-                if (error.addThrowable(t)) {
+                if (errors.tryAddThrowableOrReport(t)) {
                     if (getAndSet(0) > 0) {
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                     }
-                } else {
-                    RxJavaPlugins.onError(t);
                 }
             } else {
-                if (error.addThrowable(t)) {
+                if (errors.tryAddThrowableOrReport(t)) {
                     if (decrementAndGet() == 0) {
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                     }
-                } else {
-                    RxJavaPlugins.onError(t);
                 }
             }
         }
@@ -126,7 +121,7 @@ public final class CompletableMerge extends Completable {
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                error.tryTerminateConsumer(downstream);
+                errors.tryTerminateConsumer(downstream);
             }
         }
 
@@ -136,24 +131,20 @@ public final class CompletableMerge extends Completable {
                 upstream.cancel();
                 set.dispose();
 
-                if (error.addThrowable(t)) {
+                if (errors.tryAddThrowableOrReport(t)) {
                     if (getAndSet(0) > 0) {
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                     }
-                } else {
-                    RxJavaPlugins.onError(t);
                 }
             } else {
-                if (error.addThrowable(t)) {
+                if (errors.tryAddThrowableOrReport(t)) {
                     if (decrementAndGet() == 0) {
-                        error.tryTerminateConsumer(downstream);
+                        errors.tryTerminateConsumer(downstream);
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             upstream.request(1);
                         }
                     }
-                } else {
-                    RxJavaPlugins.onError(t);
                 }
             }
         }
@@ -161,7 +152,7 @@ public final class CompletableMerge extends Completable {
         void innerComplete(MergeInnerObserver inner) {
             set.delete(inner);
             if (decrementAndGet() == 0) {
-                error.tryTerminateConsumer(downstream);
+                errors.tryTerminateConsumer(downstream);
             } else {
                 if (maxConcurrency != Integer.MAX_VALUE) {
                     upstream.request(1);

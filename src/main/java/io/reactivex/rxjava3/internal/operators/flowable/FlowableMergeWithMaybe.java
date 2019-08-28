@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Merges an Observable and a Maybe by emitting the items of the Observable and the success
@@ -142,11 +141,9 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void onError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 DisposableHelper.dispose(otherObserver);
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 
@@ -200,11 +197,9 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         }
 
         void otherError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 SubscriptionHelper.cancel(mainSubscription);
                 drain();
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 

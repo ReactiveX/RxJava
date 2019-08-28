@@ -27,7 +27,6 @@ import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
@@ -124,7 +123,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
 
         @Override
         public void onError(Throwable t) {
-            if (errors.addThrowable(t)) {
+            if (errors.tryAddThrowableOrReport(t)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     inner.dispose();
                     errors.tryTerminateConsumer(downstream);
@@ -135,8 +134,6 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                     done = true;
                     drain();
                 }
-            } else {
-                RxJavaPlugins.onError(t);
             }
         }
 
@@ -163,7 +160,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
         }
 
         void innerError(Throwable ex) {
-            if (errors.addThrowable(ex)) {
+            if (errors.tryAddThrowableOrReport(ex)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
                     upstream.cancel();
                     errors.tryTerminateConsumer(downstream);
@@ -174,8 +171,6 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                     active = false;
                     drain();
                 }
-            } else {
-                RxJavaPlugins.onError(ex);
             }
         }
 
@@ -233,7 +228,7 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
                             Exceptions.throwIfFatal(ex);
                             queue.clear();
                             upstream.cancel();
-                            errors.addThrowable(ex);
+                            errors.tryAddThrowableOrReport(ex);
                             errors.tryTerminateConsumer(downstream);
                             return;
                         }

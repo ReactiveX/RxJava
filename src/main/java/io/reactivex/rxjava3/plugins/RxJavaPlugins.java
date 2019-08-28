@@ -361,7 +361,7 @@ public final class RxJavaPlugins {
         Consumer<? super Throwable> f = errorHandler;
 
         if (error == null) {
-            error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+            error = ExceptionHelper.createNullPointerException("onError called with a null Throwable.");
         } else {
             if (!isBug(error)) {
                 error = new UndeliverableException(error);

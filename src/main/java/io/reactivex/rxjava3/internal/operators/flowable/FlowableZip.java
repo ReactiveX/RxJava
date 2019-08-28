@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class FlowableZip<T, R> extends Flowable<R> {
 
@@ -145,11 +144,9 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         }
 
         void error(ZipSubscriber<T, R> inner, Throwable e) {
-            if (errors.addThrowable(e)) {
+            if (errors.tryAddThrowableOrReport(e)) {
                 inner.done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(e);
             }
         }
 
@@ -185,7 +182,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                     if (!delayErrors && errors.get() != null) {
                         cancelAll();
-                        a.onError(errors.terminate());
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -203,12 +200,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                                 boolean sourceEmpty = v == null;
                                 if (d && sourceEmpty) {
                                     cancelAll();
-                                    Throwable ex = errors.get();
-                                    if (ex != null) {
-                                        a.onError(errors.terminate());
-                                    } else {
-                                        a.onComplete();
-                                    }
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                                 if (!sourceEmpty) {
@@ -219,10 +211,10 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
 
-                                errors.addThrowable(ex);
+                                errors.tryAddThrowableOrReport(ex);
                                 if (!delayErrors) {
                                     cancelAll();
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                                 empty = true;
@@ -241,8 +233,8 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelAll();
-                        errors.addThrowable(ex);
-                        a.onError(errors.terminate());
+                        errors.tryAddThrowableOrReport(ex);
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -260,7 +252,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                     if (!delayErrors && errors.get() != null) {
                         cancelAll();
-                        a.onError(errors.terminate());
+                        errors.tryTerminateConsumer(a);
                         return;
                     }
 
@@ -275,12 +267,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                                 boolean empty = v == null;
                                 if (d && empty) {
                                     cancelAll();
-                                    Throwable ex = errors.get();
-                                    if (ex != null) {
-                                        a.onError(errors.terminate());
-                                    } else {
-                                        a.onComplete();
-                                    }
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                                 if (!empty) {
@@ -288,10 +275,10 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                                 }
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
-                                errors.addThrowable(ex);
+                                errors.tryAddThrowableOrReport(ex);
                                 if (!delayErrors) {
                                     cancelAll();
-                                    a.onError(errors.terminate());
+                                    errors.tryTerminateConsumer(a);
                                     return;
                                 }
                             }

@@ -134,7 +134,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onError(Throwable t) {
-            if (!done && errors.addThrowable(t)) {
+            if (!done && errors.tryAddThrowable(t)) {
                 if (!delayErrors) {
                     disposeInner();
                 }
@@ -265,7 +265,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             inner.cancel();
-                            errors.addThrowable(ex);
+                            errors.tryAddThrowableOrReport(ex);
                             d = true;
                             v = null;
                         }
@@ -392,7 +392,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         @Override
         public void onError(Throwable t) {
             SwitchMapSubscriber<T, R> p = parent;
-            if (index == p.unique && p.errors.addThrowable(t)) {
+            if (index == p.unique && p.errors.tryAddThrowable(t)) {
                 if (!p.delayErrors) {
                     p.upstream.cancel();
                     p.done = true;
