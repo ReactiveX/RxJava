@@ -150,7 +150,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.blockingForEach(new Consumer<GroupedObservable<K, V>>() {
+        observable.doOnNext(new Consumer<GroupedObservable<K, V>>() {
 
             @Override
             public void accept(final GroupedObservable<K, V> o) {
@@ -164,7 +164,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
                 });
             }
-        });
+        }).blockingSubscribe();
 
         return result;
     }
@@ -534,7 +534,9 @@ public class ObservableGroupByTest extends RxJavaTest {
         if (!latch.await(500, TimeUnit.MILLISECONDS)) {
             fail("timed out - never got completion");
         }
-        assertEquals(2, eventCounter.get());
+        // Behavior change: groups not subscribed immediately will be automatically abandoned
+        // so this leads to group recreation
+        assertEquals(100, eventCounter.get());
     }
 
     @Test
@@ -1538,5 +1540,79 @@ public class ObservableGroupByTest extends RxJavaTest {
         .flatMap(Functions.<Observable<Integer>>identity())
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void cancelOverFlatmapRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            final TestObserver<Integer> to = new TestObserver<Integer>();
+
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            ps.groupBy(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    return v % 10;
+                }
+            })
+            .flatMap(new Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(GroupedObservable<Integer, Integer> v)
+                        throws Throwable {
+                    return v;
+                }
+            })
+            .subscribe(to);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 1000; j++) {
+                        ps.onNext(j);
+                    }
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            assertFalse("Round " + i, ps.hasObservers());
+        }
+    }
+
+    @Test
+    public void abandonedGroupsNoDataloss() {
+        final List<GroupedObservable<Integer, Integer>> groups = new ArrayList<GroupedObservable<Integer, Integer>>();
+
+        Observable.range(1, 1000)
+        .groupBy(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Throwable {
+                return v % 10;
+            }
+        })
+        .doOnNext(new Consumer<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void accept(GroupedObservable<Integer, Integer> v) throws Throwable {
+                groups.add(v);
+            }
+        })
+        .test()
+        .assertValueCount(1000)
+        .assertComplete()
+        .assertNoErrors();
+
+        Observable.concat(groups)
+        .test()
+        .assertValueCount(1000)
+        .assertNoErrors()
+        .assertComplete();
     }
 }

@@ -179,6 +179,13 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             if (newGroup) {
                 q.offer(group);
                 drain();
+
+                if (group.state.tryAbandon()) {
+                    cancel(key);
+                    group.onComplete();
+
+                    upstream.request(1);
+                }
             }
         }
 
@@ -489,11 +496,16 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         final AtomicReference<Subscriber<? super T>> actual = new AtomicReference<Subscriber<? super T>>();
 
-        final AtomicBoolean once = new AtomicBoolean();
-
         boolean outputFused;
 
         int produced;
+
+        final AtomicInteger once = new AtomicInteger();
+
+        static final int FRESH = 0;
+        static final int HAS_SUBSCRIBER = 1;
+        static final int ABANDONED = 2;
+        static final int ABANDONED_HAS_SUBSCRIBER = ABANDONED | HAS_SUBSCRIBER;
 
         State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -513,19 +525,30 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         @Override
         public void cancel() {
             if (cancelled.compareAndSet(false, true)) {
-                parent.cancel(key);
+                cancelParent();
             }
         }
 
         @Override
-        public void subscribe(Subscriber<? super T> s) {
-            if (once.compareAndSet(false, true)) {
-                s.onSubscribe(this);
-                actual.lazySet(s);
-                drain();
-            } else {
-                EmptySubscription.error(new IllegalStateException("Only one Subscriber allowed!"), s);
+        public void subscribe(Subscriber<? super T> subscriber) {
+            for (;;) {
+                int s = once.get();
+                if ((s & HAS_SUBSCRIBER) != 0) {
+                    break;
+                }
+                int u = s | HAS_SUBSCRIBER;
+                if (once.compareAndSet(s, u)) {
+                    subscriber.onSubscribe(this);
+                    actual.lazySet(subscriber);
+                    if (cancelled.get()) {
+                        actual.lazySet(null);
+                    } else {
+                        drain();
+                    }
+                    return;
+                }
             }
+            EmptySubscription.error(new IllegalStateException("Only one Subscriber allowed!"), subscriber);
         }
 
         public void onNext(T t) {
@@ -542,6 +565,16 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         public void onComplete() {
             done = true;
             drain();
+        }
+
+        void cancelParent() {
+            if ((once.get() & ABANDONED) == 0) {
+                parent.cancel(key);
+            }
+        }
+
+        boolean tryAbandon() {
+            return once.get() == FRESH && once.compareAndSet(FRESH, ABANDONED);
         }
 
         void drain() {
@@ -640,7 +673,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                         if (r != Long.MAX_VALUE) {
                             requested.addAndGet(-e);
                         }
-                        parent.upstream.request(e);
+                        if ((once.get() & ABANDONED) == 0) {
+                            parent.upstream.request(e);
+                        }
                     }
                 }
 
@@ -708,7 +743,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             int p = produced;
             if (p != 0) {
                 produced = 0;
-                parent.upstream.request(p);
+                if ((once.get() & ABANDONED) == 0) {
+                    parent.upstream.request(p);
+                }
             }
             return null;
         }

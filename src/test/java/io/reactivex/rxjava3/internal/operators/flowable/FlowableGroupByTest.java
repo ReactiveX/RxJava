@@ -157,7 +157,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        flowable.blockingForEach(new Consumer<GroupedFlowable<K, V>>() {
+        flowable.doOnNext(new Consumer<GroupedFlowable<K, V>>() {
 
             @Override
             public void accept(final GroupedFlowable<K, V> f) {
@@ -171,7 +171,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
                 });
             }
-        });
+        }).blockingSubscribe();
 
         return result;
     }
@@ -541,7 +541,9 @@ public class FlowableGroupByTest extends RxJavaTest {
         if (!latch.await(500, TimeUnit.MILLISECONDS)) {
             fail("timed out - never got completion");
         }
-        assertEquals(2, eventCounter.get());
+        // Behavior change: groups not subscribed immediately will be automatically abandoned
+        // so this leads to group recreation
+        assertEquals(100, eventCounter.get());
     }
 
     @Test
@@ -1558,7 +1560,9 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void oneGroupInnerRequestsTwiceBuffer() {
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>(0L);
+        // FIXME: delayed requesting in groupBy results in group abandonment
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>(1L);
+
         final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
 
         Flowable.range(1, Flowable.bufferSize() * 2)
@@ -1575,16 +1579,6 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
         })
         .subscribe(ts1);
-
-        ts1.assertNoValues();
-        ts1.assertNoErrors();
-        ts1.assertNotComplete();
-
-        ts2.assertNoValues();
-        ts2.assertNoErrors();
-        ts2.assertNotComplete();
-
-        ts1.request(1);
 
         ts1.assertValueCount(1);
         ts1.assertNoErrors();
@@ -2206,5 +2200,79 @@ public class FlowableGroupByTest extends RxJavaTest {
                                     }});
                     }};
         return evictingMapFactory;
+    }
+
+    @Test
+    public void cancelOverFlatmapRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            pp.groupBy(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Throwable {
+                    return v % 10;
+                }
+            }, Functions.<Integer>identity(), false, 2048)
+            .flatMap(new Function<GroupedFlowable<Integer, Integer>, GroupedFlowable<Integer, Integer>>() {
+                @Override
+                public GroupedFlowable<Integer, Integer> apply(GroupedFlowable<Integer, Integer> v)
+                        throws Throwable {
+                    return v;
+                }
+            })
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 1000; j++) {
+                        pp.onNext(j);
+                    }
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            assertFalse("Round " + i, pp.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void abandonedGroupsNoDataloss() {
+        final List<GroupedFlowable<Integer, Integer>> groups = new ArrayList<GroupedFlowable<Integer, Integer>>();
+
+        Flowable.range(1, 1000)
+        .groupBy(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Throwable {
+                return v % 10;
+            }
+        })
+        .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+            @Override
+            public void accept(GroupedFlowable<Integer, Integer> v) throws Throwable {
+                groups.add(v);
+            }
+        })
+        .test()
+        .assertValueCount(1000)
+        .assertComplete()
+        .assertNoErrors();
+
+        Flowable.concat(groups)
+        .test()
+        .assertValueCount(1000)
+        .assertNoErrors()
+        .assertComplete();
     }
 }
