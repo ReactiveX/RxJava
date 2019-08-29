@@ -10414,6 +10414,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10462,6 +10467,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10512,6 +10523,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10565,6 +10581,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10621,6 +10642,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10726,6 +10752,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

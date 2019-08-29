@@ -110,6 +110,11 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 getAndIncrement();
 
                 downstream.onNext(group);
+
+                if (group.state.tryAbandon()) {
+                    cancel(key);
+                    group.onComplete();
+                }
             }
 
             V v;
@@ -151,7 +156,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         @Override
         public void dispose() {
-            // cancelling the main source means we don't want any more groups
+            // canceling the main source means we don't want any more groups
             // but running groups still require new values
             if (cancelled.compareAndSet(false, true)) {
                 if (decrementAndGet() == 0) {
@@ -220,9 +225,14 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        final AtomicBoolean once = new AtomicBoolean();
-
         final AtomicReference<Observer<? super T>> actual = new AtomicReference<Observer<? super T>>();
+
+        final AtomicInteger once = new AtomicInteger();
+
+        static final int FRESH = 0;
+        static final int HAS_SUBSCRIBER = 1;
+        static final int ABANDONED = 2;
+        static final int ABANDONED_HAS_SUBSCRIBER = ABANDONED | HAS_SUBSCRIBER;
 
         State(int bufferSize, GroupByObserver<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -236,7 +246,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             if (cancelled.compareAndSet(false, true)) {
                 if (getAndIncrement() == 0) {
                     actual.lazySet(null);
-                    parent.cancel(key);
+                    cancelParent();
                 }
             }
         }
@@ -248,17 +258,24 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         @Override
         public void subscribe(Observer<? super T> observer) {
-            if (once.compareAndSet(false, true)) {
-                observer.onSubscribe(this);
-                actual.lazySet(observer);
-                if (cancelled.get()) {
-                    actual.lazySet(null);
-                } else {
-                    drain();
+            for (;;) {
+                int s = once.get();
+                if ((s & HAS_SUBSCRIBER) != 0) {
+                    break;
                 }
-            } else {
-                EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), observer);
+                int u = s | HAS_SUBSCRIBER;
+                if (once.compareAndSet(s, u)) {
+                    observer.onSubscribe(this);
+                    actual.lazySet(observer);
+                    if (cancelled.get()) {
+                        actual.lazySet(null);
+                    } else {
+                        drain();
+                    }
+                    return;
+                }
             }
+            EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), observer);
         }
 
         public void onNext(T t) {
@@ -315,11 +332,21 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             }
         }
 
+        void cancelParent() {
+            if ((once.get() & ABANDONED) == 0) {
+                parent.cancel(key);
+            }
+        }
+
+        boolean tryAbandon() {
+            return once.get() == FRESH && once.compareAndSet(FRESH, ABANDONED);
+        }
+
         boolean checkTerminated(boolean d, boolean empty, Observer<? super T> a, boolean delayError) {
             if (cancelled.get()) {
                 queue.clear();
-                parent.cancel(key);
                 actual.lazySet(null);
+                cancelParent();
                 return true;
             }
 

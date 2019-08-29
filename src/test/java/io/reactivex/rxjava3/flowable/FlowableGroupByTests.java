@@ -102,7 +102,13 @@ public class FlowableGroupByTests extends RxJavaTest {
             }
         }).subscribe(ts);
 
-        ts.assertValues(0, 5, 10, 15, 1, 6, 11, 16, 2, 7, 12, 17, 3, 8, 13, 18, 4, 9, 14, 19);
+        // Behavior change: this now counts as group abandonment because concatMap
+        // doesn't subscribe to the 2nd+ emitted groups immediately
+        ts.assertValues(
+                0, 5, 10, 15, // First group is okay
+                // any other group gets abandoned so we get 16 one-element group
+                1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19
+                );
         ts.assertComplete();
         ts.assertNoErrors();
     }

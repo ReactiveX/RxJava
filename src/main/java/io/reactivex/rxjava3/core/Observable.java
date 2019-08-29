@@ -9067,6 +9067,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9101,6 +9107,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9138,6 +9150,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9176,6 +9194,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9217,6 +9241,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
