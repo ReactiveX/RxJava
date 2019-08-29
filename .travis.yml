@@ -13,7 +13,7 @@ script: gradle/buildViaTravis.sh
 
 # Code coverage
 after_success:
-  - bash <(curl -s --retry 10 --retry-connrefused https://codecov.io/bash)
+  - bash <(curl -s --retry 10 https://codecov.io/bash)
   - bash gradle/push_javadoc.sh
 
 # cache between builds
