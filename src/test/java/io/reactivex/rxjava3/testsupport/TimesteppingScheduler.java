@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.disposables.*;
  * Basic scheduler that produces an ever increasing {@link #now(TimeUnit)} value.
  * Use this scheduler only as a time source!
  */
-public class TimesteppingScheduler extends Scheduler {
+public final class TimesteppingScheduler extends Scheduler {
 
     final class TimesteppingWorker extends Worker {
         @Override
@@ -42,11 +42,13 @@ public class TimesteppingScheduler extends Scheduler {
 
         @Override
         public long now(TimeUnit unit) {
-            return time++;
+            return TimesteppingScheduler.this.now(unit);
         }
     }
 
-    long time;
+    public long time;
+
+    public boolean stepEnabled = true;
 
     @Override
     public Worker createWorker() {
@@ -55,6 +57,9 @@ public class TimesteppingScheduler extends Scheduler {
 
     @Override
     public long now(TimeUnit unit) {
-        return time++;
+        if (stepEnabled) {
+            return time++;
+        }
+        return time;
     }
 }
