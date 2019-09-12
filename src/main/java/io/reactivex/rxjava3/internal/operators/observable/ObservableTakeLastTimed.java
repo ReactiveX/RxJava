@@ -139,6 +139,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
             final Observer<? super T> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
+            final long timestampLimit = scheduler.now(unit) - time;
 
             for (;;) {
                 if (cancelled) {
@@ -171,7 +172,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
                 @SuppressWarnings("unchecked")
                 T o = (T)q.poll();
 
-                if ((Long)ts < scheduler.now(unit) - time) {
+                if ((Long)ts < timestampLimit) {
                     continue;
                 }
 
