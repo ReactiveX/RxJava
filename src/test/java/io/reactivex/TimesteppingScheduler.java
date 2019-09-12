@@ -42,11 +42,13 @@ public class TimesteppingScheduler extends Scheduler {
 
         @Override
         public long now(TimeUnit unit) {
-            return time++;
+            return TimesteppingScheduler.this.now(unit);
         }
     }
 
-    long time;
+    public long time;
+
+    public boolean stepEnabled;
 
     @Override
     public Worker createWorker() {
@@ -55,6 +57,9 @@ public class TimesteppingScheduler extends Scheduler {
 
     @Override
     public long now(TimeUnit unit) {
-        return time++;
+        if (stepEnabled) {
+            return time++;
+        }
+        return time;
     }
 }
