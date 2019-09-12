@@ -16,11 +16,15 @@ package io.reactivex.rxjava3.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.*;
+import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.schedulers.TestScheduler;
+import io.reactivex.rxjava3.subscribers.TestSubscriber;
 
 public class FlowableWindowTests extends RxJavaTest {
 
@@ -49,5 +53,44 @@ public class FlowableWindowTests extends RxJavaTest {
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });
         assertEquals(2, lists.size());
 
+    }
+
+    @Test
+    public void timeSizeWindowAlternatingBounds() {
+        TestScheduler scheduler = new TestScheduler();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<List<Integer>> ts = pp.window(5, TimeUnit.SECONDS, scheduler, 2)
+        .flatMapSingle(new Function<Flowable<Integer>, SingleSource<List<Integer>>>() {
+            @Override
+            public SingleSource<List<Integer>> apply(Flowable<Integer> v) throws Throwable {
+                return v.toList();
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+        pp.onNext(2);
+        ts.assertValueCount(1); // size bound hit
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        pp.onNext(3);
+        scheduler.advanceTimeBy(6, TimeUnit.SECONDS);
+        ts.assertValueCount(2); // time bound hit
+
+        pp.onNext(4);
+        pp.onNext(5);
+
+        ts.assertValueCount(3); // size bound hit again
+
+        pp.onNext(4);
+
+        scheduler.advanceTimeBy(6, TimeUnit.SECONDS);
+
+        ts.assertValueCount(4)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        ts.cancel();
     }
 }
