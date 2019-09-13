@@ -2049,30 +2049,6 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void openCloseLimit() {
-        PublishProcessor<Integer> source = PublishProcessor.create();
-
-        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
-
-        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
-
-        TestSubscriber<List<Integer>> ts = source
-        .buffer(openIndicator, Functions.justFunction(closeIndicator))
-        .limit(1)
-        .test(2);
-
-        openIndicator.onNext(1);
-        closeIndicator.onComplete();
-
-        assertFalse(source.hasSubscribers());
-        assertFalse(openIndicator.hasSubscribers());
-        assertFalse(closeIndicator.hasSubscribers());
-
-        ts.assertResult(Collections.<Integer>emptyList());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
     public void openCloseEmptyBackpressure() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 

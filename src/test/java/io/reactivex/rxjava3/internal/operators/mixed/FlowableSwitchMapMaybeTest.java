@@ -140,7 +140,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
                 return Maybe.just(v);
             }
         })
-        .limit(3)
+        .take(3)
         .test()
         .assertResult(1, 2, 3);
     }

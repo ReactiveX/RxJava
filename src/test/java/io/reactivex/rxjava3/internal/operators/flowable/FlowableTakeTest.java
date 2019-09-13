@@ -142,6 +142,27 @@ public class FlowableTakeTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
+    
+    @Test
+    public void takeEmitsErrors() {
+        Flowable.error(new TestException())
+            .take(1)
+            .test()
+            .assertNoValues()
+            .assertError(TestException.class);
+    }
+    
+    @Test
+    public void takeRequestOverflow() {
+        TestSubscriber<Integer> ts = Flowable.just(1, 2, 3)
+            .take(3)
+            .test(0);
+        ts.requestMore(1)
+          .assertValues(1)
+          .assertNotComplete()
+          .requestMore(Long.MAX_VALUE)
+          .assertValues(1, 2, 3);
+    }
 
     @Test
     public void unsubscribeAfterTake() {
@@ -305,7 +326,7 @@ public class FlowableTakeTest extends RxJavaTest {
             }
 
         }).take(3).subscribe(ts);
-        assertEquals(Long.MAX_VALUE, requested.get());
+        assertEquals(3, requested.get());
     }
 
     @Test
@@ -332,7 +353,7 @@ public class FlowableTakeTest extends RxJavaTest {
 
         }).take(1).subscribe(ts);
         //FIXME take triggers fast path if downstream requests more than the limit
-        assertEquals(Long.MAX_VALUE, requested.get());
+        assertEquals(1, requested.get());
     }
 
     @Test
@@ -383,7 +404,7 @@ public class FlowableTakeTest extends RxJavaTest {
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertNoErrors();
-        assertEquals(3, requests.get());
+        assertEquals(2, requests.get());
     }
 
     @Test

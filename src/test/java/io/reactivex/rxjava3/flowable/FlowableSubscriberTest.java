@@ -331,8 +331,7 @@ public class FlowableSubscriberTest {
             }
         }).take(2).subscribe(ts);
 
-        // FIXME the take now requests Long.MAX_PATH if downstream requests at least the limit
-        assertEquals(Long.MAX_VALUE, requested.get());
+        assertEquals(2, requested.get());
     }
 
     @Test

@@ -357,7 +357,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
         TestSubscriber<Integer> ts = pp.mergeWith(cs)
-                .limit(2)
+                .take(2)
                 .subscribeWith(new TestSubscriber<Integer>(2) {
             @Override
             public void onNext(Integer t) {

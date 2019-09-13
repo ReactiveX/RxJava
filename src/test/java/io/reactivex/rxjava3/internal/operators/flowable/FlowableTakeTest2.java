@@ -29,7 +29,8 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Action {
+// moved tests from FlowableLimitTest to here (limit removed as operator)
+public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Action {
 
     final List<Long> requests = new ArrayList<Long>();
 
@@ -49,7 +50,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
     public void shorterSequence() {
         Flowable.range(1, 5)
         .doOnRequest(this)
-        .limit(6)
+        .take(6)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -61,7 +62,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
         Flowable.range(1, 5)
         .doOnRequest(this)
         .doOnCancel(this)
-        .limit(5)
+        .take(5)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -74,7 +75,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
     public void longerSequence() {
         Flowable.range(1, 6)
         .doOnRequest(this)
-        .limit(5)
+        .take(5)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
@@ -84,17 +85,17 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .limit(5)
+        .take(5)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
-    public void limitZero() {
+    public void takeZero() {
         Flowable.range(1, 5)
         .doOnCancel(this)
         .doOnRequest(this)
-        .limit(0)
+        .take(0)
         .test()
         .assertResult();
 
@@ -103,10 +104,10 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
     }
 
     @Test
-    public void limitStep() {
+    public void takeStep() {
         TestSubscriber<Integer> ts = Flowable.range(1, 6)
         .doOnRequest(this)
-        .limit(5)
+        .take(5)
         .test(0L);
 
         assertEquals(0, requests.size());
@@ -124,16 +125,16 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
     }
 
     @Test
-    public void limitAndTake() {
+    public void takeThenTake() {
         Flowable.range(1, 5)
         .doOnCancel(this)
         .doOnRequest(this)
-        .limit(6)
+        .take(6)
         .take(5)
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
-        assertEquals(Arrays.asList(6L, CANCELLED), requests);
+        assertEquals(Arrays.asList(5L, CANCELLED), requests);
     }
 
     @Test
@@ -142,7 +143,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
 
         TestSubscriber<Integer> ts = pp
                 .doOnRequest(this)
-                .limit(5)
+                .take(5)
                 .test(0L);
 
         ts.request(5);
@@ -173,7 +174,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
                     s.onSubscribe(null);
                 }
             }
-            .limit(0)
+            .take(0)
             .test()
             .assertResult();
 
@@ -186,14 +187,14 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.range(1, 5).limit(3));
+        TestHelper.assertBadRequestReported(Flowable.range(1, 5).take(3));
     }
 
     @Test
     public void requestRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = Flowable.range(1, 10)
-                    .limit(5)
+                    .take(5)
                     .test(0L);
 
             Runnable r = new Runnable() {
@@ -214,7 +215,7 @@ public class FlowableLimitTest extends RxJavaTest implements LongConsumer, Actio
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.error(new TestException())
-            .limit(0)
+            .take(0)
             .test()
             .assertResult();
 

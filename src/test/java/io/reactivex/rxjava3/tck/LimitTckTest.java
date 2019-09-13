@@ -24,7 +24,7 @@ public class LimitTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements * 2).limit(elements)
+                Flowable.range(0, (int)elements * 2).take(elements)
         ;
     }
 }
