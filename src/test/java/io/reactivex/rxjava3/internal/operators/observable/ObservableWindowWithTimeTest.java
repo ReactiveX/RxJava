@@ -65,17 +65,19 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         Observable<Observable<String>> windowed = source.window(100, TimeUnit.MILLISECONDS, scheduler, 2);
         windowed.subscribe(observeWindow(list, lists));
 
-        scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        scheduler.advanceTimeTo(95, TimeUnit.MILLISECONDS);
         assertEquals(1, lists.size());
         assertEquals(lists.get(0), list("one", "two"));
 
-        scheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-        assertEquals(2, lists.size());
-        assertEquals(lists.get(1), list("three", "four"));
+        scheduler.advanceTimeTo(195, TimeUnit.MILLISECONDS);
+        assertEquals(3, lists.size());
+        assertTrue(lists.get(1).isEmpty());
+        assertEquals(lists.get(2), list("three", "four"));
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
-        assertEquals(3, lists.size());
-        assertEquals(lists.get(2), list("five"));
+        assertEquals(5, lists.size());
+        assertTrue(lists.get(3).isEmpty());
+        assertEquals(lists.get(4), list("five"));
     }
 
     @Test
