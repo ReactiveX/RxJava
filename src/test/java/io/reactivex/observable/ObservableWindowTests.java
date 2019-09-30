@@ -16,11 +16,16 @@ package io.reactivex.observable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.SingleSource;
 import io.reactivex.functions.*;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableWindowTests {
 
@@ -49,5 +54,44 @@ public class ObservableWindowTests {
         assertArrayEquals(lists.get(1).toArray(new Integer[3]), new Integer[] { 4, 5, 6 });
         assertEquals(2, lists.size());
 
+    }
+
+    @Test
+    public void timeSizeWindowAlternatingBounds() {
+        TestScheduler scheduler = new TestScheduler();
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<List<Integer>> to = ps.window(5, TimeUnit.SECONDS, scheduler, 2)
+        .flatMapSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
+            @Override
+            public SingleSource<List<Integer>> apply(Observable<Integer> v) {
+                return v.toList();
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+        ps.onNext(2);
+        to.assertValueCount(1); // size bound hit
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        ps.onNext(3);
+        scheduler.advanceTimeBy(6, TimeUnit.SECONDS);
+        to.assertValueCount(2); // time bound hit
+
+        ps.onNext(4);
+        ps.onNext(5);
+
+        to.assertValueCount(3); // size bound hit again
+
+        ps.onNext(4);
+
+        scheduler.advanceTimeBy(6, TimeUnit.SECONDS);
+
+        to.assertValueCount(4)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        to.dispose();
     }
 }

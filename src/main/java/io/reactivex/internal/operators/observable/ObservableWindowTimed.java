@@ -444,7 +444,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
-                        if (restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
+                        if (!restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
                             w.onComplete();
                             count = 0;
                             w = UnicastSubject.create(bufferSize);
