@@ -2,6 +2,18 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.13 - October 3, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.13%7C))
+
+#### Dependencies
+
+  - [Commit cc690ff2](https://github.com/ReactiveX/RxJava/commit/cc690ff2f757873b11cd075ebc22262f76f28459): Upgrade to **Reactive Streams 1.0.3**.
+
+#### Bugfixes
+
+  - [Commit cc690ff2](https://github.com/ReactiveX/RxJava/commit/cc690ff2f757873b11cd075ebc22262f76f28459): Avoid using `System.getProperties()`.
+  - [Pull 6653](https://github.com/ReactiveX/RxJava/pull/6653): Fix `takeLast(time)` last events time window calculation.
+  - [Pull 6657](https://github.com/ReactiveX/RxJava/pull/6657): Fix size+time bound `window` not creating windows properly.
+
 ### Version 2.2.12 - August 25, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.12%7C))
 
 #### Bugfixes
