@@ -168,6 +168,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();
+                if (newGroup) {
+                    q.offer(group);
+                    drain();
+                }
                 onError(ex);
                 return;
             }

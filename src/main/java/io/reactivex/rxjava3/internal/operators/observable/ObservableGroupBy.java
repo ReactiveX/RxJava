@@ -97,6 +97,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
             Object mapKey = key != null ? key : NULL_KEY;
             GroupedUnicast<K, V> group = groups.get(mapKey);
+            boolean newGroup = false;
             if (group == null) {
                 // if the main has been cancelled, stop creating groups
                 // and skip this value
@@ -109,12 +110,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
                 getAndIncrement();
 
-                downstream.onNext(group);
-
-                if (group.state.tryAbandon()) {
-                    cancel(key);
-                    group.onComplete();
-                }
+                newGroup = true;
             }
 
             V v;
@@ -123,11 +119,23 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.dispose();
+                if (newGroup) {
+                    downstream.onNext(group);
+                }
                 onError(e);
                 return;
             }
 
             group.onNext(v);
+
+            if (newGroup) {
+                downstream.onNext(group);
+
+                if (group.state.tryAbandon()) {
+                    cancel(key);
+                    group.onComplete();
+                }
+            }
         }
 
         @Override
