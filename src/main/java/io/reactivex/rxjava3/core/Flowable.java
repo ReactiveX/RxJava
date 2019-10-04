@@ -15326,7 +15326,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapSingle<T, R>(this, mapper, true));
     }
 
-    
     /**
      * Returns a Flowable that emits only the first {@code count} items emitted by the source Publisher. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
@@ -15368,7 +15367,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL) 
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> take(long count) {
         if (count < 0) {

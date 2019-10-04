@@ -142,7 +142,7 @@ public class FlowableTakeTest extends RxJavaTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void takeEmitsErrors() {
         Flowable.error(new TestException())
@@ -151,7 +151,7 @@ public class FlowableTakeTest extends RxJavaTest {
             .assertNoValues()
             .assertError(TestException.class);
     }
-    
+
     @Test
     public void takeRequestOverflow() {
         TestSubscriber<Integer> ts = Flowable.just(1, 2, 3)
