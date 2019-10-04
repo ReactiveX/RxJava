@@ -101,7 +101,7 @@ public class TooManyEmptyNewLines {
                                 if (line1.isEmpty()) {
                                     int c = 1;
                                     for (int j = i + 1; j < lines.size(); j++) {
-                                        if (lines.get(j).isEmpty()) {
+                                        if (lines.get(j).trim().isEmpty()) {
                                             c++;
                                         } else {
                                             break;
