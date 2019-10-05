@@ -1615,4 +1615,61 @@ public class ObservableGroupByTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
     }
+
+    @Test
+    public void newGroupValueSelectorFails() {
+        TestObserver<Object> to1 = new TestObserver<Object>();
+        final TestObserver<Object> to2 = new TestObserver<Object>();
+
+        Observable.just(1)
+        .groupBy(Functions.<Integer>identity(), new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Throwable {
+                throw new TestException();
+            }
+        })
+        .doOnNext(new Consumer<GroupedObservable<Integer, Object>>() {
+            @Override
+            public void accept(GroupedObservable<Integer, Object> g) throws Throwable {
+                g.subscribe(to2);
+            }
+        })
+        .subscribe(to1);
+
+        to1.assertValueCount(1)
+        .assertError(TestException.class)
+        .assertNotComplete();
+
+        to2.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void existingGroupValueSelectorFails() {
+        TestObserver<Object> to1 = new TestObserver<Object>();
+        final TestObserver<Object> to2 = new TestObserver<Object>();
+
+        Observable.just(1, 2)
+        .groupBy(Functions.justFunction(1), new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Throwable {
+                if (v == 2) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .doOnNext(new Consumer<GroupedObservable<Integer, Object>>() {
+            @Override
+            public void accept(GroupedObservable<Integer, Object> g) throws Throwable {
+                g.subscribe(to2);
+            }
+        })
+        .subscribe(to1);
+
+        to1.assertValueCount(1)
+        .assertError(TestException.class)
+        .assertNotComplete();
+
+        to2.assertFailure(TestException.class, 1);
+    }
 }

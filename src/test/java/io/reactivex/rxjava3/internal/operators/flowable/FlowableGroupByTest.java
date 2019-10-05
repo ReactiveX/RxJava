@@ -2275,4 +2275,61 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
     }
+
+    @Test
+    public void newGroupValueSelectorFails() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+
+        Flowable.just(1)
+        .groupBy(Functions.<Integer>identity(), new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Throwable {
+                throw new TestException();
+            }
+        })
+        .doOnNext(new Consumer<GroupedFlowable<Integer, Object>>() {
+            @Override
+            public void accept(GroupedFlowable<Integer, Object> g) throws Throwable {
+                g.subscribe(ts2);
+            }
+        })
+        .subscribe(ts1);
+
+        ts1.assertValueCount(1)
+        .assertError(TestException.class)
+        .assertNotComplete();
+
+        ts2.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void existingGroupValueSelectorFails() {
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+
+        Flowable.just(1, 2)
+        .groupBy(Functions.justFunction(1), new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Throwable {
+                if (v == 2) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .doOnNext(new Consumer<GroupedFlowable<Integer, Object>>() {
+            @Override
+            public void accept(GroupedFlowable<Integer, Object> g) throws Throwable {
+                g.subscribe(ts2);
+            }
+        })
+        .subscribe(ts1);
+
+        ts1.assertValueCount(1)
+        .assertError(TestException.class)
+        .assertNotComplete();
+
+        ts2.assertFailure(TestException.class, 1);
+    }
 }
