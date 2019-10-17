@@ -142,7 +142,8 @@ jar {
             'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*',
             'Bundle-DocURL': 'https://github.com/ReactiveX/RxJava',
             'Eclipse-ExtensibleAPI': 'true',
-            'Automatic-Module-Name': 'io.reactivex.rxjava3'
+            'Automatic-Module-Name': 'io.reactivex.rxjava3',
+            'Export-Package': '!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*'
     )
 }
 
