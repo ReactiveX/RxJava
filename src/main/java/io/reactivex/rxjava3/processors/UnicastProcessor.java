@@ -345,7 +345,6 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         for (;;) {
 
             if (cancelled) {
-                q.clear();
                 downstream.lazySet(null);
                 return;
             }
@@ -548,10 +547,11 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
             doTerminate();
 
-            if (!enableOperatorFusion) {
-                if (wip.getAndIncrement() == 0) {
+            downstream.lazySet(null);
+            if (wip.getAndIncrement() == 0) {
+                downstream.lazySet(null);
+                if (!enableOperatorFusion) {
                     queue.clear();
-                    downstream.lazySet(null);
                 }
             }
         }

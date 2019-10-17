@@ -150,7 +150,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 cancelled = true;
                 upstream.cancel();
 
-                if (getAndIncrement() == 0) {
+                if (!outputFused && getAndIncrement() == 0) {
                     queue.clear();
                 }
             }
