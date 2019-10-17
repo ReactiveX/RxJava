@@ -420,7 +420,6 @@ public final class UnicastSubject<T> extends Subject<T> {
 
             if (disposed) {
                 downstream.lazySet(null);
-                q.clear();
                 return;
             }
             boolean d = done;
@@ -558,7 +557,9 @@ public final class UnicastSubject<T> extends Subject<T> {
                 downstream.lazySet(null);
                 if (wip.getAndIncrement() == 0) {
                     downstream.lazySet(null);
-                    queue.clear();
+                    if (!enableOperatorFusion) {
+                        queue.clear();
+                    }
                 }
             }
         }
