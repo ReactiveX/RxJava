@@ -16,16 +16,20 @@ package io.reactivex.rxjava3.processors;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.exceptions.*;
+import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.*;
 
@@ -437,6 +441,39 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
             TestHelper.assertError(errors, 0, IllegalArgumentException.class);
         } finally {
             RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void fusedNoConcurrentCleanDueToCancel() {
+        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+                TestObserver<Integer> to = us
+                .observeOn(Schedulers.io())
+                .map(Functions.<Integer>identity())
+                .observeOn(Schedulers.single())
+                .firstOrError()
+                .test();
+
+                for (int i = 0; us.hasSubscribers(); i++) {
+                    us.onNext(i);
+                }
+
+                to
+                .awaitDone(5, TimeUnit.SECONDS)
+                ;
+
+                if (!errors.isEmpty()) {
+                    throw new CompositeException(errors);
+                }
+
+                to.assertResult(0);
+            } finally {
+                RxJavaPlugins.reset();
+            }
         }
     }
 }

@@ -30,12 +30,13 @@ import com.google.common.base.Ticker;
 import com.google.common.cache.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.GroupedFlowable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -2331,5 +2332,84 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertNotComplete();
 
         ts2.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void fusedNoConcurrentCleanDueToCancel() {
+        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+                final AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>> qs = new AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>>();
+
+                final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+                pp.groupBy(Functions.identity(), Functions.<Integer>identity(), false, 4)
+                .subscribe(new FlowableSubscriber<GroupedFlowable<Object, Integer>>() {
+
+                    boolean once;
+
+                    @Override
+                    public void onNext(GroupedFlowable<Object, Integer> g) {
+                        if (!once) {
+                            try {
+                                GroupedFlowable<Object, Integer> t = qs.get().poll();
+                                if (t != null) {
+                                    once = true;
+                                    t.subscribe(ts2);
+                                }
+                            } catch (Throwable ignored) {
+                                // not relevant here
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        @SuppressWarnings("unchecked")
+                        QueueSubscription<GroupedFlowable<Object, Integer>> q = (QueueSubscription<GroupedFlowable<Object, Integer>>)s;
+                        qs.set(q);
+                        q.requestFusion(QueueFuseable.ANY);
+                        q.request(1);
+                    }
+                })
+                ;
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        qs.get().cancel();
+                        qs.get().clear();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ts2.cancel();
+                    }
+                };
+
+                for (int i = 0; i < 100; i++) {
+                    pp.onNext(i);
+                }
+
+                TestHelper.race(r1, r2);
+
+                if (!errors.isEmpty()) {
+                    throw new CompositeException(errors);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }
