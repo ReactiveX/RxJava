@@ -16,8 +16,8 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
@@ -708,5 +708,245 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to.assertValueCount(2)
         .assertNoErrors()
         .assertNotComplete();
+    }
+
+    @Test
+    public void exactTimeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeAndSizeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(100, TimeUnit.MILLISECONDS, 10)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(100, TimeUnit.MILLISECONDS, 10)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void skipTimeAndSizeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(90, 100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void skipTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        ps.window(90, 100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Observable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        ps.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        ps.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
     }
 }
