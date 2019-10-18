@@ -2341,20 +2341,21 @@ public class FlowableGroupByTest extends RxJavaTest {
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-                final AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>> qs = new AtomicReference<QueueSubscription<GroupedFlowable<Object, Integer>>>();
+                final AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>> qs =
+                        new AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>>();
 
                 final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
-                pp.groupBy(Functions.identity(), Functions.<Integer>identity(), false, 4)
-                .subscribe(new FlowableSubscriber<GroupedFlowable<Object, Integer>>() {
+                pp.groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), false, 4)
+                .subscribe(new FlowableSubscriber<GroupedFlowable<Integer, Integer>>() {
 
                     boolean once;
 
                     @Override
-                    public void onNext(GroupedFlowable<Object, Integer> g) {
+                    public void onNext(GroupedFlowable<Integer, Integer> g) {
                         if (!once) {
                             try {
-                                GroupedFlowable<Object, Integer> t = qs.get().poll();
+                                GroupedFlowable<Integer, Integer> t = qs.get().poll();
                                 if (t != null) {
                                     once = true;
                                     t.subscribe(ts2);
@@ -2376,7 +2377,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                     @Override
                     public void onSubscribe(Subscription s) {
                         @SuppressWarnings("unchecked")
-                        QueueSubscription<GroupedFlowable<Object, Integer>> q = (QueueSubscription<GroupedFlowable<Object, Integer>>)s;
+                        QueueSubscription<GroupedFlowable<Integer, Integer>> q = (QueueSubscription<GroupedFlowable<Integer, Integer>>)s;
                         qs.set(q);
                         q.requestFusion(QueueFuseable.ANY);
                         q.request(1);
