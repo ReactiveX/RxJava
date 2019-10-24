@@ -15,14 +15,13 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.NotificationLite;
@@ -85,7 +84,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         UnicastSubject<T> window;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final SequentialDisposable timer = new SequentialDisposable();
 
         static final Object NEXT = new Object();
 
@@ -114,7 +113,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 if (!cancelled) {
                     Disposable task = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                    DisposableHelper.replace(timer, task);
+                    timer.replace(task);
                 }
             }
         }
@@ -146,7 +145,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeTimer();
             downstream.onError(t);
         }
 
@@ -157,7 +155,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeTimer();
             downstream.onComplete();
         }
 
@@ -171,15 +168,10 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             return cancelled;
         }
 
-        void disposeTimer() {
-            DisposableHelper.dispose(timer);
-        }
-
         @Override
         public void run() {
             if (cancelled) {
                 terminated = true;
-                disposeTimer();
             }
             queue.offer(NEXT);
             if (enter()) {
@@ -206,13 +198,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     if (d && (o == null || o == NEXT)) {
                         window = null;
                         q.clear();
-                        disposeTimer();
                         Throwable err = error;
                         if (err != null) {
                             w.onError(err);
                         } else {
                             w.onComplete();
                         }
+                        timer.dispose();
                         return;
                     }
 
@@ -266,7 +258,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         volatile boolean terminated;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final SequentialDisposable timer = new SequentialDisposable();
 
         WindowExactBoundedObserver(
                 Observer<? super Observable<T>> actual,
@@ -312,7 +304,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     task = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
                 }
 
-                DisposableHelper.replace(timer, task);
+                timer.replace(task);
             }
         }
 
@@ -370,7 +362,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             downstream.onError(t);
-            disposeTimer();
         }
 
         @Override
@@ -381,7 +372,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             downstream.onComplete();
-            disposeTimer();
         }
 
         @Override
@@ -428,13 +418,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     if (d && (empty || isHolder)) {
                         window = null;
                         q.clear();
-                        disposeTimer();
                         Throwable err = error;
                         if (err != null) {
                             w.onError(err);
                         } else {
                             w.onComplete();
                         }
+                        disposeTimer();
                         return;
                     }
 
@@ -507,7 +497,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     p.queue.offer(this);
                 } else {
                     p.terminated = true;
-                    p.disposeTimer();
                 }
                 if (p.enter()) {
                     p.drainLoop();
@@ -592,7 +581,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             downstream.onError(t);
-            disposeWorker();
         }
 
         @Override
@@ -603,7 +591,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             downstream.onComplete();
-            disposeWorker();
         }
 
         @Override
@@ -614,10 +601,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         @Override
         public boolean isDisposed() {
             return cancelled;
-        }
-
-        void disposeWorker() {
-            worker.dispose();
         }
 
         void complete(UnicastSubject<T> w) {
@@ -640,9 +623,9 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 for (;;) {
                     if (terminated) {
                         upstream.dispose();
-                        disposeWorker();
                         q.clear();
                         ws.clear();
+                        worker.dispose();
                         return;
                     }
 
@@ -665,8 +648,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                                 w.onComplete();
                             }
                         }
-                        disposeWorker();
                         ws.clear();
+                        worker.dispose();
                         return;
                     }
 
