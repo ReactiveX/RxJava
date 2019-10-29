@@ -17,6 +17,8 @@ buildscript {
   ext.jfrogExtractorVersion = "4.5.2"
   ext.bndVersion = "4.2.0"
   ext.checkstyleVersion = "6.19"
+  ext.blockhoundVersion = "1.0.1.RELEASE"
+  ext.testsetsVersion = "2.2.1"
 
   // --------------------------------------
 
@@ -34,6 +36,7 @@ buildscript {
     classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayVersion"
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:$jfrogExtractorVersion"
     classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:$bndVersion"
+    classpath "org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:$testsetsVersion"
   }
 }
 
@@ -65,6 +68,7 @@ apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
+apply plugin: "org.unbroken-dome.test-sets"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -73,11 +77,17 @@ repositories {
   mavenCentral()
 }
 
+testSets {
+    blockHoundTest
+}
+
 dependencies {
     signature "org.codehaus.mojo.signature:java16:1.1@signature"
 
     api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
     jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+
+    compileOnly "io.projectreactor.tools:blockhound:$blockhoundVersion"
 
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -85,6 +95,8 @@ dependencies {
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
     testImplementation "com.google.guava:guava:$guavaVersion"
+
+    blockHoundTestImplementation "io.projectreactor.tools:blockhound:$blockhoundVersion"
 }
 
 javadoc {
