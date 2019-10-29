@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -918,5 +918,244 @@ public class FlowableWindowWithTimeTest {
         .assertError(MissingBackpressureException.class)
         .assertNotComplete();
     }
-}
 
+    @Test
+    public void exactTimeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeAndSizeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(100, TimeUnit.MILLISECONDS, 10)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void exactTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(100, TimeUnit.MILLISECONDS, 10)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void skipTimeAndSizeBoundNoInterruptWindowOutputOnComplete() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(90, 100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onComplete();
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+
+    @Test
+    public void skipTimeAndSizeBoundNoInterruptWindowOutputOnError() throws Exception {
+        final AtomicBoolean isInterrupted = new AtomicBoolean();
+
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final CountDownLatch doOnNextDone = new CountDownLatch(1);
+        final CountDownLatch secondWindowProcessing = new CountDownLatch(1);
+
+        pp.window(90, 100, TimeUnit.MILLISECONDS)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            int count;
+            @Override
+            public void accept(Flowable<Integer> v) throws Exception {
+                System.out.println(Thread.currentThread());
+                if (count++ == 1) {
+                    secondWindowProcessing.countDown();
+                    try {
+                        Thread.sleep(200);
+                        isInterrupted.set(Thread.interrupted());
+                    } catch (InterruptedException ex) {
+                        isInterrupted.set(true);
+                    }
+                    doOnNextDone.countDown();
+                }
+            }
+        })
+        .test();
+
+        pp.onNext(1);
+
+        assertTrue(secondWindowProcessing.await(5, TimeUnit.SECONDS));
+
+        pp.onError(new TestException());
+
+        assertTrue(doOnNextDone.await(5, TimeUnit.SECONDS));
+
+        assertFalse("The doOnNext got interrupted!", isInterrupted.get());
+    }
+}
