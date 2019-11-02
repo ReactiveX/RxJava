@@ -2,6 +2,17 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.14 - November 2, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.14%7C))
+
+#### Bugfixes
+
+  - [Pull 6677](https://github.com/ReactiveX/RxJava/pull/6677): Fix concurrent `clear()` calls when fused chains are canceled.
+  - [Pull 6684](https://github.com/ReactiveX/RxJava/pull/6684): Fix `window(time)` possible interrupts while terminating.
+
+#### Documentation changes
+
+  - [Pull 6681](https://github.com/ReactiveX/RxJava/pull/6681): Backport marble diagrams for `Single` from 3.x.
+ 
 ### Version 2.2.13 - October 3, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.13%7C))
 
 #### Dependencies
