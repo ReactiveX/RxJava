@@ -9820,12 +9820,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size" and optionally delays onError notifications.
      * <p>
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <p>
      * This operator keeps emitting as many signals as it can on the given Scheduler's Worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
      * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
      * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -9844,9 +9845,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
-     * @see #delay(long, TimeUnit, Scheduler)
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean, int)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -9858,12 +9859,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer of configurable "island size" and optionally delays onError notifications.
      * <p>
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <p>
      * This operator keeps emitting as many signals as it can on the given Scheduler's Worker thread,
      * which may result in a longer than expected occupation of this thread. In other terms,
      * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
      * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -9883,9 +9885,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
-     * @see #delay(long, TimeUnit, Scheduler)
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
