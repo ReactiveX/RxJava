@@ -504,8 +504,9 @@ It is recommended one sets up one or more of the following `-dontwarn` entries:
 ```
 -dontwarn org.reactivestreams.FlowAdapters
 -dontwarn org.reactivestreams.**
--dontwarn java.util.concurrent.flow.**
--dontwarn java.util.concurrent.**```
+-dontwarn java.util.concurrent.Flow.**
+-dontwarn java.util.concurrent.**
+```
 
 ### Further reading
 
