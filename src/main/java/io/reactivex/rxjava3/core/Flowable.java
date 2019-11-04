@@ -11419,6 +11419,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * asynchronously with a bounded buffer and optionally delays onError notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <p>
+     * This operator keeps emitting as many signals as it can on the given Scheduler's Worker thread,
+     * which may result in a longer than expected occupation of this thread. In other terms,
+     * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
+     * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
+     * <p>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
@@ -11443,6 +11449,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean, int)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -11456,6 +11463,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * asynchronously with a bounded buffer of configurable size and optionally delays onError notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <p>
+     * This operator keeps emitting as many signals as it can on the given Scheduler's Worker thread,
+     * which may result in a longer than expected occupation of this thread. In other terms,
+     * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
+     * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
+     * <p>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
@@ -11481,6 +11494,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @NonNull
