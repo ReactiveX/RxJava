@@ -15,7 +15,7 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 - fixed API mistakes and many limits of RxJava 2
 - intended to be a replacement for RxJava 2 with relatively few binary incompatible changes
 - Java 8 lambda-friendly API
-- non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc.)
+- non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.)
 - async or synchronous execution
 - virtual time and schedulers for parameterized concurrency
 - test and diagnostic support via test schedulers, test consumers and plugin hooks
@@ -24,7 +24,7 @@ Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/
 
 #### Version 2.x
 
-The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) will be supported with bugfixes and important documentation updates till
+The [2.x version](https://github.com/ReactiveX/RxJava/tree/2.x) will be supported with bugfixes and important documentation updates until
 **December 31, 2020**. No new features will be added to 2.x.
 
 #### Version 1.x
@@ -97,7 +97,7 @@ source.operator1().operator2().operator3().subscribe(consumer);
 source.flatMap(value -> source.operator1().operator2().operator3());
 ```
 
-Here, if we imagine ourselves on `operator2`, looking to the left towards the source, is called the **upstream**. Looking to the right towards the subscriber/consumer, is called the **downstream**. This is often more apparent when each element is written on a separate line:
+Here, if we imagine ourselves on `operator2`, looking to the left towards the source is called the **upstream**. Looking to the right towards the subscriber/consumer is called the **downstream**. This is often more apparent when each element is written on a separate line:
 
 ```java
 source
@@ -113,9 +113,9 @@ In RxJava's documentation, **emission**, **emits**, **item**, **event**, **signa
 
 #### Backpressure
 
-When the dataflow runs through asynchronous steps, each step may perform different things with different speed. To avoid overwhelming such steps, which usually would manifest itself as increased memory usage due to temporary buffering or the need for skipping/dropping data, a so-called backpressure is applied, which is a form of flow control where the steps can express how many items are they ready to process. This allows constraining the memory usage of the dataflows in situations where there is generally no way for a step to know how many items the upstream will send to it.
+When the dataflow runs through asynchronous steps, each step may perform different things with different speed. To avoid overwhelming such steps, which usually would manifest itself as increased memory usage due to temporary buffering or the need for skipping/dropping data, so-called backpressure is applied, which is a form of flow control where the steps can express how many items are they ready to process. This allows constraining the memory usage of the dataflows in situations where there is generally no way for a step to know how many items the upstream will send to it.
 
-In RxJava, the dedicated `Flowable` class is designated to support backpressure and `Observable` is dedicated for the non-backpressured operations (short sequences, GUI interactions, etc.). The other types, `Single`, `Maybe` and `Completable` don't support backpressure nor should they; there is always room to store one item temporarily.
+In RxJava, the dedicated `Flowable` class is designated to support backpressure and `Observable` is dedicated to the non-backpressured operations (short sequences, GUI interactions, etc.). The other types, `Single`, `Maybe` and `Completable` don't support backpressure nor should they; there is always room to store one item temporarily.
 
 #### Assembly time
 
@@ -200,16 +200,16 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 ### Schedulers
 
-RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 3 features several standard schedulers accessible via `Schedulers` utility class. 
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so-called `Scheduler`s that abstract away sources of concurrency behind a uniform API. RxJava 3 features several standard schedulers accessible via `Schedulers` utility class. 
 
-- `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operator use this as their default `Scheduler`.
+- `Schedulers.computation()`: Run computation intensive work on a fixed number of dedicated threads in the background. Most asynchronous operators use this as their default `Scheduler`.
 - `Schedulers.io()`: Run I/O-like or blocking operations on a dynamically changing set of threads.
 - `Schedulers.single()`: Run work on a single thread in a sequential and FIFO manner.
 - `Schedulers.trampoline()`: Run work in a sequential and FIFO manner in one of the participating threads, usually for testing purposes.
 
 These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
 
-In addition, there is option to wrap an existing `Executor` (and its subtypes such as `ExecutorService`) into a `Scheduler` via `Schedulers.from(Executor)`. This can be used, for example, to have a larger but still fixed pool of threads (unlike `computation()` and `io()` respectively).
+In addition, there is an option to wrap an existing `Executor` (and its subtypes such as `ExecutorService`) into a `Scheduler` via `Schedulers.from(Executor)`. This can be used, for example, to have a larger but still fixed pool of threads (unlike `computation()` and `io()` respectively).
 
 The `Thread.sleep(2000);` at the end is no accident. In RxJava the default `Scheduler`s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations lets you see the output of the flow on the console with time to spare.
 
@@ -242,7 +242,7 @@ Flowable.range(1, 10)
 
 Practically, parallelism in RxJava means running independent flows and merging their results back into a single flow. The operator `flatMap` does this by first mapping each number from 1 to 10 into its own individual `Flowable`, runs them and merges the computed squares.
 
-Note, however, that `flatMap` doesn't guarantee any order and the end result from the inner flows may end up interleaved. There are alternative operators:
+Note, however, that `flatMap` doesn't guarantee any order and the items from the inner flows may end up interleaved. There are alternative operators:
 
   - `concatMap` that maps and runs one inner flow at a time and
   - `concatMapEager` which runs all inner flows "at once" but the output flow will be in the order those inner flows were created.
@@ -362,7 +362,7 @@ Observable.range(1, 10)
 
 ### Type conversions
 
-Sometimes, a source or service returns a different type than the flow that is supposed to work with it. For example, in the inventory example above, `getDemandAsync` could return a `Single<DemandRecord>`. If the code example is left unchanged, this will result in a compile time error (however, often with misleading error message about lack of overload).
+Sometimes, a source or service returns a different type than the flow that is supposed to work with it. For example, in the inventory example above, `getDemandAsync` could return a `Single<DemandRecord>`. If the code example is left unchanged, this will result in a compile-time error (however, often with a misleading error message about lack of overload).
 
 In such situations, there are usually two options to fix the transformation: 1) convert to the desired type or 2) find and use an overload of the specific operator supporting the different type.
 
@@ -378,7 +378,7 @@ Each reactive base class features operators that can perform such conversions, i
 |**Maybe** | `toFlowable`<sup>3</sup> | `toObservable` | `toSingle` |  | `ignoreElement` |
 |**Completable** | `toFlowable` | `toObservable` | `toSingle` | `toMaybe` |  |
 
-<sup>1</sup>: When turning a multi-valued source into a single valued source, one should decide which of the many source values should be considered as the result.
+<sup>1</sup>: When turning a multi-valued source into a single-valued source, one should decide which of the many source values should be considered as the result.
 
 <sup>2</sup>: Turning an `Observable` into `Flowable` requires an additional decision: what to do with the potential unconstrained flow
 of the source `Observable`? There are several strategies available (such as buffering, dropping, keeping the latest) via the `BackpressureStrategy` parameter or via standard `Flowable` operators such as `onBackpressureBuffer`, `onBackpressureDrop`, `onBackpressureLatest` which also
@@ -487,6 +487,26 @@ The base classes can be considered heavy due to the sheer number of static and i
 
 <sup>2</sup>The naming convention of the interface was to append `Source` to the semi-traditional class name. There is no `FlowableSource` since `Publisher` is provided by the Reactive Streams library (and subtyping it wouldn't have helped with interoperation either). These interfaces are, however, not standard in the sense of the Reactive Streams specification and are currently RxJava specific only.
 
+### R8 and ProGuard settings
+
+By default, RxJava doesn't require any ProGuard/R8 settings and should work without problems. Unfortunately, the Reactive Streams dependency since version 1.0.3 has embedded Java 9 class files in its JAR that can cause warnings with ProGuard:
+
+```
+Warning: org.reactivestreams.FlowAdapters$FlowPublisherFromReactive: can't find superclass or interface java.util.concurrent.Flow$Publisher
+Warning: org.reactivestreams.FlowAdapters$FlowToReactiveProcessor: can't find superclass or interface java.util.concurrent.Flow$Processor
+Warning: org.reactivestreams.FlowAdapters$FlowToReactiveSubscriber: can't find superclass or interface java.util.concurrent.Flow$Subscriber
+Warning: org.reactivestreams.FlowAdapters$FlowToReactiveSubscription: can't find superclass or interface java.util.concurrent.Flow$Subscription
+Warning: org.reactivestreams.FlowAdapters: can't find referenced class java.util.concurrent.Flow$Publisher
+```
+
+It is recommended one sets up one or more of the following `-dontwarn` entries:
+
+```
+-dontwarn org.reactivestreams.FlowAdapters
+-dontwarn org.reactivestreams.**
+-dontwarn java.util.concurrent.flow.**
+-dontwarn java.util.concurrent.**```
+
 ### Further reading
 
 For further details, consult the [wiki](https://github.com/ReactiveX/RxJava/wiki).
@@ -505,11 +525,11 @@ Version 3.x is in development. Bugfixes will be applied to both 2.x and 3.x bran
 
 Minor 3.x increments (such as 3.1, 3.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 3.x.y increments (such as 3.0.0 -> 3.0.1, 3.3.1 -> 3.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 3.x.y increments (such as 3.0.0 -> 3.0.1, 3.3.1 -> 3.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in the patch releases to allow rapid exploration and iteration of unstable new functionality. 
 
 #### @Beta
 
-APIs marked with the [`@Beta`][beta source link] annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
+APIs marked with the [`@Beta`][beta source link] annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
 
 #### @Experimental
 
@@ -521,7 +541,7 @@ APIs marked with the `@Deprecated` annotation at the class or method level will 
 
 #### io.reactivex.rxjava3.internal.*
 
-All code inside the `io.reactivex.rxjava3.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `io.reactivex.rxjava3.internal.*` packages are considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 
