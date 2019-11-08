@@ -1,1 +1,1 @@
--dontwarn java.util.concurrent.Flow
+-dontwarn java.util.concurrent.Flow*
