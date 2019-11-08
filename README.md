@@ -489,7 +489,7 @@ The base classes can be considered heavy due to the sheer number of static and i
 
 ### R8 and ProGuard settings
 
-By default, RxJava doesn't require any ProGuard/R8 settings and should work without problems. Unfortunately, the Reactive Streams dependency since version 1.0.3 has embedded Java 9 class files in its JAR that can cause warnings with ProGuard:
+By default, RxJava itself doesn't require any ProGuard/R8 settings and should work without problems. Unfortunately, the Reactive Streams dependency since version 1.0.3 has embedded Java 9 class files in its JAR that can cause warnings with the plain ProGuard:
 
 ```
 Warning: org.reactivestreams.FlowAdapters$FlowPublisherFromReactive: can't find superclass or interface java.util.concurrent.Flow$Publisher
@@ -499,14 +499,13 @@ Warning: org.reactivestreams.FlowAdapters$FlowToReactiveSubscription: can't find
 Warning: org.reactivestreams.FlowAdapters: can't find referenced class java.util.concurrent.Flow$Publisher
 ```
 
-It is recommended one sets up one or more of the following `-dontwarn` entries:
+It is recommended one sets up one or more of the following `-dontwarn` entries in the application's `proguard-ruleset` file:
 
 ```
--dontwarn org.reactivestreams.FlowAdapters
--dontwarn org.reactivestreams.**
--dontwarn java.util.concurrent.Flow.**
--dontwarn java.util.concurrent.**
+-dontwarn java.util.concurrent.Flow*
 ```
+
+For R8, the RxJava jar includes the `META-INF/proguard/rxjava3.pro` with the same no-warning clause and should apply automatically.
 
 ### Further reading
 
