@@ -499,7 +499,7 @@ Warning: org.reactivestreams.FlowAdapters$FlowToReactiveSubscription: can't find
 Warning: org.reactivestreams.FlowAdapters: can't find referenced class java.util.concurrent.Flow$Publisher
 ```
 
-It is recommended one sets up one or more of the following `-dontwarn` entries in the application's `proguard-ruleset` file:
+It is recommended one sets up the following `-dontwarn` entry in the application's `proguard-ruleset` file:
 
 ```
 -dontwarn java.util.concurrent.Flow*
