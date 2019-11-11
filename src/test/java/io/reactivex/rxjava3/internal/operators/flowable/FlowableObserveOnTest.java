@@ -35,6 +35,7 @@ import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableObserveOn.BaseObserveOnSubscriber;
 import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
+import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.*;
@@ -1937,5 +1938,38 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()).subscribe(ts);
 
         assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void fusedNoConcurrentCleanDueToCancel() {
+        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+                TestObserver<Integer> to = up.hide()
+                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.single())
+                .unsubscribeOn(Schedulers.computation())
+                .firstOrError()
+                .test();
+
+                for (int i = 0; up.hasSubscribers() && i < 10000; i++) {
+                    up.onNext(i);
+                }
+
+                to
+                .awaitDone(5, TimeUnit.SECONDS)
+                ;
+
+                if (!errors.isEmpty()) {
+                    throw new CompositeException(errors);
+                }
+
+                to.assertResult(0);
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }

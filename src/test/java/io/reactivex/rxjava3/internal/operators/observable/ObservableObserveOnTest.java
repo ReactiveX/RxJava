@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.exceptions.TestException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableObserveOnTest.DisposeTrackingScheduler;
@@ -815,4 +815,36 @@ public class ObservableObserveOnTest extends RxJavaTest {
         assertEquals(1, s.disposedCount.get());
     }
 
+    @Test
+    public void fusedNoConcurrentCleanDueToCancel() {
+        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final UnicastSubject<Integer> us = UnicastSubject.create();
+
+                TestObserver<Integer> to = us.hide()
+                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.single())
+                .unsubscribeOn(Schedulers.computation())
+                .firstOrError()
+                .test();
+
+                for (int i = 0; us.hasObservers() && i < 10000; i++) {
+                    us.onNext(i);
+                }
+
+                to
+                .awaitDone(5, TimeUnit.SECONDS)
+                ;
+
+                if (!errors.isEmpty()) {
+                    throw new CompositeException(errors);
+                }
+
+                to.assertResult(0);
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
 }
