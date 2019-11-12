@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,7 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.flowable.FlowableObserveOnTest.DisposeTrackingScheduler;
@@ -813,4 +814,36 @@ public class ObservableObserveOnTest {
         assertEquals(1, s.disposedCount.get());
     }
 
+    @Test
+    public void fusedNoConcurrentCleanDueToCancel() {
+        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final UnicastSubject<Integer> us = UnicastSubject.create();
+
+                TestObserver<Integer> to = us.hide()
+                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.single())
+                .unsubscribeOn(Schedulers.computation())
+                .firstOrError()
+                .test();
+
+                for (int i = 0; us.hasObservers() && i < 10000; i++) {
+                    us.onNext(i);
+                }
+
+                to
+                .awaitDone(5, TimeUnit.SECONDS)
+                ;
+
+                if (!errors.isEmpty()) {
+                    throw new CompositeException(errors);
+                }
+
+                to.assertResult(0);
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
 }
