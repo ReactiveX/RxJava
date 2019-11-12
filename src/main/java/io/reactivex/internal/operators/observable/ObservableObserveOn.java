@@ -145,7 +145,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 disposed = true;
                 upstream.dispose();
                 worker.dispose();
-                if (getAndIncrement() == 0) {
+                if (!outputFused && getAndIncrement() == 0) {
                     queue.clear();
                 }
             }
