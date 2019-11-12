@@ -466,7 +466,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
     /**
      * Used to determine if onNext is being invoked concurrently.
      *
-     * @param <T>
+     * @param <T> the element type
      */
     private static class ConcurrentObserverValidator<T> extends DefaultSubscriber<T> {
 

@@ -28,9 +28,6 @@ final class SchedulerTestHelper {
     /**
      * Verifies that the given Scheduler does not deliver handled errors to its executing Thread's
      * {@link java.lang.Thread.UncaughtExceptionHandler}.
-     * <p>
-     * This is a companion test to {@link #testUnhandledErrorIsDeliveredToThreadHandler}, and is needed only for the
-     * same Schedulers.
      */
     static void handledErrorIsNotDeliveredToThreadHandler(Scheduler scheduler) throws InterruptedException {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();

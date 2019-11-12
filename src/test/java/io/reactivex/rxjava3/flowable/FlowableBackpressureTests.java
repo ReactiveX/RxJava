@@ -634,10 +634,10 @@ public class FlowableBackpressureTests extends RxJavaTest {
     }
 
     /**
-     * A synchronous Observable that will emit incrementing integers as requested.
+     * A synchronous Flowable that will emit incrementing integers as requested.
      *
-     * @param counter
-     * @return
+     * @param counter the shared value to be incremented
+     * @return the incrementing Flowable instance
      */
     private static Flowable<Integer> incrementingIntegers(final AtomicInteger counter) {
         return incrementingIntegers(counter, null);
@@ -689,8 +689,8 @@ public class FlowableBackpressureTests extends RxJavaTest {
     /**
      * Incrementing int without backpressure.
      *
-     * @param counter
-     * @return
+     * @param counter the shared value to increment
+     * @return the Flowable doing the increments
      */
     private static Flowable<Integer> firehose(final AtomicInteger counter) {
         return Flowable.unsafeCreate(new Publisher<Integer>() {
