@@ -154,7 +154,7 @@ final Scheduler scheduler;
             upstream.cancel();
             worker.dispose();
 
-            if (getAndIncrement() == 0) {
+            if (!outputFused && getAndIncrement() == 0) {
                 queue.clear();
             }
         }
