@@ -570,6 +570,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
                 }
             }
 
+            consumed = c;
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
