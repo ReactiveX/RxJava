@@ -784,4 +784,41 @@ public class MulticastProcessorTest extends RxJavaTest {
         assertTrue(mp.hasSubscribers());
     }
 
+    @Test
+    public void requestUpstreamPrefetchNonFused() {
+        for (int j = 1; j < 12; j++) {
+            MulticastProcessor<Integer> mp = MulticastProcessor.create(j, true);
+
+            TestSubscriber<Integer> ts = mp.test(0).withTag("Prefetch: " + j);
+
+            Flowable.range(1, 10).hide().subscribe(mp);
+
+            ts.assertEmpty()
+            .requestMore(3)
+            .assertValuesOnly(1, 2, 3)
+            .requestMore(3)
+            .assertValuesOnly(1, 2, 3, 4, 5, 6)
+            .requestMore(4)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        }
+    }
+
+    @Test
+    public void requestUpstreamPrefetchNonFused2() {
+        for (int j = 1; j < 12; j++) {
+            MulticastProcessor<Integer> mp = MulticastProcessor.create(j, true);
+
+            TestSubscriber<Integer> ts = mp.test(0).withTag("Prefetch: " + j);
+
+            Flowable.range(1, 10).hide().subscribe(mp);
+
+            ts.assertEmpty()
+            .requestMore(2)
+            .assertValuesOnly(1, 2)
+            .requestMore(2)
+            .assertValuesOnly(1, 2, 3, 4)
+            .requestMore(6)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        }
+    }
 }
