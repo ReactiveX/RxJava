@@ -269,6 +269,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                     }
 
                     boolean empty = q.isEmpty();
+
                     if (d && empty) {
                         for (Subscriber<? super T> s : a) {
                             s.onComplete();
@@ -297,18 +298,20 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                             return;
                         }
 
-                        if (v != null) {
-                            a[idx].onNext(v);
-
-                            e[idx] = emissionAtIndex + 1;
-
-                            int c = ++consumed;
-                            if (c == limit) {
-                                consumed = 0;
-                                upstream.request(c);
-                            }
-                            notReady = 0;
+                        if (v == null) {
+                            break;
                         }
+
+                        a[idx].onNext(v);
+
+                        e[idx] = emissionAtIndex + 1;
+
+                        int c = ++consumed;
+                        if (c == limit) {
+                            consumed = 0;
+                            upstream.request(c);
+                        }
+                        notReady = 0;
                     } else {
                         notReady++;
                     }
