@@ -2413,4 +2413,34 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
         }
     }
+
+    @Test
+    public void fusedParallelGroupProcessing() {
+        Flowable.range(0, 500000)
+        .subscribeOn(Schedulers.single())
+        .groupBy(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i) throws Throwable {
+                return i % 2;
+            }
+        })
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) {
+                return g.getKey() == 0
+                    ? g
+                        .parallel()
+                        .runOn(Schedulers.computation())
+                        .map(Functions.<Integer>identity())
+                        .sequential()
+                    : g.map(Functions.<Integer>identity()) // no need to use hide
+                ;
+            }
+        })
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertValueCount(500000)
+        .assertComplete()
+        .assertNoErrors();
+    }
 }
