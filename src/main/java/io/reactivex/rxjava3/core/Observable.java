@@ -9793,6 +9793,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <p>
+     * This operator keeps emitting as many signals as it can on the given Scheduler's Worker thread,
+     * which may result in a longer than expected occupation of this thread. In other terms,
+     * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
+     * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -9809,6 +9814,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler, boolean)
      * @see #observeOn(Scheduler, boolean, int)
+     * @see #delay(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -9826,7 +9832,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * which may result in a longer than expected occupation of this thread. In other terms,
      * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
      * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
-     * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -9847,7 +9852,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean, int)
-     * @see #delay(long, TimeUnit, Scheduler)
+     * @see #delay(long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -9865,7 +9870,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * which may result in a longer than expected occupation of this thread. In other terms,
      * it does not allow per-signal fairness in case the worker runs on a shared underlying thread.
      * If such fairness and signal/work interleaving is preferred, use the delay operator with zero time instead.
-     * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -9887,7 +9891,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see #subscribeOn
      * @see #observeOn(Scheduler)
      * @see #observeOn(Scheduler, boolean)
-     * @see #delay(long, TimeUnit, Scheduler)
+     * @see #delay(long, TimeUnit, Scheduler, boolean)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
