@@ -1972,4 +1972,20 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
         }
     }
+
+    @Test
+    public void fusedParallelProcessing() {
+        Flowable.range(0, 500000)
+        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.computation())
+        .parallel()
+        .runOn(Schedulers.computation())
+        .map(Functions.<Integer>identity())
+        .sequential()
+        .test()
+        .awaitDone(20, TimeUnit.SECONDS)
+        .assertValueCount(500000)
+        .assertComplete()
+        .assertNoErrors();
+    }
 }
