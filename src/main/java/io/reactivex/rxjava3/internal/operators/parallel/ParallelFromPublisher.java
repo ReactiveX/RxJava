@@ -268,21 +268,9 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                         }
                     }
 
-                    boolean empty = q.isEmpty();
-
-                    if (d && empty) {
-                        for (Subscriber<? super T> s : a) {
-                            s.onComplete();
-                        }
-                        return;
-                    }
-
-                    if (empty) {
-                        break;
-                    }
-
                     long requestAtIndex = r.get(idx);
                     long emissionAtIndex = e[idx];
+                    boolean empty = false;
                     if (requestAtIndex != emissionAtIndex && r.get(n + idx) == 0) {
 
                         T v;
@@ -298,24 +286,34 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                             return;
                         }
 
-                        if (v == null) {
-                            break;
+                        empty = v == null;
+                        if (!empty) {
+                            a[idx].onNext(v);
+
+                            e[idx] = emissionAtIndex + 1;
+
+                            int c = ++consumed;
+                            if (c == limit) {
+                                consumed = 0;
+                                upstream.request(c);
+                            }
+                            notReady = 0;
                         }
-
-                        a[idx].onNext(v);
-
-                        e[idx] = emissionAtIndex + 1;
-
-                        int c = ++consumed;
-                        if (c == limit) {
-                            consumed = 0;
-                            upstream.request(c);
-                        }
-                        notReady = 0;
                     } else {
                         notReady++;
                     }
 
+                    if (d && empty) {
+                        for (Subscriber<? super T> s : a) {
+                            s.onComplete();
+                        }
+                        return;
+                    }
+
+                    if (empty) {
+                        break;
+                    }
+                    
                     idx++;
                     if (idx == n) {
                         idx = 0;
