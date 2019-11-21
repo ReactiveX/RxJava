@@ -709,17 +709,25 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 produced++;
                 return v;
             }
-            int p = produced;
-            if (p != 0) {
-                produced = 0;
-                parent.upstream.request(p);
-            }
+            tryReplenish();
             return null;
         }
 
         @Override
         public boolean isEmpty() {
-            return queue.isEmpty();
+            if (queue.isEmpty()) {
+                tryReplenish();
+                return true;
+            }
+            return false;
+        }
+
+        void tryReplenish() {
+            int p = produced;
+            if (p != 0) {
+                produced = 0;
+                parent.upstream.request(p);
+            }
         }
 
         @Override
