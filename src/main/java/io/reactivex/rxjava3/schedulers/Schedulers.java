@@ -317,6 +317,11 @@ public final class Schedulers {
      * with a time delay close to each other may end up executing in different order than
      * the original schedule() call was issued. This limitation may be lifted in a future patch.
      * <p>
+     * The implementation of the Worker of this wrapper Scheduler is eager and will execute as many
+     * non-delayed tasks as it can, which may result in a longer than expected occupation of a
+     * thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
+     * in case the worker runs on a shared underlying thread of the Executor.
+     * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
      * executor's lifecycle must be managed externally:
      * <pre><code>
@@ -372,6 +377,11 @@ public final class Schedulers {
      * {@code ScheduledExecutorService} instance is not single threaded, tasks scheduled
      * with a time delay close to each other may end up executing in different order than
      * the original schedule() call was issued. This limitation may be lifted in a future patch.
+     * <p>
+     * The implementation of the Worker of this wrapper Scheduler is eager and will execute as many
+     * non-delayed tasks as it can, which may result in a longer than expected occupation of a
+     * thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
+     * in case the worker runs on a shared underlying thread of the Executor.
      * <p>
      * Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
      * executor's lifecycle must be managed externally:
