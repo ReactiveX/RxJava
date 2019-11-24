@@ -2,6 +2,22 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.15 - November 24, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.15%7C))
+
+#### Bugfixes
+
+  - [Pull 6715](https://github.com/ReactiveX/RxJava/pull/6715): Fix `MulticastProcessor` not requesting more after limit is reached.
+  - [Pull 6710](https://github.com/ReactiveX/RxJava/pull/6710): Fix concurrent `clear` in `observeOn` while output-fused.
+  - [Pull 6720](https://github.com/ReactiveX/RxJava/pull/6720): Fix `parallel()` on grouped flowable not replenishing properly.
+
+#### Documentation changes
+
+  - [Pull 6722](https://github.com/ReactiveX/RxJava/pull/6722): Update javadoc for `observeOn` to mention its eagerness.
+ 
+#### Other changes
+
+  - [Pull 6704](https://github.com/ReactiveX/RxJava/pull/6704): Add ProGuard rule to avoid `j.u.c.Flow` warnings due to RS 1.0.3.
+
 ### Version 2.2.14 - November 2, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.14%7C))
 
 #### Bugfixes
