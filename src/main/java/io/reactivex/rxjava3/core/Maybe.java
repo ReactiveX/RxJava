@@ -2537,7 +2537,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return a Single that emits a single item: the number of items emitted by the source Maybe as a
      *         64-bit Long item
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
-     * @see #count()
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2940,7 +2939,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onTerminate the action to invoke when the consumer calls {@code onComplete} or {@code onError}
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Action)
      * @since 3.0.0
      */
     @CheckReturnValue

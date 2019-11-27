@@ -42,10 +42,8 @@ public final class BlockingObservableMostRecent<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
 
-        /**
-         * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
-         * since it is for BlockingObservable.
-         */
+        // Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
+        // since it is for BlockingObservable.
         source.subscribe(mostRecentObserver);
 
         return mostRecentObserver.getIterable();

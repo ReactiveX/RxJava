@@ -2568,7 +2568,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param onTerminate the action to invoke when the consumer calls {@code onSuccess} or {@code onError}
      * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Action)
      * @since 3.0.0
      */
     @CheckReturnValue
