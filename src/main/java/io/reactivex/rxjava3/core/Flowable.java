@@ -8134,7 +8134,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Single that emits a single item: the number of items emitted by the source Publisher as a
      *         64-bit Long item
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
-     * @see #count()
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -14978,6 +14977,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @see #switchMapDelayError(Function)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -15013,6 +15013,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current active inner Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @see #switchMapDelayError(Function, int)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -15102,7 +15103,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *               {@link CompletableSource} to be subscribed to and awaited for
      *               (non blockingly) for its terminal event
      * @return the new Completable instance
-     * @see #switchMapCompletableDelayError(Function)
+     * @see #switchMapCompletable(Function)
      * @since 2.2
      */
     @CheckReturnValue
@@ -15140,6 +15141,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @see #switchMap(Function)
      * @since 2.0
      */
     @CheckReturnValue
@@ -15177,6 +15179,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current active inner Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @see #switchMap(Function, int)
      * @since 2.0
      */
     @CheckReturnValue
@@ -15229,7 +15232,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *               return a {@code MaybeSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @see #switchMapMaybe(Function)
+     * @see #switchMapMaybeDelayError(Function)
      * @since 2.2
      */
     @CheckReturnValue
@@ -15301,7 +15304,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *               return a {@code SingleSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @see #switchMapSingle(Function)
+     * @see #switchMapSingleDelayError(Function)
      * @since 2.2
      */
     @CheckReturnValue
