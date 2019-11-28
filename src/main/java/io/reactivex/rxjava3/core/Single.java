@@ -1553,7 +1553,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.i.png" alt="">
      * <p>
      * If any of the SingleSources signal an error, all other SingleSources get disposed and the
      * error emitted to downstream immediately.
@@ -1583,7 +1583,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to two items emitted by
      * two other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1619,7 +1619,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to three items emitted
      * by three other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1660,7 +1660,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to four items
      * emitted by four other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1705,7 +1705,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to five items
      * emitted by five other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1755,7 +1755,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to six items
      * emitted by six other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1809,7 +1809,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to seven items
      * emitted by seven other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1868,7 +1868,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to eight items
      * emitted by eight other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1931,7 +1931,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the results of a specified combiner function applied to nine items
      * emitted by nine other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.n.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2000,14 +2000,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * value and calls a zipper function with an array of these values to return a result
      * to be emitted to downstream.
      * <p>
+     * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zipArray.png" alt="">
+     * <p>
      * If the array of {@link SingleSource}s is empty a {@link NoSuchElementException} error is signalled immediately.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * If any of the SingleSources signal an error, all other SingleSources get disposed and the
      * error emitted to downstream immediately.
@@ -4104,7 +4103,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that emits the result of applying a specified function to the pair of items emitted by
      * the source Single and another specified Single.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
+     * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zipWith.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
