@@ -47,7 +47,7 @@ public class ObservableFromSupplierTest extends RxJavaTest {
 
         Observable<Object> fromSupplierObservable = Observable.fromSupplier(func);
 
-        verifyZeroInteractions(func);
+        verifyNoInteractions(func);
 
         fromSupplierObservable.subscribe();
 

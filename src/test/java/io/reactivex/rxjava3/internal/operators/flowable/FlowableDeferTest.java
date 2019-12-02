@@ -38,7 +38,7 @@ public class FlowableDeferTest extends RxJavaTest {
 
         Flowable<String> deferred = Flowable.defer(factory);
 
-        verifyZeroInteractions(factory);
+        verifyNoInteractions(factory);
 
         Subscriber<String> firstSubscriber = TestHelper.mockSubscriber();
         deferred.subscribe(firstSubscriber);

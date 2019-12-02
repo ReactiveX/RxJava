@@ -47,7 +47,7 @@ public class FlowableFromSupplierTest extends RxJavaTest {
 
         Flowable<Object> fromSupplierFlowable = Flowable.fromSupplier(func);
 
-        verifyZeroInteractions(func);
+        verifyNoInteractions(func);
 
         fromSupplierFlowable.subscribe();
 

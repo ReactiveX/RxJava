@@ -47,7 +47,7 @@ public class ObservableFromCallableTest extends RxJavaTest {
 
         Observable<Object> fromCallableObservable = Observable.fromCallable(func);
 
-        verifyZeroInteractions(func);
+        verifyNoInteractions(func);
 
         fromCallableObservable.subscribe();
 
