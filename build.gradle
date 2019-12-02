@@ -8,7 +8,7 @@ buildscript {
   ext.testNgVersion = "7.0.0"
   ext.mockitoVersion = "3.0.0"
   ext.jmhLibVersion = "1.21"
-  ext.jmhGradleVersion = "0.5.0-rc-2"
+  ext.jmhGradleVersion = "0.5.0"
   ext.guavaVersion = "28.0-jre"
   ext.jacocoVersion = "0.8.4"
   ext.animalSnifferVersion = "1.5.0"
