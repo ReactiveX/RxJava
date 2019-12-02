@@ -6,7 +6,7 @@ buildscript {
   ext.reactiveStreamsVersion = "1.0.3"
   ext.junitVersion = "4.12"
   ext.testNgVersion = "7.0.0"
-  ext.mockitoVersion = "3.0.0"
+  ext.mockitoVersion = "3.2.0"
   ext.jmhLibVersion = "1.21"
   ext.jmhGradleVersion = "0.5.0-rc-2"
   ext.guavaVersion = "28.0-jre"
