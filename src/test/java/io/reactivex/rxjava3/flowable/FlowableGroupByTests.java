@@ -100,7 +100,8 @@ public class FlowableGroupByTests extends RxJavaTest {
             public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> v) {
                 return v;
             }
-        }).subscribe(ts);
+        }, 20) // need to prefetch as many groups as groupBy produces to avoid MBE
+        .subscribe(ts);
 
         // Behavior change: this now counts as group abandonment because concatMap
         // doesn't subscribe to the 2nd+ emitted groups immediately
