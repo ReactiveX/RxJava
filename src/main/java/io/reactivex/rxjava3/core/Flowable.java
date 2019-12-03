@@ -10442,9 +10442,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      * @see #groupBy(Function, boolean)
+     * @see #groupBy(Function, Function)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
         return groupBy(keySelector, Functions.<T>identity(), false, bufferSize());
@@ -10503,7 +10504,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
         return groupBy(keySelector, Functions.<T>identity(), delayError, bufferSize());
@@ -10561,9 +10562,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @see #groupBy(Function, Function, boolean)
+     * @see #groupBy(Function, Function, boolean, int)
+     * @see #groupBy(Function, Function, boolean, int, Function)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector) {
@@ -10625,9 +10629,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @see #groupBy(Function, Function, boolean, int)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
@@ -10694,7 +10699,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @CheckReturnValue
     @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
@@ -10815,7 +10820,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @CheckReturnValue
     @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
