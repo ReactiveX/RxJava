@@ -15,7 +15,6 @@ package io.reactivex.rxjava3.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.lang.management.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -27,7 +26,7 @@ import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.internal.schedulers.*;
+import io.reactivex.rxjava3.internal.schedulers.RxThreadFactory;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -45,87 +44,6 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 
-    public static void cancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
-        System.out.println("Wait before GC");
-        Thread.sleep(1000);
-
-        System.out.println("GC");
-        System.gc();
-
-        Thread.sleep(1000);
-
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
-        long initial = memHeap.getUsed();
-
-        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
-
-        int n = 100 * 1000;
-        if (periodic) {
-            final CountDownLatch cdl = new CountDownLatch(n);
-            final Runnable action = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
-            }
-
-            System.out.println("Waiting for the first round to finish...");
-            cdl.await();
-        } else {
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.DAYS);
-            }
-        }
-
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long after = memHeap.getUsed();
-        System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
-
-        w.dispose();
-
-        System.out.println("Wait before second GC");
-        System.out.println("JDK 6 purge is N log N because it removes and shifts one by one");
-        int t = (int)(n * Math.log(n) / 100) + SchedulerPoolFactory.PURGE_PERIOD_SECONDS * 1000;
-        while (t > 0) {
-            System.out.printf("  >> Waiting for purge: %.2f s remaining%n", t / 1000d);
-
-            System.gc();
-
-            Thread.sleep(1000);
-
-            t -= 1000;
-            memHeap = memoryMXBean.getHeapMemoryUsage();
-            long finish = memHeap.getUsed();
-            System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
-            if (finish <= initial * 5) {
-                break;
-            }
-        }
-
-        System.out.println("Second GC");
-        System.gc();
-
-        Thread.sleep(1000);
-
-        memHeap = memoryMXBean.getHeapMemoryUsage();
-        long finish = memHeap.getUsed();
-        System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
-
-        if (finish > initial * 5) {
-            fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
-        }
-    }
-
     @Test
     public void cancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -133,14 +51,14 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
         try {
             Scheduler.Worker w = s.createWorker();
             try {
-                cancelledRetention(w, false);
+                ExecutorSchedulerTest.cancelledRetention(w, false);
             } finally {
                 w.dispose();
             }
 
             w = s.createWorker();
             try {
-                cancelledRetention(w, true);
+                ExecutorSchedulerTest.cancelledRetention(w, true);
             } finally {
                 w.dispose();
             }
