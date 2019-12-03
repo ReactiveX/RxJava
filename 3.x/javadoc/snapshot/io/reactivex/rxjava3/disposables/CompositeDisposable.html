@@ -107,13 +107,13 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>, io.reactivex.rxjava3.internal.disposables.DisposableContainer</dd>
+<dd><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>, <a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">CompositeDisposable</span>
 extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
-implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>, io.reactivex.rxjava3.internal.disposables.DisposableContainer</pre>
+implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>, <a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></pre>
 <div class="block">A disposable container that can hold onto multiple other disposables and
  offers O(1) add and removal complexity.</div>
 </li>
@@ -333,7 +333,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
  container has been disposed.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>add</code>&nbsp;in interface&nbsp;<code>io.reactivex.rxjava3.internal.disposables.DisposableContainer</code></dd>
+<dd><code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html#add-io.reactivex.rxjava3.disposables.Disposable-">add</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>disposable</code> - the disposable to add, not null</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -375,7 +375,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
  container.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>remove</code>&nbsp;in interface&nbsp;<code>io.reactivex.rxjava3.internal.disposables.DisposableContainer</code></dd>
+<dd><code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html#remove-io.reactivex.rxjava3.disposables.Disposable-">remove</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>disposable</code> - the disposable to remove and dispose, not null</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -395,7 +395,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
  container.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>delete</code>&nbsp;in interface&nbsp;<code>io.reactivex.rxjava3.internal.disposables.DisposableContainer</code></dd>
+<dd><code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html#delete-io.reactivex.rxjava3.disposables.Disposable-">delete</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>disposable</code> - the disposable to remove, not null</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

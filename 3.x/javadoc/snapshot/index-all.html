@@ -93,6 +93,11 @@
 <div class="block">Adds a disposable to this container or disposes it if the
  container has been disposed.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/DisposableContainer.html#add-io.reactivex.rxjava3.disposables.Disposable-">add(Disposable)</a></span> - Method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></dt>
+<dd>
+<div class="block">Adds a disposable to this container or disposes it if the
+ container has been disposed.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#add-io.reactivex.rxjava3.disposables.Disposable-">add(Disposable)</a></span> - Method in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/ResourceCompletableObserver.html" title="class in io.reactivex.rxjava3.observers">ResourceCompletableObserver</a></dt>
 <dd>
 <div class="block">Adds a resource to this ResourceObserver.</div>
@@ -2657,6 +2662,11 @@
 <div class="block">Removes (but does not dispose) the given disposable if it is part of this
  container.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/DisposableContainer.html#delete-io.reactivex.rxjava3.disposables.Disposable-">delete(Disposable)</a></span> - Method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></dt>
+<dd>
+<div class="block">Removes but does not dispose the given disposable if it is part of this
+ container.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#dematerialize-io.reactivex.rxjava3.functions.Function-">dematerialize(Function&lt;? super T, Notification&lt;R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a Flowable that reverses the effect of <a href="io/reactivex/rxjava3/core/Flowable.html#materialize--"><code>materialize</code></a> by transforming the
@@ -2685,6 +2695,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/DisposableCompletableObserver.html#DisposableCompletableObserver--">DisposableCompletableObserver()</a></span> - Constructor for class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava3.observers">DisposableCompletableObserver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables"><span class="typeNameLink">DisposableContainer</span></a> - Interface in <a href="io/reactivex/rxjava3/disposables/package-summary.html">io.reactivex.rxjava3.disposables</a></dt>
+<dd>
+<div class="block">Common interface to add and remove disposables from a container.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava3/observers/DisposableMaybeObserver.html" title="class in io.reactivex.rxjava3.observers"><span class="typeNameLink">DisposableMaybeObserver</span></a>&lt;<a href="io/reactivex/rxjava3/observers/DisposableMaybeObserver.html" title="type parameter in DisposableMaybeObserver">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/observers/package-summary.html">io.reactivex.rxjava3.observers</a></dt>
 <dd>
 <div class="block">An abstract <a href="io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> that allows asynchronous cancellation by implementing Disposable.</div>
@@ -6755,6 +6769,11 @@
  timeout if all subscribers have unsubscribed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/CompositeDisposable.html#remove-io.reactivex.rxjava3.disposables.Disposable-">remove(Disposable)</a></span> - Method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava3.disposables">CompositeDisposable</a></dt>
+<dd>
+<div class="block">Removes and disposes the given disposable if it is part of this
+ container.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/DisposableContainer.html#remove-io.reactivex.rxjava3.disposables.Disposable-">remove(Disposable)</a></span> - Method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></dt>
 <dd>
 <div class="block">Removes and disposes the given disposable if it is part of this
  container.</div>
