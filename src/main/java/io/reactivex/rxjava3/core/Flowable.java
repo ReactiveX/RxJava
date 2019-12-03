@@ -10430,7 +10430,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10488,7 +10488,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10547,7 +10547,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10611,7 +10611,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10676,7 +10676,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10789,7 +10789,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
-     *  all active inner {@GroupedFlowable}s will signal the same exception.</dd>
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      * <p>History: 2.1.10 - beta
      * @param keySelector
