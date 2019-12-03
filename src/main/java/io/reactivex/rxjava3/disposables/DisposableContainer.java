@@ -11,9 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.disposables;
-
-import io.reactivex.rxjava3.disposables.Disposable;
+package io.reactivex.rxjava3.disposables;
 
 /**
  * Common interface to add and remove disposables from a container.
@@ -38,7 +36,7 @@ public interface DisposableContainer {
     boolean remove(Disposable d);
 
     /**
-     * Removes (but does not dispose) the given disposable if it is part of this
+     * Removes but does not dispose the given disposable if it is part of this
      * container.
      * @param d the disposable to remove, not null
      * @return true if the operation was successful
