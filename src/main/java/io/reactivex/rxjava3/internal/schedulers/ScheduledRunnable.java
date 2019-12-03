@@ -16,8 +16,7 @@ package io.reactivex.rxjava3.internal.schedulers;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.disposables.DisposableContainer;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object>
