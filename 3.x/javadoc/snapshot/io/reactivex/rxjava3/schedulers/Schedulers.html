@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -167,36 +167,45 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-">from</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+    boolean&nbsp;interruptibleWorker,
+    boolean&nbsp;fair)</code>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+ calls to it.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--">io</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance intended for IO-bound work.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--">newThread</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true" title="class or interface in java.lang"><code>Thread</code></a> for each unit of work.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#shutdown--">shutdown</a></span>()</code>
 <div class="block">Shuts down the standard Schedulers.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--">single</a></span>()</code>
 <div class="block">Returns a default, shared, single-thread-backed <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance for work
  requiring strongly-sequential execution on the same background thread.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#start--">start</a></span>()</code>
 <div class="block">Starts the standard Schedulers.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#trampoline--">trampoline</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance whose <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
@@ -496,6 +505,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  non-delayed tasks as it can, which may result in a longer than expected occupation of a
  thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
  in case the worker runs on a shared underlying thread of the Executor.
+ See <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-"><code>from(Executor, boolean, boolean)</code></a> to create a wrapper that uses the underlying Executor
+ more fairly.
  <p>
  Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
  executor's lifecycle must be managed externally:
@@ -523,6 +534,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dd><code>executor</code> - the executor to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Scheduler wrapping the Executor</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-"><code>from(Executor, boolean, boolean)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -565,6 +578,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  non-delayed tasks as it can, which may result in a longer than expected occupation of a
  thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
  in case the worker runs on a shared underlying thread of the Executor.
+ See <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-"><code>from(Executor, boolean, boolean)</code></a> to create a wrapper that uses the underlying Executor
+ more fairly.
  <p>
  Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
  executor's lifecycle must be managed externally:
@@ -593,6 +608,89 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dd><code>executor</code> - the executor to wrap</dd>
 <dd><code>interruptibleWorker</code> - if <code>true</code> the tasks submitted to the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> will
  be interrupted when the task is disposed.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the new Scheduler wrapping the Executor</dd>
+<dt><span class="simpleTagLabel">Since:</span></dt>
+<dd>3.0.0</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-"><code>from(Executor, boolean, boolean)</code></a></dd>
+</dl>
+</li>
+</ul>
+<a name="from-java.util.concurrent.Executor-boolean-boolean-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>from</h4>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                      <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+                                      boolean&nbsp;interruptibleWorker,
+                                      boolean&nbsp;fair)</pre>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+ calls to it.
+ <p>
+ The tasks scheduled by the returned <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> and its <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
+ can be optionally interrupted.
+ <p>
+ If the provided executor doesn't support any of the more specific standard Java executor
+ APIs, tasks scheduled with a time delay or periodically will use the
+ <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
+ before posting the actual task to the given executor.
+ <p>
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
+ canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+ <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
+ a time delay or periodically will use the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
+ before posting the actual task to the given executor.
+ <p>
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
+ canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
+ <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
+ a time delay or periodically will use the provided executor. Note, however, if the provided
+ <code>ScheduledExecutorService</code> instance is not single threaded, tasks scheduled
+ with a time delay close to each other may end up executing in different order than
+ the original schedule() call was issued. This limitation may be lifted in a future patch.
+ <p>
+ The implementation of the Worker of this wrapper Scheduler can operate in both eager (non-fair) and
+ fair modes depending on the specified parameter. In <em>eager</em> mode, it will execute as many
+ non-delayed tasks as it can, which may result in a longer than expected occupation of a
+ thread of the given backing Executor. In other terms, it does not allow per-Runnable fairness
+ in case the worker runs on a shared underlying thread of the Executor. In <em>fair</em> mode,
+ non-delayed tasks will still be executed in a FIFO and non-overlapping manner, but after each task,
+ the execution for the next task is rescheduled with the same underlying Executor, allowing interleaving
+ from both the same Scheduler or other external usages of the underlying Executor.
+ <p>
+ Starting, stopping and restarting this scheduler is not supported (no-op) and the provided
+ executor's lifecycle must be managed externally:
+ <pre><code>
+ ExecutorService exec = Executors.newSingleThreadedExecutor();
+ try {
+     Scheduler scheduler = Schedulers.from(exec, true, true);
+     Flowable.just(1)
+        .subscribeOn(scheduler)
+        .map(v -&gt; v + 1)
+        .observeOn(scheduler)
+        .blockingSubscribe(System.out::println);
+ } finally {
+     exec.shutdown();
+ }
+ </code></pre>
+ <p>
+ This type of scheduler is less sensitive to leaking <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> instances, although
+ not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
+ execute those tasks "unexpectedly".
+ <p>
+ Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>executor</code> - the executor to wrap</dd>
+<dd><code>interruptibleWorker</code> - if <code>true</code> the tasks submitted to the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> will
+ be interrupted when the task is disposed.</dd>
+<dd><code>fair</code> - if <code>true</code> tasks submitted to the will be executed by the underlying <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> one after the other, still
+ in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying <code>Executor</code>.
+ If <code>false</code>, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying <code>Executor</code> thread.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Scheduler wrapping the Executor</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
