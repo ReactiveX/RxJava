@@ -35,6 +35,7 @@ import io.reactivex.rxjava3.flowables.GroupedFlowable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -2405,5 +2406,42 @@ public class FlowableGroupByTest extends RxJavaTest {
         ts.assertFailure(MissingBackpressureException.class);
 
         assertTrue("" + ts.errors().get(0).getCause(), ts.errors().get(0).getCause() instanceof TestException);
+    }
+
+    @Test
+    public void fusedGroupClearedOnCancel() {
+        Flowable.just(1)
+        .groupBy(Functions.<Integer>identity())
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Throwable {
+                return g.observeOn(ImmediateThinScheduler.INSTANCE).take(1);
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void fusedGroupClearedOnCancelDelayed() {
+        Flowable.range(1, 100)
+        .groupBy(Functions.<Integer, Integer>justFunction(1))
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Throwable {
+                return g.observeOn(Schedulers.io())
+                        .doOnNext(new Consumer<Integer>() {
+                            @Override
+                            public void accept(Integer v) throws Throwable {
+                                Thread.sleep(100);
+                            }
+                        })
+                        .take(1);
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
     }
 }
