@@ -15,29 +15,31 @@ package io.reactivex.rxjava3.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.lang.management.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.internal.schedulers.*;
+import io.reactivex.rxjava3.internal.schedulers.RxThreadFactory;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.processors.PublishProcessor;
+import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
+public class ExecutorSchedulerFairTest extends AbstractSchedulerConcurrencyTests {
 
     static final Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool"));
 
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.from(executor);
+        return Schedulers.from(executor, false, true);
     }
 
     @Test
@@ -45,106 +47,21 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         SchedulerTestHelper.handledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 
-    public static void cancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
-        System.out.println("Wait before GC");
-        Thread.sleep(1000);
-
-        System.out.println("GC");
-        System.gc();
-
-        Thread.sleep(1000);
-
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        long initial = memoryMXBean.getHeapMemoryUsage().getUsed();
-
-        System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
-
-        int n = 100 * 1000;
-        if (periodic) {
-            final CountDownLatch cdl = new CountDownLatch(n);
-            final Runnable action = new Runnable() {
-                @Override
-                public void run() {
-                    cdl.countDown();
-                }
-            };
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
-            }
-
-            System.out.println("Waiting for the first round to finish...");
-            cdl.await();
-        } else {
-            for (int i = 0; i < n; i++) {
-                if (i % 50000 == 0) {
-                    System.out.println("  -> still scheduling: " + i);
-                }
-                w.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.DAYS);
-            }
-        }
-
-        long after = memoryMXBean.getHeapMemoryUsage().getUsed();
-        System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
-
-        w.dispose();
-
-        System.out.println("Wait before second GC");
-        System.out.println("JDK 6 purge is N log N because it removes and shifts one by one");
-        int t = (int)(n * Math.log(n) / 100) + SchedulerPoolFactory.PURGE_PERIOD_SECONDS * 1000;
-        int sleepStep = 100;
-        while (t > 0) {
-            System.out.printf("  >> Waiting for purge: %.2f s remaining%n", t / 1000d);
-
-            System.gc();
-
-            long finish = memoryMXBean.getHeapMemoryUsage().getUsed();
-            System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
-            if (finish <= initial * 5) {
-                break;
-            }
-
-            Thread.sleep(sleepStep);
-            t -= sleepStep;
-        }
-
-        System.out.println("Second GC");
-        System.gc();
-
-        t = 2000;
-        long finish = memoryMXBean.getHeapMemoryUsage().getUsed();
-
-        while (t > 0) {
-            System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
-
-            if (finish <= initial * 5) {
-                return;
-            }
-            Thread.sleep(sleepStep);
-            t -= sleepStep;
-            finish = memoryMXBean.getHeapMemoryUsage().getUsed();
-        }
-
-        fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
-    }
-
     @Test
     public void cancelledTaskRetention() throws InterruptedException {
         ExecutorService exec = Executors.newSingleThreadExecutor();
-        Scheduler s = Schedulers.from(exec);
+        Scheduler s = Schedulers.from(exec, false, true);
         try {
             Scheduler.Worker w = s.createWorker();
             try {
-                cancelledRetention(w, false);
+                ExecutorSchedulerTest.cancelledRetention(w, false);
             } finally {
                 w.dispose();
             }
 
             w = s.createWorker();
             try {
-                cancelledRetention(w, true);
+                ExecutorSchedulerTest.cancelledRetention(w, true);
             } finally {
                 w.dispose();
             }
@@ -184,7 +101,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             }
         };
         TestExecutor exec = new TestExecutor();
-        Scheduler custom = Schedulers.from(exec);
+        Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
         try {
             Disposable d1 = w.schedule(task);
@@ -213,7 +130,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             }
         };
         TestExecutor exec = new TestExecutor();
-        Scheduler custom = Schedulers.from(exec);
+        Scheduler custom = Schedulers.from(exec, false, true);
         Worker w = custom.createWorker();
         try {
             w.schedule(task);
@@ -233,7 +150,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             public void execute(Runnable r) {
                 r.run();
             }
-        });
+        }, false, true);
 
         final CountDownLatch cdl = new CountDownLatch(5);
 
@@ -264,7 +181,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         exec.shutdown();
 
-        Scheduler s = Schedulers.from(exec);
+        Scheduler s = Schedulers.from(exec, false, true);
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
@@ -291,13 +208,13 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Worker s = Schedulers.from(exec).createWorker();
+            Worker s = Schedulers.from(exec, false, true).createWorker();
             assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE));
 
-            s = Schedulers.from(exec).createWorker();
+            s = Schedulers.from(exec, false, true).createWorker();
             assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS));
 
-            s = Schedulers.from(exec).createWorker();
+            s = Schedulers.from(exec, false, true).createWorker();
             assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodically(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
 
             TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
@@ -313,7 +230,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 
         try {
-            Scheduler s = Schedulers.from(exec);
+            Scheduler s = Schedulers.from(exec, false, true);
 
             final CountDownLatch cdl = new CountDownLatch(8);
 
@@ -344,7 +261,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void reuseScheduledExecutorAsWorker() throws Exception {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 
-        Worker s = Schedulers.from(exec).createWorker();
+        Worker s = Schedulers.from(exec, false, true).createWorker();
 
         assertFalse(s.isDisposed());
         try {
@@ -380,7 +297,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     public void disposeRace() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
-        final Scheduler s = Schedulers.from(exec);
+        final Scheduler s = Schedulers.from(exec, false, true);
         try {
             for (int i = 0; i < 500; i++) {
                 final Worker w = s.createWorker();
@@ -411,7 +328,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             public void execute(Runnable r) {
                 r.run();
             }
-        });
+        }, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         assertTrue(d.isDisposed());
@@ -424,7 +341,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             public void execute(Runnable r) {
                 new Thread(r).start();
             }
-        });
+        }, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         while (!d.isDisposed()) {
@@ -434,7 +351,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Test
     public void runnableDisposedAsync2() throws Exception {
-        final Scheduler s = Schedulers.from(executor);
+        final Scheduler s = Schedulers.from(executor, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
 
         while (!d.isDisposed()) {
@@ -449,7 +366,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             public void execute(Runnable r) {
                 new Thread(r).start();
             }
-        });
+        }, false, true);
         Disposable d = s.scheduleDirect(new Runnable() {
             @Override
             public void run() {
@@ -469,7 +386,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             public void execute(Runnable r) {
                 new Thread(r).start();
             }
-        });
+        }, false, true);
         Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
 
         while (!d.isDisposed()) {
@@ -481,7 +398,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public void runnableDisposedAsyncTimed2() throws Exception {
         ExecutorService executorScheduler = Executors.newScheduledThreadPool(1, new RxThreadFactory("TestCustomPoolTimed"));
         try {
-            final Scheduler s = Schedulers.from(executorScheduler);
+            final Scheduler s = Schedulers.from(executorScheduler, false, true);
             Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
 
             while (!d.isDisposed()) {
@@ -508,5 +425,91 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         disposable.dispose();
 
         assertSame(Functions.EMPTY_RUNNABLE, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void fairInterleaving() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        try {
+            final Scheduler sch = Schedulers.from(exec, false, true);
+
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp
+            .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Flowable<Integer> v) throws Throwable {
+                    return Flowable.merge(
+                            v.filter(new Predicate<Integer>() {
+                                @Override
+                                public boolean test(Integer w) throws Throwable {
+                                    return w % 2 == 0;
+                                }
+                            }).observeOn(sch, false, 1).hide(),
+                            v.filter(new Predicate<Integer>() {
+                                @Override
+                                public boolean test(Integer w) throws Throwable {
+                                    return w % 2 != 0;
+                                }
+                            }).observeOn(sch, false, 1).hide()
+                    );
+                }
+            })
+            .test();
+
+            for (int i = 1; i < 11; i++) {
+                pp.onNext(i);
+            }
+            pp.onComplete();
+
+            ts
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void fairInterleavingWithDelay() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        try {
+            final Scheduler sch = Schedulers.from(exec, false, true);
+
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp
+            .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Flowable<Integer> v) throws Throwable {
+                    return Flowable.merge(
+                            v.filter(new Predicate<Integer>() {
+                                @Override
+                                public boolean test(Integer w) throws Throwable {
+                                    return w % 2 == 0;
+                                }
+                            }).delay(0, TimeUnit.SECONDS, sch).hide(),
+                            v.filter(new Predicate<Integer>() {
+                                @Override
+                                public boolean test(Integer w) throws Throwable {
+                                    return w % 2 != 0;
+                                }
+                            }).delay(0, TimeUnit.SECONDS, sch).hide()
+                    );
+                }
+            })
+            .test();
+
+            for (int i = 1; i < 11; i++) {
+                pp.onNext(i);
+            }
+            pp.onComplete();
+
+            ts
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        } finally {
+            exec.shutdown();
+        }
     }
 }
