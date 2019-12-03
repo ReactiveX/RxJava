@@ -37,7 +37,7 @@ public class ObservableDeferTest extends RxJavaTest {
 
         Observable<String> deferred = Observable.defer(factory);
 
-        verifyZeroInteractions(factory);
+        verifyNoInteractions(factory);
 
         Observer<String> firstObserver = TestHelper.mockObserver();
         deferred.subscribe(firstObserver);

@@ -100,7 +100,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
         Single<Object> fromCallableSingle = Single.fromCallable(func);
 
-        verifyZeroInteractions(func);
+        verifyNoInteractions(func);
 
         fromCallableSingle.subscribe();
 

@@ -78,7 +78,7 @@ public class SerialDisposableTests extends RxJavaTest {
     public void settingSameDisposableTwiceDoesUnsubscribeIt() {
         Disposable underlying = mock(Disposable.class);
         serialDisposable.set(underlying);
-        verifyZeroInteractions(underlying);
+        verifyNoInteractions(underlying);
         serialDisposable.set(underlying);
         verify(underlying).dispose();
     }

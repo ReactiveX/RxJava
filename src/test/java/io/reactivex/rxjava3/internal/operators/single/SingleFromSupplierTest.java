@@ -101,7 +101,7 @@ public class SingleFromSupplierTest extends RxJavaTest {
 
         Single<Object> fromSupplierSingle = Single.fromSupplier(func);
 
-        verifyZeroInteractions(func);
+        verifyNoInteractions(func);
 
         fromSupplierSingle.subscribe();
 
