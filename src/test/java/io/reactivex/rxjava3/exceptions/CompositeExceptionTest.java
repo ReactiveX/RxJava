@@ -350,7 +350,7 @@ public class CompositeExceptionTest extends RxJavaTest {
         System.err.println(overview);
 
         assertTrue(overview, overview.contains("        Multiple exceptions (2)"));
-        assertTrue(overview, overview.contains("        |- io.reactivex.rxjava3.exceptions.TestException: ex1"));
+        assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava3.exceptions.TestException: ex1"));
         assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava3.exceptions.TestException: ex2"));
     }
 
