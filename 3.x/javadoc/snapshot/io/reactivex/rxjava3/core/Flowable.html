@@ -15820,7 +15820,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/disposables/Disposab
 <li class="blockList">
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#ERROR">ERROR</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector)</pre>
 <div class="block">Groups the items emitted by a <code>Publisher</code> according to a specified criterion, and emits these
@@ -15850,13 +15850,16 @@ public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>Publisher</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>Publisher</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -15868,7 +15871,9 @@ public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
          unique key value and each of which emits those items from the source Publisher that share that
          key value</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a></dd>
+<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-boolean-"><code>groupBy(Function, boolean)</code></a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-"><code>groupBy(Function, Function)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -15879,7 +15884,7 @@ public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
 <li class="blockList">
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#ERROR">ERROR</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector,
         boolean&nbsp;delayError)</pre>
@@ -15910,13 +15915,16 @@ public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>Publisher</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>Publisher</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -15941,7 +15949,7 @@ public final&nbsp;&lt;K&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
 <li class="blockList">
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#ERROR">ERROR</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,V&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector,
         <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends V&gt;&nbsp;valueSelector)</pre>
@@ -15972,13 +15980,16 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>Publisher</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>Publisher</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -15992,7 +16003,10 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
          unique key value and each of which emits those items from the source Publisher that share that
          key value</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a></dd>
+<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-"><code>groupBy(Function, Function, boolean)</code></a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-int-"><code>groupBy(Function, Function, boolean, int)</code></a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-int-io.reactivex.rxjava3.functions.Function-"><code>groupBy(Function, Function, boolean, int, Function)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -16003,7 +16017,7 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 <li class="blockList">
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#ERROR">ERROR</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,V&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector,
         <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends V&gt;&nbsp;valueSelector,
@@ -16035,13 +16049,16 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>Publisher</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>Publisher</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -16057,7 +16074,8 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
          unique key value and each of which emits those items from the source Publisher that share that
          key value</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a></dd>
+<dd><a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>, 
+<a href="../../../../io/reactivex/rxjava3/core/Flowable.html#groupBy-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Function-boolean-int-"><code>groupBy(Function, Function, boolean, int)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -16069,7 +16087,7 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#SPECIAL">SPECIAL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,V&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector,
         <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends V&gt;&nbsp;valueSelector,
@@ -16102,13 +16120,16 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>Publisher</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>Publisher</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -16137,7 +16158,7 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 <h4>groupBy</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
- <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#SPECIAL">SPECIAL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/GroupedFlowable.html" title="class in io.reactivex.rxjava3.flowables">GroupedFlowable</a>&lt;K,V&gt;&gt;&nbsp;groupBy(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends K&gt;&nbsp;keySelector,
         <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="type parameter in Flowable">T</a>,? extends V&gt;&nbsp;valueSelector,
@@ -16212,13 +16233,16 @@ public final&nbsp;&lt;K,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
 
  <dl>
   <dt><b>Backpressure:</b></dt>
-  <dd>Both the returned and its inner <code>GroupedFlowable</code>s honor backpressure and the source <code>Publisher</code>
-  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-  downstream consumption). Note that both the returned and its inner <code>GroupedFlowable</code>s use
-  unbounded internal buffers and if the source <code>Publisher</code> doesn't honor backpressure, that <em>may</em>
-  lead to <code>OutOfMemoryError</code>.</dd>
+  <dd>The consumer of the returned <code>Flowable</code> has to be ready to receive new <code>GroupedFlowable</code>s or else
+  this operator will signal <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>. To avoid this exception, make
+  sure a combining operator (such as <code>flatMap</code>) has adequate amount of buffering/prefetch configured.
+  The inner <code>GroupedFlowable</code>s honor backpressure but due to the single-source multiple consumer
+  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>groupBy</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+  <dt><b>Error handling:</b></dt>
+  <dd>If the upstream signals or the callback(s) throw an exception, the returned <code>Flowable</code> and
+  all active inner <code>GroupedFlowable</code>s will signal the same exception.</dd>
  </dl>
  <p>History: 2.1.10 - beta</div>
 <dl>
