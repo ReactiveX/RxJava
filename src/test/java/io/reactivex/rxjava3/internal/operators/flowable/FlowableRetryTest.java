@@ -864,7 +864,7 @@ public class FlowableRetryTest extends RxJavaTest {
             public Flowable<String> apply(GroupedFlowable<String, String> t1) {
                 return t1.take(1);
             }
-        })
+        }, NUM_MSG) // Must request as many groups as groupBy produces to avoid MBE
         .subscribe(new TestSubscriber<String>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);

@@ -34,9 +34,9 @@ import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.GroupedFlowable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
-import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
+import io.reactivex.rxjava3.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -1322,29 +1322,30 @@ public class FlowableGroupByTest extends RxJavaTest {
                     System.out.println("testgroupByBackpressure2 >> " + v);
                 }
             })
-            .groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
+            .groupBy(IS_EVEN2)
+            .flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
+                @Override
+                public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
+                    return g.take(2)
+                            .observeOn(Schedulers.computation())
+                            .map(new Function<Integer, String>() {
+                                @Override
+                                public String apply(Integer l) {
+                                    if (g.getKey()) {
+                                        try {
+                                            Thread.sleep(1);
+                                        } catch (InterruptedException e) {
+                                        }
+                                        return l + " is even.";
+                                    } else {
+                                        return l + " is odd.";
+                                    }
+                                }
+                            });
+                }
+            }, 4000) // a lot of groups are created due to take(2)
+            .subscribe(ts);
 
-            @Override
-            public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
-                return g.take(2).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
-
-                    @Override
-                    public String apply(Integer l) {
-                        if (g.getKey()) {
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                            }
-                            return l + " is even.";
-                        } else {
-                            return l + " is odd.";
-                        }
-                    }
-
-                });
-            }
-
-        }).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
     }
@@ -1513,9 +1514,30 @@ public class FlowableGroupByTest extends RxJavaTest {
      * or emit to a completely different group. In this test, the merge requests N which
      * must be produced by the range, however it will create a bunch of groups before the actual
      * group receives a value.
+     * 
+     * 12/03/2019: this test produces abandoned groups and as such keeps producing new groups
+     * that have to be ready to be received by observeOn and merge.
      */
     @Test
     public void backpressureObserveOnOuter() {
+        int n = 500;
+        for (int j = 0; j < 1000; j++) {
+            Flowable.merge(
+                    Flowable.range(0, n)
+                    .groupBy(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer i) {
+                            return i % (Flowable.bufferSize() + 2);
+                        }
+                    })
+                    .observeOn(Schedulers.computation(), false, n)
+            , n)
+            .blockingLast();
+        }
+    }
+
+    @Test(expected = MissingBackpressureException.class)
+    public void backpressureObserveOnOuterMissingBackpressure() {
         for (int j = 0; j < 1000; j++) {
             Flowable.merge(
                     Flowable.range(0, 500)
@@ -1537,8 +1559,9 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void backpressureInnerDoesntOverflowOuter() {
         TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
 
-        Flowable.fromArray(1, 2)
-                .groupBy(new Function<Integer, Integer>() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.groupBy(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
                         return v;
@@ -1554,9 +1577,35 @@ public class FlowableGroupByTest extends RxJavaTest {
                 ;
         ts.request(1);
 
+        pp.onNext(1);
+
         ts.assertNotComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
+    }
+
+    @Test
+    public void backpressureInnerDoesntOverflowOuterMissingBackpressure() {
+        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(1);
+
+        Flowable.fromArray(1, 2)
+                .groupBy(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) {
+                        return v;
+                    }
+                })
+                .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                    @Override
+                    public void accept(GroupedFlowable<Integer, Integer> g) {
+                        g.subscribe();
+                    }
+                }) // this will request Long.MAX_VALUE
+                .subscribe(ts)
+                ;
+        ts.assertValueCount(1)
+        .assertError(MissingBackpressureException.class)
+        .assertNotComplete();
     }
 
     @Test
@@ -1628,7 +1677,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertComplete();
 
         ts2
-        .assertFusionMode(QueueFuseable.ASYNC)
         .assertValueCount(1)
         .assertNoErrors()
         .assertComplete();
@@ -1788,30 +1836,6 @@ public class FlowableGroupByTest extends RxJavaTest {
         })
         .test()
         .assertResult(1);
-    }
-
-    @Test
-    public void errorFused() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
-
-        Flowable.error(new TestException())
-        .groupBy(Functions.justFunction(1))
-        .subscribe(ts);
-
-        ts.assertFusionMode(QueueFuseable.ASYNC)
-        .assertFailure(TestException.class);
-    }
-
-    @Test
-    public void errorFusedDelayed() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
-
-        Flowable.error(new TestException())
-        .groupBy(Functions.justFunction(1), true)
-        .subscribe(ts);
-
-        ts.assertFusionMode(QueueFuseable.ASYNC)
-        .assertFailure(TestException.class);
     }
 
     @Test
@@ -2335,86 +2359,6 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
-    public void fusedNoConcurrentCleanDueToCancel() {
-        for (int j = 0; j < TestHelper.RACE_LONG_LOOPS; j++) {
-            List<Throwable> errors = TestHelper.trackPluginErrors();
-            try {
-                final PublishProcessor<Integer> pp = PublishProcessor.create();
-
-                final AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>> qs =
-                        new AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>>();
-
-                final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
-
-                pp.groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), false, 4)
-                .subscribe(new FlowableSubscriber<GroupedFlowable<Integer, Integer>>() {
-
-                    boolean once;
-
-                    @Override
-                    public void onNext(GroupedFlowable<Integer, Integer> g) {
-                        if (!once) {
-                            try {
-                                GroupedFlowable<Integer, Integer> t = qs.get().poll();
-                                if (t != null) {
-                                    once = true;
-                                    t.subscribe(ts2);
-                                }
-                            } catch (Throwable ignored) {
-                                // not relevant here
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        @SuppressWarnings("unchecked")
-                        QueueSubscription<GroupedFlowable<Integer, Integer>> q = (QueueSubscription<GroupedFlowable<Integer, Integer>>)s;
-                        qs.set(q);
-                        q.requestFusion(QueueFuseable.ANY);
-                        q.request(1);
-                    }
-                })
-                ;
-
-                Runnable r1 = new Runnable() {
-                    @Override
-                    public void run() {
-                        qs.get().cancel();
-                        qs.get().clear();
-                    }
-                };
-                Runnable r2 = new Runnable() {
-                    @Override
-                    public void run() {
-                        ts2.cancel();
-                    }
-                };
-
-                for (int i = 0; i < 100; i++) {
-                    pp.onNext(i);
-                }
-
-                TestHelper.race(r1, r2);
-
-                if (!errors.isEmpty()) {
-                    throw new CompositeException(errors);
-                }
-            } finally {
-                RxJavaPlugins.reset();
-            }
-        }
-    }
-
-    @Test
     public void fusedParallelGroupProcessing() {
         Flowable.range(0, 500000)
         .subscribeOn(Schedulers.single())
@@ -2442,5 +2386,62 @@ public class FlowableGroupByTest extends RxJavaTest {
         .assertValueCount(500000)
         .assertComplete()
         .assertNoErrors();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void valueSelectorCrashAndMissingBackpressure() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriberEx<GroupedFlowable<Integer, Integer>> ts = pp.groupBy(Functions.justFunction(1), new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t) throws Throwable {
+                throw new TestException();
+            }
+        })
+        .subscribeWith(new TestSubscriberEx<GroupedFlowable<Integer, Integer>>(0L));
+
+        assertTrue(pp.offer(1));
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        assertTrue("" + ts.errors().get(0).getCause(), ts.errors().get(0).getCause() instanceof TestException);
+    }
+
+    @Test
+    public void fusedGroupClearedOnCancel() {
+        Flowable.just(1)
+        .groupBy(Functions.<Integer>identity())
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Throwable {
+                return g.observeOn(ImmediateThinScheduler.INSTANCE).take(1);
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void fusedGroupClearedOnCancelDelayed() {
+        Flowable.range(1, 100)
+        .groupBy(Functions.<Integer, Integer>justFunction(1))
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Throwable {
+                return g.observeOn(Schedulers.io())
+                        .doOnNext(new Consumer<Integer>() {
+                            @Override
+                            public void accept(Integer v) throws Throwable {
+                                Thread.sleep(100);
+                            }
+                        })
+                        .take(1);
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
     }
 }
