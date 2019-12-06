@@ -11419,8 +11419,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the default {@link #bufferSize()} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
@@ -11458,8 +11466,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the default {@link #bufferSize()} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler, boolean)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
@@ -11501,8 +11517,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the specified {@code bufferSize} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this specified value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler, boolean)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
