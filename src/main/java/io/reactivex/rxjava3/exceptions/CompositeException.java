@@ -149,14 +149,17 @@ public final class CompositeException extends RuntimeException {
                             inner = inner.getCause();
                             depth++;
                         } else {
-                            for (int i = 0; i < depth + 2; i++) {
-                                aggregateMessage.append("  ");
+                            inner = inner.getCause();
+                            if (inner != null) {
+                                for (int i = 0; i < depth + 2; i++) {
+                                    aggregateMessage.append("  ");
+                                }
+                                aggregateMessage.append("|-- ");
+                                aggregateMessage.append("(cause not expanded again) ");
+                                aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");
+                                aggregateMessage.append(inner.getMessage());
+                                aggregateMessage.append(separator);
                             }
-                            aggregateMessage.append("|-- ");
-                            aggregateMessage.append("(cause not expanded again) ");
-                            aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");
-                            aggregateMessage.append(inner.getMessage());
-                            aggregateMessage.append(separator);
                             break;
                         }
                     }
