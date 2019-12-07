@@ -106,40 +106,69 @@ public final class CompositeException extends RuntimeException {
     @NonNull
     public synchronized Throwable getCause() { // NOPMD
         if (cause == null) {
-            // we lazily generate this causal chain if this is called
-            CompositeExceptionCausalChain localCause = new CompositeExceptionCausalChain();
-            Set<Throwable> seenCauses = new HashSet<Throwable>();
+            String separator = System.getProperty("line.separator");
+            if (exceptions.size() > 1) {
+                Map<Throwable, Boolean> seenCauses = new IdentityHashMap<Throwable, Boolean>();
 
-            Throwable chain = localCause;
-            for (Throwable e : exceptions) {
-                if (seenCauses.contains(e)) {
-                    // already seen this outer Throwable so skip
-                    continue;
-                }
-                seenCauses.add(e);
+                StringBuilder aggregateMessage = new StringBuilder();
+                aggregateMessage.append("Multiple exceptions (").append(exceptions.size()).append(")").append(separator);
 
-                List<Throwable> listOfCauses = getListOfCauses(e);
-                // check if any of them have been seen before
-                for (Throwable child : listOfCauses) {
-                    if (seenCauses.contains(child)) {
-                        // already seen this outer Throwable so skip
-                        e = new RuntimeException("Duplicate found in causal chain so cropping to prevent loop ...");
-                        continue;
+                for (Throwable inner : exceptions) {
+                    int depth = 0;
+                    while (inner != null) {
+                        for (int i = 0; i < depth; i++) {
+                            aggregateMessage.append("  ");
+                        }
+                        aggregateMessage.append("|-- ");
+                        aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");
+                        String innerMessage = inner.getMessage();
+                        if (innerMessage != null && innerMessage.contains(separator)) {
+                            aggregateMessage.append(separator);
+                            for (String line : innerMessage.split(separator)) {
+                                for (int i = 0; i < depth + 2; i++) {
+                                    aggregateMessage.append("  ");
+                                }
+                                aggregateMessage.append(line).append(separator);
+                            }
+                        } else {
+                            aggregateMessage.append(innerMessage);
+                            aggregateMessage.append(separator);
+                        }
+
+                        for (int i = 0; i < depth + 2; i++) {
+                            aggregateMessage.append("  ");
+                        }
+                        StackTraceElement[] st = inner.getStackTrace();
+                        if (st.length > 0) {
+                            aggregateMessage.append("at ").append(st[0]).append(separator);
+                        }
+
+                        if (!seenCauses.containsKey(inner)) {
+                            seenCauses.put(inner, true);
+
+                            inner = inner.getCause();
+                            depth++;
+                        } else {
+                            inner = inner.getCause();
+                            if (inner != null) {
+                                for (int i = 0; i < depth + 2; i++) {
+                                    aggregateMessage.append("  ");
+                                }
+                                aggregateMessage.append("|-- ");
+                                aggregateMessage.append("(cause not expanded again) ");
+                                aggregateMessage.append(inner.getClass().getCanonicalName()).append(": ");
+                                aggregateMessage.append(inner.getMessage());
+                                aggregateMessage.append(separator);
+                            }
+                            break;
+                        }
                     }
-                    seenCauses.add(child);
                 }
 
-                // we now have 'e' as the last in the chain
-                try {
-                    chain.initCause(e);
-                } catch (Throwable t) { // NOPMD
-                    // ignore
-                    // the JavaDocs say that some Throwables (depending on how they're made) will never
-                    // let me call initCause without blowing up even if it returns null
-                }
-                chain = getRootCause(chain);
+                cause = new ExceptionOverview(aggregateMessage.toString().trim());
+            } else {
+                cause = exceptions.get(0);
             }
-            cause = localCause;
         }
         return cause;
     }
@@ -236,31 +265,21 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    static final class CompositeExceptionCausalChain extends RuntimeException {
+    /**
+     * Contains a formatted message with a simplified representation of the exception graph
+     * contained within the CompositeException.
+     */
+    static final class ExceptionOverview extends RuntimeException {
+
         private static final long serialVersionUID = 3875212506787802066L;
-        /* package-private */static final String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
+
+        ExceptionOverview(String message) {
+            super(message);
+        }
 
         @Override
-        public String getMessage() {
-            return MESSAGE;
-        }
-    }
-
-    private List<Throwable> getListOfCauses(Throwable ex) {
-        List<Throwable> list = new ArrayList<Throwable>();
-        Throwable root = ex.getCause();
-        if (root == null || root == ex) {
-            return list;
-        } else {
-            while (true) {
-                list.add(root);
-                Throwable cause = root.getCause();
-                if (cause == null || cause == root) {
-                    return list;
-                } else {
-                    root = cause;
-                }
-            }
+        public synchronized Throwable fillInStackTrace() {
+            return this;
         }
     }
 
@@ -270,25 +289,5 @@ public final class CompositeException extends RuntimeException {
      */
     public int size() {
         return exceptions.size();
-    }
-
-    /**
-     * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
-     *
-     * @param e the {@link Throwable} {@code e}.
-     * @return The root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
-     */
-    /*private */Throwable getRootCause(Throwable e) {
-        Throwable root = e.getCause();
-        if (root == null || e == root) {
-            return e;
-        }
-        while (true) {
-            Throwable cause = root.getCause();
-            if (cause == null || cause == root) {
-                return root;
-            }
-            root = cause;
-        }
     }
 }

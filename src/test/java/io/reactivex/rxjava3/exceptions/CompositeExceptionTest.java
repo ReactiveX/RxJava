@@ -23,7 +23,6 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.exceptions.CompositeException.CompositeExceptionCausalChain;
 
 public class CompositeExceptionTest extends RxJavaTest {
 
@@ -252,41 +251,6 @@ public class CompositeExceptionTest extends RxJavaTest {
     }
 
     @Test
-    public void complexCauses() {
-        Throwable e1 = new Throwable("1");
-        Throwable e2 = new Throwable("2");
-        e1.initCause(e2);
-
-        Throwable e3 = new Throwable("3");
-        Throwable e4 = new Throwable("4");
-        e3.initCause(e4);
-
-        Throwable e5 = new Throwable("5");
-        Throwable e6 = new Throwable("6");
-        e5.initCause(e6);
-
-        CompositeException compositeException = new CompositeException(e1, e3, e5);
-        assertTrue(compositeException.getCause() instanceof CompositeExceptionCausalChain);
-
-        List<Throwable> causeChain = new ArrayList<Throwable>();
-        Throwable cause = compositeException.getCause().getCause();
-        while (cause != null) {
-            causeChain.add(cause);
-            cause = cause.getCause();
-        }
-        // The original relations
-        //
-        // e1 -> e2
-        // e3 -> e4
-        // e5 -> e6
-        //
-        // will be set to
-        //
-        // e1 -> e2 -> e3 -> e4 -> e5 -> e6
-        assertEquals(Arrays.asList(e1, e2, e3, e4, e5, e6), causeChain);
-    }
-
-    @Test
     public void constructorWithNull() {
         assertTrue(new CompositeException((Throwable[])null).getExceptions().get(0) instanceof NullPointerException);
 
@@ -306,46 +270,6 @@ public class CompositeExceptionTest extends RxJavaTest {
     }
 
     @Test
-    public void cyclicRootCause() {
-        RuntimeException te = new RuntimeException() {
-
-            private static final long serialVersionUID = -8492568224555229753L;
-            Throwable cause;
-
-            @Override
-            public Throwable initCause(Throwable c) {
-                return this;
-            }
-
-            @Override
-            public Throwable getCause() {
-                return cause;
-            }
-        };
-
-        assertSame(te, new CompositeException(te).getCause().getCause());
-
-        assertSame(te, new CompositeException(new RuntimeException(te)).getCause().getCause().getCause());
-    }
-
-    @Test
-    public void nullRootCause() {
-        RuntimeException te = new RuntimeException() {
-
-            private static final long serialVersionUID = -8492568224555229753L;
-
-            @Override
-            public Throwable getCause() {
-                return null;
-            }
-        };
-
-        assertSame(te, new CompositeException(te).getCause().getCause());
-
-        assertSame(te, new CompositeException(new RuntimeException(te)).getCause().getCause().getCause());
-    }
-
-    @Test
     public void badException() {
         Throwable e = new BadException();
         assertSame(e, new CompositeException(e).getCause().getCause());
@@ -353,34 +277,89 @@ public class CompositeExceptionTest extends RxJavaTest {
     }
 
     @Test
-    public void rootCauseEval() {
-        final TestException ex0 = new TestException();
-        Throwable throwable = new Throwable() {
+    public void exceptionOverview() {
+        CompositeException composite = new CompositeException(
+                new TestException("ex1"),
+                new TestException("ex2"),
+                new TestException("ex3", new TestException("ex4"))
+        );
 
-            private static final long serialVersionUID = 3597694032723032281L;
+        String overview = composite.getCause().getMessage();
 
-            @Override
-            public synchronized Throwable getCause() {
-                return ex0;
-            }
-        };
-        CompositeException ex = new CompositeException(throwable);
-        assertSame(ex0, ex.getRootCause(ex));
+        assertTrue(overview, overview.contains("Multiple exceptions (3)"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex1"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex2"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex3"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex4"));
+        assertTrue(overview, overview.contains("at io.reactivex.rxjava3.exceptions.CompositeExceptionTest.exceptionOverview"));
     }
 
     @Test
-    public void rootCauseSelf() {
-        Throwable throwable = new Throwable() {
+    public void causeWithExceptionWithoutStacktrace() {
+        CompositeException composite = new CompositeException(
+                new TestException("ex1"),
+                new CompositeException.ExceptionOverview("example")
+        );
 
-            private static final long serialVersionUID = -4398003222998914415L;
+        String overview = composite.getCause().getMessage();
 
-            @Override
-            public synchronized Throwable getCause() {
-                return this;
-            }
-        };
-        CompositeException tmp = new CompositeException(new TestException());
-        assertSame(throwable, tmp.getRootCause(throwable));
+        assertTrue(overview, overview.contains("Multiple exceptions (2)"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex1"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.CompositeException.ExceptionOverview: example"));
+
+        assertEquals(overview, 2, overview.split("at\\s").length);
+    }
+
+    @Test
+    public void reoccurringException() {
+        TestException ex0 = new TestException("ex0");
+        TestException ex1 = new TestException("ex1", ex0);
+        CompositeException composite = new CompositeException(
+                ex1,
+                new TestException("ex2", ex1)
+        );
+
+        String overview = composite.getCause().getMessage();
+        System.err.println(overview);
+
+        assertTrue(overview, overview.contains("Multiple exceptions (2)"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex0"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex1"));
+        assertTrue(overview, overview.contains("io.reactivex.rxjava3.exceptions.TestException: ex2"));
+        assertTrue(overview, overview.contains("(cause not expanded again) io.reactivex.rxjava3.exceptions.TestException: ex0"));
+        assertEquals(overview, 5, overview.split("at\\s").length);
+    }
+
+    @Test
+    public void nestedMultilineMessage() {
+        TestException ex1 = new TestException("ex1");
+        TestException ex2 = new TestException("ex2");
+        CompositeException composite1 = new CompositeException(
+                ex1,
+                ex2
+        );
+        TestException ex3 = new TestException("ex3");
+        TestException ex4 = new TestException("ex4", composite1);
+
+        CompositeException composite2 = new CompositeException(
+                ex3,
+                ex4
+        );
+
+        String overview = composite2.getCause().getMessage();
+        System.err.println(overview);
+
+        assertTrue(overview, overview.contains("        Multiple exceptions (2)"));
+        assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava3.exceptions.TestException: ex1"));
+        assertTrue(overview, overview.contains("        |-- io.reactivex.rxjava3.exceptions.TestException: ex2"));
+    }
+
+    @Test
+    public void singleExceptionIsTheCause() {
+        TestException ex = new TestException("ex1");
+        CompositeException composite = new CompositeException(ex);
+
+        assertSame(composite.getCause(), ex);
     }
 }
 
