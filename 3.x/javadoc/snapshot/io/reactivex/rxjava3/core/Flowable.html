@@ -16943,8 +16943,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
   <dd>This operator honors backpressure from downstream and expects it from the source <code>Publisher</code>. Violating this
   expectation will lead to <code>MissingBackpressureException</code>. This is the most common operator where the exception
   pops up; look for sources up the chain that don't support backpressure,
-  such as <code>interval</code>, <code>timer</code>, {code PublishSubject} or <code>BehaviorSubject</code> and apply any
-  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.</dd>
+  such as <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#interval-long-java.util.concurrent.TimeUnit-"><code>interval(long, TimeUnit)</code></a>, <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#timer-long-java.util.concurrent.TimeUnit-"><code>timer(long, TimeUnit)</code></a>,
+  <a href="../../../../io/reactivex/rxjava3/processors/PublishProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>PublishProcessor</code></a> or
+  <a href="../../../../io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>BehaviorProcessor</code></a> and apply any
+  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.
+  Note also that request amounts are not preserved between the immediate downstream and the
+  immediate upstream. The operator always requests the default <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>bufferSize()</code></a> amount first, then after
+  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+  is to be preferred over potential excess scheduler infrastructure use, consider applying
+  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>delay(long, TimeUnit, Scheduler)</code></a> with zero time instead.
+  </dd>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
  </dl></div>
@@ -16989,8 +16997,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
   <dd>This operator honors backpressure from downstream and expects it from the source <code>Publisher</code>. Violating this
   expectation will lead to <code>MissingBackpressureException</code>. This is the most common operator where the exception
   pops up; look for sources up the chain that don't support backpressure,
-  such as <code>interval</code>, <code>timer</code>, {code PublishSubject} or <code>BehaviorSubject</code> and apply any
-  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.</dd>
+  such as <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#interval-long-java.util.concurrent.TimeUnit-"><code>interval(long, TimeUnit)</code></a>, <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#timer-long-java.util.concurrent.TimeUnit-"><code>timer(long, TimeUnit)</code></a>,
+  <a href="../../../../io/reactivex/rxjava3/processors/PublishProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>PublishProcessor</code></a> or
+  <a href="../../../../io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>BehaviorProcessor</code></a> and apply any
+  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.
+  Note also that request amounts are not preserved between the immediate downstream and the
+  immediate upstream. The operator always requests the default <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>bufferSize()</code></a> amount first, then after
+  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+  is to be preferred over potential excess scheduler infrastructure use, consider applying
+  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-"><code>delay(long, TimeUnit, Scheduler, boolean)</code></a> with zero time instead.
+  </dd>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
  </dl></div>
@@ -17040,8 +17056,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
   <dd>This operator honors backpressure from downstream and expects it from the source <code>Publisher</code>. Violating this
   expectation will lead to <code>MissingBackpressureException</code>. This is the most common operator where the exception
   pops up; look for sources up the chain that don't support backpressure,
-  such as <code>interval</code>, <code>timer</code>, {code PublishSubject} or <code>BehaviorSubject</code> and apply any
-  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.</dd>
+  such as <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#interval-long-java.util.concurrent.TimeUnit-"><code>interval(long, TimeUnit)</code></a>, <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#timer-long-java.util.concurrent.TimeUnit-"><code>timer(long, TimeUnit)</code></a>,
+  <a href="../../../../io/reactivex/rxjava3/processors/PublishProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>PublishProcessor</code></a> or
+  <a href="../../../../io/reactivex/rxjava3/processors/BehaviorProcessor.html" title="class in io.reactivex.rxjava3.processors"><code>BehaviorProcessor</code></a> and apply any
+  of the <code>onBackpressureXXX</code> operators <strong>before</strong> applying <code>observeOn</code> itself.
+  Note also that request amounts are not preserved between the immediate downstream and the
+  immediate upstream. The operator always requests the specified <code>bufferSize</code> amount first, then after
+  every 75% of that amount delivered, another 75% of this specified value. If preserving the request amounts
+  is to be preferred over potential excess scheduler infrastructure use, consider applying
+  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-"><code>delay(long, TimeUnit, Scheduler, boolean)</code></a> with zero time instead.
+  </dd>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
  </dl></div>
