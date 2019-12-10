@@ -15,7 +15,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
 fi
 
 # only when on the 3.x branch and not tagged
-if ["$TRAVIS_BRANCH" != "3.x"] && [ "$TRAVIS_TAG" == "" ]; then
+if [ "$TRAVIS_BRANCH" != "3.x" ] && [ "$TRAVIS_TAG" == "" ]; then
     echo -e "On a secondary branch '$TRAVIS_BRANCH', skipping JavaDocs pushback."
     exit 0
 fi
