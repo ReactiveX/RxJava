@@ -49,7 +49,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
-            sources = new Observable[8];
+            sources = new ObservableSource[8];
             for (ObservableSource<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
                     ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
