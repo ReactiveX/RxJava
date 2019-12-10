@@ -264,6 +264,23 @@ public class ObservableAmbTest {
         .assertResult(1);
     }
 
+    /**
+     * Ensures that an ObservableSource implementation can be supplied that doesn't subclass Observable
+     */
+    @Test
+    public void singleIterableNotSubclassingObservable() {
+        final ObservableSource<Integer> s1 = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe (final Observer<? super Integer> observer) {
+                Observable.just(1).subscribe(observer);
+            }
+        };
+
+        Observable.amb(Collections.singletonList(s1))
+        .test()
+        .assertResult(1);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void disposed() {
