@@ -667,4 +667,19 @@ public class FlowableAmbTest extends RxJavaTest {
             assertFalse("Interrupted!", interrupted.get());
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void publishersInIterable() {
+        Publisher<Integer> source = new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                Flowable.just(1).subscribe(subscriber);
+            }
+        };
+
+        Flowable.amb(Arrays.asList(source, source))
+        .test()
+        .assertResult(1);
+    }
 }

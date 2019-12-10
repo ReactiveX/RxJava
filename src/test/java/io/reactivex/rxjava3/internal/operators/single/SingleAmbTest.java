@@ -342,4 +342,19 @@ public class SingleAmbTest extends RxJavaTest {
             assertFalse("Interrupted!", interrupted.get());
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleSourcesInIterable() {
+        SingleSource<Integer> source = new SingleSource<Integer>() {
+            @Override
+            public void subscribe(SingleObserver<? super Integer> observer) {
+                Single.just(1).subscribe(observer);
+            }
+        };
+
+        Single.amb(Arrays.asList(source, source))
+        .test()
+        .assertResult(1);
+    }
 }

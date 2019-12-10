@@ -315,4 +315,18 @@ public class CompletableAmbTest extends RxJavaTest {
             assertFalse("Interrupted!", interrupted.get());
         }
     }
+
+    @Test
+    public void completableSourcesInIterable() {
+        CompletableSource source = new CompletableSource() {
+            @Override
+            public void subscribe(CompletableObserver observer) {
+                Completable.complete().subscribe(observer);
+            }
+        };
+
+        Completable.amb(Arrays.asList(source, source))
+        .test()
+        .assertResult();
+    }
 }

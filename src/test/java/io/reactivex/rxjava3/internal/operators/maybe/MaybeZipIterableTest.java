@@ -221,4 +221,24 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .to(TestHelper.<Object>testConsumer())
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void maybeSourcesInIterable() {
+        MaybeSource<Integer> source = new MaybeSource<Integer>() {
+            @Override
+            public void subscribe(MaybeObserver<? super Integer> observer) {
+                Maybe.just(1).subscribe(observer);
+            }
+        };
+
+        Maybe.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
+            @Override
+            public Integer apply(Object[] t) throws Throwable {
+                return 2;
+            }
+        })
+        .test()
+        .assertResult(2);
+    }
 }

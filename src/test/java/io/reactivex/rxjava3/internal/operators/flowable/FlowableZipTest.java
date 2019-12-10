@@ -1896,4 +1896,24 @@ public class FlowableZipTest extends RxJavaTest {
 
         assertEquals(0, counter.get());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void publishersInIterable() {
+        Publisher<Integer> source = new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                Flowable.just(1).subscribe(subscriber);
+            }
+        };
+
+        Flowable.zip(Arrays.asList(source, source), new Function<Object[], Integer>() {
+            @Override
+            public Integer apply(Object[] t) throws Throwable {
+                return 2;
+            }
+        })
+        .test()
+        .assertResult(2);
+    }
 }
