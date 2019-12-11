@@ -1212,4 +1212,24 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 42);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void observableSourcesInIterable() {
+        ObservableSource<Integer> source = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> observer) {
+                Observable.just(1).subscribe(observer);
+            }
+        };
+
+        Observable.combineLatest(Arrays.asList(source, source), new Function<Object[], Integer>() {
+            @Override
+            public Integer apply(Object[] t) throws Throwable {
+                return 2;
+            }
+        })
+        .test()
+        .assertResult(2);
+    }
 }

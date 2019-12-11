@@ -36,7 +36,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
-            sources = new Observable[8];
+            sources = new ObservableSource[8];
             try {
                 for (ObservableSource<? extends T> p : sourcesIterable) {
                     if (p == null) {

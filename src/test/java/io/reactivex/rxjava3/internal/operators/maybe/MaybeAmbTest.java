@@ -254,4 +254,19 @@ public class MaybeAmbTest extends RxJavaTest {
             }
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void maybeSourcesInIterable() {
+        MaybeSource<Integer> source = new MaybeSource<Integer>() {
+            @Override
+            public void subscribe(MaybeObserver<? super Integer> observer) {
+                Maybe.just(1).subscribe(observer);
+            }
+        };
+
+        Maybe.amb(Arrays.asList(source, source))
+        .test()
+        .assertResult(1);
+    }
 }

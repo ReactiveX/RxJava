@@ -1551,4 +1551,24 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 42);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void publishersInIterable() {
+        Publisher<Integer> source = new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                Flowable.just(1).subscribe(subscriber);
+            }
+        };
+
+        Flowable.combineLatest(Arrays.asList(source, source), new Function<Object[], Integer>() {
+            @Override
+            public Integer apply(Object[] t) throws Throwable {
+                return 2;
+            }
+        })
+        .test()
+        .assertResult(2);
+    }
 }

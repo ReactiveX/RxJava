@@ -467,4 +467,18 @@ public class ObservableAmbTest extends RxJavaTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void observableSourcesInIterable() {
+        ObservableSource<Integer> source = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> observer) {
+                Observable.just(1).subscribe(observer);
+            }
+        };
+
+        Observable.amb(Arrays.asList(source, source))
+        .test()
+        .assertResult(1);
+    }
 }
