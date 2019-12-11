@@ -787,6 +787,34 @@ public class ObservableCombineLatestTest {
         .assertResult("[1, 2]");
     }
 
+    /**
+     * Ensures that an ObservableSource implementation can be supplied that doesn't subclass Observable
+     */
+    @Test
+    public void combineLatestIterableOfSourcesNotSubclassingObservable() {
+        final ObservableSource<Integer> s1 = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe (final Observer<? super Integer> observer) {
+                Observable.just(1).subscribe(observer);
+            }
+        };
+        final ObservableSource<Integer> s2 = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe (final Observer<? super Integer> observer) {
+                Observable.just(2).subscribe(observer);
+            }
+        };
+
+        Observable.combineLatest(Arrays.asList(s1, s2), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSources() {
@@ -1216,4 +1244,5 @@ public class ObservableCombineLatestTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 42);
     }
+
 }

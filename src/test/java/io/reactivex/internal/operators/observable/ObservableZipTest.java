@@ -1350,6 +1350,34 @@ public class ObservableZipTest {
         .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
     }
 
+    /**
+     * Ensures that an ObservableSource implementation can be supplied that doesn't subclass Observable
+     */
+    @Test
+    public void zipIterableNotSubclassingObservable() {
+        final ObservableSource<Integer> s1 = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe (final Observer<? super Integer> observer) {
+                Observable.just(1).subscribe(observer);
+            }
+        };
+        final ObservableSource<Integer> s2 = new ObservableSource<Integer>() {
+            @Override
+            public void subscribe (final Observer<? super Integer> observer) {
+                Observable.just(2).subscribe(observer);
+            }
+        };
+
+        Observable.zip(Arrays.asList(s1, s2), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.zip(Observable.just(1), Observable.just(1), new BiFunction<Integer, Integer, Object>() {
@@ -1457,4 +1485,5 @@ public class ObservableZipTest {
 
         assertEquals(0, counter.get());
     }
+
 }
