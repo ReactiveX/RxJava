@@ -15,19 +15,18 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava3.internal.disposables.*;
+import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
-import io.reactivex.rxjava3.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava3.internal.util.NotificationLite;
+import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.processors.UnicastProcessor;
 import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
 
@@ -74,227 +73,286 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
 
-    static final class WindowExactUnboundedSubscriber<T>
-            extends QueueDrainSubscriber<T, Object, Flowable<T>>
-            implements FlowableSubscriber<T>, Subscription, Runnable {
+    abstract static class AbstractWindowSubscriber<T>
+    extends AtomicInteger
+    implements FlowableSubscriber<T>, Subscription {
+        private static final long serialVersionUID = 5724293814035355511L;
+
+        final Subscriber<? super Flowable<T>> downstream;
+
+        final SimplePlainQueue<Object> queue;
+
         final long timespan;
         final TimeUnit unit;
-        final Scheduler scheduler;
         final int bufferSize;
+
+        final AtomicLong requested;
+        long emitted;
+
+        volatile boolean done;
+        Throwable error;
 
         Subscription upstream;
 
-        UnicastProcessor<T> window;
+        final AtomicBoolean downstreamCancelled;
 
-        final SequentialDisposable timer = new SequentialDisposable();
+        volatile boolean upstreamCancelled;
 
-        static final Object NEXT = new Object();
+        final AtomicInteger windowCount;
 
-        volatile boolean terminated;
-
-        WindowExactUnboundedSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit,
-                Scheduler scheduler, int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
+        AbstractWindowSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit, int bufferSize) {
+            this.downstream = actual;
+            this.queue = new MpscLinkedQueue<Object>();
             this.timespan = timespan;
             this.unit = unit;
-            this.scheduler = scheduler;
             this.bufferSize = bufferSize;
+            this.requested = new AtomicLong();
+            this.downstreamCancelled = new AtomicBoolean();
+            this.windowCount = new AtomicInteger(1);
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
+        public final void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
                 this.upstream = s;
 
-                window = UnicastProcessor.<T>create(bufferSize);
+                downstream.onSubscribe(this);
 
-                Subscriber<? super Flowable<T>> a = downstream;
-                a.onSubscribe(this);
-
-                long r = requested();
-                if (r != 0L) {
-                    a.onNext(window);
-                    if (r != Long.MAX_VALUE) {
-                        produced(1);
-                    }
-                } else {
-                    cancelled = true;
-                    s.cancel();
-                    a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
-                    return;
-                }
-
-                if (!cancelled) {
-                    if (timer.replace(scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit))) {
-                        s.request(Long.MAX_VALUE);
-                    }
-                }
+                createFirstWindow();
             }
         }
 
+        abstract void createFirstWindow();
+
         @Override
-        public void onNext(T t) {
-            if (terminated) {
-                return;
-            }
-            if (fastEnter()) {
-                window.onNext(t);
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
-                }
-            }
-            drainLoop();
+        public final void onNext(T t) {
+            queue.offer(t);
+            drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public final void onError(Throwable t) {
             error = t;
             done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onError(t);
+            drain();
         }
 
         @Override
-        public void onComplete() {
+        public final void onComplete() {
             done = true;
-            if (enter()) {
-                drainLoop();
+            drain();
+        }
+
+        @Override
+        public final void request(long n) {
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.add(requested, n);
             }
-
-            downstream.onComplete();
         }
 
         @Override
-        public void request(long n) {
-            requested(n);
+        public final void cancel() {
+            if (downstreamCancelled.compareAndSet(false, true)) {
+                windowDone();
+            }
+        }
+
+        final void windowDone() {
+            if (windowCount.decrementAndGet() == 0) {
+                cleanupResources();
+                upstream.cancel();
+                upstreamCancelled = true;
+                drain();
+            }
+        }
+
+        abstract void cleanupResources();
+
+        abstract void drain();
+    }
+
+    static final class WindowExactUnboundedSubscriber<T>
+            extends AbstractWindowSubscriber<T>
+            implements Runnable {
+
+        private static final long serialVersionUID = 1155822639622580836L;
+
+        final Scheduler scheduler;
+
+        UnicastProcessor<T> window;
+
+        final SequentialDisposable timer;
+
+        static final Object NEXT_WINDOW = new Object();
+
+        final Runnable windowRunnable;
+
+        WindowExactUnboundedSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit,
+                Scheduler scheduler, int bufferSize) {
+            super(actual, timespan, unit, bufferSize);
+            this.scheduler = scheduler;
+            this.timer = new SequentialDisposable();
+            this.windowRunnable = new WindowRunnable();
         }
 
         @Override
-        public void cancel() {
-            cancelled = true;
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                if (requested.get() != 0L) {
+                    windowCount.getAndIncrement();
+                    window = UnicastProcessor.create(bufferSize, windowRunnable);
+
+                    emitted = 1;
+
+                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    downstream.onNext(intercept);
+
+                    timer.replace(scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit));
+
+                    if (intercept.tryAbandon()) {
+                        window.onComplete();
+                    }
+
+                    upstream.request(Long.MAX_VALUE);
+                } else {
+                    upstream.cancel();
+                    downstream.onError(new MissingBackpressureException(missingBackpressureMessage(emitted)));
+
+                    cleanupResources();
+                    upstreamCancelled = true;
+                }
+            }
         }
 
         @Override
         public void run() {
-            if (cancelled) {
-                terminated = true;
-            }
-            queue.offer(NEXT);
-            if (enter()) {
-                drainLoop();
-            }
+            queue.offer(NEXT_WINDOW);
+            drain();
         }
 
-        void drainLoop() {
+        @Override
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
 
-            final SimplePlainQueue<Object> q = queue;
-            final Subscriber<? super Flowable<T>> a = downstream;
-            UnicastProcessor<T> w = window;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Subscriber<? super Flowable<T>> downstream = this.downstream;
+            UnicastProcessor<T> window = this.window;
 
             int missed = 1;
             for (;;) {
 
-                for (;;) {
-                    boolean term = terminated; // NOPMD
+                if (upstreamCancelled) {
+                    queue.clear();
+                    window = null;
+                    this.window = null;
+                } else {
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                    boolean d = done;
-
-                    Object o = q.poll();
-
-                    if (d && (o == null || o == NEXT)) {
-                        window = null;
-                        q.clear();
-                        Throwable err = error;
-                        if (err != null) {
-                            w.onError(err);
-                        } else {
-                            w.onComplete();
-                        }
-                        timer.dispose();
-                        return;
-                    }
-
-                    if (o == null) {
-                        break;
-                    }
-
-                    if (o == NEXT) {
-                        w.onComplete();
-                        if (!term) {
-                            w = UnicastProcessor.<T>create(bufferSize);
-                            window = w;
-
-                            long r = requested();
-                            if (r != 0L) {
-                                a.onNext(w);
-                                if (r != Long.MAX_VALUE) {
-                                    produced(1);
-                                }
-                            } else {
-                                window = null;
-                                queue.clear();
-                                upstream.cancel();
-                                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
-                                timer.dispose();
-                                return;
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            if (window != null) {
+                                window.onError(ex);
                             }
+                            downstream.onError(ex);
                         } else {
-                            upstream.cancel();
+                            if (window != null) {
+                                window.onComplete();
+                            }
+                            downstream.onComplete();
                         }
+                        cleanupResources();
+                        upstreamCancelled = true;
                         continue;
                     }
+                    else if (!isEmpty) {
 
-                    w.onNext(NotificationLite.<T>getValue(o));
+                        if (o == NEXT_WINDOW) {
+                            if (window != null) {
+                                window.onComplete();
+                                window = null;
+                                this.window = null;
+                            }
+                            if (downstreamCancelled.get()) {
+                                timer.dispose();
+                            } else {
+                                if (requested.get() == emitted) {
+                                    upstream.cancel();
+                                    cleanupResources();
+                                    upstreamCancelled = true;
+
+                                    downstream.onError(new MissingBackpressureException(missingBackpressureMessage(emitted)));
+                                } else {
+                                    emitted++;
+
+                                    windowCount.getAndIncrement();
+                                    window = UnicastProcessor.create(bufferSize, windowRunnable);
+                                    this.window = window;
+
+                                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                                    downstream.onNext(intercept);
+
+                                    if (intercept.tryAbandon()) {
+                                        window.onComplete();
+                                    }
+                                }
+                            }
+                        } else if (window != null) {
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            window.onNext(item);
+                        }
+
+                        continue;
+                    }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
+
+        @Override
+        void cleanupResources() {
+            timer.dispose();
+        }
+
+        final class WindowRunnable implements Runnable {
+            @Override
+            public void run() {
+                windowDone();
+            }
+        }
     }
 
     static final class WindowExactBoundedSubscriber<T>
-    extends QueueDrainSubscriber<T, Object, Flowable<T>>
-    implements Subscription {
-        final long timespan;
-        final TimeUnit unit;
+    extends AbstractWindowSubscriber<T>
+    implements Runnable {
+        private static final long serialVersionUID = -6130475889925953722L;
+
         final Scheduler scheduler;
-        final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
         final Scheduler.Worker worker;
 
         long count;
 
-        long producerIndex;
-
-        Subscription upstream;
-
         UnicastProcessor<T> window;
 
-        volatile boolean terminated;
-
-        final SequentialDisposable timer = new SequentialDisposable();
+        final SequentialDisposable timer;
 
         WindowExactBoundedSubscriber(
                 Subscriber<? super Flowable<T>> actual,
                 long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
-            super(actual, new MpscLinkedQueue<Object>());
-            this.timespan = timespan;
-            this.unit = unit;
+            super(actual, timespan, unit, bufferSize);
             this.scheduler = scheduler;
-            this.bufferSize = bufferSize;
             this.maxSize = maxSize;
             this.restartTimerOnMaxSize = restartTimerOnMaxSize;
             if (restartTimerOnMaxSize) {
@@ -302,142 +360,50 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             } else {
                 worker = null;
             }
+            this.timer = new SequentialDisposable();
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.upstream, s)) {
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                if (requested.get() != 0L) {
+                    emitted = 1;
 
-                this.upstream = s;
+                    windowCount.getAndIncrement();
+                    window = UnicastProcessor.create(bufferSize, this);
 
-                Subscriber<? super Flowable<T>> a = downstream;
+                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    downstream.onNext(intercept);
 
-                a.onSubscribe(this);
-
-                if (cancelled) {
-                    return;
-                }
-
-                UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-                window = w;
-
-                long r = requested();
-                if (r != 0L) {
-                    a.onNext(w);
-                    if (r != Long.MAX_VALUE) {
-                        produced(1);
-                    }
-                } else {
-                    cancelled = true;
-                    s.cancel();
-                    a.onError(new MissingBackpressureException("Could not deliver initial window due to lack of requests."));
-                    return;
-                }
-
-                Disposable task;
-                ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
-                if (restartTimerOnMaxSize) {
-                    task = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
-                } else {
-                    task = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
-                }
-
-                if (timer.replace(task)) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (terminated) {
-                return;
-            }
-
-            if (fastEnter()) {
-                UnicastProcessor<T> w = window;
-                w.onNext(t);
-
-                long c = count + 1;
-
-                if (c >= maxSize) {
-                    producerIndex++;
-                    count = 0;
-
-                    w.onComplete();
-
-                    long r = requested();
-
-                    if (r != 0L) {
-                        w = UnicastProcessor.<T>create(bufferSize);
-                        window = w;
-                        downstream.onNext(w);
-                        if (r != Long.MAX_VALUE) {
-                            produced(1);
-                        }
-                        if (restartTimerOnMaxSize) {
-                            Disposable tm = timer.get();
-
-                            tm.dispose();
-                            Disposable task = worker.schedulePeriodically(
-                                    new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                            timer.replace(task);
-                        }
+                    Runnable boundaryTask = new WindowBoundaryRunnable(this, 1L);
+                    if (restartTimerOnMaxSize) {
+                        timer.replace(worker.schedulePeriodically(boundaryTask, timespan, timespan, unit));
                     } else {
-                        window = null;
-                        upstream.cancel();
-                        downstream.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
-                        disposeTimer();
-                        return;
+                        timer.replace(scheduler.schedulePeriodicallyDirect(boundaryTask, timespan, timespan, unit));
                     }
+
+                    if (intercept.tryAbandon()) {
+                        window.onComplete();
+                    }
+
+                    upstream.request(Long.MAX_VALUE);
                 } else {
-                    count = c;
-                }
+                    upstream.cancel();
+                    downstream.onError(new MissingBackpressureException(missingBackpressureMessage(emitted)));
 
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
+                    cleanupResources();
+                    upstreamCancelled = true;
                 }
             }
-            drainLoop();
         }
 
         @Override
-        public void onError(Throwable t) {
-            error = t;
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onError(t);
+        public void run() {
+            windowDone();
         }
 
         @Override
-        public void onComplete() {
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onComplete();
-        }
-
-        @Override
-        public void request(long n) {
-            requested(n);
-        }
-
-        @Override
-        public void cancel() {
-            cancelled = true;
-        }
-
-        public void disposeTimer() {
+        void cleanupResources() {
             timer.dispose();
             Worker w = worker;
             if (w != null) {
@@ -445,343 +411,278 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
         }
 
-        void drainLoop() {
-            final SimplePlainQueue<Object> q = queue;
-            final Subscriber<? super Flowable<T>> a = downstream;
-            UnicastProcessor<T> w = window;
+        void boundary(WindowBoundaryRunnable sender) {
+            queue.offer(sender);
+            drain();
+        }
+
+        @Override
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
 
             int missed = 1;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Subscriber<? super Flowable<T>> downstream = this.downstream;
+            UnicastProcessor<T> window = this.window;
+
             for (;;) {
 
-                for (;;) {
-                    if (terminated) {
-                        upstream.cancel();
-                        q.clear();
-                        disposeTimer();
-                        return;
-                    }
+                if (upstreamCancelled) {
+                    queue.clear();
+                    window = null;
+                    this.window = null;
+                } else {
 
-                    boolean d = done;
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                    Object o = q.poll();
-
-                    boolean empty = o == null;
-                    boolean isHolder = o instanceof ConsumerIndexHolder;
-
-                    if (d && (empty || isHolder)) {
-                        window = null;
-                        q.clear();
-                        Throwable err = error;
-                        if (err != null) {
-                            w.onError(err);
-                        } else {
-                            w.onComplete();
-                        }
-                        disposeTimer();
-                        return;
-                    }
-
-                    if (empty) {
-                        break;
-                    }
-
-                    if (isHolder) {
-                        ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
-                        if (!restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
-                            w.onComplete();
-                            count = 0;
-                            w = UnicastProcessor.<T>create(bufferSize);
-                            window = w;
-
-                            long r = requested();
-                            if (r != 0L) {
-                                a.onNext(w);
-                                if (r != Long.MAX_VALUE) {
-                                    produced(1);
-                                }
-                            } else {
-                                window = null;
-                                queue.clear();
-                                upstream.cancel();
-                                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
-                                disposeTimer();
-                                return;
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            if (window != null) {
+                                window.onError(ex);
                             }
+                            downstream.onError(ex);
+                        } else {
+                            if (window != null) {
+                                window.onComplete();
+                            }
+                            downstream.onComplete();
                         }
+                        cleanupResources();
+                        upstreamCancelled = true;
                         continue;
-                    }
-
-                    w.onNext(NotificationLite.<T>getValue(o));
-                    long c = count + 1;
-
-                    if (c >= maxSize) {
-                        producerIndex++;
-                        count = 0;
-
-                        w.onComplete();
-
-                        long r = requested();
-
-                        if (r != 0L) {
-                            w = UnicastProcessor.<T>create(bufferSize);
-                            window = w;
-                            downstream.onNext(w);
-                            if (r != Long.MAX_VALUE) {
-                                produced(1);
+                    } else if (!isEmpty) {
+                        if (o instanceof WindowBoundaryRunnable) {
+                            WindowBoundaryRunnable boundary = (WindowBoundaryRunnable) o;
+                            if (boundary.index == emitted || !restartTimerOnMaxSize) {
+                                this.count = 0;
+                                window = createNewWindow(window);
                             }
+                        } else if (window != null) {
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            window.onNext(item);
 
-                            if (restartTimerOnMaxSize) {
-                                Disposable tm = timer.get();
-                                tm.dispose();
-
-                                Disposable task = worker.schedulePeriodically(
-                                        new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                                timer.replace(task);
+                            long count = this.count + 1;
+                            if (count == maxSize) {
+                                this.count = 0;
+                                window = createNewWindow(window);
+                            } else {
+                                this.count = count;
                             }
-
-                        } else {
-                            window = null;
-                            upstream.cancel();
-                            downstream.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
-                            disposeTimer();
-                            return;
                         }
-                    } else {
-                        count = c;
+
+                        continue;
                     }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
 
-        static final class ConsumerIndexHolder implements Runnable {
-            final long index;
+        UnicastProcessor<T> createNewWindow(UnicastProcessor<T> window) {
+            if (window != null) {
+                window.onComplete();
+                window = null;
+            }
+
+            if (downstreamCancelled.get()) {
+                cleanupResources();
+            } else {
+                long emitted = this.emitted;
+                if (requested.get() == emitted) {
+                    upstream.cancel();
+                    cleanupResources();
+                    upstreamCancelled = true;
+
+                    downstream.onError(new MissingBackpressureException(missingBackpressureMessage(emitted)));
+                } else {
+                    this.emitted = ++emitted;
+
+                    windowCount.getAndIncrement();
+                    window = UnicastProcessor.create(bufferSize, this);
+                    this.window = window;
+
+                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    downstream.onNext(intercept);
+
+                    if (restartTimerOnMaxSize) {
+                        timer.update(worker.schedulePeriodically(new WindowBoundaryRunnable(this, emitted), timespan, timespan, unit));
+                    }
+
+                    if (intercept.tryAbandon()) {
+                        window.onComplete();
+                    }
+                }
+            }
+
+            return window;
+        }
+
+        static final class WindowBoundaryRunnable implements Runnable {
+
             final WindowExactBoundedSubscriber<?> parent;
-            ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
-                this.index = index;
+
+            final long index;
+
+            WindowBoundaryRunnable(WindowExactBoundedSubscriber<?> parent, long index) {
                 this.parent = parent;
+                this.index = index;
             }
 
             @Override
             public void run() {
-                WindowExactBoundedSubscriber<?> p = parent;
-
-                if (!p.cancelled) {
-                    p.queue.offer(this);
-                } else {
-                    p.terminated = true;
-                }
-                if (p.enter()) {
-                    p.drainLoop();
-                }
+                parent.boundary(this);
             }
         }
     }
 
     static final class WindowSkipSubscriber<T>
-    extends QueueDrainSubscriber<T, Object, Flowable<T>>
-    implements Subscription, Runnable {
-        final long timespan;
+    extends AbstractWindowSubscriber<T>
+    implements Runnable {
+        private static final long serialVersionUID = -7852870764194095894L;
+
         final long timeskip;
-        final TimeUnit unit;
         final Scheduler.Worker worker;
-        final int bufferSize;
 
         final List<UnicastProcessor<T>> windows;
-
-        Subscription upstream;
-
-        volatile boolean terminated;
 
         WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
-            this.timespan = timespan;
+            super(actual, timespan, unit, bufferSize);
             this.timeskip = timeskip;
-            this.unit = unit;
             this.worker = worker;
-            this.bufferSize = bufferSize;
             this.windows = new LinkedList<UnicastProcessor<T>>();
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.upstream, s)) {
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                if (requested.get() != 0L) {
+                    emitted = 1;
 
-                this.upstream = s;
+                    windowCount.getAndIncrement();
+                    UnicastProcessor<T> window = UnicastProcessor.create(bufferSize, this);
+                    windows.add(window);
 
-                downstream.onSubscribe(this);
+                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    downstream.onNext(intercept);
 
-                if (cancelled) {
-                    return;
-                }
+                    worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
+                    worker.schedulePeriodically(new WindowBoundaryRunnable(this, true), timeskip, timeskip, unit);
 
-                long r = requested();
-                if (r != 0L) {
-                    final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-                    windows.add(w);
-
-                    downstream.onNext(w);
-                    if (r != Long.MAX_VALUE) {
-                        produced(1);
+                    if (intercept.tryAbandon()) {
+                        window.onComplete();
+                        windows.remove(window);
                     }
-                    worker.schedule(new Completion(w), timespan, unit);
 
-                    worker.schedulePeriodically(this, timeskip, timeskip, unit);
-
-                    s.request(Long.MAX_VALUE);
-
+                    upstream.request(Long.MAX_VALUE);
                 } else {
-                    s.cancel();
-                    downstream.onError(new MissingBackpressureException("Could not emit the first window due to lack of requests"));
+                    upstream.cancel();
+                    downstream.onError(new MissingBackpressureException(missingBackpressureMessage(emitted)));
+
+                    cleanupResources();
+                    upstreamCancelled = true;
                 }
             }
         }
 
         @Override
-        public void onNext(T t) {
-            if (fastEnter()) {
-                for (UnicastProcessor<T> w : windows) {
-                    w.onNext(t);
-                }
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(t);
-                if (!enter()) {
-                    return;
-                }
-            }
-            drainLoop();
+        void cleanupResources() {
+            worker.dispose();
         }
 
         @Override
-        public void onError(Throwable t) {
-            error = t;
-            done = true;
-            if (enter()) {
-                drainLoop();
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
             }
-
-            downstream.onError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onComplete();
-        }
-
-        @Override
-        public void request(long n) {
-            requested(n);
-        }
-
-        @Override
-        public void cancel() {
-            cancelled = true;
-        }
-
-        void complete(UnicastProcessor<T> w) {
-            queue.offer(new SubjectWork<T>(w, false));
-            if (enter()) {
-                drainLoop();
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        void drainLoop() {
-            final SimplePlainQueue<Object> q = queue;
-            final Subscriber<? super Flowable<T>> a = downstream;
-            final List<UnicastProcessor<T>> ws = windows;
 
             int missed = 1;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Subscriber<? super Flowable<T>> downstream = this.downstream;
+            final List<UnicastProcessor<T>> windows = this.windows;
 
             for (;;) {
+                if (upstreamCancelled) {
+                    queue.clear();
+                    windows.clear();
+                } else {
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                for (;;) {
-                    if (terminated) {
-                        upstream.cancel();
-                        q.clear();
-                        ws.clear();
-                        worker.dispose();
-                        return;
-                    }
-
-                    boolean d = done;
-
-                    Object v = q.poll();
-
-                    boolean empty = v == null;
-                    boolean sw = v instanceof SubjectWork;
-
-                    if (d && (empty || sw)) {
-                        q.clear();
-                        Throwable e = error;
-                        if (e != null) {
-                            for (UnicastProcessor<T> w : ws) {
-                                w.onError(e);
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            for (UnicastProcessor<T> window : windows) {
+                                window.onError(ex);
                             }
+                            downstream.onError(ex);
                         } else {
-                            for (UnicastProcessor<T> w : ws) {
-                                w.onComplete();
+                            for (UnicastProcessor<T> window : windows) {
+                                window.onComplete();
                             }
+                            downstream.onComplete();
                         }
-                        ws.clear();
-                        worker.dispose();
-                        return;
-                    }
+                        cleanupResources();
+                        upstreamCancelled = true;
+                        continue;
+                    } else if (!isEmpty) {
+                        if (o == WINDOW_OPEN) {
+                            if (!downstreamCancelled.get()) {
+                                long emitted = this.emitted;
+                                if (requested.get() != emitted) {
+                                    this.emitted = ++emitted;
 
-                    if (empty) {
-                        break;
-                    }
+                                    windowCount.getAndIncrement();
+                                    UnicastProcessor<T> window = UnicastProcessor.create(bufferSize, this);
+                                    windows.add(window);
 
-                    if (sw) {
-                        SubjectWork<T> work = (SubjectWork<T>)v;
+                                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                                    downstream.onNext(intercept);
 
-                        if (work.open) {
-                            if (cancelled) {
-                                continue;
-                            }
+                                    worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
 
-                            long r = requested();
-                            if (r != 0L) {
-                                final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-                                ws.add(w);
-                                a.onNext(w);
-                                if (r != Long.MAX_VALUE) {
-                                    produced(1);
+                                    if (intercept.tryAbandon()) {
+                                        window.onComplete();
+                                    }
+                                } else {
+                                    upstream.cancel();
+                                    Throwable ex = new MissingBackpressureException(missingBackpressureMessage(emitted));
+                                    for (UnicastProcessor<T> window : windows) {
+                                        window.onError(ex);
+                                    }
+                                    downstream.onError(ex);
+
+                                    cleanupResources();
+                                    upstreamCancelled = true;
+                                    continue;
                                 }
-
-                                worker.schedule(new Completion(w), timespan, unit);
-                            } else {
-                                a.onError(new MissingBackpressureException("Can't emit window due to lack of requests"));
+                            }
+                        } else if (o == WINDOW_CLOSE) {
+                            if (!windows.isEmpty()) {
+                                windows.remove(0).onComplete();
                             }
                         } else {
-                            ws.remove(work.w);
-                            work.w.onComplete();
-                            if (ws.isEmpty() && cancelled) {
-                                terminated = true;
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            for (UnicastProcessor<T> window : windows) {
+                                window.onNext(item);
                             }
                         }
-                    } else {
-                        for (UnicastProcessor<T> w : ws) {
-                            w.onNext((T)v);
-                        }
+                        continue;
                     }
                 }
-
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
@@ -790,39 +691,37 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void run() {
-
-            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-
-            SubjectWork<T> sw = new SubjectWork<T>(w, true);
-            if (!cancelled) {
-                queue.offer(sw);
-            }
-            if (enter()) {
-                drainLoop();
-            }
+            windowDone();
         }
 
-        static final class SubjectWork<T> {
-            final UnicastProcessor<T> w;
-            final boolean open;
-            SubjectWork(UnicastProcessor<T> w, boolean open) {
-                this.w = w;
-                this.open = open;
-            }
+        void boundary(boolean isOpen) {
+            queue.offer(isOpen ? WINDOW_OPEN : WINDOW_CLOSE);
+            drain();
         }
 
-        final class Completion implements Runnable {
-            private final UnicastProcessor<T> processor;
+        static final Object WINDOW_OPEN = new Object();
+        static final Object WINDOW_CLOSE = new Object();
 
-            Completion(UnicastProcessor<T> processor) {
-                this.processor = processor;
+        static final class WindowBoundaryRunnable implements Runnable {
+
+            final WindowSkipSubscriber<?> parent;
+
+            final boolean isOpen;
+
+            WindowBoundaryRunnable(WindowSkipSubscriber<?> parent, boolean isOpen) {
+                this.parent = parent;
+                this.isOpen = isOpen;
             }
 
             @Override
             public void run() {
-                complete(processor);
+                parent.boundary(isOpen);
             }
         }
+    }
+
+    static String missingBackpressureMessage(long index) {
+        return "Unable to emit the next window (#" + index + ") due to lack of requests. Please make sure the downstream is ready to consume windows.";
     }
 
 }

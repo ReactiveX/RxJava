@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import io.reactivex.rxjava3.processors.UnicastProcessor;
+import io.reactivex.rxjava3.processors.*;
 
 public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final long size;
@@ -92,13 +92,15 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             long i = index;
 
             UnicastProcessor<T> w = window;
+            WindowSubscribeIntercept<T> intercept = null;
             if (i == 0) {
                 getAndIncrement();
 
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                downstream.onNext(w);
+                intercept = new WindowSubscribeIntercept<T>(w);
+                downstream.onNext(intercept);
             }
 
             i++;
@@ -111,6 +113,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w.onComplete();
             } else {
                 index = i;
+            }
+
+            if (intercept != null && intercept.tryAbandon()) {
+                intercept.window.onComplete();
             }
         }
 
@@ -205,6 +211,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         public void onNext(T t) {
             long i = index;
 
+            WindowSubscribeIntercept<T> intercept = null;
             UnicastProcessor<T> w = window;
             if (i == 0) {
                 getAndIncrement();
@@ -212,7 +219,8 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                downstream.onNext(w);
+                intercept = new WindowSubscribeIntercept<T>(w);
+                downstream.onNext(intercept);
             }
 
             i++;
@@ -230,6 +238,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 index = 0;
             } else {
                 index = i;
+            }
+
+            if (intercept != null && intercept.tryAbandon()) {
+                intercept.window.onComplete();
             }
         }
 
@@ -352,16 +364,14 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
             long i = index;
 
+            UnicastProcessor<T> newWindow = null;
             if (i == 0) {
                 if (!cancelled) {
                     getAndIncrement();
 
-                    UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize, this);
+                    newWindow = UnicastProcessor.<T>create(bufferSize, this);
 
-                    windows.offer(w);
-
-                    queue.offer(w);
-                    drain();
+                    windows.offer(newWindow);
                 }
             }
 
@@ -369,6 +379,11 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
             for (Processor<T, T> w : windows) {
                 w.onNext(t);
+            }
+
+            if (newWindow != null) {
+                queue.offer(newWindow);
+                drain();
             }
 
             long p = produced + 1;
@@ -431,39 +446,59 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             final SpscLinkedArrayQueue<UnicastProcessor<T>> q = queue;
             int missed = 1;
 
+            outer:
             for (;;) {
 
-                long r = requested.get();
-                long e = 0;
+                if (cancelled) {
+                    UnicastProcessor<T> up = null;
+                    while ((up = q.poll()) != null) {
+                        up.onComplete();
+                    }
+                } else {
+                    long r = requested.get();
+                    long e = 0;
 
-                while (e != r) {
-                    boolean d = done;
+                    while (e != r) {
+                        boolean d = done;
 
-                    UnicastProcessor<T> t = q.poll();
+                        UnicastProcessor<T> t = q.poll();
 
-                    boolean empty = t == null;
+                        boolean empty = t == null;
 
-                    if (checkTerminated(d, empty, a, q)) {
-                        return;
+                        if (cancelled) {
+                            continue outer;
+                        }
+
+                        if (checkTerminated(d, empty, a, q)) {
+                            return;
+                        }
+
+                        if (empty) {
+                            break;
+                        }
+
+                        WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(t);
+                        a.onNext(intercept);
+
+                        if (intercept.tryAbandon()) {
+                            t.onComplete();
+                        }
+                        e++;
                     }
 
-                    if (empty) {
-                        break;
+                    if (e == r) {
+                        if (cancelled) {
+                            continue outer;
+                        }
+
+                        if (checkTerminated(done, q.isEmpty(), a, q)) {
+                            return;
+                        }
                     }
 
-                    a.onNext(t);
-
-                    e++;
-                }
-
-                if (e == r) {
-                    if (checkTerminated(done, q.isEmpty(), a, q)) {
-                        return;
+                    if (e != 0L && r != Long.MAX_VALUE) {
+                        requested.addAndGet(-e);
                     }
-                }
-
-                if (e != 0L && r != Long.MAX_VALUE) {
-                    requested.addAndGet(-e);
                 }
 
                 missed = wip.addAndGet(-missed);
@@ -474,11 +509,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         }
 
         boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, SpscLinkedArrayQueue<?> q) {
-            if (cancelled) {
-                q.clear();
-                return true;
-            }
-
             if (d) {
                 Throwable e = error;
 
@@ -520,6 +550,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             if (once.compareAndSet(false, true)) {
                 run();
             }
+            drain();
         }
 
         @Override

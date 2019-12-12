@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -37,20 +37,12 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     private static <T> List<List<T>> toLists(Flowable<Flowable<T>> observables) {
 
-        final List<List<T>> lists = new ArrayList<List<T>>();
-        Flowable.concat(observables.map(new Function<Flowable<T>, Flowable<List<T>>>() {
+        return observables.flatMapSingle(new Function<Flowable<T>, SingleSource<List<T>>>() {
             @Override
-            public Flowable<List<T>> apply(Flowable<T> xs) {
-                return xs.toList().toFlowable();
+            public SingleSource<List<T>> apply(Flowable<T> w) throws Throwable {
+                return w.toList();
             }
-        }))
-                .blockingForEach(new Consumer<List<T>>() {
-                    @Override
-                    public void accept(List<T> xs) {
-                        lists.add(xs);
-                    }
-                });
-        return lists;
+        }).toList().blockingGet();
     }
 
     @Test
@@ -311,7 +303,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
                 return t.toList().toFlowable();
             }
         })
-        .concatMap(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
+        .concatMapEager(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
             @Override
             public Publisher<List<Integer>> apply(Flowable<List<Integer>> v) {
                 return v;
@@ -454,5 +446,167 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertError(TestException.class);
 
         to[0].assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamSize() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(10)
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamSize() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(10)
+        .take(1)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult(1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamSkip() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(5, 10)
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamSkip() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(5, 10)
+        .take(1)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult(1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamOverlap() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(5, 3)
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamOverlap() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(5, 3)
+        .take(1)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult(1);
     }
 }
