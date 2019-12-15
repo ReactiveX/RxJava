@@ -114,7 +114,7 @@ import io.reactivex.rxjava3.subscribers.*;
  *         Thread.sleep(1000);
  *
  *         // the consumer might have cancelled the flow
- *         if (emitter.isCancelled() {
+ *         if (emitter.isCancelled()) {
  *             return;
  *         }
  *
