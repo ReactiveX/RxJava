@@ -2,6 +2,16 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.16 - December 15, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.16%7C))
+
+#### Bugfixes
+
+  - [Pull 6754](https://github.com/ReactiveX/RxJava/pull/6754): Fix `amb`, `combineLatest` and `zip` `Iterable` overloads throwing `ArrayStoreException` for `ObservableSource`s.
+
+#### Documentation changes
+
+  - [Pull 6746](https://github.com/ReactiveX/RxJava/pull/6746): Fix self-see references, some comments.
+
 ### Version 2.2.15 - November 24, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.15%7C))
 
 #### Bugfixes
