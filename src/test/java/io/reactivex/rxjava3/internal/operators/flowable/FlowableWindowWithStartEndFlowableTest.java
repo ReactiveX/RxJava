@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
@@ -160,7 +160,14 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
             public Flowable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(ts);
+        })
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
+        .subscribe(ts);
 
         open.onNext(1);
         source.onNext(1);
@@ -197,7 +204,14 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
             public Flowable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(ts);
+        })
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
+        .subscribe(ts);
 
         open.onNext(1);
 
@@ -246,16 +260,6 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         ts
         .awaitDone(1, TimeUnit.SECONDS)
         .assertResult(1, 2);
-    }
-
-    @Test
-    public void badSourceCallable() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
-            @Override
-            public Object apply(Flowable<Object> f) throws Exception {
-                return f.window(Flowable.just(1), Functions.justFunction(Flowable.never()));
-            }
-        }, false, 1, 1, (Object[])null);
     }
 
     @Test
@@ -372,6 +376,12 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                     };
                 }
             })
+            .doOnNext(new Consumer<Flowable<Integer>>() {
+                @Override
+                public void accept(Flowable<Integer> w) throws Throwable {
+                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+                }
+            })
             .test()
             .assertValueCount(1)
             .assertNoErrors()
@@ -406,6 +416,12 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                 return flowableDisposed(closeDisposed);
             }
         })
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
         .to(TestHelper.<Flowable<Integer>>testConsumer())
         .assertSubscribed()
         .assertNoErrors()
@@ -435,5 +451,94 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
         assertFalse(source.hasSubscribers());
         assertFalse(boundary.hasSubscribers());
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()), Functions.justFunction(Flowable.never()))
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>just(1).concatWith(Flowable.<Integer>never()),
+                Functions.justFunction(Flowable.never()))
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts
+        .assertValueCount(1)
+        ;
+
+        pp.onNext(1);
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void closingIndicatorFunctionCrash() {
+
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> boundary = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = source.window(boundary, new Function<Integer, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Integer end) throws Throwable {
+                throw new TestException();
+            }
+        })
+        .test()
+        ;
+
+        ts.assertEmpty();
+
+        boundary.onNext(1);
+
+        ts.assertFailure(TestException.class);
+
+        assertFalse(source.hasSubscribers());
+        assertFalse(boundary.hasSubscribers());
+
     }
 }

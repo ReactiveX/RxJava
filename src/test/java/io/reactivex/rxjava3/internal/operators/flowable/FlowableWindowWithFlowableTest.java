@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -418,6 +418,12 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                     ref.set(subscriber);
                 }
             })
+            .doOnNext(new Consumer<Flowable<Object>>() {
+                @Override
+                public void accept(Flowable<Object> w) throws Throwable {
+                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+                }
+            })
             .to(TestHelper.<Flowable<Object>>testConsumer());
 
             ts
@@ -673,5 +679,66 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>never())
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts
+        .assertValueCount(1)
+        ;
+
+        pp.onNext(1);
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult();
     }
 }

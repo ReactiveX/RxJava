@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
@@ -161,7 +161,14 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(to);
+        })
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
+        .subscribe(to);
 
         open.onNext(1);
         source.onNext(1);
@@ -199,7 +206,14 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(to);
+        })
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
+        .subscribe(to);
 
         open.onNext(1);
 
@@ -365,6 +379,12 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                     };
                 }
             })
+            .doOnNext(new Consumer<Observable<Integer>>() {
+                @Override
+                public void accept(Observable<Integer> w) throws Throwable {
+                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+                }
+            })
             .test()
             .assertValueCount(1)
             .assertNoErrors()
@@ -399,6 +419,12 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 return observableDisposed(closeDisposed);
             }
         })
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Throwable {
+                w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
+            }
+        })
         .to(TestHelper.<Observable<Integer>>testConsumer())
         .assertSubscribed()
         .assertNoErrors()
@@ -408,5 +434,102 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         assertTrue(mainDisposed.get());
         assertTrue(openDisposed.get());
         assertTrue(closeDisposed.get());
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstream() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(Observable.just(1).concatWith(Observable.<Integer>never()), Functions.justFunction(Observable.never()))
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstream() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(Observable.<Integer>just(1).concatWith(Observable.<Integer>never()),
+                Functions.justFunction(Observable.never()))
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        to
+        .assertValueCount(1)
+        ;
+
+        ps.onNext(1);
+
+        assertTrue(ps.hasObservers());
+
+        to.dispose();
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        assertFalse("Subject still has observers!", ps.hasObservers());
+
+        inner.get().test().assertResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void closingIndicatorFunctionCrash() {
+
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = source.window(boundary, new Function<Integer, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Integer end) throws Throwable {
+                throw new TestException();
+            }
+        })
+        .test()
+        ;
+
+        to.assertEmpty();
+
+        boundary.onNext(1);
+
+        to.assertFailure(TestException.class);
+
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mainError() {
+        Observable.error(new TestException())
+        .window(Observable.never(), Functions.justFunction(Observable.never()))
+        .test()
+        .assertFailure(TestException.class);
     }
 }

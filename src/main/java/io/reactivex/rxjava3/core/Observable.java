@@ -14536,6 +14536,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14564,6 +14569,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14594,6 +14604,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14630,6 +14645,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource emits the current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14658,6 +14678,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emits the current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14690,6 +14715,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emits the current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -14723,6 +14753,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource emits the current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14754,6 +14789,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14788,6 +14828,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14824,6 +14869,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * current window and propagates the notification from the source ObservableSource.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -14865,6 +14915,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -14891,6 +14946,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -14922,6 +14982,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -14953,6 +15018,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
