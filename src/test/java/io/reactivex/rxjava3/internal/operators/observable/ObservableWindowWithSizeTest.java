@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<List<T>>();
-        Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
+        Observable.concatEager(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
             @Override
             public Observable<List<T>> apply(Observable<T> xs) {
                 return xs.toList().toObservable();
@@ -375,5 +375,167 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertError(TestException.class);
 
         to[0].assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(10)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(10)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        inner.get().test().assertResult(1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(5, 10)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(5, 10)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        inner.get().test().assertResult(1);
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamOverlap() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(5, 3)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamOverlap() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(5, 3)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        inner.get().test().assertResult(1);
     }
 }

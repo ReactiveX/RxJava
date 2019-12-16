@@ -25,13 +25,13 @@ import io.reactivex.rxjava3.processors.FlowableProcessor;
  * @param <T> the element type of the flow.
  * @since 3.0.0
  */
-final class WindowSubscribeIntercept<T> extends Flowable<T> {
+final class FlowableWindowSubscribeIntercept<T> extends Flowable<T> {
 
     final FlowableProcessor<T> window;
 
     final AtomicBoolean once;
 
-    WindowSubscribeIntercept(FlowableProcessor<T> source) {
+    FlowableWindowSubscribeIntercept(FlowableProcessor<T> source) {
         this.window = source;
         this.once = new AtomicBoolean();
     }

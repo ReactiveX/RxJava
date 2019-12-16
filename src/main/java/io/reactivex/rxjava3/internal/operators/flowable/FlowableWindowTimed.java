@@ -28,7 +28,6 @@ import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.processors.UnicastProcessor;
-import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
 
 public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final long timespan;
@@ -53,23 +52,21 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super Flowable<T>> s) {
-        SerializedSubscriber<Flowable<T>> actual = new SerializedSubscriber<Flowable<T>>(s);
-
+    protected void subscribeActual(Subscriber<? super Flowable<T>> downstream) {
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
                 source.subscribe(new WindowExactUnboundedSubscriber<T>(
-                        actual,
+                        downstream,
                         timespan, unit, scheduler, bufferSize));
                 return;
             }
             source.subscribe(new WindowExactBoundedSubscriber<T>(
-                        actual,
+                        downstream,
                         timespan, unit, scheduler,
                         bufferSize, maxSize, restartTimerOnMaxSize));
             return;
         }
-        source.subscribe(new WindowSkipSubscriber<T>(actual,
+        source.subscribe(new WindowSkipSubscriber<T>(downstream,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
 
@@ -100,8 +97,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicInteger windowCount;
 
-        AbstractWindowSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit, int bufferSize) {
-            this.downstream = actual;
+        AbstractWindowSubscriber(Subscriber<? super Flowable<T>> downstream, long timespan, TimeUnit unit, int bufferSize) {
+            this.downstream = downstream;
             this.queue = new MpscLinkedQueue<Object>();
             this.timespan = timespan;
             this.unit = unit;
@@ -204,7 +201,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     emitted = 1;
 
-                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                     downstream.onNext(intercept);
 
                     timer.replace(scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit));
@@ -293,7 +290,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                     window = UnicastProcessor.create(bufferSize, windowRunnable);
                                     this.window = window;
 
-                                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                                     downstream.onNext(intercept);
 
                                     if (intercept.tryAbandon()) {
@@ -372,7 +369,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     windowCount.getAndIncrement();
                     window = UnicastProcessor.create(bufferSize, this);
 
-                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                     downstream.onNext(intercept);
 
                     Runnable boundaryTask = new WindowBoundaryRunnable(this, 1L);
@@ -510,7 +507,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     window = UnicastProcessor.create(bufferSize, this);
                     this.window = window;
 
-                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                     downstream.onNext(intercept);
 
                     if (restartTimerOnMaxSize) {
@@ -573,7 +570,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     UnicastProcessor<T> window = UnicastProcessor.create(bufferSize, this);
                     windows.add(window);
 
-                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                     downstream.onNext(intercept);
 
                     worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
@@ -647,7 +644,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                     UnicastProcessor<T> window = UnicastProcessor.create(bufferSize, this);
                                     windows.add(window);
 
-                                    WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(window);
+                                    FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(window);
                                     downstream.onNext(intercept);
 
                                     worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);

@@ -949,4 +949,154 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
         assertFalse("The doOnNext got interrupted!", isInterrupted.get());
     }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamExactTime() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(10, TimeUnit.MINUTES)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamExactTime() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        inner.get().test().assertResult();
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamExactTimeAndSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(10, TimeUnit.MINUTES, 100)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamExactTimeAndSize() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES, 100)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        inner.get().test().assertResult();
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstreamExactTimeSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.window(10, 15, TimeUnit.MINUTES)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        to
+        .assertResult(1);
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstreamExactTimeSkip() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+
+        TestObserver<Observable<Integer>> to = ps.window(10, 15, TimeUnit.MINUTES)
+        .take(1)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertFalse("Subject still has subscribers!", ps.hasObservers());
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+
+        inner.get().test().assertResult();
+    }
 }

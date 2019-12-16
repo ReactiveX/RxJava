@@ -77,14 +77,17 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         @Override
         public void onNext(T t) {
             UnicastSubject<T> w = window;
+            ObservableWindowSubscribeIntercept<T> intercept = null;
             if (w == null && !cancelled) {
                 w = UnicastSubject.create(capacityHint, this);
                 window = w;
-                downstream.onNext(w);
+                intercept = new ObservableWindowSubscribeIntercept<T>(w);
+                downstream.onNext(intercept);
             }
 
             if (w != null) {
                 w.onNext(t);
+
                 if (++size >= count) {
                     size = 0;
                     window = null;
@@ -92,6 +95,12 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                     if (cancelled) {
                         upstream.dispose();
                     }
+                }
+
+                if (intercept != null && intercept.tryAbandon()) {
+                    w.onComplete();
+                    w = null;
+                    window = null;
                 }
             }
         }
@@ -180,11 +189,14 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
             long s = skip;
 
+            ObservableWindowSubscribeIntercept<T> intercept = null;
+
             if (i % s == 0 && !cancelled) {
                 wip.getAndIncrement();
                 UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
+                intercept = new ObservableWindowSubscribeIntercept<T>(w);
                 ws.offer(w);
-                downstream.onNext(w);
+                downstream.onNext(intercept);
             }
 
             long c = firstEmission + 1;
@@ -205,6 +217,10 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
 
             index = i + 1;
+
+            if (intercept != null && intercept.tryAbandon()) {
+                intercept.window.onComplete();
+            }
         }
 
         @Override

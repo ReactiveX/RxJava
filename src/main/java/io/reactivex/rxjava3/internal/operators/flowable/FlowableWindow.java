@@ -92,14 +92,14 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             long i = index;
 
             UnicastProcessor<T> w = window;
-            WindowSubscribeIntercept<T> intercept = null;
+            FlowableWindowSubscribeIntercept<T> intercept = null;
             if (i == 0) {
                 getAndIncrement();
 
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                intercept = new WindowSubscribeIntercept<T>(w);
+                intercept = new FlowableWindowSubscribeIntercept<T>(w);
                 downstream.onNext(intercept);
             }
 
@@ -211,7 +211,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         public void onNext(T t) {
             long i = index;
 
-            WindowSubscribeIntercept<T> intercept = null;
+            FlowableWindowSubscribeIntercept<T> intercept = null;
             UnicastProcessor<T> w = window;
             if (i == 0) {
                 getAndIncrement();
@@ -219,7 +219,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                intercept = new WindowSubscribeIntercept<T>(w);
+                intercept = new FlowableWindowSubscribeIntercept<T>(w);
                 downstream.onNext(intercept);
             }
 
@@ -477,7 +477,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                             break;
                         }
 
-                        WindowSubscribeIntercept<T> intercept = new WindowSubscribeIntercept<T>(t);
+                        FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(t);
                         a.onNext(intercept);
 
                         if (intercept.tryAbandon()) {

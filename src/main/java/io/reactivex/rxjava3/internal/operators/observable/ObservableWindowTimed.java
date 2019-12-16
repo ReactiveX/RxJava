@@ -15,17 +15,16 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.*;
 
-import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.observers.QueueDrainObserver;
+import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
-import io.reactivex.rxjava3.internal.util.NotificationLite;
-import io.reactivex.rxjava3.observers.SerializedObserver;
 import io.reactivex.rxjava3.subjects.UnicastSubject;
 
 public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstream<T, Observable<T>> {
@@ -37,8 +36,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     final int bufferSize;
     final boolean restartTimerOnMaxSize;
 
-    public ObservableWindowTimed(
-            ObservableSource<T> source,
+    public ObservableWindowTimed(Observable<T> source,
             long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, long maxSize,
             int bufferSize, boolean restartTimerOnMaxSize) {
         super(source);
@@ -52,223 +50,282 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(Observer<? super Observable<T>> t) {
-        SerializedObserver<Observable<T>> actual = new SerializedObserver<Observable<T>>(t);
-
+    protected void subscribeActual(Observer<? super Observable<T>> downstream) {
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
                 source.subscribe(new WindowExactUnboundedObserver<T>(
-                        actual,
+                        downstream,
                         timespan, unit, scheduler, bufferSize));
                 return;
             }
             source.subscribe(new WindowExactBoundedObserver<T>(
-                        actual,
+                        downstream,
                         timespan, unit, scheduler,
                         bufferSize, maxSize, restartTimerOnMaxSize));
             return;
         }
-        source.subscribe(new WindowSkipObserver<T>(actual,
+        source.subscribe(new WindowSkipObserver<T>(downstream,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
 
-    static final class WindowExactUnboundedObserver<T>
-            extends QueueDrainObserver<T, Object, Observable<T>>
-            implements Observer<T>, Disposable, Runnable {
+    abstract static class AbstractWindowObserver<T>
+    extends AtomicInteger
+    implements Observer<T>, Disposable {
+        private static final long serialVersionUID = 5724293814035355511L;
+
+        final Observer<? super Observable<T>> downstream;
+
+        final SimplePlainQueue<Object> queue;
+
         final long timespan;
         final TimeUnit unit;
-        final Scheduler scheduler;
         final int bufferSize;
+
+        long emitted;
+
+        volatile boolean done;
+        Throwable error;
 
         Disposable upstream;
 
-        UnicastSubject<T> window;
+        final AtomicBoolean downstreamCancelled;
 
-        final SequentialDisposable timer = new SequentialDisposable();
+        volatile boolean upstreamCancelled;
 
-        static final Object NEXT = new Object();
+        final AtomicInteger windowCount;
 
-        volatile boolean terminated;
-
-        WindowExactUnboundedObserver(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
-                Scheduler scheduler, int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
+        AbstractWindowObserver(Observer<? super Observable<T>> downstream, long timespan, TimeUnit unit, int bufferSize) {
+            this.downstream = downstream;
+            this.queue = new MpscLinkedQueue<Object>();
             this.timespan = timespan;
             this.unit = unit;
-            this.scheduler = scheduler;
             this.bufferSize = bufferSize;
+            this.downstreamCancelled = new AtomicBoolean();
+            this.windowCount = new AtomicInteger(1);
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
+        public final void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
                 this.upstream = d;
 
-                window = UnicastSubject.<T>create(bufferSize);
+                downstream.onSubscribe(this);
 
-                Observer<? super Observable<T>> a = downstream;
-                a.onSubscribe(this);
-
-                a.onNext(window);
-
-                if (!cancelled) {
-                    Disposable task = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                    timer.replace(task);
-                }
+                createFirstWindow();
             }
         }
 
+        abstract void createFirstWindow();
+
         @Override
-        public void onNext(T t) {
-            if (terminated) {
-                return;
-            }
-            if (fastEnter()) {
-                window.onNext(t);
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
-                }
-            }
-            drainLoop();
+        public final void onNext(T t) {
+            queue.offer(t);
+            drain();
         }
 
         @Override
-        public void onError(Throwable t) {
+        public final void onError(Throwable t) {
             error = t;
             done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onError(t);
+            drain();
         }
 
         @Override
-        public void onComplete() {
+        public final void onComplete() {
             done = true;
-            if (enter()) {
-                drainLoop();
+            drain();
+        }
+
+        @Override
+        public final void dispose() {
+            if (downstreamCancelled.compareAndSet(false, true)) {
+                windowDone();
             }
-
-            downstream.onComplete();
         }
 
         @Override
-        public void dispose() {
-            cancelled = true;
+        public final boolean isDisposed() {
+            return downstreamCancelled.get();
+        }
+
+        final void windowDone() {
+            if (windowCount.decrementAndGet() == 0) {
+                cleanupResources();
+                upstream.dispose();
+                upstreamCancelled = true;
+                drain();
+            }
+        }
+
+        abstract void cleanupResources();
+
+        abstract void drain();
+    }
+
+    static final class WindowExactUnboundedObserver<T>
+            extends AbstractWindowObserver<T>
+            implements Runnable {
+
+        private static final long serialVersionUID = 1155822639622580836L;
+
+        final Scheduler scheduler;
+
+        UnicastSubject<T> window;
+
+        final SequentialDisposable timer;
+
+        static final Object NEXT_WINDOW = new Object();
+
+        final Runnable windowRunnable;
+
+        WindowExactUnboundedObserver(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
+                Scheduler scheduler, int bufferSize) {
+            super(actual, timespan, unit, bufferSize);
+            this.scheduler = scheduler;
+            this.timer = new SequentialDisposable();
+            this.windowRunnable = new WindowRunnable();
         }
 
         @Override
-        public boolean isDisposed() {
-            return cancelled;
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                windowCount.getAndIncrement();
+                window = UnicastSubject.create(bufferSize, windowRunnable);
+
+                emitted = 1;
+
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                downstream.onNext(intercept);
+
+                timer.replace(scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit));
+
+                if (intercept.tryAbandon()) {
+                    window.onComplete();
+                }
+            }
         }
 
         @Override
         public void run() {
-            if (cancelled) {
-                terminated = true;
-            }
-            queue.offer(NEXT);
-            if (enter()) {
-                drainLoop();
-            }
+            queue.offer(NEXT_WINDOW);
+            drain();
         }
 
-        void drainLoop() {
+        @Override
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
 
-            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = downstream;
-            UnicastSubject<T> w = window;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Observer<? super Observable<T>> downstream = this.downstream;
+            UnicastSubject<T> window = this.window;
 
             int missed = 1;
             for (;;) {
 
-                for (;;) {
-                    boolean term = terminated; // NOPMD
+                if (upstreamCancelled) {
+                    queue.clear();
+                    window = null;
+                    this.window = null;
+                } else {
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                    boolean d = done;
-
-                    Object o = q.poll();
-
-                    if (d && (o == null || o == NEXT)) {
-                        window = null;
-                        q.clear();
-                        Throwable err = error;
-                        if (err != null) {
-                            w.onError(err);
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            if (window != null) {
+                                window.onError(ex);
+                            }
+                            downstream.onError(ex);
                         } else {
-                            w.onComplete();
+                            if (window != null) {
+                                window.onComplete();
+                            }
+                            downstream.onComplete();
                         }
-                        timer.dispose();
-                        return;
-                    }
-
-                    if (o == null) {
-                        break;
-                    }
-
-                    if (o == NEXT) {
-                        w.onComplete();
-                        if (!term) {
-                            w = UnicastSubject.create(bufferSize);
-                            window = w;
-
-                            a.onNext(w);
-                        } else {
-                            upstream.dispose();
-                        }
+                        cleanupResources();
+                        upstreamCancelled = true;
                         continue;
                     }
+                    else if (!isEmpty) {
 
-                    w.onNext(NotificationLite.<T>getValue(o));
+                        if (o == NEXT_WINDOW) {
+                            if (window != null) {
+                                window.onComplete();
+                                window = null;
+                                this.window = null;
+                            }
+                            if (downstreamCancelled.get()) {
+                                timer.dispose();
+                            } else {
+                                emitted++;
+
+                                windowCount.getAndIncrement();
+                                window = UnicastSubject.create(bufferSize, windowRunnable);
+                                this.window = window;
+
+                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                                downstream.onNext(intercept);
+
+                                if (intercept.tryAbandon()) {
+                                    window.onComplete();
+                                }
+                            }
+                        } else if (window != null) {
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            window.onNext(item);
+                        }
+
+                        continue;
+                    }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
+
+        @Override
+        void cleanupResources() {
+            timer.dispose();
+        }
+
+        final class WindowRunnable implements Runnable {
+            @Override
+            public void run() {
+                windowDone();
+            }
+        }
     }
 
     static final class WindowExactBoundedObserver<T>
-    extends QueueDrainObserver<T, Object, Observable<T>>
-    implements Disposable {
-        final long timespan;
-        final TimeUnit unit;
+    extends AbstractWindowObserver<T>
+    implements Runnable {
+        private static final long serialVersionUID = -6130475889925953722L;
+
         final Scheduler scheduler;
-        final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
-
         final Scheduler.Worker worker;
 
         long count;
 
-        long producerIndex;
-
-        Disposable upstream;
-
         UnicastSubject<T> window;
 
-        volatile boolean terminated;
-
-        final SequentialDisposable timer = new SequentialDisposable();
+        final SequentialDisposable timer;
 
         WindowExactBoundedObserver(
                 Observer<? super Observable<T>> actual,
                 long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
-            super(actual, new MpscLinkedQueue<Object>());
-            this.timespan = timespan;
-            this.unit = unit;
+            super(actual, timespan, unit, bufferSize);
             this.scheduler = scheduler;
-            this.bufferSize = bufferSize;
             this.maxSize = maxSize;
             this.restartTimerOnMaxSize = restartTimerOnMaxSize;
             if (restartTimerOnMaxSize) {
@@ -276,415 +333,288 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             } else {
                 worker = null;
             }
+            this.timer = new SequentialDisposable();
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.upstream, d)) {
-                this.upstream = d;
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                emitted = 1;
 
-                Observer<? super Observable<T>> a = downstream;
+                windowCount.getAndIncrement();
+                window = UnicastSubject.create(bufferSize, this);
 
-                a.onSubscribe(this);
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                downstream.onNext(intercept);
 
-                if (cancelled) {
-                    return;
-                }
-
-                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-                window = w;
-
-                a.onNext(w);
-
-                Disposable task;
-                ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
+                Runnable boundaryTask = new WindowBoundaryRunnable(this, 1L);
                 if (restartTimerOnMaxSize) {
-                    task = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
+                    timer.replace(worker.schedulePeriodically(boundaryTask, timespan, timespan, unit));
                 } else {
-                    task = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
+                    timer.replace(scheduler.schedulePeriodicallyDirect(boundaryTask, timespan, timespan, unit));
                 }
 
-                timer.replace(task);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (terminated) {
-                return;
-            }
-
-            if (fastEnter()) {
-                UnicastSubject<T> w = window;
-                w.onNext(t);
-
-                long c = count + 1;
-
-                if (c >= maxSize) {
-                    producerIndex++;
-                    count = 0;
-
-                    w.onComplete();
-
-                    w = UnicastSubject.create(bufferSize);
-                    window = w;
-                    downstream.onNext(w);
-                    if (restartTimerOnMaxSize) {
-                        Disposable tm = timer.get();
-                        tm.dispose();
-                        Disposable task = worker.schedulePeriodically(
-                                new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-
-                        DisposableHelper.replace(timer, task);
-                    }
-                } else {
-                    count = c;
-                }
-
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
+                if (intercept.tryAbandon()) {
+                    window.onComplete();
                 }
             }
-            drainLoop();
         }
 
         @Override
-        public void onError(Throwable t) {
-            error = t;
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onError(t);
+        public void run() {
+            windowDone();
         }
 
         @Override
-        public void onComplete() {
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onComplete();
-        }
-
-        @Override
-        public void dispose() {
-            cancelled = true;
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return cancelled;
-        }
-
-        void disposeTimer() {
-            DisposableHelper.dispose(timer);
+        void cleanupResources() {
+            timer.dispose();
             Worker w = worker;
             if (w != null) {
                 w.dispose();
             }
         }
 
-        void drainLoop() {
-            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = downstream;
-            UnicastSubject<T> w = window;
+        void boundary(WindowBoundaryRunnable sender) {
+            queue.offer(sender);
+            drain();
+        }
+
+        @Override
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
 
             int missed = 1;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Observer<? super Observable<T>> downstream = this.downstream;
+            UnicastSubject<T> window = this.window;
+
             for (;;) {
 
-                for (;;) {
-                    if (terminated) {
-                        upstream.dispose();
-                        q.clear();
-                        disposeTimer();
-                        return;
-                    }
+                if (upstreamCancelled) {
+                    queue.clear();
+                    window = null;
+                    this.window = null;
+                } else {
 
-                    boolean d = done;
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                    Object o = q.poll();
-
-                    boolean empty = o == null;
-                    boolean isHolder = o instanceof ConsumerIndexHolder;
-
-                    if (d && (empty || isHolder)) {
-                        window = null;
-                        q.clear();
-                        Throwable err = error;
-                        if (err != null) {
-                            w.onError(err);
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            if (window != null) {
+                                window.onError(ex);
+                            }
+                            downstream.onError(ex);
                         } else {
-                            w.onComplete();
+                            if (window != null) {
+                                window.onComplete();
+                            }
+                            downstream.onComplete();
                         }
-                        disposeTimer();
-                        return;
-                    }
-
-                    if (empty) {
-                        break;
-                    }
-
-                    if (isHolder) {
-                        ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
-                        if (!restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
-                            w.onComplete();
-                            count = 0;
-                            w = UnicastSubject.create(bufferSize);
-                            window = w;
-
-                            a.onNext(w);
-                        }
+                        cleanupResources();
+                        upstreamCancelled = true;
                         continue;
-                    }
+                    } else if (!isEmpty) {
+                        if (o instanceof WindowBoundaryRunnable) {
+                            WindowBoundaryRunnable boundary = (WindowBoundaryRunnable) o;
+                            if (boundary.index == emitted || !restartTimerOnMaxSize) {
+                                this.count = 0;
+                                window = createNewWindow(window);
+                            }
+                        } else if (window != null) {
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            window.onNext(item);
 
-                    w.onNext(NotificationLite.<T>getValue(o));
-                    long c = count + 1;
-
-                    if (c >= maxSize) {
-                        producerIndex++;
-                        count = 0;
-
-                        w.onComplete();
-
-                        w = UnicastSubject.create(bufferSize);
-                        window = w;
-                        downstream.onNext(w);
-
-                        if (restartTimerOnMaxSize) {
-                            Disposable tm = timer.get();
-                            tm.dispose();
-
-                            Disposable task = worker.schedulePeriodically(
-                                    new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                            if (!timer.compareAndSet(tm, task)) {
-                                task.dispose();
+                            long count = this.count + 1;
+                            if (count == maxSize) {
+                                this.count = 0;
+                                window = createNewWindow(window);
+                            } else {
+                                this.count = count;
                             }
                         }
 
-                    } else {
-                        count = c;
+                        continue;
                     }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
 
-        static final class ConsumerIndexHolder implements Runnable {
-            final long index;
+        UnicastSubject<T> createNewWindow(UnicastSubject<T> window) {
+            if (window != null) {
+                window.onComplete();
+                window = null;
+            }
+
+            if (downstreamCancelled.get()) {
+                cleanupResources();
+            } else {
+                long emitted = this.emitted;
+                this.emitted = ++emitted;
+
+                windowCount.getAndIncrement();
+                window = UnicastSubject.create(bufferSize, this);
+                this.window = window;
+
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                downstream.onNext(intercept);
+
+                if (restartTimerOnMaxSize) {
+                    timer.update(worker.schedulePeriodically(new WindowBoundaryRunnable(this, emitted), timespan, timespan, unit));
+                }
+
+                if (intercept.tryAbandon()) {
+                    window.onComplete();
+                }
+            }
+
+            return window;
+        }
+
+        static final class WindowBoundaryRunnable implements Runnable {
+
             final WindowExactBoundedObserver<?> parent;
-            ConsumerIndexHolder(long index, WindowExactBoundedObserver<?> parent) {
-                this.index = index;
+
+            final long index;
+
+            WindowBoundaryRunnable(WindowExactBoundedObserver<?> parent, long index) {
                 this.parent = parent;
+                this.index = index;
             }
 
             @Override
             public void run() {
-                WindowExactBoundedObserver<?> p = parent;
-
-                if (!p.cancelled) {
-                    p.queue.offer(this);
-                } else {
-                    p.terminated = true;
-                }
-                if (p.enter()) {
-                    p.drainLoop();
-                }
+                parent.boundary(this);
             }
         }
     }
 
     static final class WindowSkipObserver<T>
-    extends QueueDrainObserver<T, Object, Observable<T>>
-    implements Disposable, Runnable {
-        final long timespan;
+    extends AbstractWindowObserver<T>
+    implements Runnable {
+        private static final long serialVersionUID = -7852870764194095894L;
+
         final long timeskip;
-        final TimeUnit unit;
         final Scheduler.Worker worker;
-        final int bufferSize;
 
         final List<UnicastSubject<T>> windows;
-
-        Disposable upstream;
-
-        volatile boolean terminated;
 
         WindowSkipObserver(Observer<? super Observable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
-            this.timespan = timespan;
+            super(actual, timespan, unit, bufferSize);
             this.timeskip = timeskip;
-            this.unit = unit;
             this.worker = worker;
-            this.bufferSize = bufferSize;
             this.windows = new LinkedList<UnicastSubject<T>>();
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.upstream, d)) {
-                this.upstream = d;
+        void createFirstWindow() {
+            if (!downstreamCancelled.get()) {
+                emitted = 1;
 
-                downstream.onSubscribe(this);
+                windowCount.getAndIncrement();
+                UnicastSubject<T> window = UnicastSubject.create(bufferSize, this);
+                windows.add(window);
 
-                if (cancelled) {
-                    return;
-                }
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                downstream.onNext(intercept);
 
-                final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-                windows.add(w);
+                worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
+                worker.schedulePeriodically(new WindowBoundaryRunnable(this, true), timeskip, timeskip, unit);
 
-                downstream.onNext(w);
-                worker.schedule(new CompletionTask(w), timespan, unit);
-
-                worker.schedulePeriodically(this, timeskip, timeskip, unit);
-            }
-
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (fastEnter()) {
-                for (UnicastSubject<T> w : windows) {
-                    w.onNext(t);
-                }
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(t);
-                if (!enter()) {
-                    return;
+                if (intercept.tryAbandon()) {
+                    window.onComplete();
+                    windows.remove(window);
                 }
             }
-            drainLoop();
         }
 
         @Override
-        public void onError(Throwable t) {
-            error = t;
-            done = true;
-            if (enter()) {
-                drainLoop();
+        void cleanupResources() {
+            worker.dispose();
+        }
+
+        @Override
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
             }
-
-            downstream.onError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            downstream.onComplete();
-        }
-
-        @Override
-        public void dispose() {
-            cancelled = true;
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return cancelled;
-        }
-
-        void complete(UnicastSubject<T> w) {
-            queue.offer(new SubjectWork<T>(w, false));
-            if (enter()) {
-                drainLoop();
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        void drainLoop() {
-            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = downstream;
-            final List<UnicastSubject<T>> ws = windows;
 
             int missed = 1;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final Observer<? super Observable<T>> downstream = this.downstream;
+            final List<UnicastSubject<T>> windows = this.windows;
 
             for (;;) {
+                if (upstreamCancelled) {
+                    queue.clear();
+                    windows.clear();
+                } else {
+                    boolean isDone = done;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                for (;;) {
-                    if (terminated) {
-                        upstream.dispose();
-                        q.clear();
-                        ws.clear();
-                        worker.dispose();
-                        return;
-                    }
+                    if (isDone && isEmpty) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            for (UnicastSubject<T> window : windows) {
+                                window.onError(ex);
+                            }
+                            downstream.onError(ex);
+                        } else {
+                            for (UnicastSubject<T> window : windows) {
+                                window.onComplete();
+                            }
+                            downstream.onComplete();
+                        }
+                        cleanupResources();
+                        upstreamCancelled = true;
+                        continue;
+                    } else if (!isEmpty) {
+                        if (o == WINDOW_OPEN) {
+                            if (!downstreamCancelled.get()) {
+                                long emitted = this.emitted;
+                                this.emitted = ++emitted;
 
-                    boolean d = done;
+                                windowCount.getAndIncrement();
+                                UnicastSubject<T> window = UnicastSubject.create(bufferSize, this);
+                                windows.add(window);
 
-                    Object v = q.poll();
+                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                                downstream.onNext(intercept);
 
-                    boolean empty = v == null;
-                    boolean sw = v instanceof SubjectWork;
+                                worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
 
-                    if (d && (empty || sw)) {
-                        q.clear();
-                        Throwable e = error;
-                        if (e != null) {
-                            for (UnicastSubject<T> w : ws) {
-                                w.onError(e);
+                                if (intercept.tryAbandon()) {
+                                    window.onComplete();
+                                }
+                            }
+                        } else if (o == WINDOW_CLOSE) {
+                            if (!windows.isEmpty()) {
+                                windows.remove(0).onComplete();
                             }
                         } else {
-                            for (UnicastSubject<T> w : ws) {
-                                w.onComplete();
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
+                            for (UnicastSubject<T> window : windows) {
+                                window.onNext(item);
                             }
                         }
-                        ws.clear();
-                        worker.dispose();
-                        return;
-                    }
-
-                    if (empty) {
-                        break;
-                    }
-
-                    if (sw) {
-                        SubjectWork<T> work = (SubjectWork<T>)v;
-
-                        if (work.open) {
-                            if (cancelled) {
-                                continue;
-                            }
-
-                            final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-                            ws.add(w);
-                            a.onNext(w);
-
-                            worker.schedule(new CompletionTask(w), timespan, unit);
-                        } else {
-                            ws.remove(work.w);
-                            work.w.onComplete();
-                            if (ws.isEmpty() && cancelled) {
-                                terminated = true;
-                            }
-                        }
-                    } else {
-                        for (UnicastSubject<T> w : ws) {
-                            w.onNext((T)v);
-                        }
+                        continue;
                     }
                 }
-
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
@@ -693,37 +623,31 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         @Override
         public void run() {
-
-            UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-
-            SubjectWork<T> sw = new SubjectWork<T>(w, true);
-            if (!cancelled) {
-                queue.offer(sw);
-            }
-            if (enter()) {
-                drainLoop();
-            }
+            windowDone();
         }
 
-        static final class SubjectWork<T> {
-            final UnicastSubject<T> w;
-            final boolean open;
-            SubjectWork(UnicastSubject<T> w, boolean open) {
-                this.w = w;
-                this.open = open;
-            }
+        void boundary(boolean isOpen) {
+            queue.offer(isOpen ? WINDOW_OPEN : WINDOW_CLOSE);
+            drain();
         }
 
-        final class CompletionTask implements Runnable {
-            private final UnicastSubject<T> w;
+        static final Object WINDOW_OPEN = new Object();
+        static final Object WINDOW_CLOSE = new Object();
 
-            CompletionTask(UnicastSubject<T> w) {
-                this.w = w;
+        static final class WindowBoundaryRunnable implements Runnable {
+
+            final WindowSkipObserver<?> parent;
+
+            final boolean isOpen;
+
+            WindowBoundaryRunnable(WindowSkipObserver<?> parent, boolean isOpen) {
+                this.parent = parent;
+                this.isOpen = isOpen;
             }
 
             @Override
             public void run() {
-                complete(w);
+                parent.boundary(isOpen);
             }
         }
     }
