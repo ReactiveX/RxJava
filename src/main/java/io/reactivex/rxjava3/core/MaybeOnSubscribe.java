@@ -21,6 +21,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  *
  * @param <T> the value type pushed
  */
+@FunctionalInterface
 public interface MaybeOnSubscribe<T> {
 
     /**

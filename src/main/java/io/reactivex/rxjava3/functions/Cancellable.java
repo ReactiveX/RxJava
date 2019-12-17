@@ -17,6 +17,7 @@ package io.reactivex.rxjava3.functions;
  * A functional interface that has a single cancel method
  * that can throw.
  */
+@FunctionalInterface
 public interface Cancellable {
 
     /**

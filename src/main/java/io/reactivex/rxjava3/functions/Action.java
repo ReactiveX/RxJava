@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.functions;
 /**
  * A functional interface similar to Runnable but allows throwing a checked exception.
  */
+@FunctionalInterface
 public interface Action {
     /**
      * Runs the action and optionally throws a checked exception.

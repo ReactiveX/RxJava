@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * A functional interface (callback) that returns true or false for the given input value.
  * @param <T> the first value
  */
+@FunctionalInterface
 public interface Predicate<T> {
     /**
      * Test the given input value and return a boolean.

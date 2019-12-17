@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T1> the first value
  * @param <T2> the second value
  */
+@FunctionalInterface
 public interface BiPredicate<T1, T2> {
 
     /**

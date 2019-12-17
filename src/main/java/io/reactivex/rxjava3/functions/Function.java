@@ -22,6 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T> the input value type
  * @param <R> the output value type
  */
+@FunctionalInterface
 public interface Function<T, R> {
     /**
      * Apply some calculation to the input value and return some other value.

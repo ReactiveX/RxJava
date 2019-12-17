@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  *
  * @since 2.0
  */
+@FunctionalInterface
 public interface CompletableSource {
 
     /**

@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
  */
+@FunctionalInterface
 public interface FlowableTransformer<Upstream, Downstream> {
     /**
      * Applies a function to the upstream Flowable and returns a Publisher with

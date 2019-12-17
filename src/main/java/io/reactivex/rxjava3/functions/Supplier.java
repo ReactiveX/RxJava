@@ -22,6 +22,7 @@ package io.reactivex.rxjava3.functions;
  * @param <T> the value type returned
  * @since 3.0.0
  */
+@FunctionalInterface
 public interface Supplier<T> {
 
     /**

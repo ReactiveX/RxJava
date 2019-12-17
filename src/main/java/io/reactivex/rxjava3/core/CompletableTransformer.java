@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * Convenience interface and callback used by the compose operator to turn a Completable into another
  * Completable fluently.
  */
+@FunctionalInterface
 public interface CompletableTransformer {
     /**
      * Applies a function to the upstream Completable and returns a CompletableSource.

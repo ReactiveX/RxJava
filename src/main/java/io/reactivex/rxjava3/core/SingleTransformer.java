@@ -21,6 +21,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
  */
+@FunctionalInterface
 public interface SingleTransformer<Upstream, Downstream> {
     /**
      * Applies a function to the upstream Single and returns a SingleSource with

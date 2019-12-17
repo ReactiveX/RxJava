@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <R> the output type
  * @since 2.2
  */
+@FunctionalInterface
 public interface SingleConverter<T, R> {
     /**
      * Applies a function to the upstream Single and returns a converted value of type {@code R}.

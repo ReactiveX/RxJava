@@ -18,6 +18,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
  */
+@FunctionalInterface
 public interface CompletableOperator {
     /**
      * Applies a function to the child CompletableObserver and returns a new parent CompletableObserver.
