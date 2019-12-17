@@ -15,6 +15,8 @@ package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
+import java.util.function.Function;
+
 /**
  * Convenience interface and callback used by the {@link Flowable#to} operator to turn a Flowable into another
  * value fluently.
@@ -24,7 +26,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface FlowableConverter<T, R> {
+public interface FlowableConverter<T, R> extends Function<Flowable<T>, R> {
     /**
      * Applies a function to the upstream Flowable and returns a converted value of type {@code R}.
      *
@@ -32,5 +34,6 @@ public interface FlowableConverter<T, R> {
      * @return the converted value
      */
     @NonNull
+    @Override
     R apply(@NonNull Flowable<T> upstream);
 }

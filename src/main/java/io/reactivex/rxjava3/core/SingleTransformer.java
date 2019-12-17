@@ -15,6 +15,8 @@ package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
+import java.util.function.Function;
+
 /**
  * Interface to compose Singles.
  *
@@ -22,7 +24,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the downstream value type
  */
 @FunctionalInterface
-public interface SingleTransformer<Upstream, Downstream> {
+public interface SingleTransformer<Upstream, Downstream> extends Function<Single<Upstream>, SingleSource<Downstream>> {
     /**
      * Applies a function to the upstream Single and returns a SingleSource with
      * optionally different element type.
@@ -30,5 +32,6 @@ public interface SingleTransformer<Upstream, Downstream> {
      * @return the transformed SingleSource instance
      */
     @NonNull
+    @Override
     SingleSource<Downstream> apply(@NonNull Single<Upstream> upstream);
 }

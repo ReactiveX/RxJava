@@ -15,6 +15,8 @@ package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
+import java.util.function.Function;
+
 /**
  * Convenience interface and callback used by the {@link Completable#to} operator to turn a Completable into another
  * value fluently.
@@ -23,7 +25,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface CompletableConverter<R> {
+public interface CompletableConverter<R> extends Function<Completable, R> {
     /**
      * Applies a function to the upstream Completable and returns a converted value of type {@code R}.
      *
@@ -31,5 +33,6 @@ public interface CompletableConverter<R> {
      * @return the converted value
      */
     @NonNull
+    @Override
     R apply(@NonNull Completable upstream);
 }

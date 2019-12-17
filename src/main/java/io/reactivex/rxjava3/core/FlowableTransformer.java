@@ -17,6 +17,8 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 
+import java.util.function.Function;
+
 /**
  * Interface to compose Flowables.
  *
@@ -24,7 +26,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the downstream value type
  */
 @FunctionalInterface
-public interface FlowableTransformer<Upstream, Downstream> {
+public interface FlowableTransformer<Upstream, Downstream> extends Function<Flowable<Upstream>, Publisher<Downstream>> {
     /**
      * Applies a function to the upstream Flowable and returns a Publisher with
      * optionally different element type.
@@ -32,5 +34,6 @@ public interface FlowableTransformer<Upstream, Downstream> {
      * @return the transformed Publisher instance
      */
     @NonNull
+    @Override
     Publisher<Downstream> apply(@NonNull Flowable<Upstream> upstream);
 }
