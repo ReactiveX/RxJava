@@ -102,9 +102,14 @@ var activeTableTab = "activeTableTab";
 <dd><code>T</code> - the upstream type</dd>
 <dd><code>R</code> - the output type</dd>
 </dl>
+<dl>
+<dt>Functional Interface:</dt>
+<dd>This is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference.</dd>
+</dl>
 <hr>
 <br>
-<pre>public interface <span class="typeNameLabel">MaybeConverter&lt;T,R&gt;</span></pre>
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang">@FunctionalInterface</a>
+public interface <span class="typeNameLabel">MaybeConverter&lt;T,R&gt;</span></pre>
 <div class="block">Convenience interface and callback used by the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#to-io.reactivex.rxjava3.core.MaybeConverter-"><code>Maybe.to(io.reactivex.rxjava3.core.MaybeConverter&lt;T, ? extends R&gt;)</code></a> operator to turn a Maybe into another
  value fluently.
  <p>History: 2.1.7 - experimental</div>
