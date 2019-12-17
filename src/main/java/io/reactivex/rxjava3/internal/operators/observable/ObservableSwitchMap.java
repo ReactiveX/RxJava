@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
@@ -108,7 +108,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
             ObservableSource<? extends R> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The ObservableSource returned is null");
+                p = Objects.requireNonNull(mapper.apply(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.dispose();

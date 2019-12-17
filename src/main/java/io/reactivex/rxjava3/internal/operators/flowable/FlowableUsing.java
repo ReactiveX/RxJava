@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -54,7 +54,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         Publisher<? extends T> source;
         try {
-            source = ObjectHelper.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null Publisher");
+            source = Objects.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null Publisher");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             try {

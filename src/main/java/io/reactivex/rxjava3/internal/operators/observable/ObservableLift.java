@@ -15,8 +15,9 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Allows lifting operators into a chain of Observables.
@@ -40,7 +41,7 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
     public void subscribeActual(Observer<? super R> observer) {
         Observer<? super T> liftedObserver;
         try {
-            liftedObserver = ObjectHelper.requireNonNull(operator.apply(observer), "Operator " + operator + " returned a null Observer");
+            liftedObserver = Objects.requireNonNull(operator.apply(observer), "Operator " + operator + " returned a null Observer");
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {

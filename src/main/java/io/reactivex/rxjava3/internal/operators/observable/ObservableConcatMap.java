@@ -12,6 +12,7 @@
  */
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -19,7 +20,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -208,7 +208,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends U> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                            o = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             dispose();
@@ -436,7 +436,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends R> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                            o = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             cancelled = true;

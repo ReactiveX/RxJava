@@ -15,8 +15,9 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.BasicQueueDisposable;
+
+import java.util.Objects;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;
@@ -70,7 +71,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
             T[] a = array;
             if (i != a.length) {
                 index = i + 1;
-                return ObjectHelper.requireNonNull(a[i], "The array element is null");
+                return Objects.requireNonNull(a[i], "The array element is null");
             }
             return null;
         }

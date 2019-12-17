@@ -18,10 +18,11 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Execute a Consumer in each 'rail' for the current element passing through.
@@ -53,14 +54,14 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
     ) {
         this.source = source;
 
-        this.onNext = ObjectHelper.requireNonNull(onNext, "onNext is null");
-        this.onAfterNext = ObjectHelper.requireNonNull(onAfterNext, "onAfterNext is null");
-        this.onError = ObjectHelper.requireNonNull(onError, "onError is null");
-        this.onComplete = ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        this.onAfterTerminated = ObjectHelper.requireNonNull(onAfterTerminated, "onAfterTerminated is null");
-        this.onSubscribe = ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
-        this.onRequest = ObjectHelper.requireNonNull(onRequest, "onRequest is null");
-        this.onCancel = ObjectHelper.requireNonNull(onCancel, "onCancel is null");
+        this.onNext = Objects.requireNonNull(onNext, "onNext is null");
+        this.onAfterNext = Objects.requireNonNull(onAfterNext, "onAfterNext is null");
+        this.onError = Objects.requireNonNull(onError, "onError is null");
+        this.onComplete = Objects.requireNonNull(onComplete, "onComplete is null");
+        this.onAfterTerminated = Objects.requireNonNull(onAfterTerminated, "onAfterTerminated is null");
+        this.onSubscribe = Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+        this.onRequest = Objects.requireNonNull(onRequest, "onRequest is null");
+        this.onCancel = Objects.requireNonNull(onCancel, "onCancel is null");
     }
 
     @Override

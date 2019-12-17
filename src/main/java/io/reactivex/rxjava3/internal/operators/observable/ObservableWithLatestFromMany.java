@@ -13,6 +13,7 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.annotations.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -164,7 +164,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(combiner.apply(objects), "combiner returned a null value");
+                v = Objects.requireNonNull(combiner.apply(objects), "combiner returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 dispose();
@@ -285,7 +285,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Throwable {
-            return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
+            return Objects.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
         }
     }
 }

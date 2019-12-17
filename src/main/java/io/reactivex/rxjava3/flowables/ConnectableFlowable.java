@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.flowables;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Subscriber;
@@ -235,8 +236,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final Flowable<T> refCount(int subscriberCount, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this, subscriberCount, timeout, unit, scheduler));
     }
 

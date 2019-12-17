@@ -14,13 +14,13 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
@@ -101,7 +101,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return null;
                 }
             }
-            return ObjectHelper.requireNonNull(it.next(), "Iterator.next() returned a null value");
+            return Objects.requireNonNull(it.next(), "Iterator.next() returned a null value");
         }
 
         @Override

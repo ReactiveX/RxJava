@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.QueueDisposable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -66,7 +66,7 @@ public final class ObservableScalarXMap {
             ObservableSource<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                r = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -138,7 +138,7 @@ public final class ObservableScalarXMap {
         public void subscribeActual(Observer<? super R> observer) {
             ObservableSource<? extends R> other;
             try {
-                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
+                other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 EmptyDisposable.error(e, observer);
                 return;

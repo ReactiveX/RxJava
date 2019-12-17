@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.parallel;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -132,7 +132,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                     if (sp != null) {
 
                         try {
-                            value = ObjectHelper.requireNonNull(reducer.apply(sp.first, sp.second), "The reducer returned a null value");
+                            value = Objects.requireNonNull(reducer.apply(sp.first, sp.second), "The reducer returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             innerError(ex);
@@ -192,7 +192,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                 } else {
 
                     try {
-                        v = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                        v = Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         get().cancel();

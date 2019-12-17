@@ -14,12 +14,12 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeDelayErrorArray.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 
@@ -40,7 +40,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
         Iterator<? extends CompletableSource> iterator;
 
         try {
-            iterator = ObjectHelper.requireNonNull(sources.iterator(), "The source iterator returned is null");
+            iterator = Objects.requireNonNull(sources.iterator(), "The source iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             observer.onError(e);
@@ -77,7 +77,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             CompletableSource c;
 
             try {
-                c = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null CompletableSource");
+                c = Objects.requireNonNull(iterator.next(), "The iterator returned a null CompletableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 errors.tryAddThrowableOrReport(e);

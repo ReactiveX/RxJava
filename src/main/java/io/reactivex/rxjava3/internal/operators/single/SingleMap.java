@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class SingleMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
@@ -54,7 +55,7 @@ public final class SingleMap<T, R> extends Single<R> {
         public void onSuccess(T value) {
             R v;
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper function returned a null value.");
+                v = Objects.requireNonNull(mapper.apply(value), "The mapper function returned a null value.");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);

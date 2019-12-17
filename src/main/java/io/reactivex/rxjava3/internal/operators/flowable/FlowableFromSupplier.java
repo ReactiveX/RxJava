@@ -18,9 +18,10 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Call a Supplier for each incoming Subscriber and signal the returned value or the thrown exception.
@@ -42,7 +43,7 @@ public final class FlowableFromSupplier<T> extends Flowable<T> implements Suppli
 
         T t;
         try {
-            t = ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
+            t = Objects.requireNonNull(supplier.get(), "The supplier returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (deferred.isCancelled()) {
@@ -58,6 +59,6 @@ public final class FlowableFromSupplier<T> extends Flowable<T> implements Suppli
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
+        return Objects.requireNonNull(supplier.get(), "The supplier returned a null value");
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.processors;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -222,7 +223,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
-        ObjectHelper.requireNonNull(onCancelled, "onTerminate");
+        Objects.requireNonNull(onCancelled, "onTerminate");
         return new UnicastProcessor<T>(capacityHint, onCancelled);
     }
 
@@ -243,7 +244,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
-        ObjectHelper.requireNonNull(onCancelled, "onTerminate");
+        Objects.requireNonNull(onCancelled, "onTerminate");
         return new UnicastProcessor<T>(capacityHint, onCancelled, delayError);
     }
 

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,12 +21,11 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of a Single onto an ObservableSource and
  * relays its signals to the downstream observer.
- * 
+ *
  * @param <T> the success value type of the Single source
  * @param <R> the result type of the ObservableSource and this operator
  * @since 2.1.15
@@ -99,7 +99,7 @@ public final class SingleFlatMapObservable<T, R> extends Observable<R> {
             ObservableSource<? extends R> o;
 
             try {
-                o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                o = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);

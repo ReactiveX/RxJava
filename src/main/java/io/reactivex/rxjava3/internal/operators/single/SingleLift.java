@@ -16,7 +16,8 @@ package io.reactivex.rxjava3.internal.operators.single;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class SingleLift<T, R> extends Single<R> {
 
@@ -34,7 +35,7 @@ public final class SingleLift<T, R> extends Single<R> {
         SingleObserver<? super T> sr;
 
         try {
-            sr = ObjectHelper.requireNonNull(onLift.apply(observer), "The onLift returned a null SingleObserver");
+            sr = Objects.requireNonNull(onLift.apply(observer), "The onLift returned a null SingleObserver");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

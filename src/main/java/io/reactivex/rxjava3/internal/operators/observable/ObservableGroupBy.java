@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.observables.GroupedObservable;
 
@@ -115,7 +114,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The value supplied is null");
+                v = Objects.requireNonNull(valueSelector.apply(t), "The value supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.dispose();

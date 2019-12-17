@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,12 +21,11 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Maps a source item to another MaybeSource then calls a BiFunction with the
  * original item and the secondary item to generate the final result.
- * 
+ *
  * @param <T> the main value type
  * @param <U> the second value type
  * @param <R> the result value type
@@ -85,7 +85,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
             MaybeSource<? extends U> next;
 
             try {
-                next = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
+                next = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 inner.downstream.onError(ex);
@@ -139,7 +139,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
                 R r;
 
                 try {
-                    r = ObjectHelper.requireNonNull(resultSelector.apply(t, value), "The resultSelector returned a null value");
+                    r = Objects.requireNonNull(resultSelector.apply(t, value), "The resultSelector returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     downstream.onError(ex);

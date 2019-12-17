@@ -13,6 +13,7 @@
 package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -21,7 +22,6 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
@@ -140,7 +140,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
                     return null;
                 }
             }
-            return ObjectHelper.requireNonNull(iterator.next(), "Iterator.next() returned a null value");
+            return Objects.requireNonNull(iterator.next(), "Iterator.next() returned a null value");
         }
 
         @Override
@@ -184,7 +184,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
                 } else {
                     T next;
                     try {
-                        next = ObjectHelper.requireNonNull(iterator.next(), "The Stream's Iterator returned a null value");
+                        next = Objects.requireNonNull(iterator.next(), "The Stream's Iterator returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         downstream.onError(ex);
@@ -252,7 +252,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
                 } else {
                     T next;
                     try {
-                        next = ObjectHelper.requireNonNull(iterator.next(), "The Stream's Iterator returned a null value");
+                        next = Objects.requireNonNull(iterator.next(), "The Stream's Iterator returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         downstream.onError(ex);

@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -236,7 +235,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
                                 ObservableSource<V> endSource;
                                 try {
-                                    endSource = ObjectHelper.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null ObservableSource");
+                                    endSource = Objects.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null ObservableSource");
                                 } catch (Throwable ex) {
                                     upstream.dispose();
                                     startObserver.dispose();

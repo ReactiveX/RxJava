@@ -165,7 +165,7 @@ public final class ExceptionHelper {
     }
 
     /**
-     * Similar to ObjectHelper.requireNonNull but composes the error message via
+     * Similar to Objects.requireNonNull but composes the error message via
      * {@link #nullWarning(String)}.
      * @param <T> the value type
      * @param value the value to check

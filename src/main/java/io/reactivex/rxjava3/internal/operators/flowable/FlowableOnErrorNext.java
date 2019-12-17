@@ -18,9 +18,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
@@ -90,7 +91,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
             Publisher<? extends T> p;
 
             try {
-                p = ObjectHelper.requireNonNull(nextSupplier.apply(t), "The nextSupplier returned a null Publisher");
+                p = Objects.requireNonNull(nextSupplier.apply(t), "The nextSupplier returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(new CompositeException(t, e));

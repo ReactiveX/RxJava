@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class CompletableErrorSupplier extends Completable {
 
@@ -32,7 +33,7 @@ public final class CompletableErrorSupplier extends Completable {
         Throwable error;
 
         try {
-            error = ObjectHelper.requireNonNull(errorSupplier.get(), "The error returned is null");
+            error = Objects.requireNonNull(errorSupplier.get(), "The error returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             error = e;

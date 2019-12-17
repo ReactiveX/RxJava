@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Maps a value into a MaybeSource and relays its signal.
@@ -102,7 +102,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             MaybeSource<? extends R> source;
 
             try {
-                source = ObjectHelper.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null MaybeSource");
+                source = Objects.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
@@ -117,7 +117,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             MaybeSource<? extends R> source;
 
             try {
-                source = ObjectHelper.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null MaybeSource");
+                source = Objects.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(e, ex));
@@ -132,7 +132,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
             MaybeSource<? extends R> source;
 
             try {
-                source = ObjectHelper.requireNonNull(onCompleteSupplier.get(), "The onCompleteSupplier returned a null MaybeSource");
+                source = Objects.requireNonNull(onCompleteSupplier.get(), "The onCompleteSupplier returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);

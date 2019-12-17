@@ -17,11 +17,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Calls a Consumer for each upstream value passing by
@@ -133,7 +134,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();
@@ -244,7 +245,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();

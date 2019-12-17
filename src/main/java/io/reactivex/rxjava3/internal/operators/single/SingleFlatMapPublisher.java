@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 
 /**
@@ -86,7 +86,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
         public void onSuccess(S value) {
             Publisher<? extends T> f;
             try {
-                f = ObjectHelper.requireNonNull(mapper.apply(value), "the mapper returned a null Publisher");
+                f = Objects.requireNonNull(mapper.apply(value), "the mapper returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);

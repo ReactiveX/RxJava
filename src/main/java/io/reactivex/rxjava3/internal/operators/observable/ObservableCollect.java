@@ -16,8 +16,9 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Supplier<? extends U> initialSupplier;
@@ -34,7 +35,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     protected void subscribeActual(Observer<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
+            u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

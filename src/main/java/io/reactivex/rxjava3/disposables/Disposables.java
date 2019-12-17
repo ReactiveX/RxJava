@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.disposables;
 
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.reactivestreams.Subscription;
@@ -41,7 +42,7 @@ public final class Disposables {
      */
     @NonNull
     public static Disposable fromRunnable(@NonNull Runnable run) {
-        ObjectHelper.requireNonNull(run, "run is null");
+        Objects.requireNonNull(run, "run is null");
         return new RunnableDisposable(run);
     }
 
@@ -53,7 +54,7 @@ public final class Disposables {
      */
     @NonNull
     public static Disposable fromAction(@NonNull Action run) {
-        ObjectHelper.requireNonNull(run, "run is null");
+        Objects.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }
 
@@ -65,7 +66,7 @@ public final class Disposables {
      */
     @NonNull
     public static Disposable fromFuture(@NonNull Future<?> future) {
-        ObjectHelper.requireNonNull(future, "future is null");
+        Objects.requireNonNull(future, "future is null");
         return fromFuture(future, true);
     }
 
@@ -78,7 +79,7 @@ public final class Disposables {
      */
     @NonNull
     public static Disposable fromFuture(@NonNull Future<?> future, boolean allowInterrupt) {
-        ObjectHelper.requireNonNull(future, "future is null");
+        Objects.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
 
@@ -90,7 +91,7 @@ public final class Disposables {
      */
     @NonNull
     public static Disposable fromSubscription(@NonNull Subscription subscription) {
-        ObjectHelper.requireNonNull(subscription, "subscription is null");
+        Objects.requireNonNull(subscription, "subscription is null");
         return new SubscriptionDisposable(subscription);
     }
 

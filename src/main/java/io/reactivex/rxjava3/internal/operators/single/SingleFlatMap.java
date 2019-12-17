@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
@@ -74,7 +74,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
             SingleSource<? extends R> o;
 
             try {
-                o = ObjectHelper.requireNonNull(mapper.apply(value), "The single returned by the mapper is null");
+                o = Objects.requireNonNull(mapper.apply(value), "The single returned by the mapper is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);

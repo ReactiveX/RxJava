@@ -34,46 +34,46 @@ public final class Functions {
     }
 
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array2Func<T1, T2, R>(f);
     }
 
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array3Func<T1, T2, T3, R>(f);
     }
 
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array4Func<T1, T2, T3, T4, R>(f);
     }
 
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array5Func<T1, T2, T3, T4, T5, R>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             final Function6<T1, T2, T3, T4, T5, T6, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array6Func<T1, T2, T3, T4, T5, T6, R>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array7Func<T1, T2, T3, T4, T5, T6, T7, R>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array8Func<T1, T2, T3, T4, T5, T6, T7, T8, R>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
-        ObjectHelper.requireNonNull(f, "f is null");
+        Objects.requireNonNull(f, "f is null");
         return new Array9Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(f);
     }
 

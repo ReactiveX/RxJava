@@ -17,10 +17,11 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
+
+import java.util.Objects;
 
 public final class FlowableFromArray<T> extends Flowable<T> {
     final T[] array;
@@ -67,7 +68,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             }
 
             index = i + 1;
-            return ObjectHelper.requireNonNull(arr[i], "array element is null");
+            return Objects.requireNonNull(arr[i], "array element is null");
         }
 
         @Override

@@ -18,9 +18,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class FlowableDematerialize<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
@@ -74,7 +75,7 @@ public final class FlowableDematerialize<T, R> extends AbstractFlowableWithUpstr
             Notification<R> notification;
 
             try {
-                notification = ObjectHelper.requireNonNull(selector.apply(item), "The selector returned a null Notification");
+                notification = Objects.requireNonNull(selector.apply(item), "The selector returned a null Notification");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.observables;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.*;
@@ -209,8 +210,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> refCount(int subscriberCount, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(this, subscriberCount, timeout, unit, scheduler));
     }
 

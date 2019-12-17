@@ -17,11 +17,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Reduce the sequence of values in each 'rail' to a single value.
@@ -58,7 +59,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
             R initialValue;
 
             try {
-                initialValue = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
+                initialValue = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 reportError(subscribers, ex);
@@ -115,7 +116,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(reducer.apply(accumulator, t), "The reducer returned a null value");
+                    v = Objects.requireNonNull(reducer.apply(accumulator, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancel();

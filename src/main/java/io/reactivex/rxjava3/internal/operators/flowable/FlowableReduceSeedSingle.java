@@ -19,9 +19,10 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Reduce a sequence of values, starting from a seed value and by using
@@ -81,7 +82,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
             R v = this.value;
             if (v != null) {
                 try {
-                    this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                    this.value = Objects.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     upstream.cancel();

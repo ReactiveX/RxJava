@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
@@ -44,7 +44,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         Publisher<?> when;
 
         try {
-            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = Objects.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

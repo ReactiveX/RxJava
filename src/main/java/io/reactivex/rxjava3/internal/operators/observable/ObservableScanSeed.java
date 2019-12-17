@@ -17,8 +17,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
@@ -35,7 +36,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         R r;
 
         try {
-            r = ObjectHelper.requireNonNull(seedSupplier.get(), "The seed supplied is null");
+            r = Objects.requireNonNull(seedSupplier.get(), "The seed supplied is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
@@ -93,7 +94,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             R u;
 
             try {
-                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
+                u = Objects.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.dispose();

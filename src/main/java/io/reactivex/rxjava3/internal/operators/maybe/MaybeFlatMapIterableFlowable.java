@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.Subscriber;
@@ -24,7 +25,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 
@@ -211,7 +211,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
                         R v;
 
                         try {
-                            v = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                            v = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             a.onError(ex);
@@ -283,7 +283,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
             Iterator<? extends R> iterator = it;
 
             if (iterator != null) {
-                R v = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                R v = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
                 if (!iterator.hasNext()) {
                     it = null;
                 }

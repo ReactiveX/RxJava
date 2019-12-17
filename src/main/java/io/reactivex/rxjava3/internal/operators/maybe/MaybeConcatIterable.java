@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
 
@@ -45,7 +45,7 @@ public final class MaybeConcatIterable<T> extends Flowable<T> {
         Iterator<? extends MaybeSource<? extends T>> it;
 
         try {
-            it = ObjectHelper.requireNonNull(sources.iterator(), "The sources Iterable returned a null Iterator");
+            it = Objects.requireNonNull(sources.iterator(), "The sources Iterable returned a null Iterator");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);
@@ -169,7 +169,7 @@ public final class MaybeConcatIterable<T> extends Flowable<T> {
                             MaybeSource<? extends T> source;
 
                             try {
-                                source = ObjectHelper.requireNonNull(sources.next(), "The source Iterator returned a null MaybeSource");
+                                source = Objects.requireNonNull(sources.next(), "The source Iterator returned a null MaybeSource");
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
                                 a.onError(ex);

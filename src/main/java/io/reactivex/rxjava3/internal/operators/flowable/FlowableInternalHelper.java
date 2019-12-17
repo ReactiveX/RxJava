@@ -12,6 +12,7 @@
  */
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.*;
@@ -76,7 +77,7 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<T> apply(final T v) throws Throwable {
-            Publisher<U> p = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
+            Publisher<U> p = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
             return new FlowableTakePublisher<U>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
@@ -164,7 +165,7 @@ public final class FlowableInternalHelper {
         @Override
         public Publisher<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
-            Publisher<U> u = (Publisher<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+            Publisher<U> u = (Publisher<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
@@ -184,7 +185,7 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<U> apply(T t) throws Throwable {
-            return new FlowableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
+            return new FlowableFromIterable<U>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 

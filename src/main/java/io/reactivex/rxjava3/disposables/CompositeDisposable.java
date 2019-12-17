@@ -16,7 +16,6 @@ import java.util.*;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
@@ -41,10 +40,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @throws NullPointerException if {@code disposables} or any of its array items is null
      */
     public CompositeDisposable(@NonNull Disposable... disposables) {
-        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        Objects.requireNonNull(disposables, "disposables is null");
         this.resources = new OpenHashSet<Disposable>(disposables.length + 1);
         for (Disposable d : disposables) {
-            ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
+            Objects.requireNonNull(d, "A Disposable in the disposables array is null");
             this.resources.add(d);
         }
     }
@@ -55,10 +54,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @throws NullPointerException if {@code disposables} or any of its items is null
      */
     public CompositeDisposable(@NonNull Iterable<? extends Disposable> disposables) {
-        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        Objects.requireNonNull(disposables, "disposables is null");
         this.resources = new OpenHashSet<Disposable>();
         for (Disposable d : disposables) {
-            ObjectHelper.requireNonNull(d, "A Disposable item in the disposables sequence is null");
+            Objects.requireNonNull(d, "A Disposable item in the disposables sequence is null");
             this.resources.add(d);
         }
     }
@@ -95,7 +94,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     @Override
     public boolean add(@NonNull Disposable disposable) {
-        ObjectHelper.requireNonNull(disposable, "disposable is null");
+        Objects.requireNonNull(disposable, "disposable is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
@@ -121,7 +120,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @throws NullPointerException if {@code disposables} or any of its array items is null
      */
     public boolean addAll(@NonNull Disposable... disposables) {
-        ObjectHelper.requireNonNull(disposables, "disposables is null");
+        Objects.requireNonNull(disposables, "disposables is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
@@ -131,7 +130,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                         resources = set;
                     }
                     for (Disposable d : disposables) {
-                        ObjectHelper.requireNonNull(d, "A Disposable in the disposables array is null");
+                        Objects.requireNonNull(d, "A Disposable in the disposables array is null");
                         set.add(d);
                     }
                     return true;
@@ -168,7 +167,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     @Override
     public boolean delete(@NonNull Disposable disposable) {
-        ObjectHelper.requireNonNull(disposable, "disposables is null");
+        Objects.requireNonNull(disposable, "disposables is null");
         if (disposed) {
             return false;
         }

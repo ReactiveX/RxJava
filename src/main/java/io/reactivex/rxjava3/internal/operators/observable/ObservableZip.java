@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 
 public final class ObservableZip<T, R> extends Observable<R> {
@@ -195,7 +195,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
+                        v = Objects.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancel();

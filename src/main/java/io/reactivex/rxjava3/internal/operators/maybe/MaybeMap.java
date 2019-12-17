@@ -18,7 +18,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 /**
  * Maps the upstream success value into some other value.
@@ -79,7 +80,7 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null item");
+                v = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null item");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);

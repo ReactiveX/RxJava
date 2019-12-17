@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.subjects.*;
 
@@ -45,7 +45,7 @@ public final class ObservableRetryWhen<T> extends AbstractObservableWithUpstream
         ObservableSource<?> other;
 
         try {
-            other = ObjectHelper.requireNonNull(handler.apply(signaller), "The handler returned a null ObservableSource");
+            other = Objects.requireNonNull(handler.apply(signaller), "The handler returned a null ObservableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

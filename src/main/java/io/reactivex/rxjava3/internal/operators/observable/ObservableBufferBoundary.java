@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -172,8 +171,8 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
-                p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
+                buf = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
+                p = Objects.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 DisposableHelper.dispose(upstream);
