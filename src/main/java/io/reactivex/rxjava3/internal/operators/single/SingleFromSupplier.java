@@ -17,8 +17,9 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Calls a supplier and emits its value or exception to the incoming SingleObserver.
@@ -44,7 +45,7 @@ public final class SingleFromSupplier<T> extends Single<T> {
         T value;
 
         try {
-            value = ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null value");
+            value = Objects.requireNonNull(supplier.get(), "The supplier returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (!d.isDisposed()) {

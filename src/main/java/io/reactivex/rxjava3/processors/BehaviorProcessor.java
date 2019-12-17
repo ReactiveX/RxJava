@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.processors;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
@@ -208,7 +208,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
+        Objects.requireNonNull(defaultValue, "defaultValue is null");
         return new BehaviorProcessor<T>(defaultValue);
     }
 
@@ -234,7 +234,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      */
     BehaviorProcessor(T defaultValue) {
         this();
-        this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
+        this.value.lazySet(Objects.requireNonNull(defaultValue, "defaultValue is null"));
     }
 
     @Override

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.util;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
@@ -20,7 +21,6 @@ import org.reactivestreams.Subscription;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.ProtocolViolationException;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -50,7 +50,7 @@ public final class EndConsumerHelper {
      * @return true if successful, false if the upstream was non null
      */
     public static boolean validate(Disposable upstream, Disposable next, Class<?> observer) {
-        ObjectHelper.requireNonNull(next, "next is null");
+        Objects.requireNonNull(next, "next is null");
         if (upstream != null) {
             next.dispose();
             if (upstream != DisposableHelper.DISPOSED) {
@@ -72,7 +72,7 @@ public final class EndConsumerHelper {
      * @return true if successful, false if the content of the AtomicReference was non null
      */
     public static boolean setOnce(AtomicReference<Disposable> upstream, Disposable next, Class<?> observer) {
-        ObjectHelper.requireNonNull(next, "next is null");
+        Objects.requireNonNull(next, "next is null");
         if (!upstream.compareAndSet(null, next)) {
             next.dispose();
             if (upstream.get() != DisposableHelper.DISPOSED) {
@@ -95,7 +95,7 @@ public final class EndConsumerHelper {
      * @return true if successful, false if the upstream was non null
      */
     public static boolean validate(Subscription upstream, Subscription next, Class<?> subscriber) {
-        ObjectHelper.requireNonNull(next, "next is null");
+        Objects.requireNonNull(next, "next is null");
         if (upstream != null) {
             next.cancel();
             if (upstream != SubscriptionHelper.CANCELLED) {
@@ -117,7 +117,7 @@ public final class EndConsumerHelper {
      * @return true if successful, false if the content of the AtomicReference was non null
      */
     public static boolean setOnce(AtomicReference<Subscription> upstream, Subscription next, Class<?> subscriber) {
-        ObjectHelper.requireNonNull(next, "next is null");
+        Objects.requireNonNull(next, "next is null");
         if (!upstream.compareAndSet(null, next)) {
             next.cancel();
             if (upstream.get() != SubscriptionHelper.CANCELLED) {

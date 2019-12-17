@@ -12,6 +12,7 @@
  */
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
@@ -19,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -277,7 +277,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
@@ -479,7 +479,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 

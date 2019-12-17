@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.QueueDrainObserver;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.util.QueueDrainHelper;
@@ -110,7 +109,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
@@ -184,7 +183,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -246,7 +245,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 final U b; // NOPMD
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     d.dispose();
@@ -328,7 +327,7 @@ extends AbstractObservableWithUpstream<T, U> {
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -427,7 +426,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     d.dispose();
@@ -469,7 +468,7 @@ extends AbstractObservableWithUpstream<T, U> {
             fastPathOrderedEmit(b, false, this);
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -541,7 +540,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

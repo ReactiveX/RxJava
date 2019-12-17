@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 /**
  * Defers the creation of the actual Maybe the incoming MaybeObserver is subscribed to.
@@ -37,7 +38,7 @@ public final class MaybeDefer<T> extends Maybe<T> {
         MaybeSource<? extends T> source;
 
         try {
-            source = ObjectHelper.requireNonNull(maybeSupplier.get(), "The maybeSupplier returned a null MaybeSource");
+            source = Objects.requireNonNull(maybeSupplier.get(), "The maybeSupplier returned a null MaybeSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,7 +22,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -229,7 +229,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(values.clone()), "The zipper returned a null value");
+                        v = Objects.requireNonNull(zipper.apply(values.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelAll();

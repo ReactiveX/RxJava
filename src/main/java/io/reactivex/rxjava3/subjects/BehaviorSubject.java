@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava3.subjects;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -218,7 +218,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      */
     BehaviorSubject(T defaultValue) {
         this();
-        this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
+        this.value.lazySet(Objects.requireNonNull(defaultValue, "defaultValue is null"));
     }
 
     @Override

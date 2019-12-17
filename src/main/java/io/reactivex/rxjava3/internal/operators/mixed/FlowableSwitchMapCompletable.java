@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -96,7 +96,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
             CompletableSource c;
 
             try {
-                c = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null CompletableSource");
+                c = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();

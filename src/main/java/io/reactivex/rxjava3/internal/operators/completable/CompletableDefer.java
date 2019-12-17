@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class CompletableDefer extends Completable {
 
@@ -32,7 +33,7 @@ public final class CompletableDefer extends Completable {
         CompletableSource c;
 
         try {
-            c = ObjectHelper.requireNonNull(completableSupplier.get(), "The completableSupplier returned a null CompletableSource");
+            c = Objects.requireNonNull(completableSupplier.get(), "The completableSupplier returned a null CompletableSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);

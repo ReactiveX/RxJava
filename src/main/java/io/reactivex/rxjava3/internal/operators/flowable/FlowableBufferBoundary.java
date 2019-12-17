@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
@@ -181,8 +180,8 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
-                p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null Publisher");
+                buf = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
+                p = Objects.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 SubscriptionHelper.cancel(upstream);

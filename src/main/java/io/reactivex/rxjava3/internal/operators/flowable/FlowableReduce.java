@@ -18,9 +18,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Reduces a sequence via a function into a single value or signals NoSuchElementException for
@@ -77,7 +78,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
                 value = t;
             } else {
                 try {
-                    value = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                    value = Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     upstream.cancel();

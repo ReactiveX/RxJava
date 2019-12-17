@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -243,7 +242,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         ObservableSource<TLeftEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null ObservableSource");
+                            p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null ObservableSource");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -265,7 +264,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         R w;
 
                         try {
-                            w = ObjectHelper.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
+                            w = Objects.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -288,7 +287,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         ObservableSource<TRightEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null ObservableSource");
+                            p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null ObservableSource");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;

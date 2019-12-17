@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
@@ -115,7 +115,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
             SingleSource<? extends R> ms;
 
             try {
-                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
+                ms = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();

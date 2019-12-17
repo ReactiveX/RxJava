@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
@@ -23,7 +24,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 
@@ -106,7 +106,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -65,7 +65,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
         MaybeSource<? extends T> source;
 
         try {
-            source = ObjectHelper.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null MaybeSource");
+            source = Objects.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null MaybeSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (eager) {

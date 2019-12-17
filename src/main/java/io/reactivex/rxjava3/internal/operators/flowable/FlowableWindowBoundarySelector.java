@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -244,7 +243,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
                                     Publisher<V> endSource;
                                     try {
-                                        endSource = ObjectHelper.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null Publisher");
+                                        endSource = Objects.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null Publisher");
                                     } catch (Throwable ex) {
                                         upstream.cancel();
                                         startSubscriber.cancel();

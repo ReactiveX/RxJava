@@ -12,6 +12,7 @@
  */
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.core.*;
@@ -73,7 +74,7 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<T> apply(final T v) throws Throwable {
-            ObservableSource<U> o = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
+            ObservableSource<U> o = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
             return new ObservableTake<U>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
@@ -161,7 +162,7 @@ public final class ObservableInternalHelper {
         @Override
         public ObservableSource<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
-            ObservableSource<U> u = (ObservableSource<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+            ObservableSource<U> u = (ObservableSource<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
@@ -181,7 +182,7 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<U> apply(T t) throws Throwable {
-            return new ObservableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
+            return new ObservableFromIterable<U>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 

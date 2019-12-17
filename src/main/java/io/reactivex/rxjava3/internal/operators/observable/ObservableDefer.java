@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class ObservableDefer<T> extends Observable<T> {
     final Supplier<? extends ObservableSource<? extends T>> supplier;
@@ -29,7 +30,7 @@ public final class ObservableDefer<T> extends Observable<T> {
     public void subscribeActual(Observer<? super T> observer) {
         ObservableSource<? extends T> pub;
         try {
-            pub = ObjectHelper.requireNonNull(supplier.get(), "The supplier returned a null ObservableSource");
+            pub = Objects.requireNonNull(supplier.get(), "The supplier returned a null ObservableSource");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptyDisposable.error(t, observer);

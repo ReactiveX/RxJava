@@ -16,7 +16,8 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 /**
  * Calls a MaybeOperator for the incoming MaybeObserver.
@@ -38,7 +39,7 @@ public final class MaybeLift<T, R> extends AbstractMaybeWithUpstream<T, R> {
         MaybeObserver<? super T> lifted;
 
         try {
-            lifted = ObjectHelper.requireNonNull(operator.apply(observer), "The operator returned a null MaybeObserver");
+            lifted = Objects.requireNonNull(operator.apply(observer), "The operator returned a null MaybeObserver");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

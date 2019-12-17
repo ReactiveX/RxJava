@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava3.internal.subscriptions;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.exceptions.ProtocolViolationException;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -129,7 +129,7 @@ public enum SubscriptionHelper implements Subscription {
      * @return true if the operation succeeded, false if the target field was not null.
      */
     public static boolean setOnce(AtomicReference<Subscription> field, Subscription s) {
-        ObjectHelper.requireNonNull(s, "s is null");
+        Objects.requireNonNull(s, "s is null");
         if (!field.compareAndSet(null, s)) {
             s.cancel();
             if (field.get() != CANCELLED) {

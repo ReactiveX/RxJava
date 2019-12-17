@@ -16,9 +16,10 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.FuseToObservable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class ObservableCollectSingle<T, U> extends Single<U> implements FuseToObservable<U> {
 
@@ -38,7 +39,7 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
     protected void subscribeActual(SingleObserver<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
+            u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

@@ -13,6 +13,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
@@ -174,7 +174,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(combiner.apply(objects), "The combiner returned a null value");
+                v = Objects.requireNonNull(combiner.apply(objects), "The combiner returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();
@@ -297,7 +297,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Throwable {
-            return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
+            return Objects.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
         }
     }
 }

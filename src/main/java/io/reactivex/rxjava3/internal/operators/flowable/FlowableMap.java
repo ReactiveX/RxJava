@@ -18,9 +18,10 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscribers.*;
+
+import java.util.Objects;
 
 public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> {
     final Function<? super T, ? extends U> mapper;
@@ -60,7 +61,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             U v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+                v = Objects.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
             } catch (Throwable ex) {
                 fail(ex);
                 return;
@@ -77,7 +78,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
         @Override
         public U poll() throws Throwable {
             T t = qs.poll();
-            return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
+            return t != null ? Objects.requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }
 
@@ -103,7 +104,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             U v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+                v = Objects.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
             } catch (Throwable ex) {
                 fail(ex);
                 return;
@@ -120,7 +121,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             U v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+                v = Objects.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
             } catch (Throwable ex) {
                 fail(ex);
                 return true;
@@ -137,7 +138,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
         @Override
         public U poll() throws Throwable {
             T t = qs.poll();
-            return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
+            return t != null ? Objects.requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }
 

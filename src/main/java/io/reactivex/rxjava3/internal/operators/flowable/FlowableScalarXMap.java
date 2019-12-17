@@ -18,9 +18,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
@@ -64,7 +65,7 @@ public final class FlowableScalarXMap {
             Publisher<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                r = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, subscriber);
@@ -133,7 +134,7 @@ public final class FlowableScalarXMap {
         public void subscribeActual(Subscriber<? super R> s) {
             Publisher<? extends R> other;
             try {
-                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
+                other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 EmptySubscription.error(e, s);
                 return;

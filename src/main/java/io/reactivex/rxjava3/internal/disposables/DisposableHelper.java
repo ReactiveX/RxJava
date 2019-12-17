@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava3.internal.disposables;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.ProtocolViolationException;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -75,7 +75,7 @@ public enum DisposableHelper implements Disposable {
      * @return true if the operation succeeded, false
      */
     public static boolean setOnce(AtomicReference<Disposable> field, Disposable d) {
-        ObjectHelper.requireNonNull(d, "d is null");
+        Objects.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
             d.dispose();
             if (field.get() != DISPOSED) {

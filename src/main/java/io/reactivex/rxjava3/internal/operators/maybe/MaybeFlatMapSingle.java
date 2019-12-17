@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.maybe;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.
@@ -81,7 +81,7 @@ public final class MaybeFlatMapSingle<T, R> extends Single<R> {
             SingleSource<? extends R> ss;
 
             try {
-                ss = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null SingleSource");
+                ss = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);

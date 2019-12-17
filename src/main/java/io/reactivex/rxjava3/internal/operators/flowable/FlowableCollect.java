@@ -17,9 +17,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
 
@@ -36,7 +37,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
     protected void subscribeActual(Subscriber<? super U> s) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initial value supplied is null");
+            u = Objects.requireNonNull(initialSupplier.get(), "The initial value supplied is null");
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
             return;

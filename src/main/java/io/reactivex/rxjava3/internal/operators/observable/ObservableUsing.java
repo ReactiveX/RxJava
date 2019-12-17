@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class ObservableUsing<T, D> extends Observable<T> {
@@ -53,7 +53,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
         ObservableSource<? extends T> source;
         try {
-            source = ObjectHelper.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null ObservableSource");
+            source = Objects.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null ObservableSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             try {

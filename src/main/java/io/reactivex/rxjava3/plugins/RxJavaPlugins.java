@@ -13,6 +13,7 @@
 package io.reactivex.rxjava3.plugins;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 
 import org.reactivestreams.Subscriber;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.schedulers.*;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
@@ -266,7 +266,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler initComputationScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
         Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
@@ -282,7 +282,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler initIoScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
         Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
@@ -298,7 +298,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler initNewThreadScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
         Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
@@ -314,7 +314,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler initSingleScheduler(@NonNull Supplier<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
+        Objects.requireNonNull(defaultScheduler, "Scheduler Supplier can't be null");
         Function<? super Supplier<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
@@ -464,7 +464,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Runnable onSchedule(@NonNull Runnable run) {
-        ObjectHelper.requireNonNull(run, "run is null");
+        Objects.requireNonNull(run, "run is null");
 
         Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
@@ -1208,7 +1208,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler createComputationScheduler(@NonNull ThreadFactory threadFactory) {
-        return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
+        return new ComputationScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -1222,7 +1222,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler createIoScheduler(@NonNull ThreadFactory threadFactory) {
-        return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
+        return new IoScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -1236,7 +1236,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler createNewThreadScheduler(@NonNull ThreadFactory threadFactory) {
-        return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
+        return new NewThreadScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -1250,7 +1250,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler createSingleScheduler(@NonNull ThreadFactory threadFactory) {
-        return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
+        return new SingleScheduler(Objects.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -1301,7 +1301,7 @@ public final class RxJavaPlugins {
     @NonNull
     static Scheduler callRequireNonNull(@NonNull Supplier<Scheduler> s) {
         try {
-            return ObjectHelper.requireNonNull(s.get(), "Scheduler Supplier result can't be null");
+            return Objects.requireNonNull(s.get(), "Scheduler Supplier result can't be null");
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -1317,7 +1317,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     static Scheduler applyRequireNonNull(@NonNull Function<? super Supplier<Scheduler>, ? extends Scheduler> f, Supplier<Scheduler> s) {
-        return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Supplier result can't be null");
+        return Objects.requireNonNull(apply(f, s), "Scheduler Supplier result can't be null");
     }
 
     /** Helper class, no instances. */

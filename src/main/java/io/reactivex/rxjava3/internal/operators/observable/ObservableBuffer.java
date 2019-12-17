@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
@@ -68,7 +67,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         boolean createBuffer() {
             U b;
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "Empty buffer supplied");
+                b = Objects.requireNonNull(bufferSupplier.get(), "Empty buffer supplied");
             } catch (Throwable t) {
                 Exceptions.throwIfFatal(t);
                 buffer = null;

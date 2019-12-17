@@ -14,7 +14,6 @@
 package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.NotificationLite;
 import java.util.Objects;
 
@@ -128,7 +127,7 @@ public final class Notification<T> {
      */
     @NonNull
     public static <T> Notification<T> createOnNext(@NonNull T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
+        Objects.requireNonNull(value, "value is null");
         return new Notification<T>(value);
     }
 
@@ -141,7 +140,7 @@ public final class Notification<T> {
      */
     @NonNull
     public static <T> Notification<T> createOnError(@NonNull Throwable error) {
-        ObjectHelper.requireNonNull(error, "error is null");
+        Objects.requireNonNull(error, "error is null");
         return new Notification<T>(NotificationLite.error(error));
     }
 

@@ -21,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -105,7 +104,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             if (b == null) {
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -227,7 +226,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             if (i++ == 0) {
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -378,7 +377,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 C b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();

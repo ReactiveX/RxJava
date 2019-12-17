@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.subjects;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.annotations.*;
@@ -288,7 +289,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     UnicastSubject(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
+        this.onTerminate = new AtomicReference<Runnable>(Objects.requireNonNull(onTerminate, "onTerminate"));
         this.delayError = delayError;
         this.downstream = new AtomicReference<Observer<? super T>>();
         this.once = new AtomicBoolean();

@@ -1052,8 +1052,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
-            this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
-            this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+            this.unit = Objects.requireNonNull(unit, "unit is null");
+            this.scheduler = Objects.requireNonNull(scheduler, "scheduler is null");
             TimedNode<T> h = new TimedNode<T>(null, 0L);
             this.tail = h;
             this.head = h;

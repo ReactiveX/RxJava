@@ -14,13 +14,13 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 public final class CompletableConcatIterable extends Completable {
     final Iterable<? extends CompletableSource> sources;
@@ -35,7 +35,7 @@ public final class CompletableConcatIterable extends Completable {
         Iterator<? extends CompletableSource> it;
 
         try {
-            it = ObjectHelper.requireNonNull(sources.iterator(), "The iterator returned is null");
+            it = Objects.requireNonNull(sources.iterator(), "The iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);
@@ -109,7 +109,7 @@ public final class CompletableConcatIterable extends Completable {
                 CompletableSource c;
 
                 try {
-                    c = ObjectHelper.requireNonNull(a.next(), "The CompletableSource returned is null");
+                    c = Objects.requireNonNull(a.next(), "The CompletableSource returned is null");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     downstream.onError(ex);

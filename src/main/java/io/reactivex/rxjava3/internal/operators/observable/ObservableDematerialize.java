@@ -18,8 +18,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class ObservableDematerialize<T, R> extends AbstractObservableWithUpstream<T, R> {
 
@@ -83,7 +84,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
             Notification<R> notification;
 
             try {
-                notification = ObjectHelper.requireNonNull(selector.apply(item), "The selector returned a null Notification");
+                notification = Objects.requireNonNull(selector.apply(item), "The selector returned a null Notification");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.dispose();

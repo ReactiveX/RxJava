@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.*;
 
@@ -23,7 +24,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.SequentialDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableTimeoutTimed.TimeoutSupport;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -108,7 +108,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<?> itemTimeoutPublisher;
 
             try {
-                itemTimeoutPublisher = ObjectHelper.requireNonNull(
+                itemTimeoutPublisher = Objects.requireNonNull(
                         itemTimeoutIndicator.apply(t),
                         "The itemTimeoutIndicator returned a null Publisher.");
             } catch (Throwable ex) {
@@ -243,7 +243,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<?> itemTimeoutPublisher;
 
             try {
-                itemTimeoutPublisher = ObjectHelper.requireNonNull(
+                itemTimeoutPublisher = Objects.requireNonNull(
                         itemTimeoutIndicator.apply(t),
                         "The itemTimeoutIndicator returned a null Publisher.");
             } catch (Throwable ex) {

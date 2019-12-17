@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.subscribers;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
@@ -20,7 +21,6 @@ import org.reactivestreams.Subscription;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
 
@@ -110,7 +110,7 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
      * @throws NullPointerException if resource is null
      */
     public final void add(Disposable resource) {
-        ObjectHelper.requireNonNull(resource, "resource is null");
+        Objects.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
 

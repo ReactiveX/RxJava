@@ -14,13 +14,13 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -41,7 +41,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
         Iterator<U> it;
 
         try {
-            it = ObjectHelper.requireNonNull(other.iterator(), "The iterator returned by other is null");
+            it = Objects.requireNonNull(other.iterator(), "The iterator returned by other is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, t);
@@ -99,7 +99,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             U u;
 
             try {
-                u = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                u = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
             } catch (Throwable e) {
                 error(e);
                 return;
@@ -107,7 +107,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
+                v = Objects.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
                 error(e);
                 return;

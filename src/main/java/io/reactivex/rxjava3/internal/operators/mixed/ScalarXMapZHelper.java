@@ -17,9 +17,10 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeToObservable;
 import io.reactivex.rxjava3.internal.operators.single.SingleToObservable;
+
+import java.util.Objects;
 
 /**
  * Utility class to extract a value from a scalar source reactive type,
@@ -55,7 +56,7 @@ final class ScalarXMapZHelper {
             try {
                 T item = supplier.get();
                 if (item != null) {
-                    cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null CompletableSource");
+                    cs = Objects.requireNonNull(mapper.apply(item), "The mapper returned a null CompletableSource");
                 }
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
@@ -94,7 +95,7 @@ final class ScalarXMapZHelper {
             try {
                 T item = supplier.get();
                 if (item != null) {
-                    cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null MaybeSource");
+                    cs = Objects.requireNonNull(mapper.apply(item), "The mapper returned a null MaybeSource");
                 }
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
@@ -133,7 +134,7 @@ final class ScalarXMapZHelper {
             try {
                 T item = supplier.get();
                 if (item != null) {
-                    cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null SingleSource");
+                    cs = Objects.requireNonNull(mapper.apply(item), "The mapper returned a null SingleSource");
                 }
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);

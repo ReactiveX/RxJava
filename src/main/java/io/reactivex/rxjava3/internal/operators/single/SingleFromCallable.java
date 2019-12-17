@@ -13,12 +13,12 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class SingleFromCallable<T> extends Single<T> {
@@ -40,7 +40,7 @@ public final class SingleFromCallable<T> extends Single<T> {
         T value;
 
         try {
-            value = ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+            value = Objects.requireNonNull(callable.call(), "The callable returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (!d.isDisposed()) {

@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava3.observers;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.MaybeObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
 
 /**
@@ -97,7 +97,7 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
      * @throws NullPointerException if resource is null
      */
     public final void add(@NonNull Disposable resource) {
-        ObjectHelper.requireNonNull(resource, "resource is null");
+        Objects.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
 

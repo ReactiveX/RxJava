@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -219,7 +219,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                         SingleSource<? extends R> ss;
 
                         try {
-                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ss = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.dispose();

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.Subscriber;
@@ -20,7 +21,6 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -37,7 +37,7 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Suppli
 
         T t;
         try {
-            t = ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+            t = Objects.requireNonNull(callable.call(), "The callable returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (deferred.isCancelled()) {
@@ -53,6 +53,6 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Suppli
 
     @Override
     public T get() throws Throwable {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        return Objects.requireNonNull(callable.call(), "The callable returned a null value");
     }
 }

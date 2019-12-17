@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.reactivestreams.Subscriber;
 
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
@@ -77,7 +77,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 boolean b;
 
                 try {
-                    key = ObjectHelper.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    key = Objects.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
                     b = collection.add(key);
                 } catch (Throwable ex) {
                     fail(ex);
@@ -125,7 +125,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             for (;;) {
                 T v = qs.poll();
 
-                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                if (v == null || collection.add(Objects.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
                     return v;
                 } else {
                     if (sourceMode == QueueFuseable.ASYNC) {

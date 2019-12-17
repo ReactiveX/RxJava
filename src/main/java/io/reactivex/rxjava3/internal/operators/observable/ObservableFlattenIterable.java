@@ -14,13 +14,13 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -100,7 +100,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                        v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         upstream.dispose();

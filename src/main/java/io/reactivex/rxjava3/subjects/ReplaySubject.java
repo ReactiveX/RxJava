@@ -1053,8 +1053,8 @@ public final class ReplaySubject<T> extends Subject<T> {
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
-            this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
-            this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+            this.unit = Objects.requireNonNull(unit, "unit is null");
+            this.scheduler = Objects.requireNonNull(scheduler, "scheduler is null");
             TimedNode<Object> h = new TimedNode<Object>(null, 0L);
             this.tail = h;
             this.head = h;

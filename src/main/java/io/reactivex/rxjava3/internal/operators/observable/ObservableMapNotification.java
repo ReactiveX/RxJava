@@ -18,7 +18,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class ObservableMapNotification<T, R> extends AbstractObservableWithUpstream<T, ObservableSource<? extends R>> {
 
@@ -84,7 +85,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext ObservableSource returned is null");
+                p = Objects.requireNonNull(onNextMapper.apply(t), "The onNext ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -99,7 +100,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError ObservableSource returned is null");
+                p = Objects.requireNonNull(onErrorMapper.apply(t), "The onError ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(new CompositeException(t, e));
@@ -115,7 +116,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onCompleteSupplier.get(), "The onComplete ObservableSource returned is null");
+                p = Objects.requireNonNull(onCompleteSupplier.get(), "The onComplete ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);

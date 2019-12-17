@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableGroupJoin.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
@@ -223,7 +222,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         Publisher<TLeftEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
+                            p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -250,7 +249,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             R w;
 
                             try {
-                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
@@ -284,7 +283,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         Publisher<TRightEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
+                            p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -311,7 +310,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             R w;
 
                             try {
-                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;

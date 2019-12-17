@@ -18,8 +18,9 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
+
+import java.util.Objects;
 
 public final class FlowableDefer<T> extends Flowable<T> {
     final Supplier<? extends Publisher<? extends T>> supplier;
@@ -31,7 +32,7 @@ public final class FlowableDefer<T> extends Flowable<T> {
     public void subscribeActual(Subscriber<? super T> s) {
         Publisher<? extends T> pub;
         try {
-            pub = ObjectHelper.requireNonNull(supplier.get(), "The publisher supplied is null");
+            pub = Objects.requireNonNull(supplier.get(), "The publisher supplied is null");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptySubscription.error(t, s);

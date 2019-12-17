@@ -18,7 +18,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 /**
  * Maps the success value of the source to a Notification, then
@@ -81,7 +82,7 @@ public final class SingleDematerialize<T, R> extends Maybe<R> {
             Notification<R> notification;
 
             try {
-                notification = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null Notification");
+                notification = Objects.requireNonNull(selector.apply(t), "The selector returned a null Notification");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);

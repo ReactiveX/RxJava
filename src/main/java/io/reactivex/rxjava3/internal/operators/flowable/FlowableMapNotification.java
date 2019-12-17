@@ -18,8 +18,9 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscribers.SinglePostCompleteSubscriber;
+
+import java.util.Objects;
 
 public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
@@ -66,7 +67,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
             R p;
 
             try {
-                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
+                p = Objects.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -82,7 +83,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
             R p;
 
             try {
-                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
+                p = Objects.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(new CompositeException(t, e));
@@ -97,7 +98,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
             R p;
 
             try {
-                p = ObjectHelper.requireNonNull(onCompleteSupplier.get(), "The onComplete publisher returned is null");
+                p = Objects.requireNonNull(onCompleteSupplier.get(), "The onComplete publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);

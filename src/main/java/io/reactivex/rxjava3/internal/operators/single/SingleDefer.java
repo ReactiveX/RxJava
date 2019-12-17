@@ -17,7 +17,8 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+
+import java.util.Objects;
 
 public final class SingleDefer<T> extends Single<T> {
 
@@ -32,7 +33,7 @@ public final class SingleDefer<T> extends Single<T> {
         SingleSource<? extends T> next;
 
         try {
-            next = ObjectHelper.requireNonNull(singleSupplier.get(), "The singleSupplier returned a null SingleSource");
+            next = Objects.requireNonNull(singleSupplier.get(), "The singleSupplier returned a null SingleSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);

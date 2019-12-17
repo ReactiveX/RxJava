@@ -19,10 +19,11 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.FuseToFlowable;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class FlowableCollectSingle<T, U> extends Single<U> implements FuseToFlowable<U> {
 
@@ -41,7 +42,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
     protected void subscribeActual(SingleObserver<? super U> observer) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
+            u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, observer);
             return;

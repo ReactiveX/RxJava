@@ -18,8 +18,9 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscribers.SinglePostCompleteSubscriber;
+
+import java.util.Objects;
 
 public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
@@ -54,7 +55,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         public void onError(Throwable t) {
             T v;
             try {
-                v = ObjectHelper.requireNonNull(valueSupplier.apply(t), "The valueSupplier returned a null value");
+                v = Objects.requireNonNull(valueSupplier.apply(t), "The valueSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(t, ex));

@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -297,7 +297,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         R v;
 
                         try {
-                            v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                            v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             current = null;
@@ -432,7 +432,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     current = it;
                 }
 
-                R r = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                R r = Objects.requireNonNull(it.next(), "The iterator returned a null value");
 
                 if (!it.hasNext()) {
                     current = null;

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -88,7 +88,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             Publisher<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
+                p = Objects.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
