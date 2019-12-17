@@ -20578,6 +20578,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -20613,6 +20618,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20650,6 +20660,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20684,6 +20699,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  ObservableSource emits the current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -20719,6 +20739,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  emits the current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -20757,6 +20782,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  emits the current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> operates by default on the <code>computation</code> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -20794,6 +20824,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  ObservableSource emits the current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20831,6 +20866,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20871,6 +20911,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20913,6 +20958,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html
  current window and propagates the notification from the source ObservableSource.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>You specify which <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> this operator will use.</dd>
@@ -20949,6 +20999,11 @@ public final&nbsp;&lt;B&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
  ObservableSource.
  <p>
  <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -20982,6 +21037,11 @@ public final&nbsp;&lt;B&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/
  ObservableSource.
  <p>
  <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -21017,6 +21077,11 @@ public final&nbsp;&lt;U,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
  <code>closingIndicator</code> emits an item.
  <p>
  <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
@@ -21054,6 +21119,11 @@ public final&nbsp;&lt;U,V&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/cor
  <code>closingIndicator</code> emits an item.
  <p>
  <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+ <p>
+ Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+ so-called window abandonment where a window may not contain any elements. In this case, subsequent
+ elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+ a tradeoff for ensuring upstream cancellation can happen under some race conditions.
  <dl>
   <dt><b>Scheduler:</b></dt>
   <dd>This version of <code>window</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
