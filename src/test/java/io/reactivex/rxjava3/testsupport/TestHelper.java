@@ -36,7 +36,6 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.operators.completable.CompletableToFlowable;
 import io.reactivex.rxjava3.internal.operators.maybe.MaybeToFlowable;
@@ -196,7 +195,7 @@ public enum TestHelper {
             err.initCause(ex);
             throw err;
         }
-        if (!ObjectHelper.equals(message, ex.getMessage())) {
+        if (!Objects.equals(message, ex.getMessage())) {
             AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
             err.initCause(ex);
             throw err;
@@ -216,7 +215,7 @@ public enum TestHelper {
             err.initCause(list.get(index));
             throw err;
         }
-        if (!ObjectHelper.equals(message, ex.getMessage())) {
+        if (!Objects.equals(message, ex.getMessage())) {
             AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
             err.initCause(ex);
             throw err;

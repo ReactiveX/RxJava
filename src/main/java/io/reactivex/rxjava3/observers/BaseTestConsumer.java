@@ -284,7 +284,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             throw fail("expected: " + valueAndClass(value) + " but was: " + values);
         }
         T v = values.get(0);
-        if (!ObjectHelper.equals(value, v)) {
+        if (!Objects.equals(value, v)) {
             throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v));
         }
         return (U)this;
@@ -330,7 +330,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         }
 
         T v = values.get(index);
-        if (!ObjectHelper.equals(value, v)) {
+        if (!Objects.equals(value, v)) {
             throw fail("expected: " + valueAndClass(value) + " but was: " + valueAndClass(v));
         }
         return (U)this;
@@ -421,7 +421,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
-            if (!ObjectHelper.equals(u, v)) {
+            if (!Objects.equals(u, v)) {
                 throw fail("Values at position " + i + " differ; expected: " + valueAndClass(u) + " but was: " + valueAndClass(v));
             }
         }
@@ -466,7 +466,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
             T u = expectedIterator.next();
             T v = actualIterator.next();
 
-            if (!ObjectHelper.equals(u, v)) {
+            if (!Objects.equals(u, v)) {
                 throw fail("Values at position " + i + " differ; expected: " + valueAndClass(u) + " but was: " + valueAndClass(v));
             }
             i++;

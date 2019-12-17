@@ -28,13 +28,6 @@ public class ObjectHelperTest extends RxJavaTest {
     }
 
     @Test
-    public void hashCodeOf() {
-        assertEquals(0, ObjectHelper.hashCode(null));
-
-        assertEquals(((Integer)1).hashCode(), ObjectHelper.hashCode(1));
-    }
-
-    @Test
     public void verifyPositiveInt() throws Exception {
         assertEquals(1, ObjectHelper.verifyPositive(1, "param"));
     }
@@ -52,19 +45,5 @@ public class ObjectHelperTest extends RxJavaTest {
     @Test(expected = IllegalArgumentException.class)
     public void verifyPositiveLongFail() throws Exception {
         assertEquals(-1L, ObjectHelper.verifyPositive(-1L, "param"));
-    }
-
-    @Test
-    public void compare() {
-        assertEquals(-1, ObjectHelper.compare(0, 2));
-        assertEquals(0, ObjectHelper.compare(0, 0));
-        assertEquals(1, ObjectHelper.compare(2, 0));
-    }
-
-    @Test
-    public void compareLong() {
-        assertEquals(-1, ObjectHelper.compare(0L, 2L));
-        assertEquals(0, ObjectHelper.compare(0L, 0L));
-        assertEquals(1, ObjectHelper.compare(2L, 0L));
     }
 }

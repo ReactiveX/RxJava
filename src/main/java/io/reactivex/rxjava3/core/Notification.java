@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.NotificationLite;
+import java.util.Objects;
 
 /**
  * Represents the reactive signal types: onNext, onError and onComplete and
@@ -95,7 +96,7 @@ public final class Notification<T> {
     public boolean equals(Object obj) {
         if (obj instanceof Notification) {
             Notification<?> n = (Notification<?>) obj;
-            return ObjectHelper.equals(value, n.value);
+            return Objects.equals(value, n.value);
         }
         return false;
     }

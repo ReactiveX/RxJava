@@ -275,7 +275,7 @@ public final class Functions {
 
         @Override
         public boolean test(T t) throws Exception {
-            return ObjectHelper.equals(t, value);
+            return Objects.equals(t, value);
         }
     }
 

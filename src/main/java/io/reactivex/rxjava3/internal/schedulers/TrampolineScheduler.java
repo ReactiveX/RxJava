@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -165,9 +164,9 @@ public final class TrampolineScheduler extends Scheduler {
 
         @Override
         public int compareTo(TimedRunnable that) {
-            int result = ObjectHelper.compare(execTime, that.execTime);
+            int result = Long.compare(execTime, that.execTime);
             if (result == 0) {
-                return ObjectHelper.compare(count, that.count);
+                return Integer.compare(count, that.count);
             }
             return result;
         }

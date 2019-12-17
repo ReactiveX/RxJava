@@ -20,7 +20,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -76,9 +75,9 @@ public final class TestScheduler extends Scheduler {
         @Override
         public int compareTo(TimedRunnable o) {
             if (time == o.time) {
-                return ObjectHelper.compare(count, o.count);
+                return Long.compare(count, o.count);
             }
-            return ObjectHelper.compare(time, o.time);
+            return Long.compare(time, o.time);
         }
     }
 

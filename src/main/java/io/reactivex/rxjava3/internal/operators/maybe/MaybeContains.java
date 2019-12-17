@@ -16,8 +16,8 @@ package io.reactivex.rxjava3.internal.operators.maybe;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamMaybeSource;
+import java.util.Objects;
 
 /**
  * Signals true if the source signals a value that is object-equals with the provided
@@ -81,7 +81,7 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
         @Override
         public void onSuccess(Object value) {
             upstream = DisposableHelper.DISPOSED;
-            downstream.onSuccess(ObjectHelper.equals(value, this.value));
+            downstream.onSuccess(Objects.equals(value, this.value));
         }
 
         @Override
