@@ -17965,6 +17965,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator does not support backpressure as it uses a {@code boundary} Publisher to control data
@@ -17995,6 +18000,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator does not support backpressure as it uses a {@code boundary} Publisher to control data
@@ -18031,6 +18041,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code closingSelector} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator doesn't support backpressure because the emission of new
@@ -18068,6 +18083,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code closingSelector} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator doesn't support backpressure because the emission of new

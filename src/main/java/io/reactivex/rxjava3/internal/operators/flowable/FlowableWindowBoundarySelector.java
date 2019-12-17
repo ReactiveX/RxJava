@@ -18,70 +18,85 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
-import io.reactivex.rxjava3.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.rxjava3.internal.util.NotificationLite;
+import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.UnicastProcessor;
-import io.reactivex.rxjava3.subscribers.*;
 
 public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final Publisher<B> open;
-    final Function<? super B, ? extends Publisher<V>> close;
+    final Function<? super B, ? extends Publisher<V>> closingIndicator;
     final int bufferSize;
 
     public FlowableWindowBoundarySelector(
             Flowable<T> source,
-            Publisher<B> open, Function<? super B, ? extends Publisher<V>> close,
+            Publisher<B> open, Function<? super B, ? extends Publisher<V>> closingIndicator,
             int bufferSize) {
         super(source);
         this.open = open;
-        this.close = close;
+        this.closingIndicator = closingIndicator;
         this.bufferSize = bufferSize;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super Flowable<T>> s) {
         source.subscribe(new WindowBoundaryMainSubscriber<T, B, V>(
-                new SerializedSubscriber<Flowable<T>>(s),
-                open, close, bufferSize));
+                s, open, closingIndicator, bufferSize));
     }
 
     static final class WindowBoundaryMainSubscriber<T, B, V>
-    extends QueueDrainSubscriber<T, Object, Flowable<T>>
-    implements Subscription {
+    extends AtomicInteger
+    implements FlowableSubscriber<T>, Subscription, Runnable {
+        private static final long serialVersionUID = 8646217640096099753L;
+
+        final Subscriber<? super Flowable<T>> downstream;
         final Publisher<B> open;
-        final Function<? super B, ? extends Publisher<V>> close;
+        final Function<? super B, ? extends Publisher<V>> closingIndicator;
         final int bufferSize;
         final CompositeDisposable resources;
 
+        final WindowStartSubscriber<B> startSubscriber;
+
+        final List<UnicastProcessor<T>> windows;
+
+        final SimplePlainQueue<Object> queue;
+
+        final AtomicLong windowCount;
+
+        final AtomicBoolean downstreamCancelled;
+
+        final AtomicLong requested;
+        long emitted;
+
+        volatile boolean upstreamCanceled;
+
+        volatile boolean upstreamDone;
+        volatile boolean openDone;
+        final AtomicThrowable error;
+
         Subscription upstream;
 
-        final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
-
-        final List<UnicastProcessor<T>> ws;
-
-        final AtomicLong windows = new AtomicLong();
-
-        final AtomicBoolean stopWindows = new AtomicBoolean();
-
         WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual,
-                Publisher<B> open, Function<? super B, ? extends Publisher<V>> close, int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
+                Publisher<B> open, Function<? super B, ? extends Publisher<V>> closingIndicator, int bufferSize) {
+            this.downstream = actual;
+            this.queue = new MpscLinkedQueue<Object>();
             this.open = open;
-            this.close = close;
+            this.closingIndicator = closingIndicator;
             this.bufferSize = bufferSize;
             this.resources = new CompositeDisposable();
-            this.ws = new ArrayList<UnicastProcessor<T>>();
-            windows.lazySet(1);
+            this.windows = new ArrayList<UnicastProcessor<T>>();
+            this.windowCount = new AtomicLong(1L);
+            this.downstreamCancelled = new AtomicBoolean();
+            this.error = new AtomicThrowable();
+            this.startSubscriber = new WindowStartSubscriber<B>(this);
+            this.requested = new AtomicLong();
         }
 
         @Override
@@ -91,297 +106,340 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
                 downstream.onSubscribe(this);
 
-                if (stopWindows.get()) {
-                    return;
-                }
+                open.subscribe(startSubscriber);
 
-                OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
-
-                if (boundary.compareAndSet(null, os)) {
-                    s.request(Long.MAX_VALUE);
-                    open.subscribe(os);
-                }
+                s.request(Long.MAX_VALUE);
             }
         }
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-            if (fastEnter()) {
-                for (UnicastProcessor<T> w : ws) {
-                    w.onNext(t);
-                }
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
-                }
-            }
-            drainLoop();
+            queue.offer(t);
+            drain();
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
+            startSubscriber.cancel();
+            resources.dispose();
+            if (error.tryAddThrowableOrReport(t)) {
+                upstreamDone = true;
+                drain();
             }
-            error = t;
-            done = true;
-
-            if (enter()) {
-                drainLoop();
-            }
-
-            if (windows.decrementAndGet() == 0) {
-                resources.dispose();
-            }
-
-            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-
-            if (enter()) {
-                drainLoop();
-            }
-
-            if (windows.decrementAndGet() == 0) {
-                resources.dispose();
-            }
-
-            downstream.onComplete();
-        }
-
-        void error(Throwable t) {
-            upstream.cancel();
+            startSubscriber.cancel();
             resources.dispose();
-            DisposableHelper.dispose(boundary);
-
-            downstream.onError(t);
+            upstreamDone = true;
+            drain();
         }
 
         @Override
         public void request(long n) {
-            requested(n);
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.add(requested, n);
+            }
         }
 
         @Override
         public void cancel() {
-            if (stopWindows.compareAndSet(false, true)) {
-                DisposableHelper.dispose(boundary);
-                if (windows.decrementAndGet() == 0) {
+            if (downstreamCancelled.compareAndSet(false, true)) {
+                if (windowCount.decrementAndGet() == 0) {
                     upstream.cancel();
+                    startSubscriber.cancel();
+                    resources.dispose();
+                    error.tryTerminateAndReport();
+                    upstreamCanceled = true;
+                    drain();
+                } else {
+                    startSubscriber.cancel();
                 }
             }
         }
 
-        void dispose() {
-            resources.dispose();
-            DisposableHelper.dispose(boundary);
+        @Override
+        public void run() {
+            if (windowCount.decrementAndGet() == 0) {
+                upstream.cancel();
+                startSubscriber.cancel();
+                resources.dispose();
+                error.tryTerminateAndReport();
+                upstreamCanceled = true;
+                drain();
+            }
         }
 
-        void drainLoop() {
-            final SimplePlainQueue<Object> q = queue;
-            final Subscriber<? super Flowable<T>> a = downstream;
-            final List<UnicastProcessor<T>> ws = this.ws;
+        void open(B startValue) {
+            queue.offer(new WindowStartItem<B>(startValue));
+            drain();
+        }
+
+        void openError(Throwable t) {
+            upstream.cancel();
+            resources.dispose();
+            if (error.tryAddThrowableOrReport(t)) {
+                upstreamDone = true;
+                drain();
+            }
+        }
+
+        void openComplete() {
+            openDone = true;
+            drain();
+        }
+
+        void close(WindowEndSubscriberIntercept<T, V> what) {
+            queue.offer(what);
+            drain();
+        }
+
+        void closeError(Throwable t) {
+            upstream.cancel();
+            startSubscriber.cancel();
+            resources.dispose();
+            if (error.tryAddThrowableOrReport(t)) {
+                upstreamDone = true;
+                drain();
+            }
+        }
+
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
             int missed = 1;
+            final Subscriber<? super Flowable<T>> downstream = this.downstream;
+            final SimplePlainQueue<Object> queue = this.queue;
+            final List<UnicastProcessor<T>> windows = this.windows;
 
             for (;;) {
+                if (upstreamCanceled) {
+                    queue.clear();
+                    windows.clear();
+                } else {
+                    boolean isDone = upstreamDone;
+                    Object o = queue.poll();
+                    boolean isEmpty = o == null;
 
-                for (;;) {
-                    boolean d = done;
-                    Object o = q.poll();
-
-                    boolean empty = o == null;
-
-                    if (d && empty) {
-                        dispose();
-                        Throwable e = error;
-                        if (e != null) {
-                            for (UnicastProcessor<T> w : ws) {
-                                w.onError(e);
-                            }
-                        } else {
-                            for (UnicastProcessor<T> w : ws) {
-                                w.onComplete();
-                            }
+                    if (isDone) {
+                        if (isEmpty || error.get() != null) {
+                            terminateDownstream(downstream);
+                            upstreamCanceled = true;
+                            continue;
                         }
-                        ws.clear();
-                        return;
                     }
 
-                    if (empty) {
-                        break;
-                    }
+                    if (!isEmpty) {
+                        if (o instanceof WindowStartItem) {
+                            if (!downstreamCancelled.get()) {
+                                long emitted = this.emitted;
+                                if (requested.get() != emitted) {
+                                    this.emitted = ++emitted;
 
-                    if (o instanceof WindowOperation) {
-                        @SuppressWarnings("unchecked")
-                        WindowOperation<T, B> wo = (WindowOperation<T, B>) o;
+                                    @SuppressWarnings("unchecked")
+                                    B startItem = ((WindowStartItem<B>)o).item;
 
-                        UnicastProcessor<T> w = wo.w;
-                        if (w != null) {
-                            if (ws.remove(wo.w)) {
-                                wo.w.onComplete();
+                                    Publisher<V> endSource;
+                                    try {
+                                        endSource = ObjectHelper.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null Publisher");
+                                    } catch (Throwable ex) {
+                                        upstream.cancel();
+                                        startSubscriber.cancel();
+                                        resources.dispose();
+                                        Exceptions.throwIfFatal(ex);
+                                        error.tryAddThrowableOrReport(ex);
+                                        upstreamDone = true;
+                                        continue;
+                                    }
 
-                                if (windows.decrementAndGet() == 0) {
-                                    dispose();
-                                    return;
+                                    windowCount.getAndIncrement();
+                                    UnicastProcessor<T> newWindow = UnicastProcessor.create(bufferSize, this);
+                                    WindowEndSubscriberIntercept<T, V> endSubscriber = new WindowEndSubscriberIntercept<T, V>(this, newWindow);
+
+                                    downstream.onNext(endSubscriber);
+
+                                    if (endSubscriber.tryAbandon()) {
+                                        newWindow.onComplete();
+                                    } else {
+                                        windows.add(newWindow);
+                                        resources.add(endSubscriber);
+                                        endSource.subscribe(endSubscriber);
+                                    }
+                                } else {
+                                    upstream.cancel();
+                                    startSubscriber.cancel();
+                                    resources.dispose();
+                                    error.tryAddThrowableOrReport(new MissingBackpressureException(FlowableWindowTimed.missingBackpressureMessage(emitted)));
+                                    upstreamDone = true;
                                 }
                             }
-                            continue;
                         }
+                        else if (o instanceof WindowEndSubscriberIntercept) {
+                            @SuppressWarnings("unchecked")
+                            UnicastProcessor<T> w = ((WindowEndSubscriberIntercept<T, V>)o).window;
 
-                        if (stopWindows.get()) {
-                            continue;
-                        }
-
-                        w = UnicastProcessor.<T>create(bufferSize);
-
-                        long r = requested();
-                        if (r != 0L) {
-                            ws.add(w);
-                            a.onNext(w);
-                            if (r != Long.MAX_VALUE) {
-                                produced(1);
-                            }
+                            windows.remove(w);
+                            resources.delete((Disposable)o);
+                            w.onComplete();
                         } else {
-                            cancel();
-                            a.onError(new MissingBackpressureException("Could not deliver new window due to lack of requests"));
-                            continue;
-                        }
+                            @SuppressWarnings("unchecked")
+                            T item = (T)o;
 
-                        Publisher<V> p;
-
-                        try {
-                            p = ObjectHelper.requireNonNull(close.apply(wo.open), "The publisher supplied is null");
-                        } catch (Throwable e) {
-                            cancel();
-                            a.onError(e);
-                            continue;
-                        }
-
-                        OperatorWindowBoundaryCloseSubscriber<T, V> cl = new OperatorWindowBoundaryCloseSubscriber<T, V>(this, w);
-
-                        if (resources.add(cl)) {
-                            windows.getAndIncrement();
-
-                            p.subscribe(cl);
+                            for (UnicastProcessor<T> w : windows) {
+                                w.onNext(item);
+                            }
                         }
 
                         continue;
                     }
-
-                    for (UnicastProcessor<T> w : ws) {
-                        w.onNext(NotificationLite.<T>getValue(o));
+                    else if (openDone && windows.size() == 0) {
+                        upstream.cancel();
+                        startSubscriber.cancel();
+                        resources.dispose();
+                        terminateDownstream(downstream);
+                        upstreamCanceled = true;
+                        continue;
                     }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
 
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not used by this operator
-            return false;
-        }
-
-        void open(B b) {
-            queue.offer(new WindowOperation<T, B>(null, b));
-            if (enter()) {
-                drainLoop();
+        void terminateDownstream(Subscriber<?> downstream) {
+            Throwable ex = error.terminate();
+            if (ex == null) {
+                for (UnicastProcessor<T> w : windows) {
+                    w.onComplete();
+                }
+                downstream.onComplete();
+            } else if (ex != ExceptionHelper.TERMINATED) {
+                for (UnicastProcessor<T> w : windows) {
+                    w.onError(ex);
+                }
+                downstream.onError(ex);
             }
         }
 
-        void close(OperatorWindowBoundaryCloseSubscriber<T, V> w) {
-            resources.delete(w);
-            queue.offer(new WindowOperation<T, B>(w.w, null));
-            if (enter()) {
-                drainLoop();
+        static final class WindowStartItem<B> {
+
+            final B item;
+
+            WindowStartItem(B item) {
+                this.item = item;
+            }
+        }
+
+        static final class WindowStartSubscriber<B> extends AtomicReference<Subscription>
+        implements FlowableSubscriber<B> {
+
+            private static final long serialVersionUID = -3326496781427702834L;
+
+            final WindowBoundaryMainSubscriber<?, B, ?> parent;
+
+            WindowStartSubscriber(WindowBoundaryMainSubscriber<?, B, ?> parent) {
+                this.parent = parent;
+            }
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                if (SubscriptionHelper.setOnce(this, s)) {
+                    s.request(Long.MAX_VALUE);
+                }
+            }
+
+            @Override
+            public void onNext(B t) {
+                parent.open(t);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                parent.openError(t);
+            }
+
+            @Override
+            public void onComplete() {
+                parent.openComplete();
+            }
+
+            void cancel() {
+                SubscriptionHelper.cancel(this);
+            }
+        }
+
+        static final class WindowEndSubscriberIntercept<T, V> extends Flowable<T>
+        implements FlowableSubscriber<V>, Disposable {
+
+            final WindowBoundaryMainSubscriber<T, ?, V> parent;
+
+            final UnicastProcessor<T> window;
+
+            final AtomicReference<Subscription> upstream;
+
+            final AtomicBoolean once;
+
+            WindowEndSubscriberIntercept(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastProcessor<T> window) {
+                this.parent = parent;
+                this.window = window;
+                this.upstream = new AtomicReference<Subscription>();
+                this.once = new AtomicBoolean();
+            }
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                if (SubscriptionHelper.setOnce(upstream, s)) {
+                    s.request(Long.MAX_VALUE);
+                }
+            }
+
+            @Override
+            public void onNext(V t) {
+                if (SubscriptionHelper.cancel(upstream)) {
+                    parent.close(this);
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                if (isDisposed()) {
+                    RxJavaPlugins.onError(t);
+                } else {
+                    parent.closeError(t);
+                }
+            }
+
+            @Override
+            public void onComplete() {
+                parent.close(this);
+            }
+
+            @Override
+            public void dispose() {
+                SubscriptionHelper.cancel(upstream);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return upstream.get() == SubscriptionHelper.CANCELLED;
+            }
+
+            @Override
+            protected void subscribeActual(Subscriber<? super T> s) {
+                window.subscribe(s);
+                once.set(true);
+            }
+
+            boolean tryAbandon() {
+                return !once.get() && once.compareAndSet(false, true);
             }
         }
     }
 
-    static final class WindowOperation<T, B> {
-        final UnicastProcessor<T> w;
-        final B open;
-        WindowOperation(UnicastProcessor<T> w, B open) {
-            this.w = w;
-            this.open = open;
-        }
-    }
-
-    static final class OperatorWindowBoundaryOpenSubscriber<T, B> extends DisposableSubscriber<B> {
-        final WindowBoundaryMainSubscriber<T, B, ?> parent;
-
-        OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        public void onNext(B t) {
-            parent.open(t);
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            parent.error(t);
-        }
-
-        @Override
-        public void onComplete() {
-            parent.onComplete();
-        }
-    }
-
-    static final class OperatorWindowBoundaryCloseSubscriber<T, V> extends DisposableSubscriber<V> {
-        final WindowBoundaryMainSubscriber<T, ?, V> parent;
-        final UnicastProcessor<T> w;
-
-        boolean done;
-
-        OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastProcessor<T> w) {
-            this.parent = parent;
-            this.w = w;
-        }
-
-        @Override
-        public void onNext(V t) {
-            cancel();
-            onComplete();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            parent.error(t);
-        }
-
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            parent.close(this);
-        }
-    }
 }

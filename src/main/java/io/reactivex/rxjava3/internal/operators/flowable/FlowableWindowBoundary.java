@@ -240,7 +240,11 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
                         if (emitted != requested.get()) {
                             emitted++;
-                            downstream.onNext(w);
+                            FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(w);
+                            downstream.onNext(intercept);
+                            if (intercept.tryAbandon()) {
+                                w.onComplete();
+                            }
                         } else {
                             SubscriptionHelper.cancel(upstream);
                             boundarySubscriber.dispose();

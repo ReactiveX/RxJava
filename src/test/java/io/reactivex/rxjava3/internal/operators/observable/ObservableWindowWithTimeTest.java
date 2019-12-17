@@ -971,7 +971,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -990,7 +990,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)
@@ -1021,7 +1021,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -1040,7 +1040,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)
@@ -1071,7 +1071,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -1090,7 +1090,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)

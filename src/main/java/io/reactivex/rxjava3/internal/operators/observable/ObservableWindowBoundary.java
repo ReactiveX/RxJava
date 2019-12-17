@@ -230,7 +230,11 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                         window = w;
                         windows.getAndIncrement();
 
-                        downstream.onNext(w);
+                        ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(w);
+                        downstream.onNext(intercept);
+                        if (intercept.tryAbandon()) {
+                            w.onComplete();
+                        }
                     }
                 }
 

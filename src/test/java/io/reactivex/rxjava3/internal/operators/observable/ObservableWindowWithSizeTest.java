@@ -398,7 +398,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -426,7 +426,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }
@@ -452,7 +452,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -480,7 +480,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }
@@ -506,7 +506,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
@@ -534,7 +534,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }
