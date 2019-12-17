@@ -141,7 +141,7 @@ extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</code>
 <div class="block">Implementors of this method should make sure everything that needs
  to be visible in <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
  calling <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a>.</div>
@@ -176,7 +176,7 @@ extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre>void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                 <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</pre>
+                 <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</pre>
 <div class="block">Implementors of this method should make sure everything that needs
  to be visible in <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
  calling <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a>. In practice this means

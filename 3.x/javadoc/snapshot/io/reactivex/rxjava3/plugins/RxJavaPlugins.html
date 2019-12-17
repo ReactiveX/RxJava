@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>io.reactivex.rxjava3.plugins.RxJavaPlugins</li>
@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">RxJavaPlugins</span>
-extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Utility class to inject handlers to certain standard RxJava operations.</div>
 </li>
 </ul>
@@ -129,29 +129,29 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createComputationScheduler-java.util.concurrent.ThreadFactory-">createComputationScheduler</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createComputationScheduler-java.util.concurrent.ThreadFactory-">createComputationScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>Schedulers.computation()</code></a>
  except using <code>threadFactory</code> for thread creation.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createIoScheduler-java.util.concurrent.ThreadFactory-">createIoScheduler</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createIoScheduler-java.util.concurrent.ThreadFactory-">createIoScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>Schedulers.io()</code></a>
  except using <code>threadFactory</code> for thread creation.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createNewThreadScheduler-java.util.concurrent.ThreadFactory-">createNewThreadScheduler</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createNewThreadScheduler-java.util.concurrent.ThreadFactory-">createNewThreadScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>Schedulers.newThread()</code></a>
  except using <code>threadFactory</code> for thread creation.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createSingleScheduler-java.util.concurrent.ThreadFactory-">createSingleScheduler</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#createSingleScheduler-java.util.concurrent.ThreadFactory-">createSingleScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</code>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>Schedulers.single()</code></a>
  except using <code>threadFactory</code> for thread creation.</div>
 </td>
@@ -163,7 +163,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;</code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#getErrorHandler--">getErrorHandler</a></span>()</code>
 <div class="block">Returns the a hook consumer.</div>
 </td>
@@ -290,7 +290,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i26" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;</code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#getScheduleHandler--">getScheduleHandler</a></span>()</code>
 <div class="block">Returns the current hook function.</div>
 </td>
@@ -302,26 +302,26 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i28" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initComputationScheduler-io.reactivex.rxjava3.functions.Supplier-">initComputationScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initComputationScheduler-io.reactivex.rxjava3.functions.Supplier-">initComputationScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i29" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initIoScheduler-io.reactivex.rxjava3.functions.Supplier-">initIoScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initIoScheduler-io.reactivex.rxjava3.functions.Supplier-">initIoScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i30" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initNewThreadScheduler-io.reactivex.rxjava3.functions.Supplier-">initNewThreadScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initNewThreadScheduler-io.reactivex.rxjava3.functions.Supplier-">initNewThreadScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i31" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initSingleScheduler-io.reactivex.rxjava3.functions.Supplier-">initSingleScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#initSingleScheduler-io.reactivex.rxjava3.functions.Supplier-">initSingleScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
@@ -346,50 +346,50 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i35" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Completable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Completable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i36" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.flowables.ConnectableFlowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.flowables.ConnectableFlowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i37" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.observables.ConnectableObservable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.observables.ConnectableObservable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i38" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Flowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Flowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i39" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Maybe-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Maybe-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i40" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Observable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Observable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i41" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.parallel.ParallelFlowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.parallel.ParallelFlowable-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i42" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Single-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onAssembly-io.reactivex.rxjava3.core.Single-">onAssembly</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
@@ -403,73 +403,73 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i44" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onComputationScheduler-io.reactivex.rxjava3.core.Scheduler-">onComputationScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onComputationScheduler-io.reactivex.rxjava3.core.Scheduler-">onComputationScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i45" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</code>
 <div class="block">Called when an undeliverable error occurs.</div>
 </td>
 </tr>
 <tr id="i46" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onIoScheduler-io.reactivex.rxjava3.core.Scheduler-">onIoScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onIoScheduler-io.reactivex.rxjava3.core.Scheduler-">onIoScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i47" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onNewThreadScheduler-io.reactivex.rxjava3.core.Scheduler-">onNewThreadScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onNewThreadScheduler-io.reactivex.rxjava3.core.Scheduler-">onNewThreadScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i48" class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-">onSchedule</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSchedule-java.lang.Runnable-">onSchedule</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</code>
 <div class="block">Called when a task is scheduled.</div>
 </td>
 </tr>
 <tr id="i49" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSingleScheduler-io.reactivex.rxjava3.core.Scheduler-">onSingleScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSingleScheduler-io.reactivex.rxjava3.core.Scheduler-">onSingleScheduler</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i50" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Completable-io.reactivex.rxjava3.core.CompletableObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Completable-io.reactivex.rxjava3.core.CompletableObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i51" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Flowable-org.reactivestreams.Subscriber-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source,
-        <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;subscriber)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Flowable-org.reactivestreams.Subscriber-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;subscriber)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i52" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Maybe-io.reactivex.rxjava3.core.MaybeObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;observer)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Maybe-io.reactivex.rxjava3.core.MaybeObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;observer)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i53" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Observable-io.reactivex.rxjava3.core.Observer-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;observer)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Observable-io.reactivex.rxjava3.core.Observer-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;observer)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
 <tr id="i54" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Single-io.reactivex.rxjava3.core.SingleObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;observer)</code>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onSubscribe-io.reactivex.rxjava3.core.Single-io.reactivex.rxjava3.core.SingleObserver-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;observer)</code>
 <div class="block">Calls the associated hook function.</div>
 </td>
 </tr>
@@ -487,7 +487,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </tr>
 <tr id="i57" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setErrorHandler-io.reactivex.rxjava3.functions.Consumer-">setErrorHandler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;handler)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setErrorHandler-io.reactivex.rxjava3.functions.Consumer-">setErrorHandler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;handler)</code>
 <div class="block">Sets the specific hook function.</div>
 </td>
 </tr>
@@ -623,7 +623,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </tr>
 <tr id="i79" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setScheduleHandler-io.reactivex.rxjava3.functions.Function-">setScheduleHandler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;handler)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setScheduleHandler-io.reactivex.rxjava3.functions.Function-">setScheduleHandler</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;handler)</code>
 <div class="block">Sets the specific hook function.</div>
 </td>
 </tr>
@@ -638,8 +638,8 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -741,7 +741,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.
 <li class="blockList">
 <h4>getErrorHandler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;getErrorHandler()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;getErrorHandler()</pre>
 <div class="block">Returns the a hook consumer.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -846,7 +846,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.
 <li class="blockList">
 <h4>getScheduleHandler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;getScheduleHandler()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;getScheduleHandler()</pre>
 <div class="block">Returns the current hook function.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -876,7 +876,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.
 <li class="blockList">
 <h4>initComputationScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -884,7 +884,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the value returned by the hook, not null</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
 </dl>
 </li>
 </ul>
@@ -895,7 +895,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>initIoScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -903,7 +903,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the value returned by the hook, not null</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
 </dl>
 </li>
 </ul>
@@ -914,7 +914,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>initNewThreadScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -922,7 +922,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the value returned by the hook, not null</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
 </dl>
 </li>
 </ul>
@@ -933,7 +933,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>initSingleScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;initSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&gt;&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -941,7 +941,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the value returned by the hook, not null</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if the supplier parameter or its result are null</dd>
 </dl>
 </li>
 </ul>
@@ -952,7 +952,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>onComputationScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -968,7 +968,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <ul class="blockList">
 <li class="blockList">
 <h4>onError</h4>
-<pre>public static&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</pre>
+<pre>public static&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</pre>
 <div class="block">Called when an undeliverable error occurs.
  <p>
  Undeliverable errors are those <code>Observer.onError()</code> invocations that are not allowed to happen on
@@ -976,8 +976,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  because the consumer has either disposed/cancelled its <code>Disposable</code>/<code>Subscription</code> or
  has already terminated with an <code>onError()</code> or <code>onComplete()</code> signal.
  <p>
- By default, this global error handler prints the stacktrace via <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true#printStackTrace--" title="class or interface in java.lang"><code>Throwable.printStackTrace()</code></a>
- and calls <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true#uncaughtException-java.lang.Thread-java.lang.Throwable-" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler.uncaughtException(Thread, Throwable)</code></a>
+ By default, this global error handler prints the stacktrace via <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true#printStackTrace--" title="class or interface in java.lang"><code>Throwable.printStackTrace()</code></a>
+ and calls <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true#uncaughtException-java.lang.Thread-java.lang.Throwable-" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler.uncaughtException(Thread, Throwable)</code></a>
  on the current thread.
  <p>
  Note that on some platforms, the platform runtime terminates the current application with an error if such
@@ -1000,7 +1000,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>onIoScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1017,7 +1017,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>onNewThreadScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1034,7 +1034,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>onSchedule</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onSchedule(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onSchedule(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;run)</pre>
 <div class="block">Called when a task is scheduled.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1051,7 +1051,7 @@ public static&nbsp;<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/
 <li class="blockList">
 <h4>onSingleScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;onSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;defaultScheduler)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1091,7 +1091,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <ul class="blockList">
 <li class="blockList">
 <h4>setErrorHandler</h4>
-<pre>public static&nbsp;void&nbsp;setErrorHandler(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;handler)</pre>
+<pre>public static&nbsp;void&nbsp;setErrorHandler(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;handler)</pre>
 <div class="block">Sets the specific hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1189,7 +1189,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <ul class="blockList">
 <li class="blockList">
 <h4>setScheduleHandler</h4>
-<pre>public static&nbsp;void&nbsp;setScheduleHandler(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;handler)</pre>
+<pre>public static&nbsp;void&nbsp;setScheduleHandler(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&gt;&nbsp;handler)</pre>
 <div class="block">Sets the specific hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1566,8 +1566,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/BiFunctio
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;subscriber)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super T&gt;&nbsp;subscriber)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1587,8 +1587,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="http://www.reactive-streams.org/react
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;observer)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super T&gt;&nbsp;observer)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1608,8 +1608,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;observer)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;? super T&gt;&nbsp;observer)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1629,8 +1629,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1648,8 +1648,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/CompletableObs
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;observer)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core">MaybeObserver</a>&lt;? super T&gt;&nbsp;observer)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1669,7 +1669,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1688,7 +1688,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1707,7 +1707,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1726,7 +1726,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/flow
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1745,7 +1745,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/observables/ConnectableObservable.html" title="class in io.reactivex.rxjava3.observables">ConnectableObservable</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1764,7 +1764,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/obse
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -1783,7 +1783,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a>&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1835,7 +1835,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/Function.
 <li class="blockList">
 <h4>onAssembly</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;source)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;onAssembly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;source)</pre>
 <div class="block">Calls the associated hook function.
  <p>History: 2.0.6 - experimental; 2.1 - beta</div>
 <dl>
@@ -1920,7 +1920,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/functions/BooleanSu
 <li class="blockList">
 <h4>createComputationScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createComputationScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>Schedulers.computation()</code></a>
  except using <code>threadFactory</code> for thread creation.
  <p>History: 2.0.5 - experimental</div>
@@ -1942,7 +1942,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>createIoScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createIoScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>Schedulers.io()</code></a>
  except using <code>threadFactory</code> for thread creation.
  <p>History: 2.0.5 - experimental</div>
@@ -1964,7 +1964,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>createNewThreadScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createNewThreadScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>Schedulers.newThread()</code></a>
  except using <code>threadFactory</code> for thread creation.
  <p>History: 2.0.5 - experimental</div>
@@ -1986,7 +1986,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>createSingleScheduler</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;createSingleScheduler(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadFactory.html?is-external=true" title="class or interface in java.util.concurrent">ThreadFactory</a>&nbsp;threadFactory)</pre>
 <div class="block">Create an instance of the default <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> used for <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>Schedulers.single()</code></a>
  except using <code>threadFactory</code> for thread creation.
  <p>History: 2.0.5 - experimental</div>

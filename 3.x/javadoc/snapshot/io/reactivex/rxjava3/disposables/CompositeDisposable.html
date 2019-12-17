@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>io.reactivex.rxjava3.disposables.CompositeDisposable</li>
@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">CompositeDisposable</span>
-extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>, <a href="../../../../io/reactivex/rxjava3/disposables/DisposableContainer.html" title="interface in io.reactivex.rxjava3.disposables">DisposableContainer</a></pre>
 <div class="block">A disposable container that can hold onto multiple other disposables and
  offers O(1) add and removal complexity.</div>
@@ -144,7 +144,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#CompositeDisposable-java.lang.Iterable-">CompositeDisposable</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;disposables)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#CompositeDisposable-java.lang.Iterable-">CompositeDisposable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;disposables)</code>
 <div class="block">Creates a CompositeDisposables with the given Iterable sequence of initial elements.</div>
 </td>
 </tr>
@@ -165,7 +165,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#add-io.reactivex.rxjava3.disposables.Disposable-">add</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#add-io.reactivex.rxjava3.disposables.Disposable-">add</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
 <div class="block">Adds a disposable to this container or disposes it if the
  container has been disposed.</div>
 </td>
@@ -185,7 +185,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#delete-io.reactivex.rxjava3.disposables.Disposable-">delete</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#delete-io.reactivex.rxjava3.disposables.Disposable-">delete</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
 <div class="block">Removes (but does not dispose) the given disposable if it is part of this
  container.</div>
 </td>
@@ -204,7 +204,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#remove-io.reactivex.rxjava3.disposables.Disposable-">remove</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/CompositeDisposable.html#remove-io.reactivex.rxjava3.disposables.Disposable-">remove</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</code>
 <div class="block">Removes and disposes the given disposable if it is part of this
  container.</div>
 </td>
@@ -220,8 +220,8 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -260,7 +260,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>disposables</code> - the array of Disposables to start with</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its array items is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its array items is null</dd>
 </dl>
 </li>
 </ul>
@@ -271,13 +271,13 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>CompositeDisposable</h4>
 <pre>public&nbsp;CompositeDisposable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                           <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;disposables)</pre>
+                           <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;disposables)</pre>
 <div class="block">Creates a CompositeDisposables with the given Iterable sequence of initial elements.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>disposables</code> - the Iterable sequence of Disposables to start with</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its items is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its items is null</dd>
 </dl>
 </li>
 </ul>
@@ -328,7 +328,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>add</h4>
 <pre>public&nbsp;boolean&nbsp;add(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                   <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
+                   <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
 <div class="block">Adds a disposable to this container or disposes it if the
  container has been disposed.</div>
 <dl>
@@ -339,7 +339,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if successful, false if this container has been disposed</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposable</code> is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposable</code> is null</dd>
 </dl>
 </li>
 </ul>
@@ -359,7 +359,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if the operation was successful, false if the container has been disposed</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its array items is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposables</code> or any of its array items is null</dd>
 </dl>
 </li>
 </ul>
@@ -370,7 +370,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>remove</h4>
 <pre>public&nbsp;boolean&nbsp;remove(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                      <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
+                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
 <div class="block">Removes and disposes the given disposable if it is part of this
  container.</div>
 <dl>
@@ -390,7 +390,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>delete</h4>
 <pre>public&nbsp;boolean&nbsp;delete(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                      <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
+                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;disposable)</pre>
 <div class="block">Removes (but does not dispose) the given disposable if it is part of this
  container.</div>
 <dl>
@@ -401,7 +401,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if the operation was successful</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposable</code> is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposable</code> is null</dd>
 </dl>
 </li>
 </ul>

@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>io.reactivex.rxjava3.observers.DisposableSingleObserver&lt;T&gt;</li>
@@ -116,7 +116,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public abstract class <span class="typeNameLabel">DisposableSingleObserver&lt;T&gt;</span>
-extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;T&gt;, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></pre>
 <div class="block">An abstract <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that allows asynchronous cancellation by implementing Disposable.
 
@@ -124,7 +124,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 
  <p>Like all other consumers, <code>DisposableSingleObserver</code> can be subscribed only once.
  Any subsequent attempt to subscribe it to a new source will yield an
- <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a> with message <code>"It is not allowed to subscribe with a(n) &lt;class name&gt; multiple times."</code>.
 
  <p>Implementation of <a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onStart--"><code>onStart()</code></a>, <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSuccess-T-"><code>SingleObserver.onSuccess(Object)</code></a> and <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a>
  are not allowed to throw any unchecked exceptions.
@@ -201,7 +201,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
 <div class="block">Provides the SingleObserver with the means of cancelling (disposing) the
  connection (channel) with the Single in both
  synchronous (from within <code>onSubscribe(Disposable)</code> itself) and asynchronous manner.</div>
@@ -212,8 +212,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.io.reactivex.rxjava3.core.SingleObserver">
@@ -260,7 +260,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre>public final&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                              <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
+                              <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">SingleObserver</a></code></span></div>
 <div class="block">Provides the SingleObserver with the means of cancelling (disposing) the
  connection (channel) with the Single in both

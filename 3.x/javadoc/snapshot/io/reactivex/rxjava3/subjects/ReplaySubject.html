@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li><a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">io.reactivex.rxjava3.core.Observable</a>&lt;T&gt;</li>
@@ -164,7 +164,7 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
  Since a <code>Subject</code> is conceptionally derived from the <code>Processor</code> type in the Reactive Streams specification,
  <code>null</code>s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
  parameters to <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#onNext-T-"><code>onNext(Object)</code></a> and <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#onError-java.lang.Throwable-"><code>onError(Throwable)</code></a>. Such calls will result in a
- <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang"><code>NullPointerException</code></a> being thrown and the subject's state is not changed.
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang"><code>NullPointerException</code></a> being thrown and the subject's state is not changed.
  <p>
  Since a <code>ReplaySubject</code> is an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>, it does not support backpressure.
  <p>
@@ -254,42 +254,42 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#create--">create</a></span>()</code>
 <div class="block">Creates an unbounded replay subject.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#create-int-">create</a></span>(int&nbsp;capacityHint)</code>
 <div class="block">Creates an unbounded replay subject with the specified initial buffer capacity.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#createWithSize-int-">createWithSize</a></span>(int&nbsp;maxSize)</code>
 <div class="block">Creates a size-bounded replay subject.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#createWithTime-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">createWithTime</a></span>(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Creates a time-bounded replay subject.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#createWithTimeAndSize-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-int-">createWithTimeAndSize</a></span>(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;maxSize)</code>
 <div class="block">Creates a time- and size-bounded replay subject.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#getThrowable--">getThrowable</a></span>()</code>
 <div class="block">Returns the error that caused the Subject to terminate or null if the Subject
  hasn't terminated yet.</div>
@@ -302,7 +302,7 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#getValues--">getValues</a></span>()</code>
 <div class="block">Returns an Object array containing snapshot all values of the Subject.</div>
 </td>
@@ -345,7 +345,7 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.</div>
 </td>
 </tr>
@@ -389,8 +389,8 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -414,10 +414,10 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
 <h4>create</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;create()</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;create()</pre>
 <div class="block">Creates an unbounded replay subject.
  <p>
- The internal buffer is backed by an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html?is-external=true" title="class or interface in java.util"><code>ArrayList</code></a> and starts with an initial capacity of 16. Once the
+ The internal buffer is backed by an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html?is-external=true" title="class or interface in java.util"><code>ArrayList</code></a> and starts with an initial capacity of 16. Once the
  number of items reaches this capacity, it will grow as necessary (usually by 50%). However, as the
  number of items grows, this causes frequent array reallocation and copying, and may hurt performance
  and latency. This can be avoided with the <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html#create-int-"><code>create(int)</code></a> overload which takes an initial capacity
@@ -438,7 +438,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <h4>create</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;create(int&nbsp;capacityHint)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;create(int&nbsp;capacityHint)</pre>
 <div class="block">Creates an unbounded replay subject with the specified initial buffer capacity.
  <p>
  Use this method to avoid excessive array reallocation while the internal buffer grows to accommodate new
@@ -464,7 +464,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <h4>createWithSize</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithSize(int&nbsp;maxSize)</pre>
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithSize(int&nbsp;maxSize)</pre>
 <div class="block">Creates a size-bounded replay subject.
  <p>
  In this setting, the <code>ReplaySubject</code> holds at most <code>size</code> items in its internal buffer and
@@ -495,8 +495,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <h4>createWithTime</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithTime(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithTime(long&nbsp;maxAge,
+        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Creates a time-bounded replay subject.
  <p>
@@ -538,8 +538,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <h4>createWithTimeAndSize</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithTimeAndSize(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.html" title="class in io.reactivex.rxjava3.subjects">ReplaySubject</a>&lt;T&gt;&nbsp;createWithTimeAndSize(long&nbsp;maxAge,
+        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;maxSize)</pre>
 <div class="block">Creates a time- and size-bounded replay subject.
@@ -642,7 +642,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <ul class="blockList">
 <li class="blockList">
 <h4>onError</h4>
-<pre>public&nbsp;void&nbsp;onError(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
+<pre>public&nbsp;void&nbsp;onError(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">Observer</a></code></span></div>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
  <p>
@@ -692,7 +692,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/subj
 <li class="blockList">
 <h4>getThrowable</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-public&nbsp;<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;getThrowable()</pre>
+public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;getThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/subjects/Subject.html#getThrowable--">Subject</a></code></span></div>
 <div class="block">Returns the error that caused the Subject to terminate or null if the Subject
  hasn't terminated yet.
@@ -752,7 +752,7 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/subjects/ReplaySubject.htm
 <ul class="blockList">
 <li class="blockList">
 <h4>getValues</h4>
-<pre>public&nbsp;<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]&nbsp;getValues()</pre>
+<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]&nbsp;getValues()</pre>
 <div class="block">Returns an Object array containing snapshot all values of the Subject.
  <p>The method is thread-safe.</div>
 <dl>

@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>io.reactivex.rxjava3.observers.SerializedObserver&lt;T&gt;</li>
@@ -116,7 +116,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">SerializedObserver&lt;T&gt;</span>
-extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;T&gt;, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></pre>
 <div class="block">Serializes access to the onNext, onError and onComplete methods of another Observer.
 
@@ -143,12 +143,12 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#SerializedObserver-io.reactivex.rxjava3.core.Observer-">SerializedObserver</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;downstream)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#SerializedObserver-io.reactivex.rxjava3.core.Observer-">SerializedObserver</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;downstream)</code>
 <div class="block">Construct a SerializedObserver by wrapping the given actual Observer.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#SerializedObserver-io.reactivex.rxjava3.core.Observer-boolean-">SerializedObserver</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;actual,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#SerializedObserver-io.reactivex.rxjava3.core.Observer-boolean-">SerializedObserver</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;actual,
                   boolean&nbsp;delayError)</code>
 <div class="block">Construct a SerializedObserver by wrapping the given actual Observer and
  optionally delaying the errors till all regular values have been emitted
@@ -190,7 +190,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.</div>
 </td>
 </tr>
@@ -202,7 +202,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
 <div class="block">Provides the Observer with the means of cancelling (disposing) the
  connection (channel) with the Observable in both
  synchronous (from within <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>Observer.onNext(Object)</code></a>) and asynchronous manner.</div>
@@ -213,8 +213,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +237,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <li class="blockList">
 <h4>SerializedObserver</h4>
 <pre>public&nbsp;SerializedObserver(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                          <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;downstream)</pre>
+                          <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;downstream)</pre>
 <div class="block">Construct a SerializedObserver by wrapping the given actual Observer.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -252,7 +252,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <li class="blockList">
 <h4>SerializedObserver</h4>
 <pre>public&nbsp;SerializedObserver(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                          <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;actual,
+                          <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SerializedObserver.html" title="type parameter in SerializedObserver">T</a>&gt;&nbsp;actual,
                           boolean&nbsp;delayError)</pre>
 <div class="block">Construct a SerializedObserver by wrapping the given actual Observer and
  optionally delaying the errors till all regular values have been emitted
@@ -279,7 +279,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                        <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
+                        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">Observer</a></code></span></div>
 <div class="block">Provides the Observer with the means of cancelling (disposing) the
  connection (channel) with the Observable in both
@@ -357,7 +357,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <li class="blockList">
 <h4>onError</h4>
 <pre>public&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                    <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
+                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">Observer</a></code></span></div>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
  <p>

@@ -169,7 +169,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="type parameter in FlowableEmitter">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="type parameter in FlowableEmitter">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html#serialize--">serialize</a></span>()</code>
 <div class="block">Ensures that calls to onNext, onError and onComplete are properly serialized.</div>
 </td>
@@ -190,7 +190,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html#tryOnError-java.lang.Throwable-">tryOnError</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html#tryOnError-java.lang.Throwable-">tryOnError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
 <div class="block">Attempts to emit the specified <code>Throwable</code> error if the downstream
  hasn't cancelled the sequence or is otherwise terminated, returning false
  if the emission is not allowed to happen due to lifecycle restrictions.</div>
@@ -289,7 +289,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <li class="blockList">
 <h4>serialize</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-<a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="type parameter in FlowableEmitter">T</a>&gt;&nbsp;serialize()</pre>
+<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/FlowableEmitter.html" title="type parameter in FlowableEmitter">T</a>&gt;&nbsp;serialize()</pre>
 <div class="block">Ensures that calls to onNext, onError and onComplete are properly serialized.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -304,7 +304,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <li class="blockList">
 <h4>tryOnError</h4>
 <pre>boolean&nbsp;tryOnError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                   <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
+                   <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <div class="block">Attempts to emit the specified <code>Throwable</code> error if the downstream
  hasn't cancelled the sequence or is otherwise terminated, returning false
  if the emission is not allowed to happen due to lifecycle restrictions.

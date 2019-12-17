@@ -95,7 +95,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>io.reactivex.rxjava3.schedulers.Schedulers</li>
@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public final class <span class="typeNameLabel">Schedulers</span>
-extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
+extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Static factory methods for returning standard Scheduler instances.
  <p>
  The initial and runtime values of the various scheduler types can be overridden via the
@@ -118,11 +118,11 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
  <strong>Supported system properties (<code>System.getProperty()</code>):</strong>
  <ul>
  <li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
- <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  <li><code>rx3.computation-threads</code> (int): sets the number of threads in the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is the number of available CPUs</li>
- <li><code>rx3.computation-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
- <li><code>rx3.newthread-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>newThread()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
- <li><code>rx3.single-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.computation-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.newthread-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>newThread()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.single-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  <li><code>rx3.purge-enabled</code> (boolean): enables periodic purging of all Scheduler's backing thread pools, default is false</li>
  <li><code>rx3.purge-period-seconds</code> (int): specifies the periodic purge interval of all Scheduler's backing thread pools, default is 1 second</li>
  </ul></div>
@@ -145,45 +145,45 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--">computation</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance intended for computational work.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-">from</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor)</code>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor)</code>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-">from</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
     boolean&nbsp;interruptibleWorker)</code>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-">from</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-boolean-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
     boolean&nbsp;interruptibleWorker,
     boolean&nbsp;fair)</code>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--">io</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance intended for IO-bound work.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--">newThread</a></span>()</code>
-<div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true" title="class or interface in java.lang"><code>Thread</code></a> for each unit of work.</div>
+<div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true" title="class or interface in java.lang"><code>Thread</code></a> for each unit of work.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
@@ -193,7 +193,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--">single</a></span>()</code>
 <div class="block">Returns a default, shared, single-thread-backed <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance for work
  requiring strongly-sequential execution on the same background thread.</div>
@@ -206,7 +206,7 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i9" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#trampoline--">trampoline</a></span>()</code>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance whose <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
  instances queue work and execute them in a FIFO manner on one of the participating threads.</div>
@@ -217,8 +217,8 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone--" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize--" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass--" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode--" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify--" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll--" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString--" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait--" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait-long-int-" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -241,31 +241,31 @@ extends <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>computation</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;computation()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;computation()</pre>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance intended for computational work.
  <p>
  This can be used for event-loops, processing callbacks and other computational work.
  <p>
  It is not recommended to perform blocking, IO-bound work on this scheduler. Use <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> instead.
  <p>
- The default instance has a backing pool of single-threaded <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instances equal to
- the number of available processors (<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html?is-external=true#availableProcessors--" title="class or interface in java.lang"><code>Runtime.availableProcessors()</code></a>) to the Java VM.
+ The default instance has a backing pool of single-threaded <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instances equal to
+ the number of available processors (<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runtime.html?is-external=true#availableProcessors--" title="class or interface in java.lang"><code>Runtime.availableProcessors()</code></a>) to the Java VM.
  <p>
- Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
+ Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
  <p>
  This type of scheduler is less sensitive to leaking <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> instances, although
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
  If the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setFailOnNonBlockingScheduler-boolean-"><code>RxJavaPlugins.setFailOnNonBlockingScheduler(boolean)</code></a> is set to true, attempting to execute
- operators that block while running on this scheduler will throw an <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a>.
+ operators that block while running on this scheduler will throw an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a>.
  <p>
  You can control certain properties of this standard scheduler via system properties that have to be set
  before the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html" title="class in io.reactivex.rxjava3.schedulers"><code>Schedulers</code></a> class is referenced in your code.
  <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
  <ul>
  <li><code>rx3.computation-threads</code> (int): sets the number of threads in the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is the number of available CPUs</li>
- <li><code>rx3.computation-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.computation-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  </ul>
  <p>
  The default value of this scheduler can be overridden at initialization time via the
@@ -295,28 +295,28 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>io</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;io()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;io()</pre>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance intended for IO-bound work.
  <p>
  This can be used for asynchronously performing blocking IO.
  <p>
- The implementation is backed by a pool of single-threaded <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instances
+ The implementation is backed by a pool of single-threaded <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instances
  that will try to reuse previously started instances used by the worker
  returned by <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#createWorker--"><code>Scheduler.createWorker()</code></a> but otherwise will start a new backing
- <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instance. Note that this scheduler may create an unbounded number
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> instance. Note that this scheduler may create an unbounded number
  of worker threads that can result in system slowdowns or <code>OutOfMemoryError</code>. Therefore, for casual uses
  or when implementing an operator, the Worker instances must be disposed via <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>.
  <p>
  It is not recommended to perform computational work on this scheduler. Use <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#computation--"><code>computation()</code></a> instead.
  <p>
- Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
+ Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
  <p>
  You can control certain properties of this standard scheduler via system properties that have to be set
  before the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html" title="class in io.reactivex.rxjava3.schedulers"><code>Schedulers</code></a> class is referenced in your code.
  <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
  <ul>
  <li><code>rx3.io-keep-alive-time</code> (long): sets the keep-alive time of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler workers, default is <code>IoScheduler.KEEP_ALIVE_TIME_DEFAULT</code></li>
- <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.io-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#io--"><code>io()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  </ul>
  <p>
  The default value of this scheduler can be overridden at initialization time via the
@@ -346,7 +346,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>trampoline</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;trampoline()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;trampoline()</pre>
 <div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance whose <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
  instances queue work and execute them in a FIFO manner on one of the participating threads.
  <p>
@@ -371,22 +371,22 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>newThread</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;newThread()</pre>
-<div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true" title="class or interface in java.lang"><code>Thread</code></a> for each unit of work.
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;newThread()</pre>
+<div class="block">Returns a default, shared <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance that creates a new <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true" title="class or interface in java.lang"><code>Thread</code></a> for each unit of work.
  <p>
- The default implementation of this scheduler creates a new, single-threaded <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> for
+ The default implementation of this scheduler creates a new, single-threaded <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> for
  each invocation of the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#scheduleDirect-java.lang.Runnable-"><code>Scheduler.scheduleDirect(Runnable)</code></a> (plus its overloads) and <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#createWorker--"><code>Scheduler.createWorker()</code></a>
  methods, thus an unbounded number of worker threads may be created that can
  result in system slowdowns or <code>OutOfMemoryError</code>. Therefore, for casual uses or when implementing an operator,
  the Worker instances must be disposed via <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>.
  <p>
- Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
+ Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
  <p>
  You can control certain properties of this standard scheduler via system properties that have to be set
  before the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html" title="class in io.reactivex.rxjava3.schedulers"><code>Schedulers</code></a> class is referenced in your code.
  <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
  <ul>
- <li><code>rx3.newthread-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>newThread()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.newthread-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#newThread--"><code>newThread()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  </ul>
  <p>
  The default value of this scheduler can be overridden at initialization time via the
@@ -416,7 +416,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>single</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;single()</pre>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;single()</pre>
 <div class="block">Returns a default, shared, single-thread-backed <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance for work
  requiring strongly-sequential execution on the same background thread.
  <p>
@@ -428,20 +428,20 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  avoid core-bashing of computation's round-robin nature</li>
  </ul>
  <p>
- Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
+ Unhandled errors will be delivered to the scheduler Thread's <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler</code></a>.
  <p>
  This type of scheduler is less sensitive to leaking <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> instances, although
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
  If the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#setFailOnNonBlockingScheduler-boolean-"><code>RxJavaPlugins.setFailOnNonBlockingScheduler(boolean)</code></a> is set to true, attempting to execute
- operators that block while running on this scheduler will throw an <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a>.
+ operators that block while running on this scheduler will throw an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a>.
  <p>
  You can control certain properties of this standard scheduler via system properties that have to be set
  before the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html" title="class in io.reactivex.rxjava3.schedulers"><code>Schedulers</code></a> class is referenced in your code.
  <p><strong>Supported system properties (<code>System.getProperty()</code>):</strong>
  <ul>
- <li><code>rx3.single-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
+ <li><code>rx3.single-priority</code> (int): sets the thread priority of the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> Scheduler, default is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html?is-external=true#NORM_PRIORITY" title="class or interface in java.lang"><code>Thread.NORM_PRIORITY</code></a></li>
  </ul>
  <p>
  The default value of this scheduler can be overridden at initialization time via the
@@ -473,9 +473,9 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>from</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                      <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor)</pre>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor)</pre>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.
  <p>
  If the provided executor doesn't support any of the more specific standard Java executor
@@ -487,13 +487,13 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  Tasks submitted to the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> of this <code>Scheduler</code> are also not interruptible. Use the
  <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#from-java.util.concurrent.Executor-boolean-"><code>from(Executor, boolean)</code></a> overload to enable task interruption via this wrapper.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
  cancelling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
  before posting the actual task to the given executor.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
  cancelling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the provided executor. Note, however, if the provided
@@ -528,7 +528,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
- Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.</div>
+ Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>executor</code> - the executor to wrap</dd>
@@ -546,10 +546,10 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>from</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                      <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
-                                      boolean&nbsp;interruptibleWorker)</pre>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+                                               boolean&nbsp;interruptibleWorker)</pre>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.
  <p>
  The tasks scheduled by the returned <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> and its <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
@@ -560,13 +560,13 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
  before posting the actual task to the given executor.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
  canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
  before posting the actual task to the given executor.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
  canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the provided executor. Note, however, if the provided
@@ -601,7 +601,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
- Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.
+ Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.
  <p>History: 2.2.6 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -624,11 +624,11 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
 <li class="blockList">
 <h4>from</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                      <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
-                                      boolean&nbsp;interruptibleWorker,
-                                      boolean&nbsp;fair)</pre>
-<div class="block">Wraps an <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;executor,
+                                               boolean&nbsp;interruptibleWorker,
+                                               boolean&nbsp;fair)</pre>
+<div class="block">Wraps an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> into a new Scheduler instance and delegates <code>schedule()</code>
  calls to it.
  <p>
  The tasks scheduled by the returned <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> and its <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a>
@@ -639,13 +639,13 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
  before posting the actual task to the given executor.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ExecutorService</code></a> API,
  canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the <a href="../../../../io/reactivex/rxjava3/schedulers/Schedulers.html#single--"><code>single()</code></a> scheduler for the timed waiting
  before posting the actual task to the given executor.
  <p>
- If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
+ If the provided executor supports the standard Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html?is-external=true" title="class or interface in java.util.concurrent"><code>ScheduledExecutorService</code></a> API,
  canceling tasks scheduled by this scheduler can be cancelled/interrupted by calling
  <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a>. In addition, tasks scheduled with
  a time delay or periodically will use the provided executor. Note, however, if the provided
@@ -682,13 +682,13 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html
  not disposing a worker that has timed/delayed tasks not cancelled by other means may leak resources and/or
  execute those tasks "unexpectedly".
  <p>
- Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.</div>
+ Note that this method returns a new <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> instance, even for the same <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>executor</code> - the executor to wrap</dd>
 <dd><code>interruptibleWorker</code> - if <code>true</code> the tasks submitted to the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler.Worker</code></a> will
  be interrupted when the task is disposed.</dd>
-<dd><code>fair</code> - if <code>true</code> tasks submitted to the will be executed by the underlying <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> one after the other, still
+<dd><code>fair</code> - if <code>true</code> tasks submitted to the will be executed by the underlying <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a> one after the other, still
  in a FIFO and non-overlapping manner, but allows interleaving with other tasks submitted to the underlying <code>Executor</code>.
  If <code>false</code>, the underlying FIFO scheme will execute as many tasks as it can before giving up the underlying <code>Executor</code> thread.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

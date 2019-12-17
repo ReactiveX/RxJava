@@ -144,10 +144,10 @@ var activeTableTab = "activeTableTab";
  <ul>
  <li>An upstream operator turns it into an <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>onError(java.lang.Throwable)</code></a> call.</li>
  <li>If the flow is synchronous, the <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html#subscribe-io.reactivex.rxjava3.core.Observer-"><code>ObservableSource.subscribe(Observer)</code></a> throws instead of returning normally.</li>
- <li>If the flow is asynchronous, the exception propagates up to the component (<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> or <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a>)
+ <li>If the flow is asynchronous, the exception propagates up to the component (<a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent"><code>Executor</code></a>)
  providing the asynchronous boundary the code is running and either routes the exception to the global
  <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a> handler or the current thread's
- <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true#uncaughtException-java.lang.Thread-java.lang.Throwable-" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler.uncaughtException(Thread, Throwable)</code></a> handler.</li>
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.UncaughtExceptionHandler.html?is-external=true#uncaughtException-java.lang.Thread-java.lang.Throwable-" title="class or interface in java.lang"><code>Thread.UncaughtExceptionHandler.uncaughtException(Thread, Throwable)</code></a> handler.</li>
  </ul>
  From the <code>Observable</code>'s perspective, an <code>Observer</code> is the end consumer thus it is the <code>Observer</code>'s
  responsibility to handle the error case and signal it "further down". This means unreliable code in the <code>onXXX</code>
@@ -190,7 +190,7 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</code>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.</div>
 </td>
 </tr>
@@ -202,7 +202,7 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
 <div class="block">Provides the Observer with the means of cancelling (disposing) the
  connection (channel) with the Observable in both
  synchronous (from within <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext(Object)</code></a>) and asynchronous manner.</div>
@@ -230,7 +230,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <h4>onSubscribe</h4>
 <pre>void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                 <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
+                 <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block">Provides the Observer with the means of cancelling (disposing) the
  connection (channel) with the Observable in both
  synchronous (from within <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext(Object)</code></a>) and asynchronous manner.</div>
@@ -272,7 +272,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <h4>onError</h4>
 <pre>void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-             <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</pre>
+             <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</pre>
 <div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
  <p>
  If the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> calls this method, it will not thereafter call <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>onNext(T)</code></a> or
