@@ -67,10 +67,4 @@ public class ObjectHelperTest extends RxJavaTest {
         assertEquals(0, ObjectHelper.compare(0L, 0L));
         assertEquals(1, ObjectHelper.compare(2L, 0L));
     }
-
-    @SuppressWarnings("deprecation")
-    @Test(expected = InternalError.class)
-    public void requireNonNullPrimitive() {
-        ObjectHelper.requireNonNull(0, "value");
-    }
 }
