@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.schedulers;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -80,9 +81,9 @@ public final class Timed<T> {
     public boolean equals(Object other) {
         if (other instanceof Timed) {
             Timed<?> o = (Timed<?>) other;
-            return ObjectHelper.equals(value, o.value)
+            return Objects.equals(value, o.value)
                     && time == o.time
-                    && ObjectHelper.equals(unit, o.unit);
+                    && Objects.equals(unit, o.unit);
         }
         return false;
     }

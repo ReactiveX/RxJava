@@ -14,11 +14,11 @@ package io.reactivex.rxjava3.internal.util;
 
 import java.io.Serializable;
 
+import java.util.Objects;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Lightweight notification handling utility class.
@@ -52,7 +52,7 @@ public enum NotificationLite {
         public boolean equals(Object obj) {
             if (obj instanceof ErrorNotification) {
                 ErrorNotification n = (ErrorNotification) obj;
-                return ObjectHelper.equals(e, n.e);
+                return Objects.equals(e, n.e);
             }
             return false;
         }
