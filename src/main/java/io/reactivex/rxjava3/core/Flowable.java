@@ -18651,6 +18651,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
     public static <T> Flowable<T> fromOptional(@NonNull Optional<T> optional) {
         ObjectHelper.requireNonNull(optional, "optional is null");
         return optional.map(Flowable::just).orElseGet(Flowable::empty);
@@ -18687,6 +18688,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
     public static <T> Flowable<T> fromCompletionStage(@NonNull CompletionStage<T> stage) {
         ObjectHelper.requireNonNull(stage, "stage is null");
         return RxJavaPlugins.onAssembly(new FlowableFromCompletionStage<>(stage));
@@ -18732,6 +18734,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
     public static <T> Flowable<T> fromStream(@NonNull Stream<T> stream) {
         ObjectHelper.requireNonNull(stream, "stream is null");
         return RxJavaPlugins.onAssembly(new FlowableFromStream<>(stream));
