@@ -18,6 +18,7 @@ package io.reactivex.rxjava3.functions;
  * @param <T1> the first value type
  * @param <T2> the second value type
  */
+@FunctionalInterface
 public interface BiConsumer<T1, T2> {
 
     /**

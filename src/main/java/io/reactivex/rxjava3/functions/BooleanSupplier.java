@@ -16,6 +16,7 @@ package io.reactivex.rxjava3.functions;
 /**
  * A functional interface (callback) that returns a boolean value.
  */
+@FunctionalInterface
 public interface BooleanSupplier {
     /**
      * Returns a boolean value.

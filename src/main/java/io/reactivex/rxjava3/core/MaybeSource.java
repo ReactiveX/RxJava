@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T> the element type
  * @since 2.0
  */
+@FunctionalInterface
 public interface MaybeSource<T> {
 
     /**

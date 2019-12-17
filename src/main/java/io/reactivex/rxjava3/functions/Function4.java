@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T4> the fourth value type
  * @param <R> the result type
  */
+@FunctionalInterface
 public interface Function4<T1, T2, T3, T4, R> {
     /**
      * Calculate a value based on the input values.

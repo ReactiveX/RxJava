@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <R> the output type
  * @since 2.2
  */
+@FunctionalInterface
 public interface FlowableConverter<T, R> {
     /**
      * Applies a function to the upstream Flowable and returns a converted value of type {@code R}.

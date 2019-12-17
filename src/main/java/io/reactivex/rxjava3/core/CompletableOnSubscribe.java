@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * an instance of a {@link CompletableEmitter} instance that allows pushing
  * an event in a cancellation-safe manner.
  */
+@FunctionalInterface
 public interface CompletableOnSubscribe {
 
     /**

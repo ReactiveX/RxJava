@@ -21,6 +21,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T2> the second value type
  * @param <R> the result type
  */
+@FunctionalInterface
 public interface BiFunction<T1, T2, R> {
 
     /**

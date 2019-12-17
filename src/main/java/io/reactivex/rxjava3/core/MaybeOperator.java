@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
  */
+@FunctionalInterface
 public interface MaybeOperator<Downstream, Upstream> {
     /**
      * Applies a function to the child MaybeObserver and returns a new parent MaybeObserver.

@@ -17,6 +17,7 @@ package io.reactivex.rxjava3.functions;
  * A functional interface (callback) that accepts a single value.
  * @param <T> the value type
  */
+@FunctionalInterface
 public interface Consumer<T> {
     /**
      * Consume the given value.

@@ -18,6 +18,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * A functional interface (callback) that takes a primitive value and return value of type T.
  * @param <T> the returned value type
  */
+@FunctionalInterface
 public interface IntFunction<T> {
     /**
      * Calculates a value based on a primitive integer input.

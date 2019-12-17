@@ -29,6 +29,7 @@ import io.reactivex.rxjava3.functions.Supplier;
  * <p>
  * @param <T> the scalar value type held by the implementing reactive type
  */
+@FunctionalInterface
 public interface ScalarSupplier<T> extends Supplier<T> {
 
     // overridden to remove the throws Throwable

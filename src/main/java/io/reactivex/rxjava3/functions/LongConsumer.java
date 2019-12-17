@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.functions;
 /**
  * A functional interface (callback) that consumes a primitive long value.
  */
+@FunctionalInterface
 public interface LongConsumer {
     /**
      * Consume a primitive long input.
