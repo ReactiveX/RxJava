@@ -66,15 +66,15 @@ apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
   mavenCentral()
 }
 
 dependencies {
-    signature "org.codehaus.mojo.signature:java16:1.1@signature"
+    signature "org.codehaus.mojo.signature:java18:1.0@signature"
 
     api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
     jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
@@ -103,14 +103,9 @@ javadoc {
     options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
 
     options.links(
-        "https://docs.oracle.com/javase/7/docs/api/",
+        "https://docs.oracle.com/javase/8/docs/api/",
         "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
-
-    if (JavaVersion.current().isJava7()) {
-        // "./gradle/stylesheet.css" only supports Java 7
-        options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
-    }
 }
 
 animalsniffer {

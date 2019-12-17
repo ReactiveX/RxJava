@@ -14,8 +14,10 @@
 package io.reactivex.rxjava3.validators;
 
 import java.lang.reflect.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -583,6 +585,14 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Subscriber[].class, new Subscriber[] { new AllFunctionals() });
 
         defaultValues.put(ParallelFailureHandling.class, ParallelFailureHandling.ERROR);
+
+        // JDK 8 types
+
+        defaultValues.put(Optional.class, Optional.of(1));
+        defaultValues.put(CompletionStage.class, CompletableFuture.completedFuture(1));
+        defaultValues.put(Stream.class, Stream.of(1, 2, 3));
+        defaultValues.put(Duration.class, Duration.ofSeconds(1));
+        defaultValues.put(Collector.class, Collectors.toList());
 
         @SuppressWarnings("rawtypes")
         class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,

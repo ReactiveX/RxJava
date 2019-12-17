@@ -11,18 +11,32 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.annotations;
+package io.reactivex.rxjava3.internal.jdk8;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.CLASS;
+import java.util.Optional;
 
-import java.lang.annotation.*;
+import org.reactivestreams.Publisher;
+import org.testng.annotations.Test;
+
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.tck.BaseTck;
 
 /**
- * Indicates that a field/parameter/variable/type parameter/return type is never null.
+ * Test Optional.empty() wrapping.
+ * @see FromOptional1TckTest
  */
-@Documented
-@Target(value = {FIELD, METHOD, PARAMETER, LOCAL_VARIABLE, TYPE_PARAMETER, TYPE_USE})
-@Retention(value = CLASS)
-public @interface NonNull { }
+@Test
+public class FromOptional0TckTest extends BaseTck<Long> {
 
+    @Override
+    public Publisher<Long> createPublisher(final long elements) {
+        return
+                Flowable.fromOptional(Optional.empty())
+            ;
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 0;
+    }
+}

@@ -52,11 +52,11 @@ public final class Burst<T> extends Flowable<T> {
 
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> Builder<T> item(T item) {
         return items(item);
     }
 
+    @SafeVarargs
     public static <T> Builder<T> items(T... items) {
         return new Builder<T>(Arrays.asList(items));
     }

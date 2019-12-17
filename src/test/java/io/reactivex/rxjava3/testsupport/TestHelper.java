@@ -624,7 +624,7 @@ public enum TestHelper {
      * @param source the source to test
      */
     public static <T> void checkDisposed(Flowable<T> source) {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
+        final TestSubscriber<Object> ts = new TestSubscriber<>(0L);
         source.subscribe(new FlowableSubscriber<Object>() {
             @Override
             public void onSubscribe(Subscription s) {
@@ -2123,10 +2123,10 @@ public enum TestHelper {
     public static <T, U> void checkDisposedMaybe(Function<Maybe<T>, ? extends MaybeSource<U>> composer) {
         PublishProcessor<T> pp = PublishProcessor.create();
 
-        TestSubscriber<U> ts = new TestSubscriber<U>();
+        TestSubscriber<U> ts = new TestSubscriber<>();
 
         try {
-            new MaybeToFlowable<U>(composer.apply(pp.singleElement())).subscribe(ts);
+            new MaybeToFlowable<>(composer.apply(pp.singleElement())).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -2145,7 +2145,7 @@ public enum TestHelper {
     public static void checkDisposedCompletable(Function<Completable, ? extends CompletableSource> composer) {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         try {
             new CompletableToFlowable<Integer>(composer.apply(pp.ignoreElements())).subscribe(ts);
@@ -2169,10 +2169,10 @@ public enum TestHelper {
     public static <T, U> void checkDisposedMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<U>> composer) {
         PublishProcessor<T> pp = PublishProcessor.create();
 
-        TestSubscriber<U> ts = new TestSubscriber<U>();
+        TestSubscriber<U> ts = new TestSubscriber<>();
 
         try {
-            new SingleToFlowable<U>(composer.apply(pp.singleElement())).subscribe(ts);
+            new SingleToFlowable<>(composer.apply(pp.singleElement())).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -2190,6 +2190,7 @@ public enum TestHelper {
      * @param ts the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
+    @SafeVarargs
     public static void assertCompositeExceptions(TestSubscriberEx<?> ts, Class<? extends Throwable>... classes) {
         ts
         .assertSubscribed()
@@ -2234,6 +2235,7 @@ public enum TestHelper {
      * @param to the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
+    @SafeVarargs
     public static void assertCompositeExceptions(TestObserverEx<?> to, Class<? extends Throwable>... classes) {
         to
         .assertSubscribed()
@@ -2278,6 +2280,7 @@ public enum TestHelper {
      * @param p the target processor
      * @param values the values to emit
      */
+    @SafeVarargs
     public static <T> void emit(Processor<T, ?> p, T... values) {
         for (T v : values) {
             p.onNext(v);
@@ -2291,6 +2294,7 @@ public enum TestHelper {
      * @param p the target subject
      * @param values the values to emit
      */
+    @SafeVarargs
     public static <T> void emit(Subject<T> p, T... values) {
         for (T v : values) {
             p.onNext(v);
@@ -2495,7 +2499,7 @@ public enum TestHelper {
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2517,7 +2521,7 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
                 os.subscribe(ts);
 
@@ -2539,7 +2543,7 @@ public enum TestHelper {
 
             if (o instanceof SingleSource) {
                 SingleSource<?> os = (SingleSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2561,7 +2565,7 @@ public enum TestHelper {
 
             if (o instanceof MaybeSource) {
                 MaybeSource<?> os = (MaybeSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2583,7 +2587,7 @@ public enum TestHelper {
 
             if (o instanceof CompletableSource) {
                 CompletableSource os = (CompletableSource) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2654,7 +2658,7 @@ public enum TestHelper {
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2676,7 +2680,7 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
                 os.subscribe(ts);
 
@@ -2698,7 +2702,7 @@ public enum TestHelper {
 
             if (o instanceof SingleSource) {
                 SingleSource<?> os = (SingleSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2720,7 +2724,7 @@ public enum TestHelper {
 
             if (o instanceof MaybeSource) {
                 MaybeSource<?> os = (MaybeSource<?>) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2742,7 +2746,7 @@ public enum TestHelper {
 
             if (o instanceof CompletableSource) {
                 CompletableSource os = (CompletableSource) o;
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
 
                 os.subscribe(to);
 
@@ -2778,7 +2782,7 @@ public enum TestHelper {
         @SuppressWarnings("unchecked")
         TestSubscriber<Object>[] tss = new TestSubscriber[n + 1];
         for (int i = 0; i <= n; i++) {
-            tss[i] = new TestSubscriber<Object>().withTag("" + i);
+            tss[i] = new TestSubscriber<>().withTag("" + i);
         }
 
         source.subscribe(tss);
@@ -2893,7 +2897,7 @@ public enum TestHelper {
 
         @Override
         public Flowable<T> apply(Flowable<T> upstream) {
-            return new FlowableStripBoundary<T>(upstream);
+            return new FlowableStripBoundary<>(upstream);
         }
 
         @Override
@@ -2985,7 +2989,7 @@ public enum TestHelper {
     }
 
     public static <T> FlowableTransformer<T, T> flowableStripBoundary() {
-        return new FlowableStripBoundary<T>(null);
+        return new FlowableStripBoundary<>(null);
     }
 
     static final class ObservableStripBoundary<T> extends Observable<T> implements ObservableTransformer<T, T> {
@@ -2998,7 +3002,7 @@ public enum TestHelper {
 
         @Override
         public Observable<T> apply(Observable<T> upstream) {
-            return new ObservableStripBoundary<T>(upstream);
+            return new ObservableStripBoundary<>(upstream);
         }
 
         @Override
@@ -3090,23 +3094,23 @@ public enum TestHelper {
     }
 
     public static <T> ObservableTransformer<T, T> observableStripBoundary() {
-        return new ObservableStripBoundary<T>(null);
+        return new ObservableStripBoundary<>(null);
     }
 
     public static <T> TestConsumerExConverters<T> testConsumer() {
-        return new TestConsumerExConverters<T>(false, 0);
+        return new TestConsumerExConverters<>(false, 0);
     }
 
     public static <T> TestConsumerExConverters<T> testConsumer(boolean cancelled) {
-        return new TestConsumerExConverters<T>(cancelled, 0);
+        return new TestConsumerExConverters<>(cancelled, 0);
     }
 
     public static <T> TestConsumerExConverters<T> testConsumer(final int fusionMode, final boolean cancelled) {
-        return new TestConsumerExConverters<T>(cancelled, fusionMode);
+        return new TestConsumerExConverters<>(cancelled, fusionMode);
     }
 
     public static <T> TestConsumerExConverters<T> testConsumer(final boolean cancelled, final int fusionMode) {
-        return new TestConsumerExConverters<T>(cancelled, fusionMode);
+        return new TestConsumerExConverters<>(cancelled, fusionMode);
     }
 
     public static <T> FlowableConverter<T, TestSubscriberEx<T>> testSubscriber(final long initialRequest) {
@@ -3125,7 +3129,7 @@ public enum TestHelper {
         return new FlowableConverter<T, TestSubscriberEx<T>>() {
             @Override
             public TestSubscriberEx<T> apply(Flowable<T> f) {
-                TestSubscriberEx<T> tse = new TestSubscriberEx<T>(initialRequest);
+                TestSubscriberEx<T> tse = new TestSubscriberEx<>(initialRequest);
                 if (cancelled) {
                     tse.cancel();
                 }
@@ -3153,7 +3157,7 @@ public enum TestHelper {
 
         @Override
         public TestObserverEx<Void> apply(Completable upstream) {
-            TestObserverEx<Void> toe = new TestObserverEx<Void>();
+            TestObserverEx<Void> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
             }
@@ -3163,7 +3167,7 @@ public enum TestHelper {
 
         @Override
         public TestObserverEx<T> apply(Maybe<T> upstream) {
-            TestObserverEx<T> toe = new TestObserverEx<T>();
+            TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
             }
@@ -3173,7 +3177,7 @@ public enum TestHelper {
 
         @Override
         public TestObserverEx<T> apply(Single<T> upstream) {
-            TestObserverEx<T> toe = new TestObserverEx<T>();
+            TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
             }
@@ -3183,7 +3187,7 @@ public enum TestHelper {
 
         @Override
         public TestObserverEx<T> apply(Observable<T> upstream) {
-            TestObserverEx<T> toe = new TestObserverEx<T>();
+            TestObserverEx<T> toe = new TestObserverEx<>();
             if (cancelled) {
                 toe.dispose();
             }
@@ -3193,7 +3197,7 @@ public enum TestHelper {
 
         @Override
         public TestSubscriberEx<T> apply(Flowable<T> upstream) {
-            TestSubscriberEx<T> tse = new TestSubscriberEx<T>();
+            TestSubscriberEx<T> tse = new TestSubscriberEx<>();
             if (cancelled) {
                 tse.dispose();
             }
@@ -3202,8 +3206,9 @@ public enum TestHelper {
         }
     }
 
+    @SafeVarargs
     public static <T> TestSubscriberEx<T> assertValueSet(TestSubscriberEx<T> ts, T... values) {
-        Set<T> expectedSet = new HashSet<T>(Arrays.asList(values));
+        Set<T> expectedSet = new HashSet<>(Arrays.asList(values));
         for (T t : ts.values()) {
             if (!expectedSet.contains(t)) {
                 throw ts.failWith("Item not in the set: " + BaseTestConsumer.valueAndClass(t));
@@ -3212,8 +3217,9 @@ public enum TestHelper {
         return ts;
     }
 
+    @SafeVarargs
     public static <T> TestObserverEx<T> assertValueSet(TestObserverEx<T> to, T... values) {
-        Set<T> expectedSet = new HashSet<T>(Arrays.asList(values));
+        Set<T> expectedSet = new HashSet<>(Arrays.asList(values));
         for (T t : to.values()) {
             if (!expectedSet.contains(t)) {
                 throw to.failWith("Item not in the set: " + BaseTestConsumer.valueAndClass(t));
@@ -3280,35 +3286,35 @@ public enum TestHelper {
             .to(transform);
 
             if (result instanceof MaybeSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((MaybeSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((SingleSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((CompletableSource)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((ObservableSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
                 disposable.set(Disposables.fromSubscription(ts));
 
                 ((Publisher<?>)result)
@@ -3348,35 +3354,35 @@ public enum TestHelper {
             .to(transform);
 
             if (result instanceof MaybeSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((MaybeSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof SingleSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((SingleSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof CompletableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((CompletableSource)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof ObservableSource) {
-                TestObserverEx<Object> to = new TestObserverEx<Object>();
+                TestObserverEx<Object> to = new TestObserverEx<>();
                 disposable.set(to);
 
                 ((ObservableSource<?>)result)
                 .subscribe(to);
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
-                TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+                TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
                 disposable.set(Disposables.fromSubscription(ts));
 
                 ((Publisher<?>)result)
@@ -3418,5 +3424,19 @@ public enum TestHelper {
             Thread.sleep(oneSleep);
         }
         return bean.getHeapMemoryUsage().getUsed();
+    }
+
+    /**
+     * Enable thracking of the global errors for the duration of the action.
+     * @param action the action to run with a list of errors encountered
+     * @throws Throwable the exception rethrown from the action
+     */
+    public static void withErrorTracking(Consumer<List<Throwable>> action) throws Throwable {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            action.accept(errors);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

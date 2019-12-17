@@ -228,7 +228,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @param errorClass the error class to expect
      * @return this
      */
-    @SuppressWarnings({ "unchecked", "rawtypes", "cast" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final U assertError(Class<? extends Throwable> errorClass) {
         return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
     }
@@ -435,6 +435,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @return this
      * @since 2.2
      */
+    @SafeVarargs
     public final U assertValuesOnly(T... values) {
         return assertSubscribed()
                 .assertValues(values)
@@ -493,6 +494,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @return this
      * @see #assertFailure(Class, Object...)
      */
+    @SafeVarargs
     public final U assertResult(T... values) {
         return assertSubscribed()
                 .assertValues(values)
@@ -507,6 +509,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @param values the expected values, asserted in order
      * @return this
      */
+    @SafeVarargs
     public final U assertFailure(Class<? extends Throwable> error, T... values) {
         return assertSubscribed()
                 .assertValues(values)

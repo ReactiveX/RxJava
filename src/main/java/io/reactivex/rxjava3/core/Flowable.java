@@ -14,6 +14,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.reactivestreams.*;
 
@@ -24,6 +25,7 @@ import io.reactivex.rxjava3.flowables.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
+import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableFromPublisher;
@@ -211,6 +213,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T> Flowable<T> ambArray(Publisher<? extends T>... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         int len = sources.length;
@@ -1224,7 +1227,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1261,7 +1263,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1303,7 +1304,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         without interleaving them
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1341,6 +1341,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T> Flowable<T> concatArray(Publisher<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
@@ -1373,6 +1374,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T> Flowable<T> concatArrayDelayError(Publisher<? extends T>... sources) {
         if (sources.length == 0) {
             return empty();
@@ -1408,6 +1410,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T> Flowable<T> concatArrayEager(Publisher<? extends T>... sources) {
         return concatArrayEager(bufferSize(), bufferSize(), sources);
     }
@@ -1475,6 +1478,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
+    @SafeVarargs
     public static <T> Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources) {
         return concatArrayEagerDelayError(bufferSize(), bufferSize(), sources);
     }
@@ -1914,6 +1918,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T> Flowable<T> fromArray(T... items) {
         ObjectHelper.requireNonNull(items, "items is null");
         if (items.length == 0) {
@@ -1977,6 +1982,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot cancel it.
      * <p>
+     * Also note that this operator will consume a {@link CompletionStage}-based {@code Future} subclass (such as
+     * {@link CompletableFuture}) in a blocking manner as well. Use the {@link #fromCompletionStage(CompletionStage)}
+     * operator to convert and consume such sources in a non-blocking fashion instead.
+     * <p>
      * Unlike 1.x, canceling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <dl>
@@ -1993,6 +2002,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the resulting Publisher
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromCompletionStage(CompletionStage)
      */
     @CheckReturnValue
     @NonNull
@@ -2016,6 +2026,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <p>
      * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot cancel it.
+     * <p>
+     * Also note that this operator will consume a {@link CompletionStage}-based {@code Future} subclass (such as
+     * {@link CompletableFuture}) in a blocking manner as well. Use the {@link #fromCompletionStage(CompletionStage)}
+     * operator to convert and consume such sources in a non-blocking fashion instead.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -2034,6 +2048,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the resulting Publisher
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromCompletionStage(CompletionStage)
      */
     @CheckReturnValue
     @NonNull
@@ -2058,6 +2073,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <p>
      * <em>Important note:</em> This Publisher is blocking; you cannot cancel it.
+     * <p>
+     * Also note that this operator will consume a {@link CompletionStage}-based {@code Future} subclass (such as
+     * {@link CompletableFuture}) in a blocking manner as well. Use the {@link #fromCompletionStage(CompletionStage)}
+     * operator to convert and consume such sources in a non-blocking fashion instead.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -2079,8 +2098,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the resulting Publisher
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromCompletionStage(CompletionStage)
      */
-    @SuppressWarnings({ "unchecked", "cast" })
+    @SuppressWarnings({ "unchecked" })
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2119,7 +2139,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
-    @SuppressWarnings({ "cast", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2148,6 +2168,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            resulting Publisher
      * @return a Flowable that emits each item in the source {@link Iterable} sequence
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromStream(Stream)
      */
     @CheckReturnValue
     @NonNull
@@ -2656,7 +2677,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2690,7 +2710,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2727,7 +2746,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2767,7 +2785,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2810,7 +2827,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2856,7 +2872,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2905,7 +2920,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2957,7 +2971,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3012,7 +3025,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits each item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4655,7 +4667,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4717,7 +4728,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4780,7 +4790,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4845,7 +4854,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4914,7 +4922,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4988,7 +4995,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -5065,7 +5071,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -5146,7 +5151,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -5232,7 +5236,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -5322,7 +5325,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -5398,6 +5400,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
     public static <T, R> Flowable<R> zipArray(Function<? super Object[], ? extends R> zipper,
             boolean delayError, int bufferSize, Publisher<? extends T>... sources) {
         if (sources.length == 0) {
@@ -5460,7 +5463,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -14548,7 +14550,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #startWithItem(Object)
      * @since 3.0.0
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -14576,7 +14577,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/startwith.html">ReactiveX operators documentation: StartWith</a>
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -14609,7 +14609,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see #startWithIterable(Iterable)
      * @since 3.0.0
      */
-    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
@@ -18620,4 +18619,124 @@ public abstract class Flowable<T> implements Publisher<T> {
         return ts;
     }
 
+    // -------------------------------------------------------------------------
+    // JDK 8 Support
+    // -------------------------------------------------------------------------
+
+    /**
+     * Converts the existing value of the provided optional into a {@link #just(Object)}
+     * or an empty optional into an {@link #empty()} {@code Flowable} instance.
+     * <p>
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromOptional.f.png" alt="">
+     * <p>
+     * Note that the operator takes an already instantiated optional reference and does not
+     * by any means create this original optional. If the optional is to be created per
+     * consumer upon subscription, use {@link #defer(Supplier)} around {@code fromOptional}:
+     * <pre><code>
+     * Flowable.defer(() -&gt; Flowable.fromOptional(createOptional()));
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} supports backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromOptional} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the optional value
+     * @param optional the optional value to convert into a {@code Flowable}
+     * @return the new Flowable instance
+     * @see #just(Object)
+     * @see #empty()
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<@NonNull T> fromOptional(@NonNull Optional<T> optional) {
+        ObjectHelper.requireNonNull(optional, "optional is null");
+        return optional.map(Flowable::just).orElseGet(Flowable::empty);
+    }
+
+    /**
+     * Signals the completion value or error of the given (hot) {@link CompletionStage}-based asynchronous calculation.
+     * <p>
+     * <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.f.png" alt="">
+     * <p>
+     * Note that the operator takes an already instantiated, running or terminated {@code CompletionStage}.
+     * If the optional is to be created per consumer upon subscription, use {@link #defer(Supplier)}
+     * around {@code fromCompletionStage}:
+     * <pre><code>
+     * Flowable.defer(() -&gt; Flowable.fromCompletionStage(createCompletionStage()));
+     * </code></pre>
+     * <p>
+     * If the {@code CompletionStage} completes with {@code null}, a {@link NullPointerException} is signaled.
+     * <p>
+     * Canceling the flow can't cancel the execution of the {@code CompletionStage} because {@code CompletionStage}
+     * itself doesn't support cancellation. Instead, the operator detaches from the {@code CompletionStage}.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} supports backpressure and caches the completion value until the
+     *  downstream is ready to receive it.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletionStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the CompletionStage
+     * @param stage the CompletionStage to convert to Flowable and signal its terminal value or error
+     * @return the new Flowable instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<@NonNull T> fromCompletionStage(@NonNull CompletionStage<T> stage) {
+        ObjectHelper.requireNonNull(stage, "stage is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromCompletionStage<>(stage));
+    }
+
+    /**
+     * Converts a {@link Stream} into a finite {@code Flowable} and emits its items in the sequence.
+     * <p>
+     * <img width="640" height="347" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromStream.f.png" alt="">
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #fromIterable(Iterable)}:
+     * <pre><code>
+     * Stream&lt;T&gt; stream = ...
+     * Flowable.fromIterable(stream::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * IntStream intStream = IntStream.rangeClosed(1, 10);
+     * Flowable.fromStream(intStream.boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and iterates the given {@code Stream}
+     *  on demand (i.e., when requested).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the source {@code Stream}
+     * @param stream the {@code Stream} of values to emit
+     * @return the new Flowable instance
+     * @since 3.0.0
+     * @see #fromIterable(Iterable)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Flowable<@NonNull T> fromStream(@NonNull Stream<T> stream) {
+        ObjectHelper.requireNonNull(stream, "stream is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromStream<>(stream));
+    }
 }
