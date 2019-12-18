@@ -15,7 +15,7 @@
  */
 
 /**
- * Classes representing so-called hot sources, aka subjects, that implement a base reactive class and
+ * Classes representing so-called hot sources, aka <strong>subjects</strong>, that implement a base reactive class and
  * the respective consumer type at once to allow forms of multicasting events to multiple
  * consumers as well as consuming another base reactive type of their kind.
  * <p>

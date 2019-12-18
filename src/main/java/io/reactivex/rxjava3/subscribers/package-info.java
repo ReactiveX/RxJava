@@ -15,9 +15,10 @@
  */
 
 /**
- * Default wrappers and implementations for Subscriber-based consumer classes and interfaces,
- * including disposable and resource-tracking variants and
- * the {@link io.reactivex.rxjava3.subscribers.TestSubscriber} that allows unit testing
- * {@link io.reactivex.rxjava3.core.Flowable}-based flows.
+ * Default wrappers and implementations for {@link org.reactivestreams.Subscriber Subscriber}-based consumer classes and interfaces,
+ * including disposable ({@link io.reactivex.rxjava3.subscribers.DisposableSubscriber DisposableSubscriber}) and resource-tracking
+ * ({@link io.reactivex.rxjava3.subscribers.ResourceSubscriber ResourceSubscriber})
+ * variants and the {@link io.reactivex.rxjava3.subscribers.TestSubscriber TestSubscriber} that allows unit testing
+ * {@link io.reactivex.rxjava3.core.Flowable Flowable}-based flows.
  */
 package io.reactivex.rxjava3.subscribers;

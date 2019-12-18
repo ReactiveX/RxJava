@@ -15,6 +15,8 @@
  */
 
 /**
- * Annotations for indicating experimental and beta operators, classes, methods, types or fields.
+ * Annotations for indicating operator behavior, API stability
+ * ({@link io.reactivex.rxjava3.annotations.Experimental @Experimental} and {@link io.reactivex.rxjava3.annotations.Beta @Beta}) and
+ * nullability indicators ({@link io.reactivex.rxjava3.annotations.Nullable Nullable} and {@link io.reactivex.rxjava3.annotations.NonNull NonNull}).
  */
 package io.reactivex.rxjava3.annotations;
