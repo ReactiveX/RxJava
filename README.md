@@ -11,10 +11,10 @@ It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern)
 #### Version 3.x ([Javadoc](http://reactivex.io/RxJava/3.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
-- continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
+- Java 8+ ([Android](https://github.com/ReactiveX/RxAndroid) desugar friendly)
+- Java 8 lambda-friendly API
 - fixed API mistakes and many limits of RxJava 2
 - intended to be a replacement for RxJava 2 with relatively few binary incompatible changes
-- Java 8 lambda-friendly API
 - non-opinionated about the source of concurrency (threads, pools, event loops, fibers, actors, etc.)
 - async or synchronous execution
 - virtual time and schedulers for parameterized concurrency
@@ -58,19 +58,6 @@ public class HelloWorld {
         Flowable.just("Hello world").subscribe(System.out::println);
     }
 }
-```
-
-If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of `Consumer` manually:
-
-```java
-import io.reactivex.rxjava3.functions.Consumer;
-
-Flowable.just("Hello world")
-  .subscribe(new Consumer<String>() {
-      @Override public void accept(String s) {
-          System.out.println(s);
-      }
-  });
 ```
 
 Note that RxJava 3 components now live under `io.reactivex.rxjava3` and the base classes and interfaces live under `io.reactivex.rxjava3.core`.
@@ -557,7 +544,7 @@ Binaries and dependency information for Maven, Ivy, Gradle and others can be fou
 Example for Gradle:
 
 ```groovy
-compile 'io.reactivex.rxjava3:rxjava:x.y.z'
+implementation 'io.reactivex.rxjava3:rxjava:x.y.z'
 ```
 
 and for Maven:
@@ -575,6 +562,8 @@ and for Ivy:
 <dependency org="io.reactivex.rxjava3" name="rxjava" rev="x.y.z" />
 ```
 
+### Snapshots
+
 Snapshots are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava3/rxjava/
 
 ```groovy
@@ -586,6 +575,8 @@ dependencies {
     compile 'io.reactivex.rxjava3:rxjava:3.0.0-SNAPSHOT'
 }
 ```
+
+JavaDoc snapshots are available at http://reactivex.io/RxJava/3.x/javadoc/snapshot
 
 ## Build
 
