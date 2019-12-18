@@ -503,6 +503,12 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class, Scheduler.class, Long.TYPE, Boolean.TYPE));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class, Scheduler.class, Long.TYPE, Boolean.TYPE, Integer.TYPE));
 
+        // null value allowed
+
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "firstStage", Object.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "singleStage", Object.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "lastStage", Object.class));
+
         // -----------------------------------------------------------------------------------
 
         ignores = new HashMap<String, List<ParamIgnore>>();
