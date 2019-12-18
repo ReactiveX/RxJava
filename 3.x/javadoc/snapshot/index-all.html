@@ -4731,7 +4731,9 @@
 </dd>
 <dt><a href="io/reactivex/rxjava3/annotations/package-summary.html">io.reactivex.rxjava3.annotations</a> - package io.reactivex.rxjava3.annotations</dt>
 <dd>
-<div class="block">Annotations for indicating experimental and beta operators, classes, methods, types or fields.</div>
+<div class="block">Annotations for indicating operator behavior, API stability
+ (<a href="io/reactivex/rxjava3/annotations/Experimental.html" title="annotation in io.reactivex.rxjava3.annotations"><code>@Experimental</code></a> and <a href="io/reactivex/rxjava3/annotations/Beta.html" title="annotation in io.reactivex.rxjava3.annotations"><code>@Beta</code></a>) and
+ nullability indicators (<a href="io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations"><code>Nullable</code></a> and <a href="io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations"><code>NonNull</code></a>).</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a> - package io.reactivex.rxjava3.core</dt>
 <dd>
@@ -4742,14 +4744,17 @@
 </dd>
 <dt><a href="io/reactivex/rxjava3/disposables/package-summary.html">io.reactivex.rxjava3.disposables</a> - package io.reactivex.rxjava3.disposables</dt>
 <dd>
-<div class="block">Default implementations for Disposable-based resource management
- (Disposable container types) and utility classes to construct
- Disposables from callbacks and other types.</div>
+<div class="block">Default implementations for <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>-based resource management
+ (<code>Disposable</code> container types) and utility classes to construct
+ <a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables"><code>Disposables</code></a> from callbacks and other types.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/exceptions/package-summary.html">io.reactivex.rxjava3.exceptions</a> - package io.reactivex.rxjava3.exceptions</dt>
 <dd>
-<div class="block">Exception handling utilities, safe subscriber exception classes,
- lifecycle exception classes.</div>
+<div class="block">Exception handling utilities (<a href="io/reactivex/rxjava3/exceptions/Exceptions.html" title="class in io.reactivex.rxjava3.exceptions"><code>Exceptions</code></a>),
+ composite exception container (<a href="io/reactivex/rxjava3/exceptions/CompositeException.html" title="class in io.reactivex.rxjava3.exceptions"><code>CompositeException</code></a>) and
+ various lifecycle-reladed (<a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>UndeliverableException</code></a>)
+ and behavior-violation exception types (<a href="io/reactivex/rxjava3/exceptions/OnErrorNotImplementedException.html" title="class in io.reactivex.rxjava3.exceptions"><code>OnErrorNotImplementedException</code></a>,
+ <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>).</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/flowables/package-summary.html">io.reactivex.rxjava3.flowables</a> - package io.reactivex.rxjava3.flowables</dt>
 <dd>
@@ -4770,11 +4775,11 @@
 </dd>
 <dt><a href="io/reactivex/rxjava3/observers/package-summary.html">io.reactivex.rxjava3.observers</a> - package io.reactivex.rxjava3.observers</dt>
 <dd>
-<div class="block">Default wrappers and implementations for Observer-based consumer classes and interfaces,
+<div class="block">Default wrappers and implementations for observer-based consumer classes and interfaces,
  including disposable and resource-tracking variants and
  the <a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> that allows unit testing
- <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-, <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>-
- and <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
+ <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-,
+ <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>- and <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/parallel/package-summary.html">io.reactivex.rxjava3.parallel</a> - package io.reactivex.rxjava3.parallel</dt>
 <dd>
@@ -4803,15 +4808,16 @@
 </dd>
 <dt><a href="io/reactivex/rxjava3/subjects/package-summary.html">io.reactivex.rxjava3.subjects</a> - package io.reactivex.rxjava3.subjects</dt>
 <dd>
-<div class="block">Classes representing so-called hot sources, aka subjects, that implement a base reactive class and
+<div class="block">Classes representing so-called hot sources, aka <strong>subjects</strong>, that implement a base reactive class and
  the respective consumer type at once to allow forms of multicasting events to multiple
  consumers as well as consuming another base reactive type of their kind.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/subscribers/package-summary.html">io.reactivex.rxjava3.subscribers</a> - package io.reactivex.rxjava3.subscribers</dt>
 <dd>
-<div class="block">Default wrappers and implementations for Subscriber-based consumer classes and interfaces,
- including disposable and resource-tracking variants and
- the <a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>TestSubscriber</code></a> that allows unit testing
+<div class="block">Default wrappers and implementations for <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>-based consumer classes and interfaces,
+ including disposable (<a href="io/reactivex/rxjava3/subscribers/DisposableSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>DisposableSubscriber</code></a>) and resource-tracking
+ (<a href="io/reactivex/rxjava3/subscribers/ResourceSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>ResourceSubscriber</code></a>)
+ variants and the <a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>TestSubscriber</code></a> that allows unit testing
  <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>-based flows.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/FlowableEmitter.html#isCancelled--">isCancelled()</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/FlowableEmitter.html" title="interface in io.reactivex.rxjava3.core">FlowableEmitter</a></dt>
@@ -5765,7 +5771,7 @@
 <dd>&nbsp;</dd>
 <dt><a href="io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations"><span class="typeNameLink">Nullable</span></a> - Annotation Type in <a href="io/reactivex/rxjava3/annotations/package-summary.html">io.reactivex.rxjava3.annotations</a></dt>
 <dd>
-<div class="block">Indicates that a field/parameter/variable/return type may be null.</div>
+<div class="block">Indicates that a field/parameter/variable/type parameter/return type may be null.</div>
 </dd>
 </dl>
 <a name="I:O">

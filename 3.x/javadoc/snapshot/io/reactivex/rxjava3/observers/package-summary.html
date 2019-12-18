@@ -70,11 +70,11 @@
 <div class="header">
 <h1 title="Package" class="title">Package&nbsp;io.reactivex.rxjava3.observers</h1>
 <div class="docSummary">
-<div class="block">Default wrappers and implementations for Observer-based consumer classes and interfaces,
+<div class="block">Default wrappers and implementations for observer-based consumer classes and interfaces,
  including disposable and resource-tracking variants and
  the <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> that allows unit testing
- <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>-
- and <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
+ <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-,
+ <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>- and <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
 </div>
 <p>See:&nbsp;<a href="#package.description">Description</a></p>
 </div>
@@ -196,11 +196,45 @@
 <!--   -->
 </a>
 <h2 title="Package io.reactivex.rxjava3.observers Description">Package io.reactivex.rxjava3.observers Description</h2>
-<div class="block">Default wrappers and implementations for Observer-based consumer classes and interfaces,
+<div class="block">Default wrappers and implementations for observer-based consumer classes and interfaces,
  including disposable and resource-tracking variants and
  the <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> that allows unit testing
- <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>-
- and <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.</div>
+ <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>-, <a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>-,
+ <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>- and <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>-based flows.
+ <p>
+ Available observer variants
+ <br>
+ <table border="1" style="border-collapse: collapse;" summary="The available observer types.">
+ <tr><td><b>Reactive type</b></td><td><b>Base interface</b></td><td><b>Simple</b></td><td><b>Disposable</b></td><td><b>Resource</b></td></tr>
+ <tr>
+     <td><a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/DefaultObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DefaultObserver</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/DisposableObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableObserver</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/ResourceObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableObserver</code></a></td>
+ </tr>
+ <tr>
+     <td><a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a></td>
+     <td>N/A</td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/DisposableMaybeObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableMaybeObserver</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/ResourceMaybeObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableMaybeObserver</code></a></td>
+ </tr>
+ <tr>
+     <td><a href="../../../../io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a></td>
+     <td>N/A</td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableSingleObserver</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/ResourceSingleObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableSingleObserver</code></a></td>
+ </tr>
+ <tr>
+     <td><a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a></td>
+     <td>N/A</td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/DisposableCompletableObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableCompletableObserver</code></a></td>
+     <td><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html" title="class in io.reactivex.rxjava3.observers"><code>DisposableCompletableObserver</code></a></td>
+ </tr>
+ </table></div>
 </div>
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
 <div class="bottomNav"><a name="navbar.bottom">

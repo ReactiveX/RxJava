@@ -140,7 +140,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#SerialDisposable-io.reactivex.rxjava3.disposables.Disposable-">SerialDisposable</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;initialDisposable)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#SerialDisposable-io.reactivex.rxjava3.disposables.Disposable-">SerialDisposable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;initialDisposable)</code>
 <div class="block">Constructs a SerialDisposable with the given initial Disposable instance.</div>
 </td>
 </tr>
@@ -166,7 +166,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#get--">get</a></span>()</code>
 <div class="block">Returns the currently contained Disposable or null if this container is empty.</div>
 </td>
@@ -179,14 +179,14 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#replace-io.reactivex.rxjava3.disposables.Disposable-">replace</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#replace-io.reactivex.rxjava3.disposables.Disposable-">replace</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</code>
 <div class="block">Atomically: set the next disposable on this container but don't dispose the previous
  one (if any) or dispose next if the container has been disposed.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#set-io.reactivex.rxjava3.disposables.Disposable-">set</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/SerialDisposable.html#set-io.reactivex.rxjava3.disposables.Disposable-">set</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</code>
 <div class="block">Atomically: set the next disposable on this container and dispose the previous
  one (if any) or dispose next if the container has been disposed.</div>
 </td>
@@ -230,7 +230,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>SerialDisposable</h4>
 <pre>public&nbsp;SerialDisposable(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-                        <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;initialDisposable)</pre>
+                        <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;initialDisposable)</pre>
 <div class="block">Constructs a SerialDisposable with the given initial Disposable instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -253,7 +253,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>set</h4>
 <pre>public&nbsp;boolean&nbsp;set(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-                   <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</pre>
+                   <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</pre>
 <div class="block">Atomically: set the next disposable on this container and dispose the previous
  one (if any) or dispose next if the container has been disposed.</div>
 <dl>
@@ -273,7 +273,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>replace</h4>
 <pre>public&nbsp;boolean&nbsp;replace(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-                       <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</pre>
+                       <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;next)</pre>
 <div class="block">Atomically: set the next disposable on this container but don't dispose the previous
  one (if any) or dispose next if the container has been disposed.</div>
 <dl>
@@ -293,7 +293,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <li class="blockList">
 <h4>get</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
-public&nbsp;<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;get()</pre>
+public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;get()</pre>
 <div class="block">Returns the currently contained Disposable or null if this container is empty.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
