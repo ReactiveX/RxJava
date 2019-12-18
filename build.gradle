@@ -16,7 +16,7 @@ buildscript {
   ext.bintrayVersion = "1.8.4"
   ext.jfrogExtractorVersion = "4.11.0"
   ext.bndVersion = "4.3.1"
-  ext.checkstyleVersion = "6.19"
+  ext.checkstyleVersion = "8.26"
 
   // --------------------------------------
 
