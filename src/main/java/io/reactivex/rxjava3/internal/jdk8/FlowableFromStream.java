@@ -42,6 +42,16 @@ public final class FlowableFromStream<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
+        subscribeStream(s, stream);
+    }
+
+    /**
+     * Subscribes to the Stream by picking the normal or conditional stream Subscription implementation.
+     * @param <T> the element type of the flow
+     * @param s the subscriber to drive
+     * @param stream the sequence to consume
+     */
+    public static <T> void subscribeStream(Subscriber<? super T> s, Stream<T> stream) {
         Iterator<T> iterator;
         try {
             iterator = stream.iterator();
