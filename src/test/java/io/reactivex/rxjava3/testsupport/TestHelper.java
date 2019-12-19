@@ -3438,4 +3438,21 @@ public enum TestHelper {
             RxJavaPlugins.reset();
         }
     }
+
+    /**
+     * Assert if the given CompletableFuture fails with a specified error inside an ExecutionException.
+     * @param cf the CompletableFuture to test
+     * @param error the error class expected
+     */
+    public static void assertError(CompletableFuture<?> cf, Class<? extends Throwable> error) {
+        try {
+            cf.get();
+            fail("Should have thrown!");
+        } catch (Throwable ex) {
+            if (!error.isInstance(ex.getCause())) {
+                ex.printStackTrace();
+                fail("Wrong cause: " + ex.getCause());
+            }
+        }
+    }
 }
