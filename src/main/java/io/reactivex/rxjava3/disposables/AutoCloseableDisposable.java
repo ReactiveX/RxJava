@@ -10,34 +10,36 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.disposables;
 
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.functions.Action;
-import io.reactivex.rxjava3.internal.util.ExceptionHelper;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * A Disposable container that manages an {@link Action} instance.
+ * A disposable container that manages an {@link AutoCloseable} instance.
+ * @since 3.0.0
  */
-final class ActionDisposable extends ReferenceDisposable<Action> {
+final class AutoCloseableDisposable extends ReferenceDisposable<AutoCloseable> {
 
-    private static final long serialVersionUID = -8219729196779211169L;
+    private static final long serialVersionUID = -6646144244598696847L;
 
-    ActionDisposable(Action value) {
+    AutoCloseableDisposable(AutoCloseable value) {
         super(value);
     }
 
     @Override
-    protected void onDisposed(@NonNull Action value) {
+    protected void onDisposed(@NonNull AutoCloseable value) {
         try {
-            value.run();
+            value.close();
         } catch (Throwable ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
+            RxJavaPlugins.onError(ex);
         }
     }
 
     @Override
     public String toString() {
-        return "ActionDisposable(disposed=" + isDisposed() + ", " + get() + ")";
+        return "AutoCloseableDisposable(disposed=" + isDisposed() + ", " + get() + ")";
     }
+
 }
