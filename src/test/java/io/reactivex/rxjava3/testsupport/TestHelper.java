@@ -2987,6 +2987,17 @@ public enum TestHelper {
         }
     }
 
+    /**
+     * Strips the {@link QueueFuseable#BOUNDARY} mode flag when the downstream calls {@link QueueSubscription#requestFusion(int)}.
+     * <p>
+     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side-effects
+     * should not leak over a fused boundary. However, some tests want to verify if {@link QueueSubscription#poll()} crashes
+     * are handled correctly and the most convenient way is to crash {@link Flowable#map} that won't fuse with {@code BOUNDARY}
+     * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the
+     * {@code poll()} chain.
+     * @param <T> the element type of the flow
+     * @return the new Transformer instance
+     */
     public static <T> FlowableTransformer<T, T> flowableStripBoundary() {
         return new FlowableStripBoundary<>(null);
     }
@@ -3092,6 +3103,17 @@ public enum TestHelper {
         }
     }
 
+    /**
+     * Strips the {@link QueueFuseable#BOUNDARY} mode flag when the downstream calls {@link QueueDisposable#requestFusion(int)}.
+     * <p>
+     * By default, many operators use {@link QueueFuseable#BOUNDARY} to indicate upstream side-effects
+     * should not leak over a fused boundary. However, some tests want to verify if {@link QueueDisposable#poll()} crashes
+     * are handled correctly and the most convenient way is to crash {@link Observable#map} that won't fuse with {@code BOUNDARY}
+     * flag. This transformer strips this flag and thus allows the function of {@code map} to be executed as part of the
+     * {@code poll()} chain.
+     * @param <T> the element type of the flow
+     * @return the new Transformer instance
+     */
     public static <T> ObservableTransformer<T, T> observableStripBoundary() {
         return new ObservableStripBoundary<>(null);
     }

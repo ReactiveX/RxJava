@@ -18997,4 +18997,289 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final CompletionStage<T> lastOrErrorStage() {
         return subscribeWith(new FlowableLastStageSubscriber<>(false, null));
     }
+
+    /**
+     * Creates a sequential {@link Stream} to consume or process this {@code Flowable} in a blocking manner via
+     * the Java {@code Stream} API.
+     * <p>
+     * <img width="640" height="446" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingStream.f.png" alt="">
+     * <p>
+     * Cancellation of the upstream is done via {@link Stream#close()}, therefore, it is strongly recommended the
+     * consumption is performed within a try-with-resources construct:
+     * <pre><code>
+     * Flowable&lt;Integer&gt; source = Flowable.range(1, 10)
+     *        .subscribeOn(Schedulers.computation());
+     *
+     * try (Stream&lt;Integer&gt; stream = source.blockingStream()) {
+     *     stream.limit(3).forEach(System.out::println);
+     * }
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requests {@link #bufferSize()} amount upfront and 75% of it after each 75% of the amount received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the new Stream instance
+     * @since 3.0.0
+     * @see #blockingStream(int)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Stream<T> blockingStream() {
+        return blockingStream(bufferSize());
+    }
+
+    /**
+     * Creates a sequential {@link Stream} to consume or process this {@code Flowable} in a blocking manner via
+     * the Java {@code Stream} API.
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingStream.fi.png" alt="">
+     * <p>
+     * Cancellation of the upstream is done via {@link Stream#close()}, therefore, it is strongly recommended the
+     * consumption is performed within a try-with-resources construct:
+     * <pre><code>
+     * Flowable&lt;Integer&gt; source = Flowable.range(1, 10)
+     *        .subscribeOn(Schedulers.computation());
+     *
+     * try (Stream&lt;Integer&gt; stream = source.blockingStream(4)) {
+     *     stream.limit(3).forEach(System.out::println);
+     * }
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requests the given {@code prefetch} amount upfront and 75% of it after each 75% of the amount received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param prefetch the number of items to request from the upstream to limit the number of
+     * in-flight items and item generation.
+     * @return the new Stream instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Stream<T> blockingStream(int prefetch) {
+        Iterator<T> iterator = blockingIterable(prefetch).iterator();
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false)
+                .onClose(() -> ((Disposable)iterator).dispose());
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="327" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapStream.f.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #concatMapIterable(Function)}:
+     * <pre><code>
+     * source.concatMapIterable(v -&gt; createStream(v)::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.concatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the downstream backpressure and consumes the inner stream only on demand. The operator
+     *  prefetches {@link #bufferSize} items of the upstream (then 75% of it after the 75% received)
+     *  and caches them until they are ready to be mapped into {@code Stream}s
+     *  after the current {@code Stream} has been consumed.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @return the new Flowable instance
+     * @see #concatMap(Function)
+     * @see #concatMapIterable(Function)
+     * @see #concatMapStream(Function, int)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
+        return flatMapStream(mapper, bufferSize());
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapStream.fi.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #concatMapIterable(Function, int)}:
+     * <pre><code>
+     * source.concatMapIterable(v -&gt; createStream(v)::iterator, 32);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.concatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed(), 32);
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the downstream backpressure and consumes the inner stream only on demand. The operator
+     *  prefetches the given amount of upstream items and caches them until they are ready to be mapped into {@code Stream}s
+     *  after the current {@code Stream} has been consumed.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
+     * @return the new Flowable instance
+     * @see #concatMap(Function, int)
+     * @see #concatMapIterable(Function, int)
+     * @see #flatMapStream(Function, int)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper, int prefetch) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="328" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.f.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function)}:
+     * <pre><code>
+     * source.flatMapIterable(v -&gt; createStream(v)::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.flatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the downstream backpressure and consumes the inner stream only on demand. The operator
+     *  prefetches {@link #bufferSize} items of the upstream (then 75% of it after the 75% received)
+     *  and caches them until they are ready to be mapped into {@code Stream}s
+     *  after the current {@code Stream} has been consumed.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @return the new Flowable instance
+     * @see #flatMap(Function)
+     * @see #flatMapIterable(Function)
+     * @see #flatMapStream(Function, int)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
+        return flatMapStream(mapper, bufferSize());
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.fi.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function, int)}:
+     * <pre><code>
+     * source.flatMapIterable(v -&gt; createStream(v)::iterator, 32);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.flatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed(), 32);
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the downstream backpressure and consumes the inner stream only on demand. The operator
+     *  prefetches the given amount of upstream items and caches them until they are ready to be mapped into {@code Stream}s
+     *  after the current {@code Stream} has been consumed.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
+     * @return the new Flowable instance
+     * @see #flatMap(Function, int)
+     * @see #flatMapIterable(Function, int)
+     * @see #concatMapStream(Function, int)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Flowable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper, int prefetch) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapStream<>(this, mapper, prefetch));
+    }
 }
