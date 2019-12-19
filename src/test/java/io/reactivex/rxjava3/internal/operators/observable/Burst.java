@@ -16,7 +16,7 @@ import java.util.*;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * Creates {@link Observable} of a number of items followed by either an error or
@@ -36,7 +36,7 @@ public final class Burst<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(final Observer<? super T> observer) {
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
         for (T item: items) {
             observer.onNext(item);
         }

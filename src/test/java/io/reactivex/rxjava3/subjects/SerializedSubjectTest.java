@@ -410,7 +410,7 @@ public class SerializedSubjectTest extends RxJavaTest {
         }
         s.onComplete();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
         s.onSubscribe(bs);
         assertTrue(bs.isDisposed());
     }
@@ -522,7 +522,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserver<Integer> to = s.test();
 
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -551,7 +551,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserver<Integer> to = s.test();
 
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -643,8 +643,8 @@ public class SerializedSubjectTest extends RxJavaTest {
 
             TestObserver<Integer> to = s.test();
 
-            final Disposable bs1 = Disposables.empty();
-            final Disposable bs2 = Disposables.empty();
+            final Disposable bs1 = Disposable.empty();
+            final Disposable bs2 = Disposable.empty();
 
             Runnable r1 = new Runnable() {
                 @Override

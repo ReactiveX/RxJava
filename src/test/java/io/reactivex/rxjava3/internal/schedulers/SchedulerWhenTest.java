@@ -268,7 +268,7 @@ public class SchedulerWhenTest extends RxJavaTest {
                 @Override
                 protected Disposable callActual(Worker actualWorker,
                         CompletableObserver actionCompletable) {
-                    return Disposables.empty();
+                    return Disposable.empty();
                 }
 
             };
@@ -299,7 +299,7 @@ public class SchedulerWhenTest extends RxJavaTest {
             protected Disposable callActual(Worker actualWorker,
                     CompletableObserver actionCompletable) {
                 count.incrementAndGet();
-                return Disposables.empty();
+                return Disposable.empty();
             }
 
         };
@@ -320,7 +320,7 @@ public class SchedulerWhenTest extends RxJavaTest {
         assertEquals(0, count.get());
 
         // should not run when already scheduled
-        sa.set(Disposables.empty());
+        sa.set(Disposable.empty());
 
         sa.call(Schedulers.single().createWorker(), null);
 
@@ -336,7 +336,7 @@ public class SchedulerWhenTest extends RxJavaTest {
                     CompletableObserver actionCompletable) {
                 count.incrementAndGet();
                 dispose();
-                return Disposables.empty();
+                return Disposable.empty();
             }
 
         };

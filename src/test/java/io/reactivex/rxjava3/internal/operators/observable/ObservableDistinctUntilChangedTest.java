@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
@@ -196,7 +196,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Integer>() {
                 @Override
                 public void subscribe(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onNext(3);

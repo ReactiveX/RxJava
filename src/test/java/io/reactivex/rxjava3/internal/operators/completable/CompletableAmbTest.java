@@ -173,12 +173,12 @@ public class CompletableAmbTest extends RxJavaTest {
     @Test
     public void ambRace() {
         TestObserver<Void> to = new TestObserver<Void>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         CompositeDisposable cd = new CompositeDisposable();
         AtomicBoolean once = new AtomicBoolean();
         Amb a = new Amb(once, cd, to);
-        a.onSubscribe(Disposables.empty());
+        a.onSubscribe(Disposable.empty());
 
         a.onComplete();
         a.onComplete();

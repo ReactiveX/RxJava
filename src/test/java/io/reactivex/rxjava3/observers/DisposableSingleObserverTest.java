@@ -79,9 +79,9 @@ public class DisposableSingleObserverTest extends RxJavaTest {
         try {
             TestSingle<Integer> tc = new TestSingle<Integer>();
 
-            tc.onSubscribe(Disposables.empty());
+            tc.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             tc.onSubscribe(d);
 
@@ -102,7 +102,7 @@ public class DisposableSingleObserverTest extends RxJavaTest {
 
         assertTrue(tc.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         tc.onSubscribe(d);
 

@@ -44,7 +44,7 @@ public class EmptyComponentTest extends RxJavaTest {
 
             c.request(-10);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             c.onSubscribe(d);
 

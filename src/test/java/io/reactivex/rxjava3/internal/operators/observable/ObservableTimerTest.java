@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableTimer.TimerObserver;
@@ -349,7 +349,7 @@ public class ObservableTimerTest extends RxJavaTest {
     @Test
     public void cancelledAndRun() {
         TestObserver<Long> to = new TestObserver<Long>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
         TimerObserver tm = new TimerObserver(to);
 
         tm.dispose();

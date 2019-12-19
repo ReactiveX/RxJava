@@ -321,7 +321,7 @@ public class ObservableScanTest extends RxJavaTest {
             Observable.unsafeCreate(new ObservableSource<Integer>() {
                 @Override
                 public void subscribe(Observer<? super Integer> o) {
-                    Disposable d = Disposables.empty();
+                    Disposable d = Disposable.empty();
                     o.onSubscribe(d);
                     o.onNext(1);
                     o.onNext(2);
@@ -346,7 +346,7 @@ public class ObservableScanTest extends RxJavaTest {
         Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> o) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 o.onSubscribe(d);
                 o.onNext(1);
                 o.onNext(2);
@@ -369,7 +369,7 @@ public class ObservableScanTest extends RxJavaTest {
         Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> o) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 o.onSubscribe(d);
                 o.onNext(1);
                 o.onNext(2);

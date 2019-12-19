@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -42,7 +42,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 observer.onNext("two");
@@ -199,7 +199,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override

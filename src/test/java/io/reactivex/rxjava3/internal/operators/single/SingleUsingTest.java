@@ -101,7 +101,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void eagerMapperThrowsDisposerThrows() {
-        TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposables.empty()), mapperThrows, disposerThrows)
+        TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposable.empty()), mapperThrows, disposerThrows)
         .to(TestHelper.<Integer>testConsumer())
         .assertFailure(CompositeException.class);
 
@@ -116,7 +116,7 @@ public class SingleUsingTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justSupplier(Disposables.empty()), mapperThrows, disposerThrows, false)
+            Single.using(Functions.justSupplier(Disposable.empty()), mapperThrows, disposerThrows, false)
             .to(TestHelper.<Integer>testConsumer())
             .assertFailureAndMessage(TestException.class, "Mapper");
 
@@ -128,7 +128,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void resourceDisposedIfMapperCrashes() {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         Single.using(Functions.justSupplier(d), mapperThrows, disposer)
         .test()
@@ -139,7 +139,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void resourceDisposedIfMapperCrashesNonEager() {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         Single.using(Functions.justSupplier(d), mapperThrows, disposer, false)
         .test()
@@ -150,7 +150,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         Single.using(Functions.justSupplier(d), mapper, disposer, false)
         .test(true);
@@ -160,7 +160,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void disposerThrowsEager() {
-        Single.using(Functions.justSupplier(Disposables.empty()), mapper, disposerThrows)
+        Single.using(Functions.justSupplier(Disposable.empty()), mapper, disposerThrows)
         .test()
         .assertFailure(TestException.class);
     }
@@ -171,7 +171,7 @@ public class SingleUsingTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justSupplier(Disposables.empty()), mapper, disposerThrows, false)
+            Single.using(Functions.justSupplier(Disposable.empty()), mapper, disposerThrows, false)
             .test()
             .assertResult(1);
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
@@ -182,7 +182,7 @@ public class SingleUsingTest extends RxJavaTest {
 
     @Test
     public void errorAndDisposerThrowsEager() {
-        TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposables.empty()),
+        TestObserverEx<Integer> to = Single.using(Functions.justSupplier(Disposable.empty()),
         new Function<Disposable, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Disposable v) throws Exception {
@@ -202,7 +202,7 @@ public class SingleUsingTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justSupplier(Disposables.empty()),
+            Single.using(Functions.justSupplier(Disposable.empty()),
             new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
@@ -222,7 +222,7 @@ public class SingleUsingTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
@@ -264,11 +264,11 @@ public class SingleUsingTest extends RxJavaTest {
                     return new Single<Integer>() {
                         @Override
                         protected void subscribeActual(SingleObserver<? super Integer> observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
 
                             assertFalse(((Disposable)observer).isDisposed());
 
-                            Disposable d = Disposables.empty();
+                            Disposable d = Disposable.empty();
                             observer.onSubscribe(d);
 
                             assertTrue(d.isDisposed());
@@ -297,7 +297,7 @@ public class SingleUsingTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             final TestObserver<Integer> to = Single.using(Functions.justSupplier(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override

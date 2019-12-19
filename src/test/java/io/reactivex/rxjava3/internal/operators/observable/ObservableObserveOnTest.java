@@ -495,7 +495,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
                     observer.onError(new TestException());
@@ -675,7 +675,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
 
                 @SuppressWarnings("unchecked")
                 ObserveOnObserver<Integer> oo = (ObserveOnObserver<Integer>)observer;

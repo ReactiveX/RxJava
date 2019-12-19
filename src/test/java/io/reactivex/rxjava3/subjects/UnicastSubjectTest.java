@@ -262,7 +262,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Object> p = UnicastSubject.create();
         p.onComplete();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
         p.onSubscribe(bs);
 
         p.onNext(1);
@@ -381,7 +381,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             RxJavaPlugins.reset();
         }
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         us.onSubscribe(d);
 

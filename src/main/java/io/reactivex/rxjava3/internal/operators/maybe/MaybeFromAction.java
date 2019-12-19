@@ -34,7 +34,7 @@ public final class MaybeFromAction<T> extends Maybe<T> implements Supplier<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
 
         if (!d.isDisposed()) {

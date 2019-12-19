@@ -106,10 +106,10 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                Disposable bs1 = Disposables.empty();
+                Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
-                Disposable bs2 = Disposables.empty();
+                Disposable bs2 = Disposable.empty();
                 observer.onSubscribe(bs2);
 
                 assertFalse(bs1.isDisposed());
@@ -127,7 +127,7 @@ public class ObservableConcatWithCompletableTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                Disposable bs1 = Disposables.empty();
+                Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
                 assertFalse(((Disposable)observer).isDisposed());

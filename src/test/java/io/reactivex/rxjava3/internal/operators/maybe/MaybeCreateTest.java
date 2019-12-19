@@ -79,7 +79,7 @@ public class MaybeCreateTest extends RxJavaTest {
         Maybe.create(new MaybeOnSubscribe<Object>() {
             @Override
             public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 e.setDisposable(d);
 
                 try {
@@ -121,7 +121,7 @@ public class MaybeCreateTest extends RxJavaTest {
         Maybe.create(new MaybeOnSubscribe<Object>() {
             @Override
             public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 e.setDisposable(d);
 
                 try {
@@ -163,7 +163,7 @@ public class MaybeCreateTest extends RxJavaTest {
         Maybe.create(new MaybeOnSubscribe<Object>() {
             @Override
             public void subscribe(MaybeEmitter<Object> e) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 e.setDisposable(d);
 
                 try {

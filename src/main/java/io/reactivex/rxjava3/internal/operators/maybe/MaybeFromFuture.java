@@ -41,7 +41,7 @@ public final class MaybeFromFuture<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
         if (!d.isDisposed()) {
             T v;

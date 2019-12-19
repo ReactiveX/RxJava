@@ -202,9 +202,9 @@ public class LambdaObserverTest extends RxJavaTest {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
-                    Disposable d1 = Disposables.empty();
+                    Disposable d1 = Disposable.empty();
                     observer.onSubscribe(d1);
-                    Disposable d2 = Disposables.empty();
+                    Disposable d2 = Disposable.empty();
                     observer.onSubscribe(d2);
 
                     assertFalse(d1.isDisposed());
@@ -256,7 +256,7 @@ public class LambdaObserverTest extends RxJavaTest {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
                     observer.onComplete();

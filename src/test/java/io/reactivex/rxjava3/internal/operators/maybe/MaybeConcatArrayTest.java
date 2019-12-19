@@ -18,10 +18,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.subscribers.TestSubscriber;
@@ -142,7 +142,7 @@ public class MaybeConcatArrayTest extends RxJavaTest {
             new Maybe<Integer>() {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onSuccess(2);
                     o[0] = observer;
                 }

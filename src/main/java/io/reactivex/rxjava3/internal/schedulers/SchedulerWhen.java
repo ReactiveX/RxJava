@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ import io.reactivex.rxjava3.processors.*;
  * <p>
  * Limit the amount concurrency two at a time without creating a new fix size
  * thread pool:
- * 
+ *
  * <pre>
  * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
@@ -69,7 +69,7 @@ import io.reactivex.rxjava3.processors.*;
  * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.rxjava3.functions.BiFunction)} where
  * subscribing to the first {@link Observable} could deadlock the subscription
  * to the second.
- * 
+ *
  * <pre>
  * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
@@ -77,12 +77,12 @@ import io.reactivex.rxjava3.processors.*;
  *  return Completable.merge(Observable.merge(workers, 2));
  * });
  * </pre>
- * 
+ *
  * Slowing down the rate to no more than than 1 a second. This suffers from the
  * same problem as the one above I could find an {@link Observable} operator
  * that limits the rate without dropping the values (aka leaky bucket
  * algorithm).
- * 
+ *
  * <pre>
  * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
  *  // use concatenate to make each worker happen one at a time.
@@ -145,7 +145,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
 
     static final Disposable SUBSCRIBED = new SubscribedDisposable();
 
-    static final Disposable DISPOSED = Disposables.disposed();
+    static final Disposable DISPOSED = Disposable.disposed();
 
     @SuppressWarnings("serial")
     abstract static class ScheduledAction extends AtomicReference<Disposable> implements Disposable {

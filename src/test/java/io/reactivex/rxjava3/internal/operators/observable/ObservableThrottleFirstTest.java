@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.TestScheduler;
@@ -48,7 +48,7 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
-                innerObserver.onSubscribe(Disposables.empty());
+                innerObserver.onSubscribe(Disposable.empty());
                 publishNext(innerObserver, 100, "one");    // publish as it's first
                 publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
                 publishNext(innerObserver, 900, "three");   // publish
@@ -76,7 +76,7 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
-                innerObserver.onSubscribe(Disposables.empty());
+                innerObserver.onSubscribe(Disposable.empty());
                 Exception error = new TestException();
                 publishNext(innerObserver, 100, "one");    // Should be published since it is first
                 publishNext(innerObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
@@ -173,7 +173,7 @@ public class ObservableThrottleFirstTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onComplete();

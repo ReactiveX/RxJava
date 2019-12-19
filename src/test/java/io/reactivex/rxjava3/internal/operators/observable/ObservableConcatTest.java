@@ -86,7 +86,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(odds);
                 observer.onNext(even);
@@ -161,7 +161,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Observable<String>> observer) {
-                final Disposable d = Disposables.empty();
+                final Disposable d = Disposable.empty();
                 observer.onSubscribe(d);
                 parent.set(new Thread(new Runnable() {
 
@@ -348,7 +348,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(Observable.unsafeCreate(w1));
                 observer.onNext(Observable.unsafeCreate(w2));
@@ -666,7 +666,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("hello");
                 observer.onComplete();
                 observer.onComplete();

@@ -30,7 +30,7 @@ public final class CompletableFromCallable extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
         try {
             callable.call();

@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.TestObserverEx;
 
@@ -48,7 +48,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
             }
         };
 
-        o.onSubscribe(Disposables.disposed());
+        o.onSubscribe(Disposable.disposed());
 
         to.assertNotSubscribed();
 

@@ -188,7 +188,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Event> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -602,7 +602,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -681,7 +681,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -773,7 +773,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -850,7 +850,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -907,7 +907,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -968,7 +968,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Event> op) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 op.onSubscribe(d);
                 subscribeCounter.incrementAndGet();
                 int i = 0;
@@ -1427,7 +1427,7 @@ public class ObservableGroupByTest extends RxJavaTest {
                 new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         observer.onNext(0);
                         observer.onNext(1);
                         observer.onError(e);

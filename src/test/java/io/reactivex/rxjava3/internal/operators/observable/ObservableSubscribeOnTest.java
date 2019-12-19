@@ -43,7 +43,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
             @Override
             public void subscribe(
                     final Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 scheduled.countDown();
                 try {
                     try {
@@ -79,7 +79,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onError(new RuntimeException("fail"));
             }
 
@@ -153,7 +153,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 sub.onSubscribe(d);
                 for (int i = 1; !d.isDisposed(); i++) {
                     count.incrementAndGet();

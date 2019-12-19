@@ -56,7 +56,7 @@ public class SerialDisposableTests extends RxJavaTest {
         final Disposable underlying = mock(Disposable.class);
         serialDisposable.set(underlying);
 
-        serialDisposable.replace(Disposables.empty());
+        serialDisposable.replace(Disposable.empty());
         serialDisposable.dispose();
 
         verify(underlying, never()).dispose();
@@ -206,7 +206,7 @@ public class SerialDisposableTests extends RxJavaTest {
 
     @Test
     public void disposeState() {
-        Disposable empty = Disposables.empty();
+        Disposable empty = Disposable.empty();
         SerialDisposable d = new SerialDisposable(empty);
 
         assertFalse(d.isDisposed());

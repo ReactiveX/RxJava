@@ -26,7 +26,7 @@ public class DisposeOnCancelTest extends RxJavaTest {
 
     @Test
     public void basicCoverage() throws Exception {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         DisposeOnCancel doc = new DisposeOnCancel(d);
 

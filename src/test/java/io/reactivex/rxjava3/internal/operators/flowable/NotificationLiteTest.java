@@ -15,10 +15,10 @@ package io.reactivex.rxjava3.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.internal.util.NotificationLite;
@@ -80,7 +80,7 @@ public class NotificationLiteTest extends RxJavaTest {
 
     @Test
     public void disposableNotification() {
-        Object o = NotificationLite.disposable(Disposables.empty());
+        Object o = NotificationLite.disposable(Disposable.empty());
 
         assertEquals("NotificationLite.Disposable[RunnableDisposable(disposed=false, EmptyRunnable)]", o.toString());
 

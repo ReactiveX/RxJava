@@ -54,9 +54,9 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeFirst source = new TakeFirst(to);
 
-            source.onSubscribe(Disposables.empty());
+            source.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             source.onSubscribe(d);
 
             assertTrue(d.isDisposed());
@@ -77,7 +77,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeFirst source = new TakeFirst(to);
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onError(new TestException());
 
         to.assertFailure(TestException.class);
@@ -89,7 +89,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeFirst source = new TakeFirst(to);
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onComplete();
 
         to.assertResult();
@@ -101,7 +101,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeFirst source = new TakeFirst(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -122,7 +122,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeFirst source = new TakeFirst(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -152,7 +152,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeFirst source = new TakeFirst(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -197,7 +197,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -222,7 +222,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -247,7 +247,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -272,7 +272,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -295,7 +295,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -337,7 +337,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -350,7 +350,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -365,7 +365,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -417,7 +417,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -456,7 +456,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -503,7 +503,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
 
         to.assertNoValues().assertNoErrors().assertComplete();

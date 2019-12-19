@@ -120,7 +120,7 @@ public final class TrampolineScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
-                return Disposables.fromRunnable(new AppendToQueueTask(timedRunnable));
+                return Disposable.fromRunnable(new AppendToQueueTask(timedRunnable));
             }
         }
 

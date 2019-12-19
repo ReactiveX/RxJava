@@ -20,10 +20,10 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
@@ -221,7 +221,7 @@ public class ObservableSerializeTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -272,7 +272,7 @@ public class ObservableSerializeTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();
             t = new Thread(new Runnable() {

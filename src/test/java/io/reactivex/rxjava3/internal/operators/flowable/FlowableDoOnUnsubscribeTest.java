@@ -72,7 +72,7 @@ public class FlowableDoOnUnsubscribeTest extends RxJavaTest {
 
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
-            subscriptions.add(Disposables.fromSubscription(subscriber));
+            subscriptions.add(Disposable.fromSubscription(subscriber));
             longs.subscribe(subscriber);
             subscribers.add(subscriber);
         }
@@ -134,7 +134,7 @@ public class FlowableDoOnUnsubscribeTest extends RxJavaTest {
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
             longs.subscribe(subscriber);
-            subscriptions.add(Disposables.fromSubscription(subscriber));
+            subscriptions.add(Disposable.fromSubscription(subscriber));
             subscribers.add(subscriber);
         }
 

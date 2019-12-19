@@ -234,7 +234,7 @@ public class MaybeSubjectTest extends RxJavaTest {
     public void onSubscribeDispose() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ms.onSubscribe(d);
 
@@ -242,7 +242,7 @@ public class MaybeSubjectTest extends RxJavaTest {
 
         ms.onComplete();
 
-        d = Disposables.empty();
+        d = Disposable.empty();
 
         ms.onSubscribe(d);
 

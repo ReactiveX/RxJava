@@ -20,12 +20,12 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 
 public class BlockingObservableToFutureTest extends RxJavaTest {
@@ -65,7 +65,7 @@ public class BlockingObservableToFutureTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onError(new TestException());
             }

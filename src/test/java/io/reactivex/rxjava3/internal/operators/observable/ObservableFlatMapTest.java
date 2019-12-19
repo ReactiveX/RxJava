@@ -992,7 +992,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
                     }
                 }, true, Integer.MAX_VALUE, 128);
 
-        merger.onSubscribe(Disposables.empty());
+        merger.onSubscribe(Disposable.empty());
         merger.getAndIncrement();
 
         merger.onNext(0);

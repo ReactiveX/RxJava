@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -56,7 +56,7 @@ public class MaybePeekTest extends RxJavaTest {
             TestObserverEx<Integer> to = new Maybe<Integer>() {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
                 }
@@ -87,7 +87,7 @@ public class MaybePeekTest extends RxJavaTest {
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onComplete();
             }

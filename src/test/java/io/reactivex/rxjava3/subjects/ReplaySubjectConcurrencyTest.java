@@ -19,12 +19,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -43,7 +43,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {
-                        o.onSubscribe(Disposables.empty());
+                        o.onSubscribe(Disposable.empty());
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
@@ -153,7 +153,7 @@ public class ReplaySubjectConcurrencyTest extends RxJavaTest {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {
-                        o.onSubscribe(Disposables.empty());
+                        o.onSubscribe(Disposable.empty());
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);

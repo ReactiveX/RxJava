@@ -20,12 +20,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -663,7 +663,7 @@ public class ObservableConcatMapSchedulerTest {
             @Override
             protected void subscribeActual(Observer<? super Integer> o) {
                 ts0[0] = o;
-                o.onSubscribe(Disposables.empty());
+                o.onSubscribe(Disposable.empty());
                 o.onError(new TestException("First"));
             }
         }), 2, ImmediateThinScheduler.INSTANCE)
@@ -689,7 +689,7 @@ public class ObservableConcatMapSchedulerTest {
             @Override
             protected void subscribeActual(Observer<? super Integer> o) {
                 ts0[0] = o;
-                o.onSubscribe(Disposables.empty());
+                o.onSubscribe(Disposable.empty());
                 o.onError(new TestException("First"));
             }
         }), true, 2, ImmediateThinScheduler.INSTANCE)

@@ -33,7 +33,7 @@ public final class CompletableFromSupplier extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
         try {
             supplier.get();

@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -232,7 +232,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onError(new IOException());
@@ -262,7 +262,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
             })
@@ -289,7 +289,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
             })
@@ -313,7 +313,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
             }
         })
@@ -335,7 +335,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onError(new IOException());
@@ -366,7 +366,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
             })
@@ -410,7 +410,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
             })
@@ -435,7 +435,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
             }
         })

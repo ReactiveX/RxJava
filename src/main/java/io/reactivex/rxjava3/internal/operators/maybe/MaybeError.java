@@ -14,7 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.maybe;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * Signals a constant Throwable.
@@ -31,7 +31,7 @@ public final class MaybeError<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        observer.onSubscribe(Disposables.disposed());
+        observer.onSubscribe(Disposable.disposed());
         observer.onError(error);
     }
 }

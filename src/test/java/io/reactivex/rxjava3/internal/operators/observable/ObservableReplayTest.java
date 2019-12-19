@@ -892,7 +892,7 @@ public class ObservableReplayTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 new Thread(new Runnable() {
 
                     @Override
@@ -1028,7 +1028,7 @@ public class ObservableReplayTest extends RxJavaTest {
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposables.empty());
+                t.onSubscribe(Disposable.empty());
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }
@@ -1232,7 +1232,7 @@ public class ObservableReplayTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onNext(1);
                     observer.onError(new TestException("Second"));
@@ -1438,7 +1438,7 @@ public class ObservableReplayTest extends RxJavaTest {
         .connect()
         .dispose();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         sub[0].onSubscribe(bs);
 

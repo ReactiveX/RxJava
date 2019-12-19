@@ -18,10 +18,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -145,7 +145,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
             }.takeUntil(Completable.complete())
@@ -167,7 +167,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
             }.takeUntil(Completable.complete())
@@ -192,7 +192,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             .takeUntil(new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
             })
@@ -219,7 +219,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
             .takeUntil(new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
             })

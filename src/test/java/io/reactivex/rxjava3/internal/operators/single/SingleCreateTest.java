@@ -36,7 +36,7 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void basic() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Single.<Integer>create(new SingleOnSubscribe<Integer>() {
             @Override
@@ -57,8 +57,8 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void basicWithCancellable() {
-        final Disposable d1 = Disposables.empty();
-        final Disposable d2 = Disposables.empty();
+        final Disposable d1 = Disposable.empty();
+        final Disposable d2 = Disposable.empty();
 
         Single.<Integer>create(new SingleOnSubscribe<Integer>() {
             @Override
@@ -86,7 +86,7 @@ public class SingleCreateTest extends RxJavaTest {
 
     @Test
     public void basicWithError() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Single.<Integer>create(new SingleOnSubscribe<Integer>() {
             @Override
@@ -193,7 +193,7 @@ public class SingleCreateTest extends RxJavaTest {
         Single.create(new SingleOnSubscribe<Object>() {
             @Override
             public void subscribe(SingleEmitter<Object> s) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 s.setDisposable(d);
                 try {
                     s.onSuccess(1);
@@ -257,7 +257,7 @@ public class SingleCreateTest extends RxJavaTest {
         Single.create(new SingleOnSubscribe<Object>() {
             @Override
             public void subscribe(SingleEmitter<Object> s) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 s.setDisposable(d);
                 try {
                     s.onError(new IOException());

@@ -80,9 +80,9 @@ public class QueueDrainObserverTest extends RxJavaTest {
     @Test
     public void unorderedSlowPath() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createUnordered(to, d);
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         qd.enter();
         qd.onNext(1);
@@ -93,9 +93,9 @@ public class QueueDrainObserverTest extends RxJavaTest {
     @Test
     public void orderedSlowPath() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         qd.enter();
         qd.onNext(1);
@@ -106,9 +106,9 @@ public class QueueDrainObserverTest extends RxJavaTest {
     @Test
     public void orderedSlowPathNonEmptyQueue() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         qd.queue.offer(0);
         qd.onNext(1);
@@ -121,9 +121,9 @@ public class QueueDrainObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
             TestObserver<Integer> to = new TestObserver<Integer>();
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             final QueueDrainObserver<Integer, Integer, Integer> qd = createUnordered(to, d);
-            to.onSubscribe(Disposables.empty());
+            to.onSubscribe(Disposable.empty());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -143,9 +143,9 @@ public class QueueDrainObserverTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
             TestObserver<Integer> to = new TestObserver<Integer>();
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             final QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
-            to.onSubscribe(Disposables.empty());
+            to.onSubscribe(Disposable.empty());
 
             Runnable r1 = new Runnable() {
                 @Override

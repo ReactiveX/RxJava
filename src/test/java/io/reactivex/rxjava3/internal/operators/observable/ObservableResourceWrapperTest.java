@@ -30,7 +30,7 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
         TestObserver<Object> to = new TestObserver<Object>();
         ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<Object>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         orw.onSubscribe(d);
 
@@ -54,8 +54,8 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
         TestObserver<Object> to = new TestObserver<Object>();
         ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<Object>(to);
 
-        Disposable d = Disposables.empty();
-        Disposable d1 = Disposables.empty();
+        Disposable d = Disposable.empty();
+        Disposable d1 = Disposable.empty();
 
         orw.setResource(d1);
 

@@ -48,7 +48,7 @@ public class FlowableCreateTest extends RxJavaTest {
     public void basic() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
                 @Override
@@ -81,8 +81,8 @@ public class FlowableCreateTest extends RxJavaTest {
     public void basicWithCancellable() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d1 = Disposables.empty();
-            final Disposable d2 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
+            final Disposable d2 = Disposable.empty();
 
             Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
                 @Override
@@ -122,7 +122,7 @@ public class FlowableCreateTest extends RxJavaTest {
     public void basicWithError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
                 @Override
@@ -153,7 +153,7 @@ public class FlowableCreateTest extends RxJavaTest {
     public void basicSerialized() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
                 @Override
@@ -188,7 +188,7 @@ public class FlowableCreateTest extends RxJavaTest {
     public void basicWithErrorSerialized() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
                 @Override
@@ -778,7 +778,7 @@ public class FlowableCreateTest extends RxJavaTest {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    Disposable d = Disposables.empty();
+                    Disposable d = Disposable.empty();
                     e.setDisposable(d);
                     try {
                         e.onError(new IOException());
@@ -816,7 +816,7 @@ public class FlowableCreateTest extends RxJavaTest {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
-                    Disposable d = Disposables.empty();
+                    Disposable d = Disposable.empty();
                     e.setDisposable(d);
                     try {
                         e.onComplete();

@@ -30,7 +30,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
         BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
         bmo.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         bmo.onSubscribe(d);
     }

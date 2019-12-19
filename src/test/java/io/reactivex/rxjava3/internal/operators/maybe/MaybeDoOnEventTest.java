@@ -58,7 +58,7 @@ public class MaybeDoOnEventTest extends RxJavaTest {
     public void onSubscribeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             new Maybe<Integer>() {
                 @Override

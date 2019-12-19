@@ -209,7 +209,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
             public Disposable get() {
-                return Disposables.fromRunnable(unsubscribe);
+                return Disposable.fromRunnable(unsubscribe);
             }
         };
 
@@ -538,7 +538,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
             }
@@ -553,7 +553,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onError(new TestException());
             }

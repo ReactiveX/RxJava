@@ -163,7 +163,7 @@ public class FlowableConcatTest {
 
             @Override
             public void subscribe(final Subscriber<? super Flowable<String>> subscriber) {
-                final Disposable d = Disposables.empty();
+                final Disposable d = Disposable.empty();
                 subscriber.onSubscribe(new Subscription() {
                     @Override
                     public void request(long n) {

@@ -46,7 +46,7 @@ public class SafeObserverTest extends RxJavaTest {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
             SafeObserver<String> safeObserver = new SafeObserver<String>(OBSERVER_ONNEXT_FAIL(onError));
-            safeObserver.onSubscribe(Disposables.empty());
+            safeObserver.onSubscribe(Disposable.empty());
             safeObserver.onNext("one");
             assertNotNull(onError.get());
             assertTrue(onError.get() instanceof SafeObserverTestException);
@@ -209,7 +209,7 @@ public class SafeObserverTest extends RxJavaTest {
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 
@@ -226,7 +226,7 @@ public class SafeObserverTest extends RxJavaTest {
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 
@@ -247,7 +247,7 @@ public class SafeObserverTest extends RxJavaTest {
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 
@@ -298,7 +298,7 @@ public class SafeObserverTest extends RxJavaTest {
 
         SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 

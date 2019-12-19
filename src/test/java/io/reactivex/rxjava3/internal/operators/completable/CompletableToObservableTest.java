@@ -43,7 +43,7 @@ public class CompletableToObservableTest extends RxJavaTest {
 
         ObserverCompletableObserver co = new ObserverCompletableObserver(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         co.onSubscribe(d);
 

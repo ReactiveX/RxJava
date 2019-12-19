@@ -210,7 +210,7 @@ public class FlowableUsingTest extends RxJavaTest {
         Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
             public Disposable get() {
-                return Disposables.fromRunnable(unsubscribe);
+                return Disposable.fromRunnable(unsubscribe);
             }
         };
 

@@ -220,7 +220,7 @@ public class SerializedObserverTest extends RxJavaTest {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
             Observer<String> w = serializedObserver(new SafeObserver<String>(tw));
-            w.onSubscribe(Disposables.empty());
+            w.onSubscribe(Disposable.empty());
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -383,7 +383,7 @@ public class SerializedObserverTest extends RxJavaTest {
         AtomicInteger p1 = new AtomicInteger();
         AtomicInteger p2 = new AtomicInteger();
 
-        o.onSubscribe(Disposables.empty());
+        o.onSubscribe(Disposable.empty());
         DisposableObserver<String> as1 = new DisposableObserver<String>() {
             @Override
             public void onNext(String t) {
@@ -446,7 +446,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                Disposable bs = Disposables.empty();
+                Disposable bs = Disposable.empty();
                 observer.onSubscribe(bs);
                 while (!bs.isDisposed()) {
                     observer.onNext("onNext");
@@ -651,7 +651,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -703,7 +703,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
@@ -859,7 +859,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 }
             };
             SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
-            sobs.onSubscribe(Disposables.empty());
+            sobs.onSubscribe(Disposable.empty());
             serial.set(sobs);
 
             sobs.onNext(1);
@@ -886,7 +886,7 @@ public class SerializedObserverTest extends RxJavaTest {
             }
         };
         SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
-        sobs.onSubscribe(Disposables.empty());
+        sobs.onSubscribe(Disposable.empty());
         serial.set(sobs);
 
         sobs.onNext(1);
@@ -902,7 +902,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 
@@ -922,7 +922,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             so.onSubscribe(d);
 
@@ -948,7 +948,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             so.onSubscribe(d);
 
@@ -984,7 +984,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             so.onSubscribe(d);
 
@@ -1022,7 +1022,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to, true);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             so.onSubscribe(d);
 
@@ -1063,9 +1063,9 @@ public class SerializedObserverTest extends RxJavaTest {
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-            so.onSubscribe(Disposables.empty());
+            so.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             so.onSubscribe(d);
 
@@ -1087,7 +1087,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
                 final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
 
                 so.onSubscribe(d);
 
@@ -1134,7 +1134,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
         final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         so.onSubscribe(d);
 

@@ -20,12 +20,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -64,7 +64,7 @@ public class ObservableCacheTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 new Thread(new Runnable() {
 
                     @Override
@@ -198,7 +198,7 @@ public class ObservableCacheTest extends RxJavaTest {
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposables.empty());
+                t.onSubscribe(Disposable.empty());
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }

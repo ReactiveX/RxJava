@@ -19,12 +19,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.internal.schedulers.IoScheduler;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -99,7 +99,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> t1) {
-            t1.onSubscribe(Disposables.empty());
+            t1.onSubscribe(Disposable.empty());
             new Thread(new Runnable() {
 
                 @Override

@@ -37,7 +37,7 @@ public final class TimesteppingScheduler extends Scheduler {
         @Override
         public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             run.run();
-            return Disposables.disposed();
+            return Disposable.disposed();
         }
 
         @Override

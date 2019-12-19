@@ -4257,7 +4257,7 @@ public class CompletableTest extends RxJavaTest {
         Completable.unsafeCreate(new CompletableSource() {
                 @Override
                 public void subscribe(CompletableObserver co) {
-                    co.onSubscribe(Disposables.empty());
+                    co.onSubscribe(Disposable.empty());
                     co.onError(e);
                 }
             })

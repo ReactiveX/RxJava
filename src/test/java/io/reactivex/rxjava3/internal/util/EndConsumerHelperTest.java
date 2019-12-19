@@ -209,13 +209,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -244,13 +244,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -279,13 +279,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -310,13 +310,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -341,13 +341,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -376,13 +376,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -411,13 +411,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -442,13 +442,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -473,13 +473,13 @@ public class EndConsumerHelperTest extends RxJavaTest {
             }
         };
 
-        Disposable sub1 = Disposables.empty();
+        Disposable sub1 = Disposable.empty();
 
         consumer.onSubscribe(sub1);
 
         assertFalse(sub1.isDisposed());
 
-        Disposable sub2 = Disposables.empty();
+        Disposable sub2 = Disposable.empty();
 
         consumer.onSubscribe(sub2);
 
@@ -494,7 +494,7 @@ public class EndConsumerHelperTest extends RxJavaTest {
 
     @Test
     public void validateDisposable() {
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         assertFalse(EndConsumerHelper.validate(DisposableHelper.DISPOSED, d1, getClass()));
 

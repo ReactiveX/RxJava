@@ -137,11 +137,11 @@ public class FutureObserverTest extends RxJavaTest {
 
         try {
 
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             fo.onSubscribe(d1);
 
-            Disposable d2 = Disposables.empty();
+            Disposable d2 = Disposable.empty();
 
             fo.onSubscribe(d2);
 

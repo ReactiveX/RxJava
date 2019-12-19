@@ -71,7 +71,7 @@ public final class SerialDisposable implements Disposable {
     public Disposable get() {
         Disposable d = resource.get();
         if (d == DisposableHelper.DISPOSED) {
-            return Disposables.disposed();
+            return Disposable.disposed();
         }
         return d;
     }

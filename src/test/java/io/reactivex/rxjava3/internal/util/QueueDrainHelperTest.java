@@ -317,7 +317,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
         q.offer(1);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         QueueDrainHelper.drainMaxLoop(q, ts, false, d, qd);
 
@@ -600,7 +600,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedDelayErrorEmpty() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -643,7 +643,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedDelayErrorEmptyResource() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -678,7 +678,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         QueueDrainHelper.checkTerminated(true, true, to, true, q, d, qd);
 
@@ -690,7 +690,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedDelayErrorNonEmpty() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -733,7 +733,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedDelayErrorEmptyError() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -776,7 +776,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedNonDelayErrorError() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -819,7 +819,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void observerCheckTerminatedNonDelayErrorErrorResource() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -854,7 +854,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         QueueDrainHelper.checkTerminated(true, false, to, false, q, d, qd);
 

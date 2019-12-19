@@ -362,14 +362,14 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     public void onSubscribeAfterDone() {
         AsyncSubject<Object> p = AsyncSubject.create();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
         p.onSubscribe(bs);
 
         assertFalse(bs.isDisposed());
 
         p.onComplete();
 
-        bs = Disposables.empty();
+        bs = Disposable.empty();
         p.onSubscribe(bs);
 
         assertTrue(bs.isDisposed());

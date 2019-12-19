@@ -81,7 +81,7 @@ import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
  * underlying task-execution scheme supports stopping and restarting itself.
  * <p>
  * If the {@code Scheduler} is shut down or a {@code Worker} is disposed, the {@code schedule} methods
- * should return the {@link io.reactivex.rxjava3.disposables.Disposables#disposed()} singleton instance indicating the shut down/disposed
+ * should return the {@link Disposable#disposed()} singleton instance indicating the shut down/disposed
  * state to the caller. Since the shutdown or dispose can happen from any thread, the {@code schedule} implementations
  * should make best effort to cancel tasks immediately after those tasks have been submitted to the
  * underlying task-execution scheme if the shutdown/dispose was detected after this submission.
@@ -349,7 +349,7 @@ public abstract class Scheduler {
      * re-adjust the absolute/relative time calculation accordingly.
      * <p>
      * If the {@code Worker} is disposed, the {@code schedule} methods
-     * should return the {@link io.reactivex.rxjava3.disposables.Disposables#disposed()} singleton instance indicating the disposed
+     * should return the {@link Disposable#disposed()} singleton instance indicating the disposed
      * state to the caller. Since the {@link #dispose()} call can happen on any thread, the {@code schedule} implementations
      * should make best effort to cancel tasks immediately after those tasks have been submitted to the
      * underlying task-execution scheme if the dispose was detected after this submission.

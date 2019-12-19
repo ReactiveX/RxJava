@@ -146,7 +146,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void unorderedFastPathNoRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -160,7 +160,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void orderedFastPathNoRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -174,7 +174,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void acceptBadRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -192,7 +192,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void unorderedFastPathRequest1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -206,7 +206,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void orderedFastPathRequest1() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -220,7 +220,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void unorderedSlowPath() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -233,7 +233,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void orderedSlowPath() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -246,7 +246,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void orderedSlowPathNonEmptyQueue() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -262,7 +262,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             final QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
             ts.onSubscribe(new BooleanSubscription());
 
@@ -285,7 +285,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             final QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
             ts.onSubscribe(new BooleanSubscription());
 
@@ -306,7 +306,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void unorderedFastPathReject() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnorderedReject(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 
@@ -322,7 +322,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     @Test
     public void orderedFastPathReject() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrderedReject(ts, d);
         ts.onSubscribe(new BooleanSubscription());
 

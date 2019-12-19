@@ -77,7 +77,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -102,7 +102,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -121,7 +121,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -140,7 +140,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -217,9 +217,9 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
         try {
             TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
 
-            rmo.onSubscribe(Disposables.empty());
+            rmo.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             rmo.onSubscribe(d);
 
@@ -238,7 +238,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
         TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
         rmo.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.onSubscribe(d);
 
