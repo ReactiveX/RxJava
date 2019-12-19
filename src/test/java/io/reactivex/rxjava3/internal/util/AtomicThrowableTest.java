@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -124,7 +124,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerObserverNoError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.tryTerminateConsumer((Observer<Object>)to);
@@ -134,7 +134,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerObserverError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.set(new TestException());
@@ -145,7 +145,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerObserverTerminated() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.terminate();
@@ -156,7 +156,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerMaybeObserverNoError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.tryTerminateConsumer((MaybeObserver<Object>)to);
@@ -166,7 +166,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerMaybeObserverError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.set(new TestException());
@@ -177,7 +177,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerMaybeObserverTerminated() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.terminate();
@@ -188,7 +188,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerSingleNoError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.tryTerminateConsumer((SingleObserver<Object>)to);
@@ -198,7 +198,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerSingleError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.set(new TestException());
@@ -209,7 +209,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerSingleTerminated() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.terminate();
@@ -220,7 +220,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerCompletableObserverNoError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.tryTerminateConsumer((CompletableObserver)to);
@@ -230,7 +230,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerCompletableObserverError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.set(new TestException());
@@ -241,7 +241,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerCompletableObserverTerminated() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.terminate();
@@ -271,7 +271,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerEmitterNoError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.tryTerminateConsumer(wrapToEmitter(to));
@@ -281,7 +281,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerEmitterError() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.set(new TestException());
@@ -292,7 +292,7 @@ public class AtomicThrowableTest extends RxJavaTest {
     @Test
     public void tryTerminateConsumerEmitterTerminated() {
         TestObserver<Object> to = new TestObserver<Object>();
-        to.onSubscribe(Disposables.empty());
+        to.onSubscribe(Disposable.empty());
 
         AtomicThrowable ex = new AtomicThrowable();
         ex.terminate();

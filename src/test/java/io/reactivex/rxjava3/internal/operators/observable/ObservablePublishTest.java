@@ -45,7 +45,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 new Thread(new Runnable() {
 
                     @Override
@@ -354,7 +354,7 @@ public class ObservablePublishTest extends RxJavaTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(Disposables.empty());
+                t.onSubscribe(Disposable.empty());
                 calls.getAndIncrement();
             }
         });
@@ -589,7 +589,7 @@ public class ObservablePublishTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onComplete();
                     observer.onNext(2);
@@ -715,7 +715,7 @@ public class ObservablePublishTest extends RxJavaTest {
         .connect()
         .dispose();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         sub[0].onSubscribe(bs);
 

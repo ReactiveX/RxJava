@@ -36,7 +36,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
     @Test
     public void basic() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable.<Integer>create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -61,8 +61,8 @@ public class ObservableCreateTest extends RxJavaTest {
 
     @Test
     public void basicWithCancellable() {
-        final Disposable d1 = Disposables.empty();
-        final Disposable d2 = Disposables.empty();
+        final Disposable d1 = Disposable.empty();
+        final Disposable d2 = Disposable.empty();
 
         Observable.<Integer>create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -94,7 +94,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
     @Test
     public void basicWithError() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable.<Integer>create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -118,7 +118,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
     @Test
     public void basicSerialized() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable.<Integer>create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -145,7 +145,7 @@ public class ObservableCreateTest extends RxJavaTest {
 
     @Test
     public void basicWithErrorSerialized() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable.<Integer>create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -174,7 +174,7 @@ public class ObservableCreateTest extends RxJavaTest {
         Observable.wrap(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext(1);
                 observer.onNext(2);
                 observer.onNext(3);
@@ -192,7 +192,7 @@ public class ObservableCreateTest extends RxJavaTest {
         Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext(1);
                 observer.onNext(2);
                 observer.onNext(3);
@@ -322,7 +322,7 @@ public class ObservableCreateTest extends RxJavaTest {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 e.setDisposable(d);
                 try {
                     e.onError(new IOException());
@@ -358,7 +358,7 @@ public class ObservableCreateTest extends RxJavaTest {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e) throws Exception {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 e.setDisposable(d);
                 try {
                     e.onComplete();

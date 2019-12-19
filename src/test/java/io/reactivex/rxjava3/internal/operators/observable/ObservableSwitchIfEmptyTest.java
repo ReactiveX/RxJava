@@ -54,7 +54,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchTriggerUnsubscribe() throws Exception {
 
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable<Long> withProducer = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
@@ -96,7 +96,7 @@ public class ObservableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void switchShouldTriggerUnsubscribe() {
-        final Disposable d = Disposables.empty();
+        final Disposable d = Disposable.empty();
 
         Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override

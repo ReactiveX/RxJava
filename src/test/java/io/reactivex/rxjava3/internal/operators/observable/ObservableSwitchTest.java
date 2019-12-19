@@ -57,11 +57,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 70, "one");
                         publishNext(innerObserver, 100, "two");
                         publishCompleted(innerObserver, 200);
@@ -86,11 +86,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 10, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 0, "one");
                         publishNext(innerObserver, 10, "two");
                         publishCompleted(innerObserver, 20);
@@ -100,7 +100,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 100, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 0, "three");
                         publishNext(innerObserver, 10, "four");
                         publishCompleted(innerObserver, 20);
@@ -132,11 +132,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 60, "one");
                         publishNext(innerObserver, 100, "two");
                     }
@@ -145,7 +145,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 0, "three");
                         publishNext(innerObserver, 100, "four");
                     }
@@ -191,11 +191,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(final Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 50, "one");
                         publishNext(innerObserver, 100, "two");
                     }
@@ -204,7 +204,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 200, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 0, "three");
                         publishNext(innerObserver, 100, "four");
                     }
@@ -250,11 +250,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 50, "one");
                         publishNext(innerObserver, 100, "two");
                     }
@@ -263,7 +263,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 130, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishCompleted(innerObserver, 0);
                     }
                 }));
@@ -271,7 +271,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 150, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 50, "three");
                     }
                 }));
@@ -304,11 +304,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 publishNext(observer, 50, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         publishNext(observer, 50, "one");
                         publishNext(observer, 100, "two");
                     }
@@ -317,7 +317,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(observer, 130, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         publishError(observer, 0, new TestException());
                     }
                 }));
@@ -325,7 +325,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(observer, 150, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         publishNext(observer, 50, "three");
                     }
                 }));
@@ -387,11 +387,11 @@ public class ObservableSwitchTest extends RxJavaTest {
         Observable<Observable<String>> source = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
             @Override
             public void subscribe(Observer<? super Observable<String>> outerObserver) {
-                outerObserver.onSubscribe(Disposables.empty());
+                outerObserver.onSubscribe(Disposable.empty());
                 publishNext(outerObserver, 0, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 10, "1-one");
                         publishNext(innerObserver, 20, "1-two");
                         // The following events will be ignored
@@ -402,7 +402,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 publishNext(outerObserver, 25, Observable.unsafeCreate(new ObservableSource<String>() {
                     @Override
                     public void subscribe(Observer<? super String> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         publishNext(innerObserver, 10, "2-one");
                         publishNext(innerObserver, 20, "2-two");
                         publishNext(innerObserver, 30, "2-three");
@@ -435,7 +435,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 Observable.unsafeCreate(new ObservableSource<Observable<Integer>>() {
                     @Override
                     public void subscribe(final Observer<? super Observable<Integer>> observer) {
-                        Disposable bs = Disposables.empty();
+                        Disposable bs = Disposable.empty();
                         observer.onSubscribe(bs);
                         observer.onNext(Observable.just(1));
                         isUnsubscribed.set(bs.isDisposed());
@@ -666,7 +666,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                 return new SingleSource<Integer>() {
                     @Override
                     public void subscribe(SingleObserver<? super Integer> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         observer.onSuccess(1);
                     }
                 };
@@ -870,7 +870,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onError(new TestException());
                     observer.onComplete();
@@ -910,7 +910,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             .switchMap(Functions.justFunction(new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                     observer.onComplete();
                     observer.onError(new TestException());
@@ -1023,10 +1023,10 @@ public class ObservableSwitchTest extends RxJavaTest {
                 })
                 .test();
 
-                obs1.get().onSubscribe(Disposables.empty());
+                obs1.get().onSubscribe(Disposable.empty());
                 obs1.get().onNext(1);
 
-                obs2.get().onSubscribe(Disposables.empty());
+                obs2.get().onSubscribe(Disposable.empty());
 
                 final TestException ex1 = new TestException();
 

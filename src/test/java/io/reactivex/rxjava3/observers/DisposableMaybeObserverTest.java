@@ -87,9 +87,9 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
         try {
             TestMaybe<Integer> tc = new TestMaybe<Integer>();
 
-            tc.onSubscribe(Disposables.empty());
+            tc.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             tc.onSubscribe(d);
 
@@ -110,7 +110,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
         assertTrue(tc.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         tc.onSubscribe(d);
 

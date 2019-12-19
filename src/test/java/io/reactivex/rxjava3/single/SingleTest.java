@@ -133,7 +133,7 @@ public class SingleTest extends RxJavaTest {
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onSuccess("Hello");
             }
         }).toFlowable().subscribe(ts);
@@ -147,7 +147,7 @@ public class SingleTest extends RxJavaTest {
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onError(new RuntimeException("fail"));
             }
         }).toFlowable().subscribe(ts);
@@ -204,7 +204,7 @@ public class SingleTest extends RxJavaTest {
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
@@ -226,7 +226,7 @@ public class SingleTest extends RxJavaTest {
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -269,7 +269,7 @@ public class SingleTest extends RxJavaTest {
                     }
 
                 });
-                sd.replace(Disposables.fromRunnable(new Runnable() {
+                sd.replace(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);
@@ -343,7 +343,7 @@ public class SingleTest extends RxJavaTest {
                     }
 
                 });
-                sd.replace(Disposables.fromRunnable(new Runnable() {
+                sd.replace(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);
@@ -399,7 +399,7 @@ public class SingleTest extends RxJavaTest {
                     }
 
                 });
-                sd.replace(Disposables.fromRunnable(new Runnable() {
+                sd.replace(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);
@@ -431,7 +431,7 @@ public class SingleTest extends RxJavaTest {
         Single<String> s = Single.unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> t) {
-                t.onSubscribe(Disposables.empty());
+                t.onSubscribe(Disposable.empty());
                 t.onSuccess("hello");
             }
         });

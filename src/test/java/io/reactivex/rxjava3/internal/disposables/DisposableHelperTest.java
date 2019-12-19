@@ -75,7 +75,7 @@ public class DisposableHelperTest extends RxJavaTest {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    DisposableHelper.replace(d, Disposables.empty());
+                    DisposableHelper.replace(d, Disposable.empty());
                 }
             };
 
@@ -91,7 +91,7 @@ public class DisposableHelperTest extends RxJavaTest {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    DisposableHelper.set(d, Disposables.empty());
+                    DisposableHelper.set(d, Disposable.empty());
                 }
             };
 
@@ -111,7 +111,7 @@ public class DisposableHelperTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        Disposable u = Disposables.empty();
+        Disposable u = Disposable.empty();
         final AtomicReference<Disposable> d = new AtomicReference<Disposable>(u);
 
         DisposableHelper.dispose(d);
@@ -123,11 +123,11 @@ public class DisposableHelperTest extends RxJavaTest {
     public void trySet() {
         AtomicReference<Disposable> ref = new AtomicReference<Disposable>();
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         assertTrue(DisposableHelper.trySet(ref, d1));
 
-        Disposable d2 = Disposables.empty();
+        Disposable d2 = Disposable.empty();
 
         assertFalse(DisposableHelper.trySet(ref, d2));
 
@@ -137,7 +137,7 @@ public class DisposableHelperTest extends RxJavaTest {
 
         DisposableHelper.dispose(ref);
 
-        Disposable d3 = Disposables.empty();
+        Disposable d3 = Disposable.empty();
 
         assertFalse(DisposableHelper.trySet(ref, d3));
 

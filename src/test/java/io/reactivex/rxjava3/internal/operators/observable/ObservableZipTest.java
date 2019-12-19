@@ -624,7 +624,7 @@ public class ObservableZipTest extends RxJavaTest {
         public void subscribe(Observer<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
             this.observer = observer;
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
         }
 
     }
@@ -1024,7 +1024,7 @@ public class ObservableZipTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 o.onSubscribe(d);
                 for (int i = 1; i <= 5; i++) {
                     if (d.isDisposed()) {
@@ -1045,7 +1045,7 @@ public class ObservableZipTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
-                final Disposable d = Disposables.empty();
+                final Disposable d = Disposable.empty();
                 o.onSubscribe(d);
                 Thread t = new Thread(new Runnable() {
 

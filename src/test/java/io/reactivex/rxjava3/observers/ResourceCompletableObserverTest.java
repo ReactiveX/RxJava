@@ -68,7 +68,7 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
         assertFalse(rco.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rco.add(d);
 
@@ -93,7 +93,7 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
         assertFalse(rco.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rco.add(d);
 
@@ -112,7 +112,7 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
 
         assertFalse(rco.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rco.add(d);
 
@@ -167,9 +167,9 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
         try {
             TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-            rco.onSubscribe(Disposables.empty());
+            rco.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             rco.onSubscribe(d);
 
@@ -188,7 +188,7 @@ public class ResourceCompletableObserverTest extends RxJavaTest {
         TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
         rco.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rco.onSubscribe(d);
 

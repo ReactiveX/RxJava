@@ -35,7 +35,7 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
     @Test
     public void cancel() {
         BooleanSubscription bs = new BooleanSubscription();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         s.setResource(d);
 
@@ -54,7 +54,7 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
     @Test
     public void error() {
         BooleanSubscription bs = new BooleanSubscription();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         s.setResource(d);
 
@@ -71,7 +71,7 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
     @Test
     public void complete() {
         BooleanSubscription bs = new BooleanSubscription();
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         s.setResource(d);
 

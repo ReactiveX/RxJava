@@ -31,13 +31,13 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class DisposablesTest extends RxJavaTest {
+public class DisposableTest extends RxJavaTest {
 
     @Test
     public void unsubscribeOnlyOnce() {
         Runnable run = mock(Runnable.class);
 
-        Disposable d = Disposables.fromRunnable(run);
+        Disposable d = Disposable.fromRunnable(run);
 
         assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=false, "));
 
@@ -52,7 +52,7 @@ public class DisposablesTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        Disposable empty = Disposables.empty();
+        Disposable empty = Disposable.empty();
         assertFalse(empty.isDisposed());
         empty.dispose();
         assertTrue(empty.isDisposed());
@@ -60,20 +60,15 @@ public class DisposablesTest extends RxJavaTest {
 
     @Test
     public void unsubscribed() {
-        Disposable disposed = Disposables.disposed();
+        Disposable disposed = Disposable.disposed();
         assertTrue(disposed.isDisposed());
-    }
-
-    @Test
-    public void utilityClass() {
-        TestHelper.checkUtilityClass(Disposables.class);
     }
 
     @Test
     public void fromAction() throws Throwable {
         Action action = mock(Action.class);
 
-        Disposable d = Disposables.fromAction(action);
+        Disposable d = Disposable.fromAction(action);
 
         assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=false, "));
 
@@ -89,7 +84,7 @@ public class DisposablesTest extends RxJavaTest {
     @Test
     public void fromActionThrows() {
         try {
-            Disposables.fromAction(new Action() {
+            Disposable.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new IllegalArgumentException();
@@ -101,7 +96,7 @@ public class DisposablesTest extends RxJavaTest {
         }
 
         try {
-            Disposables.fromAction(new Action() {
+            Disposable.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new InternalError();
@@ -113,7 +108,7 @@ public class DisposablesTest extends RxJavaTest {
         }
 
         try {
-            Disposables.fromAction(new Action() {
+            Disposable.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new IOException();
@@ -132,7 +127,7 @@ public class DisposablesTest extends RxJavaTest {
     @Test
     public void disposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Runnable r = new Runnable() {
                 @Override
@@ -147,14 +142,14 @@ public class DisposablesTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromSubscriptionNull() {
-        Disposables.fromSubscription(null);
+        Disposable.fromSubscription(null);
     }
 
     @Test
     public void fromSubscription() {
         Subscription s = mock(Subscription.class);
 
-        Disposables.fromSubscription(s).dispose();
+        Disposable.fromSubscription(s).dispose();
 
         verify(s).cancel();
         verify(s, never()).request(anyInt());
@@ -166,11 +161,11 @@ public class DisposablesTest extends RxJavaTest {
         try {
 
             AtomicReference<Disposable> target = new AtomicReference<Disposable>();
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             DisposableHelper.setOnce(target, d);
 
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             DisposableHelper.setOnce(target, d1);
 
@@ -188,7 +183,7 @@ public class DisposablesTest extends RxJavaTest {
 
         AutoCloseable ac = () -> counter.getAndIncrement();
 
-        Disposable d = Disposables.fromAutoCloseable(ac);
+        Disposable d = Disposable.fromAutoCloseable(ac);
 
         assertFalse(d.isDisposed());
         assertEquals(0, counter.get());
@@ -212,7 +207,7 @@ public class DisposablesTest extends RxJavaTest {
         TestHelper.withErrorTracking(errors -> {
             AutoCloseable ac = () -> { throw new TestException(); };
 
-            Disposable d = Disposables.fromAutoCloseable(ac);
+            Disposable d = Disposable.fromAutoCloseable(ac);
 
             assertFalse(d.isDisposed());
 
@@ -236,9 +231,9 @@ public class DisposablesTest extends RxJavaTest {
     public void toAutoCloseable() throws Exception {
         AtomicInteger counter = new AtomicInteger();
 
-        Disposable d = Disposables.fromAction(() -> counter.getAndIncrement());
+        Disposable d = Disposable.fromAction(() -> counter.getAndIncrement());
 
-        AutoCloseable ac = Disposables.toAutoCloseable(d);
+        AutoCloseable ac = Disposable.toAutoCloseable(d);
 
         assertFalse(d.isDisposed());
         assertEquals(0, counter.get());

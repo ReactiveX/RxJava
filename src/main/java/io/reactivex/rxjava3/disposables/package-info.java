@@ -17,6 +17,6 @@
 /**
  * Default implementations for {@link io.reactivex.rxjava3.disposables.Disposable Disposable}-based resource management
  * ({@code Disposable} container types) and utility classes to construct
- * {@link io.reactivex.rxjava3.disposables.Disposables Disposables} from callbacks and other types.
+ * {@link io.reactivex.rxjava3.disposables.Disposable Disposables} from callbacks and other types.
  */
 package io.reactivex.rxjava3.disposables;

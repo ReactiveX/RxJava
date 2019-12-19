@@ -27,14 +27,14 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
     public void normal() {
         ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         assertTrue(acd.setResource(0, d1));
         assertTrue(acd.setResource(1, d2));
 
-        Disposable d3 = Disposables.empty();
-        Disposable d4 = Disposables.empty();
+        Disposable d3 = Disposable.empty();
+        Disposable d4 = Disposable.empty();
 
         acd.replaceResource(0, d3);
         acd.replaceResource(1, d4);
@@ -58,8 +58,8 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
         assertTrue(d2.isDisposed());
 
-        Disposable d5 = Disposables.empty();
-        Disposable d6 = Disposables.empty();
+        Disposable d5 = Disposable.empty();
+        Disposable d6 = Disposable.empty();
 
         assertFalse(acd.setResource(0, d5));
         acd.replaceResource(1, d6);
@@ -92,7 +92,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    acd.replaceResource(0, Disposables.empty());
+                    acd.replaceResource(0, Disposable.empty());
                 }
             };
 
@@ -108,7 +108,7 @@ public class ArrayCompositeDisposableTest extends RxJavaTest {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    acd.setResource(0, Disposables.empty());
+                    acd.setResource(0, Disposable.empty());
                 }
             };
 

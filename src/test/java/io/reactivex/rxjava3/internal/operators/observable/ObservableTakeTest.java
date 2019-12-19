@@ -115,7 +115,7 @@ public class ObservableTakeTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
             }
@@ -181,7 +181,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                Disposable bs = Disposables.empty();
+                Disposable bs = Disposable.empty();
                 observer.onSubscribe(bs);
                 for (int i = 0; !bs.isDisposed(); i++) {
                     System.out.println("Emit: " + i);
@@ -214,7 +214,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -243,7 +243,7 @@ public class ObservableTakeTest extends RxJavaTest {
 
         @Override
         public void subscribe(Observer<? super Long> op) {
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             op.onSubscribe(d);
             long l = 1;
             while (!d.isDisposed()) {

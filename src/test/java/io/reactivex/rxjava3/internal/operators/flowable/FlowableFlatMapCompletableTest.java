@@ -455,7 +455,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
                 return new Completable() {
                     @Override
                     protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 
@@ -494,7 +494,7 @@ public class FlowableFlatMapCompletableTest extends RxJavaTest {
                 return new Completable() {
                     @Override
                     protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 

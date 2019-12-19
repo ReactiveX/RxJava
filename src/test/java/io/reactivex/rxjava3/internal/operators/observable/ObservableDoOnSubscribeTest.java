@@ -74,7 +74,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 onSubscribed.incrementAndGet();
                 sref.set(observer);
             }
@@ -111,7 +111,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
     public void onSubscribeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             new Observable<Integer>() {
                 @Override

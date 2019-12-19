@@ -967,7 +967,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         ReplaySubject<Integer> rp = ReplaySubject.create();
         rp.onComplete();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         rp.onSubscribe(bs);
 

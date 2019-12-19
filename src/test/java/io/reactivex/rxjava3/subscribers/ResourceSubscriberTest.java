@@ -81,7 +81,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 
@@ -106,7 +106,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 
@@ -125,7 +125,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 

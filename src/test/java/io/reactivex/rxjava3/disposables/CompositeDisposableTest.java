@@ -33,7 +33,7 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void success() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -42,7 +42,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         }));
 
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -63,7 +63,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
         for (int i = 0; i < count; i++) {
-            cd.add(Disposables.fromRunnable(new Runnable() {
+            cd.add(Disposable.fromRunnable(new Runnable() {
 
                 @Override
                 public void run() {
@@ -101,7 +101,7 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void exception() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -110,7 +110,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         }));
 
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -135,7 +135,7 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void compositeException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -144,7 +144,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         }));
 
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -152,7 +152,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             }
         }));
 
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -175,8 +175,8 @@ public class CompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void removeUnsubscribes() {
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(d1);
@@ -190,8 +190,8 @@ public class CompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void clear() {
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         CompositeDisposable cd = new CompositeDisposable();
         cd.add(d1);
@@ -206,7 +206,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d2.isDisposed());
         assertFalse(cd.isDisposed());
 
-        Disposable d3 = Disposables.empty();
+        Disposable d3 = Disposable.empty();
 
         cd.add(d3);
         cd.dispose();
@@ -219,7 +219,7 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void unsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable cd = new CompositeDisposable();
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -244,7 +244,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
-        cd.add(Disposables.fromRunnable(new Runnable() {
+        cd.add(Disposable.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -301,8 +301,8 @@ public class CompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void initializeVarargs() {
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         CompositeDisposable cd = new CompositeDisposable(d1, d2);
 
@@ -315,8 +315,8 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
         assertTrue(d2.isDisposed());
 
-        Disposable d3 = Disposables.empty();
-        Disposable d4 = Disposables.empty();
+        Disposable d3 = Disposable.empty();
+        Disposable d4 = Disposable.empty();
 
         cd = new CompositeDisposable(d3, d4);
 
@@ -330,8 +330,8 @@ public class CompositeDisposableTest extends RxJavaTest {
 
     @Test
     public void initializeIterable() {
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         CompositeDisposable cd = new CompositeDisposable(Arrays.asList(d1, d2));
 
@@ -344,8 +344,8 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
         assertTrue(d2.isDisposed());
 
-        Disposable d3 = Disposables.empty();
-        Disposable d4 = Disposables.empty();
+        Disposable d3 = Disposable.empty();
+        Disposable d4 = Disposable.empty();
 
         cd = new CompositeDisposable(Arrays.asList(d3, d4));
 
@@ -363,9 +363,9 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void addAll() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        Disposable d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
-        Disposable d3 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
+        Disposable d3 = Disposable.empty();
 
         cd.addAll(d1, d2);
         cd.addAll(d3);
@@ -379,8 +379,8 @@ public class CompositeDisposableTest extends RxJavaTest {
         assertTrue(d1.isDisposed());
         assertTrue(d2.isDisposed());
 
-        d1 = Disposables.empty();
-        d2 = Disposables.empty();
+        d1 = Disposable.empty();
+        d2 = Disposable.empty();
 
         cd = new CompositeDisposable();
 
@@ -406,14 +406,14 @@ public class CompositeDisposableTest extends RxJavaTest {
         CompositeDisposable cd = new CompositeDisposable();
         cd.dispose();
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         assertFalse(cd.add(d1));
 
         assertTrue(d1.isDisposed());
 
-        d1 = Disposables.empty();
-        Disposable d2 = Disposables.empty();
+        d1 = Disposable.empty();
+        Disposable d2 = Disposable.empty();
 
         assertFalse(cd.addAll(d1, d2));
 
@@ -427,11 +427,11 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         CompositeDisposable cd = new CompositeDisposable();
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         assertFalse(cd.delete(d1));
 
-        Disposable d2 = Disposables.empty();
+        Disposable d2 = Disposable.empty();
 
         cd.add(d2);
 
@@ -466,7 +466,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             Runnable run = new Runnable() {
                 @Override
                 public void run() {
-                    cd.add(Disposables.empty());
+                    cd.add(Disposable.empty());
                 }
             };
 
@@ -482,7 +482,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             Runnable run = new Runnable() {
                 @Override
                 public void run() {
-                    cd.addAll(Disposables.empty());
+                    cd.addAll(Disposable.empty());
                 }
             };
 
@@ -495,7 +495,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -515,7 +515,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -535,7 +535,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -565,7 +565,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             Runnable run2 = new Runnable() {
                 @Override
                 public void run() {
-                    cd.add(Disposables.empty());
+                    cd.add(Disposable.empty());
                 }
             };
 
@@ -588,7 +588,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             Runnable run2 = new Runnable() {
                 @Override
                 public void run() {
-                    cd.addAll(Disposables.empty());
+                    cd.addAll(Disposable.empty());
                 }
             };
 
@@ -601,7 +601,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -628,7 +628,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -655,7 +655,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -682,7 +682,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
-            final Disposable d1 = Disposables.empty();
+            final Disposable d1 = Disposable.empty();
 
             cd.add(d1);
 
@@ -708,14 +708,14 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void disposeThrowsIAE() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new IllegalArgumentException();
             }
         }));
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         cd.add(d1);
 
@@ -733,14 +733,14 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void disposeThrowsError() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new AssertionError();
             }
         }));
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         cd.add(d1);
 
@@ -758,14 +758,14 @@ public class CompositeDisposableTest extends RxJavaTest {
     public void disposeThrowsCheckedException() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new IOException();
             }
         }));
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         cd.add(d1);
 
@@ -804,7 +804,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             }
         });
 
-        Disposable d1 = Disposables.empty();
+        Disposable d1 = Disposable.empty();
 
         cd.add(d1);
 

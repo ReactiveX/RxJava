@@ -79,7 +79,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -135,7 +135,7 @@ public class ObservableMergeTest extends RxJavaTest {
             @Override
             public void subscribe(final Observer<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable upstream = Disposables.fromRunnable(new Runnable() {
+                final Disposable upstream = Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("*** unsubscribed");
@@ -342,7 +342,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         @Override
         public void subscribe(Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             observer.onNext("hello");
             observer.onComplete();
         }
@@ -354,7 +354,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -385,7 +385,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         @Override
         public void subscribe(Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
@@ -486,7 +486,7 @@ public class ObservableMergeTest extends RxJavaTest {
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onSubscribe(final Disposable d) {
-                        child.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                        child.onSubscribe(Disposable.fromRunnable(new Runnable() {
                             @Override
                             public void run() {
                                 unsubscribed.set(true);
@@ -545,7 +545,7 @@ public class ObservableMergeTest extends RxJavaTest {
             public void subscribe(final Observer<? super Integer> observer) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
-                as.add(Disposables.empty());
+                as.add(Disposable.empty());
                 as.add(inner);
 
                 observer.onSubscribe(as);
@@ -595,7 +595,7 @@ public class ObservableMergeTest extends RxJavaTest {
             public void subscribe(final Observer<? super Integer> observer) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
-                as.add(Disposables.empty());
+                as.add(Disposable.empty());
                 as.add(inner);
 
                 observer.onSubscribe(as);
@@ -966,7 +966,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
                     @Override
                     public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         if (i < 500) {
                             try {
                                 Thread.sleep(1);

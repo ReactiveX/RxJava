@@ -374,7 +374,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             .window(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
             })
@@ -413,14 +413,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
                 TestObserverEx<Observable<Object>> to = new Observable<Object>() {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         refMain.set(observer);
                     }
                 }
                 .window(new Observable<Object>() {
                     @Override
                     protected void subscribeActual(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         ref.set(observer);
                     }
                 })
@@ -463,14 +463,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             TestObserver<Observable<Object>> to = new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     refMain.set(observer);
                 }
             }
             .window(new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     ref.set(observer);
                 }
             })
@@ -506,14 +506,14 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
         TestObserverEx<Observable<Object>> to = new Observable<Object>() {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 refMain.set(observer);
             }
         }
         .window(new Observable<Object>() {
             @Override
             protected void subscribeActual(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 ref.set(observer);
             }
         })
@@ -538,7 +538,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
             final TestObserver<Observable<Object>> to = new Observable<Object>() {
                  @Override
                  protected void subscribeActual(Observer<? super Object> observer) {
-                     observer.onSubscribe(Disposables.empty());
+                     observer.onSubscribe(Disposable.empty());
                      refMain.set(observer);
                  }
              }
@@ -596,7 +596,7 @@ public class ObservableWindowWithObservableTest extends RxJavaTest {
            final TestObserver<Observable<Object>> to = new Observable<Object>() {
                @Override
                protected void subscribeActual(Observer<? super Object> observer) {
-                   observer.onSubscribe(Disposables.empty());
+                   observer.onSubscribe(Disposable.empty());
                    refMain.set(observer);
                }
            }

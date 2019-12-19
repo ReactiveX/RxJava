@@ -77,7 +77,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposables.empty());
+                t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -112,7 +112,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposables.empty());
+                t1.onSubscribe(Disposable.empty());
                 t1.onNext(0);
                 t1.onNext(1);
                 t1.onError(new TestException());
@@ -141,7 +141,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposables.empty());
+                t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -178,7 +178,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(Disposables.empty());
+                t1.onSubscribe(Disposable.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);

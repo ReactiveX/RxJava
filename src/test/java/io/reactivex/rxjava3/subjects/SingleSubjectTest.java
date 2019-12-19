@@ -209,7 +209,7 @@ public class SingleSubjectTest extends RxJavaTest {
     public void onSubscribeDispose() {
         SingleSubject<Integer> ss = SingleSubject.create();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ss.onSubscribe(d);
 
@@ -217,7 +217,7 @@ public class SingleSubjectTest extends RxJavaTest {
 
         ss.onSuccess(1);
 
-        d = Disposables.empty();
+        d = Disposable.empty();
 
         ss.onSubscribe(d);
 

@@ -1261,7 +1261,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
                         @SuppressWarnings("unchecked")
                         @Override
                         protected void subscribeActual(Observer observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             observer.onNext(10);
                             observer.onComplete();
                         }

@@ -325,7 +325,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
                 }
@@ -348,7 +348,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
             .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
                 }
@@ -437,7 +437,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
                 return new Maybe<Object>() {
                     @Override
                     protected void subscribeActual(MaybeObserver<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 

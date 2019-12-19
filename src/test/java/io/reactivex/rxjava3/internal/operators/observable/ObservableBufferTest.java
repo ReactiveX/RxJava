@@ -70,7 +70,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
@@ -126,7 +126,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -158,7 +158,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 97);
                 push(observer, "two", 98);
                 /**
@@ -192,7 +192,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -205,7 +205,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
@@ -218,7 +218,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                     }
@@ -1360,8 +1360,8 @@ public class ObservableBufferTest extends RxJavaTest {
             new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1484,8 +1484,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1529,8 +1529,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1602,7 +1602,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Integer> ps = new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onNext(1);
                 observer.onComplete();
@@ -1613,7 +1613,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Integer> b = new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 ref.set(observer);
             }
         };
@@ -1658,7 +1658,7 @@ public class ObservableBufferTest extends RxJavaTest {
         BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<Integer, List<Integer>>(
                 to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
         assertFalse(sub.isDisposed());
 
@@ -1708,7 +1708,7 @@ public class ObservableBufferTest extends RxJavaTest {
         BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
                 to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
         sub.enter();
         sub.onComplete();
@@ -1736,7 +1736,7 @@ public class ObservableBufferTest extends RxJavaTest {
                     }
                 }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
         sub.run();
 
@@ -1755,7 +1755,7 @@ public class ObservableBufferTest extends RxJavaTest {
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         sub.onSubscribe(bs);
 

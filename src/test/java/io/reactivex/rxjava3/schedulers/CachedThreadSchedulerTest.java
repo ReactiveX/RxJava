@@ -114,11 +114,11 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
         Worker w = s.createWorker();
         w.dispose();
 
-        assertEquals(Disposables.disposed(), w.schedule(r));
+        assertEquals(Disposable.disposed(), w.schedule(r));
 
-        assertEquals(Disposables.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
 
-        assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
 
         assertEquals(0, calls[0]);
     }

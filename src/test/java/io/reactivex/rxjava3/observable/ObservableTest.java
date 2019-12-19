@@ -500,7 +500,7 @@ public class ObservableTest extends RxJavaTest {
         ConnectableObservable<String> connectable = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 count.incrementAndGet();
                 new Thread(new Runnable() {
                     @Override
@@ -538,7 +538,7 @@ public class ObservableTest extends RxJavaTest {
         ConnectableObservable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     new Thread(new Runnable() {
 
                         @Override
@@ -591,7 +591,7 @@ public class ObservableTest extends RxJavaTest {
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -636,7 +636,7 @@ public class ObservableTest extends RxJavaTest {
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

@@ -411,11 +411,11 @@ public class CompletableUsingTest extends RxJavaTest {
                     return Completable.wrap(new CompletableSource() {
                         @Override
                         public void subscribe(CompletableObserver observer) {
-                            Disposable d1 = Disposables.empty();
+                            Disposable d1 = Disposable.empty();
 
                             observer.onSubscribe(d1);
 
-                            Disposable d2 = Disposables.empty();
+                            Disposable d2 = Disposable.empty();
 
                             observer.onSubscribe(d2);
 

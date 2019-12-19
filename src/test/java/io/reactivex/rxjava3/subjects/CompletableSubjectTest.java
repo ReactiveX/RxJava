@@ -189,7 +189,7 @@ public class CompletableSubjectTest extends RxJavaTest {
     public void onSubscribeDispose() {
         CompletableSubject cs = CompletableSubject.create();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         cs.onSubscribe(d);
 
@@ -197,7 +197,7 @@ public class CompletableSubjectTest extends RxJavaTest {
 
         cs.onComplete();
 
-        d = Disposables.empty();
+        d = Disposable.empty();
 
         cs.onSubscribe(d);
 

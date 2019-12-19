@@ -332,7 +332,7 @@ public class SingleDoOnTest extends RxJavaTest {
     public void onSubscribeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             new Single<Integer>() {
                 @Override

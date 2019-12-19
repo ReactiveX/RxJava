@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -51,7 +51,7 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
                     }
             );
 
-            o.onSubscribe(Disposables.empty());
+            o.onSubscribe(Disposable.empty());
 
             assertFalse(o.isDisposed());
 

@@ -150,7 +150,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
                     observer.onComplete();
@@ -181,7 +181,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
                     observer.onComplete();
@@ -355,7 +355,7 @@ public class ObservableConcatMapTest extends RxJavaTest {
                         @Override
                         protected void subscribeActual(Observer<? super Integer> observer) {
                             o[0] = observer;
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             observer.onComplete();
                         }
                     };

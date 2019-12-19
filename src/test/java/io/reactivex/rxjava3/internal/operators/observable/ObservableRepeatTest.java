@@ -74,7 +74,7 @@ public class ObservableRepeatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(Disposables.empty());
+                sub.onSubscribe(Disposable.empty());
                 counter.incrementAndGet();
                 sub.onNext(1);
                 sub.onNext(2);

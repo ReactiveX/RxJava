@@ -257,7 +257,7 @@ public class ObservableBlockingTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 s[0] = observer;
             }
         }.blockingSubscribe(to);
@@ -294,7 +294,7 @@ public class ObservableBlockingTest extends RxJavaTest {
         o.dispose();
         assertTrue(o.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         o.onSubscribe(d);
 

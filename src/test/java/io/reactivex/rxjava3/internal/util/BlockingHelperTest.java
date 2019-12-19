@@ -34,7 +34,7 @@ public class BlockingHelperTest extends RxJavaTest {
     @Test
     public void interrupted() {
         CountDownLatch cdl = new CountDownLatch(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         Thread.currentThread().interrupt();
 
@@ -50,7 +50,7 @@ public class BlockingHelperTest extends RxJavaTest {
     @Test
     public void unblock() {
         final CountDownLatch cdl = new CountDownLatch(1);
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         Schedulers.computation().scheduleDirect(new Runnable() {
             @Override

@@ -68,7 +68,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -93,7 +93,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -112,7 +112,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -169,9 +169,9 @@ public class ResourceSingleObserverTest extends RxJavaTest {
         try {
             TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
 
-            rso.onSubscribe(Disposables.empty());
+            rso.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             rso.onSubscribe(d);
 
@@ -190,7 +190,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
         TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
         rso.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.onSubscribe(d);
 

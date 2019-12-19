@@ -43,20 +43,20 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
         Scheduler s = new SingleScheduler();
         s.shutdown();
 
-        assertEquals(Disposables.disposed(), s.scheduleDirect(r));
+        assertEquals(Disposable.disposed(), s.scheduleDirect(r));
 
-        assertEquals(Disposables.disposed(), s.scheduleDirect(r, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), s.scheduleDirect(r, 1, TimeUnit.SECONDS));
 
-        assertEquals(Disposables.disposed(), s.schedulePeriodicallyDirect(r, 1, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), s.schedulePeriodicallyDirect(r, 1, 1, TimeUnit.SECONDS));
 
         Worker w = s.createWorker();
         ((ScheduledWorker)w).executor.shutdownNow();
 
-        assertEquals(Disposables.disposed(), w.schedule(r));
+        assertEquals(Disposable.disposed(), w.schedule(r));
 
-        assertEquals(Disposables.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
 
-        assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
+        assertEquals(Disposable.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
 
         assertEquals(0, calls[0]);
 

@@ -28,7 +28,7 @@ public final class CompletableFromRunnable extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
         try {
             runnable.run();

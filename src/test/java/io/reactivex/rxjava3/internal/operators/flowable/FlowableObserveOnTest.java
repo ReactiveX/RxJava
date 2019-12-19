@@ -1806,7 +1806,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             public Disposable schedule(Runnable run, long delay,
                     TimeUnit unit) {
                 run.run();
-                return Disposables.empty();
+                return Disposable.empty();
             }
         }
     }

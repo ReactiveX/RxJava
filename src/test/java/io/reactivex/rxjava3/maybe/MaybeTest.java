@@ -230,7 +230,7 @@ public class MaybeTest extends RxJavaTest {
         Maybe.wrap(new MaybeSource<Integer>() {
             @Override
             public void subscribe(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onSuccess(1);
             }
         })
@@ -356,7 +356,7 @@ public class MaybeTest extends RxJavaTest {
         Maybe.unsafeCreate(new MaybeSource<Integer>() {
             @Override
             public void subscribe(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onSuccess(1);
             }
         })
@@ -1503,7 +1503,7 @@ public class MaybeTest extends RxJavaTest {
     public void basic() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
                 @Override
@@ -1533,7 +1533,7 @@ public class MaybeTest extends RxJavaTest {
     public void basicWithError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
                 @Override
@@ -1561,7 +1561,7 @@ public class MaybeTest extends RxJavaTest {
     public void basicWithComplete() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable d = Disposables.empty();
+            final Disposable d = Disposable.empty();
 
             Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
                 @Override

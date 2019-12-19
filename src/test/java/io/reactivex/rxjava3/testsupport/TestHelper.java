@@ -520,11 +520,11 @@ public enum TestHelper {
     public static void doubleOnSubscribe(Observer<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             observer.onSubscribe(d1);
 
-            Disposable d2 = Disposables.empty();
+            Disposable d2 = Disposable.empty();
 
             observer.onSubscribe(d2);
 
@@ -546,11 +546,11 @@ public enum TestHelper {
     public static void doubleOnSubscribe(SingleObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             observer.onSubscribe(d1);
 
-            Disposable d2 = Disposables.empty();
+            Disposable d2 = Disposable.empty();
 
             observer.onSubscribe(d2);
 
@@ -572,11 +572,11 @@ public enum TestHelper {
     public static void doubleOnSubscribe(CompletableObserver observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             observer.onSubscribe(d1);
 
-            Disposable d2 = Disposables.empty();
+            Disposable d2 = Disposable.empty();
 
             observer.onSubscribe(d2);
 
@@ -598,11 +598,11 @@ public enum TestHelper {
     public static void doubleOnSubscribe(MaybeObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
-            Disposable d1 = Disposables.empty();
+            Disposable d1 = Disposable.empty();
 
             observer.onSubscribe(d1);
 
-            Disposable d2 = Disposables.empty();
+            Disposable d2 = Disposable.empty();
 
             observer.onSubscribe(d2);
 
@@ -899,11 +899,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -953,11 +953,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1007,11 +1007,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1061,11 +1061,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1115,11 +1115,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1169,11 +1169,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1223,11 +1223,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1276,11 +1276,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(MaybeObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1330,11 +1330,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(SingleObserver<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1438,11 +1438,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1492,11 +1492,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1546,11 +1546,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1599,11 +1599,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1866,11 +1866,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1919,11 +1919,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -1972,11 +1972,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -2024,11 +2024,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -2076,11 +2076,11 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
                     try {
-                        Disposable d1 = Disposables.empty();
+                        Disposable d1 = Disposable.empty();
 
                         observer.onSubscribe(d1);
 
-                        Disposable d2 = Disposables.empty();
+                        Disposable d2 = Disposable.empty();
 
                         observer.onSubscribe(d2);
 
@@ -2469,7 +2469,7 @@ public enum TestHelper {
                 boolean once;
                 @Override
                 protected void subscribeActual(Observer<? super T> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
 
                     if (once) {
                         return;
@@ -3336,7 +3336,7 @@ public enum TestHelper {
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
-                disposable.set(Disposables.fromSubscription(ts));
+                disposable.set(Disposable.fromSubscription(ts));
 
                 ((Publisher<?>)result)
                 .subscribe(ts);
@@ -3404,7 +3404,7 @@ public enum TestHelper {
                 to.assertEmpty();
             } else if (result instanceof Publisher) {
                 TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
-                disposable.set(Disposables.fromSubscription(ts));
+                disposable.set(Disposable.fromSubscription(ts));
 
                 ((Publisher<?>)result)
                 .subscribe(ts);

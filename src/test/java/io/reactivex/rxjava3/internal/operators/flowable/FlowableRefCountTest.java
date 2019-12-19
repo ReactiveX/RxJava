@@ -805,7 +805,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -827,7 +827,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -922,7 +922,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -969,7 +969,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -1214,7 +1214,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -1392,7 +1392,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         FlowableRefCount<Object> o = (FlowableRefCount<Object>)tcf.refCount();
 
         RefConnection rc = new RefConnection(o);
-        rc.set(Disposables.empty());
+        rc.set(Disposable.empty());
         o.connection = rc;
 
         o.timeout(rc);

@@ -18,10 +18,10 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -202,7 +202,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
             new Observable<Notification<Object>>() {
                 @Override
                 protected void subscribeActual(Observer<? super Notification<Object>> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(Notification.createOnComplete());
                     observer.onNext(Notification.<Object>createOnNext(1));
                     observer.onNext(Notification.createOnError(new TestException("First")));
@@ -225,7 +225,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
         new Observable<Notification<Object>>() {
             @Override
             protected void subscribeActual(Observer<? super Notification<Object>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext(Notification.createOnComplete());
                 observer.onNext(Notification.<Object>createOnNext(1));
             }

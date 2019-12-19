@@ -31,7 +31,7 @@ public final class SingleFromCallable<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
         observer.onSubscribe(d);
 
         if (d.isDisposed()) {

@@ -38,7 +38,7 @@ public final class ImmediateThinScheduler extends Scheduler {
     static final Disposable DISPOSED;
 
     static {
-        DISPOSED = Disposables.empty();
+        DISPOSED = Disposable.empty();
         DISPOSED.dispose();
     }
 

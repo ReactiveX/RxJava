@@ -52,7 +52,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> t1) {
-                t1.onSubscribe(Disposables.empty());
+                t1.onSubscribe(Disposable.empty());
                 System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
                 if (count.getAndDecrement() == 0) {
@@ -248,7 +248,7 @@ public class ObservableRetryTest extends RxJavaTest {
         ObservableSource<Integer> onSubscribe = new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 final int emit = inc.incrementAndGet();
                 observer.onNext(emit);
                 observer.onComplete();
@@ -397,7 +397,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> o) {
-            o.onSubscribe(Disposables.empty());
+            o.onSubscribe(Disposable.empty());
             o.onNext("beginningEveryTime");
             int i = count.getAndIncrement();
             if (i < numFailures) {
@@ -432,7 +432,7 @@ public class ObservableRetryTest extends RxJavaTest {
             @Override
             public void subscribe(Observer<? super String> observer) {
                 subsCount.incrementAndGet();
-                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             subsCount.decrementAndGet();
@@ -491,7 +491,7 @@ public class ObservableRetryTest extends RxJavaTest {
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 subsCount.incrementAndGet();
                 observer.onError(new RuntimeException("failed"));
             }
@@ -510,7 +510,7 @@ public class ObservableRetryTest extends RxJavaTest {
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 subsCount.incrementAndGet();
                 observer.onError(new RuntimeException("failed"));
             }
@@ -539,7 +539,7 @@ public class ObservableRetryTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super Long> observer) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
+            observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
                 @Override
                 public void run() {
                         terminate.set(true);
@@ -840,7 +840,7 @@ public class ObservableRetryTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> o) {
-                o.onSubscribe(Disposables.empty());
+                o.onSubscribe(Disposable.empty());
                 for (int i = 0; i < NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }

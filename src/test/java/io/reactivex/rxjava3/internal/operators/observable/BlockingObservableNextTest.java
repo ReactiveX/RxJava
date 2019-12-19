@@ -247,7 +247,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
                     @Override
                     public void subscribe(final Observer<? super Integer> o) {
-                        o.onSubscribe(Disposables.empty());
+                        o.onSubscribe(Disposable.empty());
                         task.replace(Schedulers.single().scheduleDirect(new Runnable() {
 
                             @Override

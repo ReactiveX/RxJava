@@ -18,12 +18,12 @@ import static org.junit.Assert.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 import io.reactivex.rxjava3.testsupport.*;
@@ -150,7 +150,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override

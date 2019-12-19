@@ -310,7 +310,7 @@ public class ObservableRefCountTest extends RxJavaTest {
             @Override
             public void subscribe(Observer<? super Long> observer) {
                 final AtomicBoolean cancel = new AtomicBoolean();
-                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         cancel.set(true);
@@ -338,7 +338,7 @@ public class ObservableRefCountTest extends RxJavaTest {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
-                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposable.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             unsubscriptionCount.incrementAndGet();
@@ -623,7 +623,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.disposed());
+                observer.onSubscribe(Disposable.disposed());
             }
         }.refCount();
 
@@ -779,7 +779,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -806,7 +806,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -814,7 +814,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
         }
     }
 
@@ -832,7 +832,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
         }
     }
 
@@ -882,7 +882,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -896,7 +896,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
             if (++count == 1) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
             } else {
                 throw new TestException("subscribeActual");
             }
@@ -922,7 +922,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -935,7 +935,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             observer.onComplete();
         }
     }
@@ -1163,7 +1163,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         @Override
         public void connect(Consumer<? super Disposable> connection) {
             try {
-                connection.accept(Disposables.empty());
+                connection.accept(Disposable.empty());
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -1176,8 +1176,8 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
-            observer.onSubscribe(Disposables.empty());
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
+            observer.onSubscribe(Disposable.empty());
             observer.onComplete();
             observer.onComplete();
             observer.onError(new TestException());
@@ -1341,7 +1341,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         ObservableRefCount<Object> o = (ObservableRefCount<Object>)tco.refCount();
 
         RefConnection rc = new RefConnection(o);
-        rc.set(Disposables.empty());
+        rc.set(Disposable.empty());
         o.connection = rc;
 
         o.timeout(rc);

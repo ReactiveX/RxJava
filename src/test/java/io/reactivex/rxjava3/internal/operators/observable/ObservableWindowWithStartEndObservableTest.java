@@ -19,12 +19,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -53,7 +53,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
-                innerObserver.onSubscribe(Disposables.empty());
+                innerObserver.onSubscribe(Disposable.empty());
                 push(innerObserver, "one", 10);
                 push(innerObserver, "two", 60);
                 push(innerObserver, "three", 110);
@@ -66,7 +66,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> innerObserver) {
-                innerObserver.onSubscribe(Disposables.empty());
+                innerObserver.onSubscribe(Disposable.empty());
                 push(innerObserver, new Object(), 50);
                 push(innerObserver, new Object(), 200);
                 complete(innerObserver, 250);
@@ -79,7 +79,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> innerObserver) {
-                        innerObserver.onSubscribe(Disposables.empty());
+                        innerObserver.onSubscribe(Disposable.empty());
                         push(innerObserver, new Object(), 100);
                         complete(innerObserver, 101);
                     }
@@ -371,7 +371,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                         @Override
                         protected void subscribeActual(
                                 Observer<? super Integer> observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             observer.onNext(1);
                             observer.onNext(2);
                             observer.onError(new TestException());

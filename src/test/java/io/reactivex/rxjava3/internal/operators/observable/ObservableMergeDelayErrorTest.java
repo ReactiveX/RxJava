@@ -20,12 +20,12 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.observers.DefaultObserver;
 import io.reactivex.rxjava3.testsupport.*;
@@ -219,7 +219,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(o1);
                 observer.onNext(o2);
@@ -317,7 +317,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
         @Override
         public void subscribe(Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             observer.onNext("hello");
             observer.onComplete();
         }
@@ -328,7 +328,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -352,7 +352,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
         @Override
         public void subscribe(Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -383,7 +383,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -453,7 +453,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
             Observable<Observable<String>> parentObservable = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
                 @Override
                 public void subscribe(Observer<? super Observable<String>> op) {
-                    op.onSubscribe(Disposables.empty());
+                    op.onSubscribe(Disposable.empty());
                     op.onNext(Observable.unsafeCreate(o1));
                     op.onNext(Observable.unsafeCreate(o2));
                     op.onError(new NullPointerException("throwing exception in parent"));
@@ -480,7 +480,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override

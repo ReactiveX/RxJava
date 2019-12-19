@@ -542,7 +542,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     public void onSubscribe() {
         BehaviorSubject<Object> p = BehaviorSubject.create();
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         p.onSubscribe(bs);
 
@@ -550,7 +550,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
         p.onComplete();
 
-        bs = Disposables.empty();
+        bs = Disposable.empty();
 
         p.onSubscribe(bs);
 

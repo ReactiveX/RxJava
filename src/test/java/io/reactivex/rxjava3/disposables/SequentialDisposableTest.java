@@ -56,7 +56,7 @@ public class SequentialDisposableTest extends RxJavaTest {
         final Disposable underlying = mock(Disposable.class);
         serialDisposable.update(underlying);
 
-        serialDisposable.replace(Disposables.empty());
+        serialDisposable.replace(Disposable.empty());
         serialDisposable.dispose();
 
         verify(underlying, never()).dispose();

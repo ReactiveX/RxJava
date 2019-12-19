@@ -50,7 +50,7 @@ public class ObservableSampleTest extends RxJavaTest {
         Observable<Long> source = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> observer1) {
-                observer1.onSubscribe(Disposables.empty());
+                observer1.onSubscribe(Disposable.empty());
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {

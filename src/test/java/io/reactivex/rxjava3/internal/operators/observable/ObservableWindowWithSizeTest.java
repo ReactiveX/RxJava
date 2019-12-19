@@ -219,7 +219,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         return Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 observer.onSubscribe(d);
                 while (!d.isDisposed()) {
                     // burst some number of items
