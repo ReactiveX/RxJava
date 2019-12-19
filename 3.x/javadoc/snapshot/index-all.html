@@ -716,6 +716,16 @@
  more than one item, throw an <code>IllegalArgumentException</code>; if it emits no items, return a default
  value.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingStream--">blockingStream()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process this <code>Flowable</code> in a blocking manner via
+ the Java <code>Stream</code> API.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingStream-int-">blockingStream(int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process this <code>Flowable</code> in a blocking manner via
+ the Java <code>Stream</code> API.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Runs the source Flowable to a terminal event, ignoring any values and rethrowing any exception.</div>
@@ -2019,6 +2029,14 @@
 <div class="block">Maps the upstream items into <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and subscribes to them one after the
  other succeeds or fails, emits their success values and optionally delays  errors
  till both this <code>Observable</code> and all inner <code>SingleSource</code>s terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMapStream-io.reactivex.rxjava3.functions.Function-">concatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMapStream-io.reactivex.rxjava3.functions.Function-int-">concatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatWith-io.reactivex.rxjava3.core.CompletableSource-">concatWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -3681,6 +3699,14 @@
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> based on applying a specified function to the item emitted by the
  source <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>, where that function returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapStream-io.reactivex.rxjava3.functions.Function-">flatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapStream-io.reactivex.rxjava3.functions.Function-int-">flatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
