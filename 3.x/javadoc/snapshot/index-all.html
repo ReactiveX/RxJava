@@ -2734,11 +2734,6 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/DisposableObserver.html#DisposableObserver--">DisposableObserver()</a></span> - Constructor for class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/DisposableObserver.html" title="class in io.reactivex.rxjava3.observers">DisposableObserver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables"><span class="typeNameLink">Disposables</span></a> - Class in <a href="io/reactivex/rxjava3/disposables/package-summary.html">io.reactivex.rxjava3.disposables</a></dt>
-<dd>
-<div class="block">Utility class to help create disposables by wrapping
- other types.</div>
-</dd>
 <dt><a href="io/reactivex/rxjava3/observers/DisposableSingleObserver.html" title="class in io.reactivex.rxjava3.observers"><span class="typeNameLink">DisposableSingleObserver</span></a>&lt;<a href="io/reactivex/rxjava3/observers/DisposableSingleObserver.html" title="type parameter in DisposableSingleObserver">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/observers/package-summary.html">io.reactivex.rxjava3.observers</a></dt>
 <dd>
 <div class="block">An abstract <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that allows asynchronous cancellation by implementing Disposable.</div>
@@ -2806,7 +2801,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html#dispose--">dispose()</a></span> - Method in class io.reactivex.rxjava3.subscribers.<a href="io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">TestSubscriber</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#disposed--">disposed()</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#disposed--">disposed()</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Returns a shared, disposed <code>Disposable</code> instance.</div>
 </dd>
@@ -3221,7 +3216,7 @@
 <div class="block">Returns an Observable that emits no items to the <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and immediately invokes its
  <a href="io/reactivex/rxjava3/core/Observer.html#onComplete--"><code>onComplete</code></a> method.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#empty--">empty()</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#empty--">empty()</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Returns a new, non-disposed <code>Disposable</code> instance.</div>
 </dd>
@@ -3850,7 +3845,7 @@
 <div class="block">Returns a Maybe instance that runs the given Action for each subscriber and
  emits either its exception or simply completes.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> that is
  executed exactly once when the <code>Disposable</code> is disposed.</div>
@@ -3868,7 +3863,7 @@
 <div class="block">Wraps multiple Publishers into a ParallelFlowable which runs them
  in parallel and unordered.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromAutoCloseable-java.lang.AutoCloseable-">fromAutoCloseable(AutoCloseable)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromAutoCloseable-java.lang.AutoCloseable-">fromAutoCloseable(AutoCloseable)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang"><code>AutoCloseable</code></a> that is
  closed exactly once when the <code>Disposable</code> is disposed.</div>
@@ -3967,12 +3962,12 @@
 <dd>
 <div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a>, operating on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>, into a <code>Single</code>.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromFuture-java.util.concurrent.Future-">fromFuture(Future&lt;?&gt;)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromFuture-java.util.concurrent.Future-">fromFuture(Future&lt;?&gt;)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> that is
  cancelled exactly once when the <code>Disposable</code> is disposed.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromFuture-java.util.concurrent.Future-boolean-">fromFuture(Future&lt;?&gt;, boolean)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromFuture-java.util.concurrent.Future-boolean-">fromFuture(Future&lt;?&gt;, boolean)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> that is
  cancelled exactly once when the <code>Disposable</code> is disposed.</div>
@@ -4033,7 +4028,7 @@
 <div class="block">Returns a Maybe instance that runs the given Action for each subscriber and
  emits either its exception or simply completes.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> that is
  executed exactly once when the <code>Disposable</code> is disposed.</div>
@@ -4051,7 +4046,7 @@
 <dd>
 <div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> into a finite <code>Flowable</code> and emits its items in the sequence.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#fromSubscription-org.reactivestreams.Subscription-">fromSubscription(Subscription)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromSubscription-org.reactivestreams.Subscription-">fromSubscription(Subscription)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> that is
  cancelled exactly once when the <code>Disposable</code> is disposed.</div>
@@ -4792,7 +4787,7 @@
 <dd>
 <div class="block">Default implementations for <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>-based resource management
  (<code>Disposable</code> container types) and utility classes to construct
- <a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables"><code>Disposables</code></a> from callbacks and other types.</div>
+ <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposables</code></a> from callbacks and other types.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/exceptions/package-summary.html">io.reactivex.rxjava3.exceptions</a> - package io.reactivex.rxjava3.exceptions</dt>
 <dd>
@@ -9453,7 +9448,7 @@
 <dd>
 <div class="block">Calls the specified converter function during assembly time and returns its resulting value.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposables.html#toAutoCloseable-io.reactivex.rxjava3.disposables.Disposable-">toAutoCloseable(Disposable)</a></span> - Static method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposables.html" title="class in io.reactivex.rxjava3.disposables">Disposables</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#toAutoCloseable-io.reactivex.rxjava3.disposables.Disposable-">toAutoCloseable(Disposable)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
 <div class="block">Construct an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang"><code>AutoCloseable</code></a> by wrapping a <code>Disposable</code> that is
  disposed when the returned <code>AutoCloseable</code> is closed.</div>

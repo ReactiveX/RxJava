@@ -145,7 +145,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
  re-adjust the absolute/relative time calculation accordingly.
  <p>
  If the <code>Worker</code> is disposed, the <code>schedule</code> methods
- should return the <a href="../../../../io/reactivex/rxjava3/disposables/Disposables.html#disposed--"><code>Disposables.disposed()</code></a> singleton instance indicating the disposed
+ should return the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#disposed--"><code>Disposable.disposed()</code></a> singleton instance indicating the disposed
  state to the caller. Since the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a> call can happen on any thread, the <code>schedule</code> implementations
  should make best effort to cancel tasks immediately after those tasks have been submitted to the
  underlying task-execution scheme if the dispose was detected after this submission.
@@ -229,7 +229,7 @@ implements <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html
 <!--   -->
 </a>
 <h3>Methods inherited from interface&nbsp;io.reactivex.rxjava3.disposables.<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></h3>
-<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--">dispose</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#isDisposed--">isDisposed</a></code></li>
+<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--">dispose</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#disposed--">disposed</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#empty--">empty</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromAutoCloseable-java.lang.AutoCloseable-">fromAutoCloseable</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromFuture-java.util.concurrent.Future-">fromFuture</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromFuture-java.util.concurrent.Future-boolean-">fromFuture</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromRunnable-java.lang.Runnable-">fromRunnable</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromSubscription-org.reactivestreams.Subscription-">fromSubscription</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#isDisposed--">isDisposed</a>, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#toAutoCloseable-io.reactivex.rxjava3.disposables.Disposable-">toAutoCloseable</a></code></li>
 </ul>
 </li>
 </ul>

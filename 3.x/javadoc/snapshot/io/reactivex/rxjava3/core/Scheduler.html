@@ -168,7 +168,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
  underlying task-execution scheme supports stopping and restarting itself.
  <p>
  If the <code>Scheduler</code> is shut down or a <code>Worker</code> is disposed, the <code>schedule</code> methods
- should return the <a href="../../../../io/reactivex/rxjava3/disposables/Disposables.html#disposed--"><code>Disposables.disposed()</code></a> singleton instance indicating the shut down/disposed
+ should return the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#disposed--"><code>Disposable.disposed()</code></a> singleton instance indicating the shut down/disposed
  state to the caller. Since the shutdown or dispose can happen from any thread, the <code>schedule</code> implementations
  should make best effort to cancel tasks immediately after those tasks have been submitted to the
  underlying task-execution scheme if the shutdown/dispose was detected after this submission.
