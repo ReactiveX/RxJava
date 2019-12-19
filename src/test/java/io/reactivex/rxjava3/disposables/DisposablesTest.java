@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
+import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -34,11 +35,19 @@ public class DisposablesTest extends RxJavaTest {
 
     @Test
     public void unsubscribeOnlyOnce() {
-        Runnable dispose = mock(Runnable.class);
-        Disposable subscription = Disposables.fromRunnable(dispose);
-        subscription.dispose();
-        subscription.dispose();
-        verify(dispose, times(1)).run();
+        Runnable run = mock(Runnable.class);
+
+        Disposable d = Disposables.fromRunnable(run);
+
+        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=false, "));
+
+        d.dispose();
+        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=true, "));
+
+        d.dispose();
+        assertTrue(d.toString(), d.toString().contains("RunnableDisposable(disposed=true, "));
+
+        verify(run, times(1)).run();
     }
 
     @Test
@@ -61,22 +70,20 @@ public class DisposablesTest extends RxJavaTest {
     }
 
     @Test
-    public void fromAction() {
-        class AtomicAction extends AtomicBoolean implements Action {
+    public void fromAction() throws Throwable {
+        Action action = mock(Action.class);
 
-            private static final long serialVersionUID = -1517510584253657229L;
+        Disposable d = Disposables.fromAction(action);
 
-            @Override
-            public void run() throws Exception {
-                set(true);
-            }
-        }
+        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=false, "));
 
-        AtomicAction aa = new AtomicAction();
+        d.dispose();
+        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=true, "));
 
-        Disposables.fromAction(aa).dispose();
+        d.dispose();
+        assertTrue(d.toString(), d.toString().contains("ActionDisposable(disposed=true, "));
 
-        assertTrue(aa.get());
+        verify(action, times(1)).run();
     }
 
     @Test
@@ -173,5 +180,77 @@ public class DisposablesTest extends RxJavaTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void fromAutoCloseable() {
+        AtomicInteger counter = new AtomicInteger();
+
+        AutoCloseable ac = () -> counter.getAndIncrement();
+
+        Disposable d = Disposables.fromAutoCloseable(ac);
+
+        assertFalse(d.isDisposed());
+        assertEquals(0, counter.get());
+        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=false, "));
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+        assertEquals(1, counter.get());
+        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=true, "));
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+        assertEquals(1, counter.get());
+        assertTrue(d.toString(), d.toString().contains("AutoCloseableDisposable(disposed=true, "));
+    }
+
+    @Test
+    public void fromAutoCloseableThrows() throws Throwable {
+        TestHelper.withErrorTracking(errors -> {
+            AutoCloseable ac = () -> { throw new TestException(); };
+
+            Disposable d = Disposables.fromAutoCloseable(ac);
+
+            assertFalse(d.isDisposed());
+
+            assertTrue(errors.isEmpty());
+
+            d.dispose();
+
+            assertTrue(d.isDisposed());
+            assertEquals(1, errors.size());
+
+            d.dispose();
+
+            assertTrue(d.isDisposed());
+            assertEquals(1, errors.size());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        });
+    }
+
+    @Test
+    public void toAutoCloseable() throws Exception {
+        AtomicInteger counter = new AtomicInteger();
+
+        Disposable d = Disposables.fromAction(() -> counter.getAndIncrement());
+
+        AutoCloseable ac = Disposables.toAutoCloseable(d);
+
+        assertFalse(d.isDisposed());
+        assertEquals(0, counter.get());
+
+        ac.close();
+
+        assertTrue(d.isDisposed());
+        assertEquals(1, counter.get());
+
+        ac.close();
+
+        assertTrue(d.isDisposed());
+        assertEquals(1, counter.get());
     }
 }

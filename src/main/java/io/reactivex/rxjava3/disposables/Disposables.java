@@ -35,8 +35,8 @@ public final class Disposables {
     }
 
     /**
-     * Construct a Disposable by wrapping a Runnable that is
-     * executed exactly once when the Disposable is disposed.
+     * Construct a {@code Disposable} by wrapping a {@link Runnable} that is
+     * executed exactly once when the {@code Disposable} is disposed.
      * @param run the Runnable to wrap
      * @return the new Disposable instance
      */
@@ -47,8 +47,8 @@ public final class Disposables {
     }
 
     /**
-     * Construct a Disposable by wrapping a Action that is
-     * executed exactly once when the Disposable is disposed.
+     * Construct a {@code Disposable} by wrapping a {@link Action} that is
+     * executed exactly once when the {@code Disposable} is disposed.
      * @param run the Action to wrap
      * @return the new Disposable instance
      */
@@ -59,10 +59,13 @@ public final class Disposables {
     }
 
     /**
-     * Construct a Disposable by wrapping a Future that is
-     * cancelled exactly once when the Disposable is disposed.
+     * Construct a {@code Disposable} by wrapping a {@link Future} that is
+     * cancelled exactly once when the {@code Disposable} is disposed.
+     * <p>
+     * The {@code Future} is cancelled with {@code mayInterruptIfRunning == true}.
      * @param future the Future to wrap
      * @return the new Disposable instance
+     * @see #fromFuture(Future, boolean)
      */
     @NonNull
     public static Disposable fromFuture(@NonNull Future<?> future) {
@@ -71,10 +74,10 @@ public final class Disposables {
     }
 
     /**
-     * Construct a Disposable by wrapping a Future that is
-     * cancelled exactly once when the Disposable is disposed.
+     * Construct a {@code Disposable} by wrapping a {@link Future} that is
+     * cancelled exactly once when the {@code Disposable} is disposed.
      * @param future the Future to wrap
-     * @param allowInterrupt if true, the future cancel happens via Future.cancel(true)
+     * @param allowInterrupt if true, the future cancel happens via {@code Future.cancel(true)}
      * @return the new Disposable instance
      */
     @NonNull
@@ -84,8 +87,8 @@ public final class Disposables {
     }
 
     /**
-     * Construct a Disposable by wrapping a Subscription that is
-     * cancelled exactly once when the Disposable is disposed.
+     * Construct a {@code Disposable} by wrapping a {@link Subscription} that is
+     * cancelled exactly once when the {@code Disposable} is disposed.
      * @param subscription the Runnable to wrap
      * @return the new Disposable instance
      */
@@ -96,8 +99,33 @@ public final class Disposables {
     }
 
     /**
-     * Returns a new, non-disposed Disposable instance.
-     * @return a new, non-disposed Disposable instance
+     * Construct a {@code Disposable} by wrapping an {@link AutoCloseable} that is
+     * closed exactly once when the {@code Disposable} is disposed.
+     * @param autoCloseable the AutoCloseable to wrap
+     * @return the new Disposable instance
+     * @since 3.0.0
+     */
+    @NonNull
+    public static Disposable fromAutoCloseable(@NonNull AutoCloseable autoCloseable) {
+        Objects.requireNonNull(autoCloseable, "autoCloseable is null");
+        return new AutoCloseableDisposable(autoCloseable);
+    }
+
+    /**
+     * Construct an {@link AutoCloseable} by wrapping a {@code Disposable} that is
+     * disposed when the returned {@code AutoCloseable} is closed.
+     * @param disposable the Disposable instance
+     * @return the new AutoCloseable instance
+     * @since 3.0.0
+     */
+    @NonNull
+    public static AutoCloseable toAutoCloseable(@NonNull Disposable disposable) {
+        return disposable::dispose;
+    }
+
+    /**
+     * Returns a new, non-disposed {@code Disposable} instance.
+     * @return a new, non-disposed {@code Disposable} instance
      */
     @NonNull
     public static Disposable empty() {
@@ -105,8 +133,8 @@ public final class Disposables {
     }
 
     /**
-     * Returns a disposed Disposable instance.
-     * @return a disposed Disposable instance
+     * Returns a shared, disposed {@code Disposable} instance.
+     * @return a shared, disposed {@code Disposable} instance
      */
     @NonNull
     public static Disposable disposed() {

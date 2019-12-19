@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.disposables;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * A disposable container that manages a Runnable instance.
+ * A disposable container that manages a {@link Runnable} instance.
  */
 final class RunnableDisposable extends ReferenceDisposable<Runnable> {
 

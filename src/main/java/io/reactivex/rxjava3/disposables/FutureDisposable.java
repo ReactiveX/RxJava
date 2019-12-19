@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A Disposable container that cancels a Future instance.
+ * A Disposable container that cancels a {@link Future} instance.
  */
 final class FutureDisposable extends AtomicReference<Future<?>> implements Disposable {
 
