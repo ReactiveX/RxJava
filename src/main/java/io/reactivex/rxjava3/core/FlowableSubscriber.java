@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
  * Represents a Reactive-Streams inspired {@link Subscriber} that is RxJava 2 only
- * and weakens rules ง1.3 and ง3.9 of the specification for gaining performance.
+ * and weakens rules ยง1.3 and ยง3.9 of the specification for gaining performance.
  *
  * <p>History: 2.0.7 - experimental; 2.1 - beta
  * @param <T> the value type
