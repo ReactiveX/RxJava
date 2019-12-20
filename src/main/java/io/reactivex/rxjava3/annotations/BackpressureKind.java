@@ -32,13 +32,13 @@ public enum BackpressureKind {
      */
     SPECIAL,
     /**
-     * The operator requests Long.MAX_VALUE from upstream but respects the backpressure
+     * The operator requests {@link Long#MAX_VALUE} from upstream but respects the backpressure
      * of the downstream.
      */
     UNBOUNDED_IN,
     /**
-     * The operator will emit a MissingBackpressureException if the downstream didn't request
-     * enough or in time.
+     * The operator will emit a {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException MissingBackpressureException}
+     * if the downstream didn't request enough or in time.
      */
     ERROR,
     /**

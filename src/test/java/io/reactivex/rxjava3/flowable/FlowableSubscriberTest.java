@@ -83,7 +83,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void requestFromChainedOperator() throws Exception {
+    public void requestFromChainedOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<String>(10L);
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
@@ -135,7 +135,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void requestFromDecoupledOperator() throws Exception {
+    public void requestFromDecoupledOperator() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<String>(0L);
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
@@ -188,7 +188,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void requestFromDecoupledOperatorThatRequestsN() throws Exception {
+    public void requestFromDecoupledOperatorThatRequestsN() throws Throwable {
         TestSubscriber<String> s = new TestSubscriber<String>(10L);
         final AtomicLong innerR = new AtomicLong();
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {

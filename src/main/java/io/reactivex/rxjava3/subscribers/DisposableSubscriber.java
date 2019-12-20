@@ -23,11 +23,11 @@ import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
 
 /**
- * An abstract Subscriber that allows asynchronous, external cancellation by implementing Disposable.
+ * An abstract Subscriber that allows asynchronous, external cancellation by implementing {@link Disposable}.
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
- * <p>The default {@link #onStart()} requests Long.MAX_VALUE by default. Override
+ * <p>The default {@link #onStart()} requests {@link Long#MAX_VALUE} by default. Override
  * the method to request a custom <em>positive</em> amount. Use the protected {@link #request(long)}
  * to request more items and {@link #cancel()} to cancel the sequence from within an
  * {@code onNext} implementation.
@@ -74,7 +74,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  * @param <T> the received value type.
  */
 public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, Disposable {
-    final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
+    final AtomicReference<Subscription> upstream = new AtomicReference<>();
 
     @Override
     public final void onSubscribe(Subscription s) {
@@ -84,18 +84,18 @@ public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, 
     }
 
     /**
-     * Called once the single upstream Subscription is set via onSubscribe.
+     * Called once the single upstream {@link Subscription} is set via {@link #onSubscribe(Subscription)}.
      */
     protected void onStart() {
         upstream.get().request(Long.MAX_VALUE);
     }
 
     /**
-     * Requests the specified amount from the upstream if its Subscription is set via
+     * Requests the specified amount from the upstream if its {@link Subscription} is set via
      * onSubscribe already.
-     * <p>Note that calling this method before a Subscription is set via onSubscribe
-     * leads to NullPointerException and meant to be called from inside onStart or
-     * onNext.
+     * <p>Note that calling this method before a {@link Subscription} is set via {@link #onSubscribe(Subscription)}
+     * leads to {@link NullPointerException} and meant to be called from inside {@link #onStart()} or
+     * {@link #onNext(Object)}.
      * @param n the request amount, positive
      */
     protected final void request(long n) {
@@ -103,8 +103,8 @@ public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, 
     }
 
     /**
-     * Cancels the Subscription set via onSubscribe or makes sure a
-     * Subscription set asynchronously (later) is cancelled immediately.
+     * Cancels the Subscription set via {@link #onSubscribe(Subscription)} or makes sure a
+     * {@link Subscription} set asynchronously (later) is cancelled immediately.
      * <p>This method is thread-safe and can be exposed as a public API.
      */
     protected final void cancel() {

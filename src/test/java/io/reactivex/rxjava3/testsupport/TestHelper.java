@@ -69,7 +69,7 @@ public enum TestHelper {
     public static final int RACE_LONG_LOOPS = 10000;
 
     /**
-     * Mocks a subscriber and prepares it to request Long.MAX_VALUE.
+     * Mocks a subscriber and prepares it to request {@link Long#MAX_VALUE}.
      * @param <T> the value type
      * @return the mocked subscriber
      */

@@ -23,8 +23,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface CompletableOnSubscribe {
 
     /**
-     * Called for each CompletableObserver that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link CompletableObserver} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull CompletableEmitter emitter) throws Throwable;

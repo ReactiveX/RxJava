@@ -53,7 +53,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public interface SingleObserver<T> {
 
     /**
-     * Provides the SingleObserver with the means of cancelling (disposing) the
+     * Provides the {@link SingleObserver} with the means of cancelling (disposing) the
      * connection (channel) with the Single in both
      * synchronous (from within {@code onSubscribe(Disposable)} itself) and asynchronous manner.
      * @param d the Disposable instance whose {@link Disposable#dispose()} can
@@ -63,23 +63,23 @@ public interface SingleObserver<T> {
     void onSubscribe(@NonNull Disposable d);
 
     /**
-     * Notifies the SingleObserver with a single item and that the {@link Single} has finished sending
+     * Notifies the {@link SingleObserver} with a single item and that the {@link Single} has finished sending
      * push-based notifications.
      * <p>
-     * The {@link Single} will not call this method if it calls {@link #onError}.
+     * The {@code Single} will not call this method if it calls {@link #onError}.
      *
      * @param t
-     *          the item emitted by the Single
+     *          the item emitted by the {@code Single}
      */
     void onSuccess(@NonNull T t);
 
     /**
-     * Notifies the SingleObserver that the {@link Single} has experienced an error condition.
+     * Notifies the {@link SingleObserver} that the {@link Single} has experienced an error condition.
      * <p>
-     * If the {@link Single} calls this method, it will not thereafter call {@link #onSuccess}.
+     * If the {@code Single} calls this method, it will not thereafter call {@link #onSuccess}.
      *
      * @param e
-     *          the exception encountered by the Single
+     *          the exception encountered by the {@code Single}
      */
     void onError(@NonNull Throwable e);
 }

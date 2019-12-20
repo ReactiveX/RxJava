@@ -51,7 +51,7 @@ implements FlowableSubscriber<T>, Subscription {
     private QueueSubscription<T> qs;
 
     /**
-     * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
+     * Constructs a non-forwarding TestSubscriber with an initial request value of {@link Long#MAX_VALUE}.
      */
     public TestSubscriberEx() {
         this(EmptySubscriber.INSTANCE, Long.MAX_VALUE);

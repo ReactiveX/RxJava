@@ -28,9 +28,9 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface MaybeSource<T> {
 
     /**
-     * Subscribes the given MaybeObserver to this MaybeSource instance.
-     * @param observer the MaybeObserver, not null
-     * @throws NullPointerException if {@code observer} is null
+     * Subscribes the given {@link MaybeObserver} to this {@link MaybeSource} instance.
+     * @param observer the {@code MaybeObserver}, not {@code null}
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
     void subscribe(@NonNull MaybeObserver<? super T> observer);
 }

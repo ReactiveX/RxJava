@@ -24,8 +24,8 @@ package io.reactivex.rxjava3.observers;
 public interface LambdaConsumerIntrospection {
 
     /**
-     * Returns true or false if a custom onError consumer has been provided.
-     * @return {@code true} if a custom onError consumer implementation was supplied. Returns {@code false} if the
+     * Returns {@code true} or {@code false} if a custom {@code onError} consumer has been provided.
+     * @return {@code true} if a custom {@code onError} consumer implementation was supplied. Returns {@code false} if the
      * implementation is missing an error consumer and thus using a throwing default implementation.
      */
     boolean hasCustomOnError();

@@ -82,17 +82,17 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  */
 public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     /** The active subscription. */
-    private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    private final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     /** The resource composite, can never be null. */
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
 
     /**
-     * Adds a resource to this ResourceObserver.
+     * Adds a resource to this {@code ResourceObserver}.
      *
      * @param resource the resource to add
      *
-     * @throws NullPointerException if resource is null
+     * @throws NullPointerException if resource is {@code null}
      */
     public final void add(@NonNull Disposable resource) {
         Objects.requireNonNull(resource, "resource is null");
@@ -107,7 +107,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     }
 
     /**
-     * Called once the upstream sets a Subscription on this ResourceObserver.
+     * Called once the upstream sets a {@link Disposable} on this {@code ResourceObserver}.
      *
      * <p>You can perform initialization at this moment. The default
      * implementation does nothing.
@@ -117,10 +117,10 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
 
     /**
      * Cancels the main disposable (if any) and disposes the resources associated with
-     * this ResourceObserver (if any).
+     * this {@code ResourceObserver} (if any).
      *
-     * <p>This method can be called before the upstream calls onSubscribe at which
-     * case the main Disposable will be immediately disposed.
+     * <p>This method can be called before the upstream calls {@link #onSubscribe(Disposable)} at which
+     * case the main {@link Disposable} will be immediately disposed.
      */
     @Override
     public final void dispose() {
@@ -130,8 +130,8 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
     }
 
     /**
-     * Returns true if this ResourceObserver has been disposed/cancelled.
-     * @return true if this ResourceObserver has been disposed/cancelled
+     * Returns true if this {@code ResourceObserver} has been disposed/cancelled.
+     * @return true if this {@code ResourceObserver} has been disposed/cancelled
      */
     @Override
     public final boolean isDisposed() {

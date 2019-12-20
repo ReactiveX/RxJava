@@ -213,7 +213,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     /**
      * Constructs a BehaviorSubject with the given initial value.
      * @param defaultValue the initial value, not null (verified)
-     * @throws NullPointerException if {@code defaultValue} is null
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      * @since 2.0
      */
     BehaviorSubject(T defaultValue) {

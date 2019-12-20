@@ -14,7 +14,7 @@
 package io.reactivex.rxjava3.exceptions;
 
 /**
- * Wrapper for Throwable errors that are sent to `RxJavaPlugins.onError`.
+ * Wrapper for Throwable errors that are sent to {@link io.reactivex.rxjava3.plugins.RxJavaPlugins#onError(Throwable) RxJavaPlugins.onError}.
  * <p>History: 2.0.6 - experimental; 2.1 - beta
  * @since 2.2
  */

@@ -67,7 +67,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * {@link NullPointerException} being thrown and the processor's state is not changed.
  * <p>
  * Since a {@code UnicastProcessor} is a {@link io.reactivex.rxjava3.core.Flowable} as well as a {@link FlowableProcessor}, it
- * honors the downstream backpressure but consumes an upstream source in an unbounded manner (requesting {@code Long.MAX_VALUE}).
+ * honors the downstream backpressure but consumes an upstream source in an unbounded manner (requesting {@link Long#MAX_VALUE}).
  * <p>
  * When this {@code UnicastProcessor} is terminated via {@link #onError(Throwable)} the current or late single {@code Subscriber}
  * may receive the {@code Throwable} before any available items could be emitted. To make sure an {@code onError} event is delivered
@@ -91,7 +91,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <dl>
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>{@code UnicastProcessor} honors the downstream backpressure but consumes an upstream source
- *  (if any) in an unbounded manner (requesting {@code Long.MAX_VALUE}).</dd>
+ *  (if any) in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code UnicastProcessor} does not operate by default on a particular {@link io.reactivex.rxjava3.core.Scheduler} and
  *  the single {@code Subscriber} gets notified on the thread the respective {@code onXXX} methods were invoked.</dd>

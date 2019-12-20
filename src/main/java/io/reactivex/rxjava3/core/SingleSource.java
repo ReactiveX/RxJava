@@ -28,9 +28,9 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface SingleSource<T> {
 
     /**
-     * Subscribes the given SingleObserver to this SingleSource instance.
-     * @param observer the SingleObserver, not null
-     * @throws NullPointerException if {@code observer} is null
+     * Subscribes the given {@link SingleObserver} to this {@link SingleSource} instance.
+     * @param observer the {@code SingleObserver}, not {@code null}
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
     void subscribe(@NonNull SingleObserver<? super T> observer);
 }

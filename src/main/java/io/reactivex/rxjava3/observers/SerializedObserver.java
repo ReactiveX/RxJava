@@ -20,13 +20,14 @@ import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * Serializes access to the onNext, onError and onComplete methods of another Observer.
+ * Serializes access to the {@link Observer#onNext(Object)}, {@link Observer#onError(Throwable)} and
+ * {@link Observer#onComplete()} methods of another {@link Observer}.
  *
  * <p>Note that {@link #onSubscribe(Disposable)} is not serialized in respect of the other methods so
- * make sure the {@code onSubscribe()} is called with a non-null {@code Disposable}
+ * make sure the {@code onSubscribe()} is called with a non-null {@link Disposable}
  * before any of the other methods are called.
  *
- * <p>The implementation assumes that the actual Observer's methods don't throw.
+ * <p>The implementation assumes that the actual {@code Observer}'s methods don't throw.
  *
  * @param <T> the value type
  */
@@ -44,19 +45,19 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     volatile boolean done;
 
     /**
-     * Construct a SerializedObserver by wrapping the given actual Observer.
-     * @param downstream the actual Observer, not null (not verified)
+     * Construct a {@code SerializedObserver} by wrapping the given actual {@link Observer}.
+     * @param downstream the actual {@code Observer}, not {@code null} (not verified)
      */
     public SerializedObserver(@NonNull Observer<? super T> downstream) {
         this(downstream, false);
     }
 
     /**
-     * Construct a SerializedObserver by wrapping the given actual Observer and
+     * Construct a SerializedObserver by wrapping the given actual {@link Observer} and
      * optionally delaying the errors till all regular values have been emitted
      * from the internal buffer.
-     * @param actual the actual Observer, not null (not verified)
-     * @param delayError if true, errors are emitted after regular values have been emitted
+     * @param actual the actual {@code Observer}, not {@code null} (not verified)
+     * @param delayError if {@code true}, errors are emitted after regular values have been emitted
      */
     public SerializedObserver(@NonNull Observer<? super T> actual, boolean delayError) {
         this.downstream = actual;
@@ -100,7 +101,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(QUEUE_LINK_SIZE);
+                    q = new AppendOnlyLinkedArrayList<>(QUEUE_LINK_SIZE);
                     queue = q;
                 }
                 q.add(NotificationLite.next(t));
@@ -129,7 +130,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
                 done = true;
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(QUEUE_LINK_SIZE);
+                    q = new AppendOnlyLinkedArrayList<>(QUEUE_LINK_SIZE);
                     queue = q;
                 }
                 Object err = NotificationLite.error(t);
@@ -167,7 +168,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(QUEUE_LINK_SIZE);
+                    q = new AppendOnlyLinkedArrayList<>(QUEUE_LINK_SIZE);
                     queue = q;
                 }
                 q.add(NotificationLite.complete());

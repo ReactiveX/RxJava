@@ -40,7 +40,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  * {@code ResourceSubscriber} and then add/remove resources to/from the {@code CompositeDisposable}
  * freely.
  *
- * <p>The default {@link #onStart()} requests Long.MAX_VALUE by default. Override
+ * <p>The default {@link #onStart()} requests {@link Long#MAX_VALUE} by default. Override
  * the method to request a custom <em>positive</em> amount. Use the protected {@link #request(long)}
  * to request more items and {@link #dispose()} to cancel the sequence from within an
  * {@code onNext} implementation.
@@ -94,7 +94,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  */
 public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Disposable {
     /** The active subscription. */
-    private final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
+    private final AtomicReference<Subscription> upstream = new AtomicReference<>();
 
     /** The resource composite, can never be null. */
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
@@ -103,11 +103,11 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
     private final AtomicLong missedRequested = new AtomicLong();
 
     /**
-     * Adds a resource to this AsyncObserver.
+     * Adds a resource to this {@code ResourceSubscriber}.
      *
      * @param resource the resource to add
      *
-     * @throws NullPointerException if resource is null
+     * @throws NullPointerException if {@code resource} is {@code null}
      */
     public final void add(Disposable resource) {
         Objects.requireNonNull(resource, "resource is null");
@@ -126,10 +126,10 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
     }
 
     /**
-     * Called once the upstream sets a Subscription on this AsyncObserver.
+     * Called once the upstream sets a {@link Subscription} on this {@code ResourceSubscriber}.
      *
      * <p>You can perform initialization at this moment. The default
-     * implementation requests Long.MAX_VALUE from upstream.
+     * implementation requests {@link Long#MAX_VALUE} from upstream.
      */
     protected void onStart() {
         request(Long.MAX_VALUE);
@@ -138,7 +138,7 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
     /**
      * Request the specified amount of elements from upstream.
      *
-     * <p>This method can be called before the upstream calls onSubscribe().
+     * <p>This method can be called before the upstream calls {@link #onSubscribe(Subscription)}.
      * When the subscription happens, all missed requests are requested.
      *
      * @param n the request amount, must be positive
@@ -149,10 +149,10 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
 
     /**
      * Cancels the subscription (if any) and disposes the resources associated with
-     * this AsyncObserver (if any).
+     * this {@code ResourceSubscriber} (if any).
      *
-     * <p>This method can be called before the upstream calls onSubscribe at which
-     * case the Subscription will be immediately cancelled.
+     * <p>This method can be called before the upstream calls {@link #onSubscribe(Subscription)} at which
+     * case the {@link Subscription} will be immediately cancelled.
      */
     @Override
     public final void dispose() {
@@ -162,8 +162,8 @@ public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Di
     }
 
     /**
-     * Returns true if this AsyncObserver has been disposed/cancelled.
-     * @return true if this AsyncObserver has been disposed/cancelled
+     * Returns true if this {@code ResourceSubscriber} has been disposed/cancelled.
+     * @return true if this {@code ResourceSubscriber} has been disposed/cancelled
      */
     @Override
     public final boolean isDisposed() {

@@ -14,6 +14,7 @@ package io.reactivex.rxjava3.internal.util;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -26,10 +27,10 @@ public final class BackpressureHelper {
     }
 
     /**
-     * Adds two long values and caps the sum at Long.MAX_VALUE.
+     * Adds two long values and caps the sum at {@link Long#MAX_VALUE}.
      * @param a the first value
      * @param b the second value
-     * @return the sum capped at Long.MAX_VALUE
+     * @return the sum capped at {@link Long#MAX_VALUE}
      */
     public static long addCap(long a, long b) {
         long u = a + b;
@@ -40,10 +41,10 @@ public final class BackpressureHelper {
     }
 
     /**
-     * Multiplies two long values and caps the product at Long.MAX_VALUE.
+     * Multiplies two long values and caps the product at {@link Long#MAX_VALUE}.
      * @param a the first value
      * @param b the second value
-     * @return the product capped at Long.MAX_VALUE
+     * @return the product capped at {@link Long#MAX_VALUE}
      */
     public static long multiplyCap(long a, long b) {
         long u = a * b;
@@ -56,13 +57,13 @@ public final class BackpressureHelper {
     }
 
     /**
-     * Atomically adds the positive value n to the requested value in the AtomicLong and
-     * caps the result at Long.MAX_VALUE and returns the previous value.
-     * @param requested the AtomicLong holding the current requested value
+     * Atomically adds the positive value n to the requested value in the {@link AtomicLong} and
+     * caps the result at {@link Long#MAX_VALUE} and returns the previous value.
+     * @param requested the {@code AtomicLong} holding the current requested value
      * @param n the value to add, must be positive (not verified)
      * @return the original value before the add
      */
-    public static long add(AtomicLong requested, long n) {
+    public static long add(@NonNull AtomicLong requested, long n) {
         for (;;) {
             long r = requested.get();
             if (r == Long.MAX_VALUE) {
@@ -76,14 +77,14 @@ public final class BackpressureHelper {
     }
 
     /**
-     * Atomically adds the positive value n to the requested value in the AtomicLong and
-     * caps the result at Long.MAX_VALUE and returns the previous value and
-     * considers Long.MIN_VALUE as a cancel indication (no addition then).
-     * @param requested the AtomicLong holding the current requested value
+     * Atomically adds the positive value n to the requested value in the {@link AtomicLong} and
+     * caps the result at {@link Long#MAX_VALUE} and returns the previous value and
+     * considers {@link Long#MIN_VALUE} as a cancel indication (no addition then).
+     * @param requested the {@code AtomicLong} holding the current requested value
      * @param n the value to add, must be positive (not verified)
      * @return the original value before the add
      */
-    public static long addCancel(AtomicLong requested, long n) {
+    public static long addCancel(@NonNull AtomicLong requested, long n) {
         for (;;) {
             long r = requested.get();
             if (r == Long.MIN_VALUE) {
@@ -100,12 +101,12 @@ public final class BackpressureHelper {
     }
 
     /**
-     * Atomically subtract the given number (positive, not validated) from the target field unless it contains Long.MAX_VALUE.
+     * Atomically subtract the given number (positive, not validated) from the target field unless it contains {@link Long#MAX_VALUE}.
      * @param requested the target field holding the current requested amount
      * @param n the produced element count, positive (not validated)
      * @return the new amount
      */
-    public static long produced(AtomicLong requested, long n) {
+    public static long produced(@NonNull AtomicLong requested, long n) {
         for (;;) {
             long current = requested.get();
             if (current == Long.MAX_VALUE) {
@@ -124,12 +125,12 @@ public final class BackpressureHelper {
 
     /**
      * Atomically subtract the given number (positive, not validated) from the target field if
-     * it doesn't contain Long.MIN_VALUE (indicating some cancelled state) or Long.MAX_VALUE (unbounded mode).
+     * it doesn't contain {@link Long#MIN_VALUE} (indicating some cancelled state) or {@link Long#MAX_VALUE} (unbounded mode).
      * @param requested the target field holding the current requested amount
      * @param n the produced element count, positive (not validated)
      * @return the new amount
      */
-    public static long producedCancel(AtomicLong requested, long n) {
+    public static long producedCancel(@NonNull AtomicLong requested, long n) {
         for (;;) {
             long current = requested.get();
             if (current == Long.MIN_VALUE) {

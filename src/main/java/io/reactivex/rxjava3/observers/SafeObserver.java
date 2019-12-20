@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * Wraps another Subscriber and ensures all onXXX methods conform the protocol
+ * Wraps another {@link Observer} and ensures all {@code onXXX} methods conform the protocol
  * (except the requirement for serialized access).
  *
  * @param <T> the value type
@@ -35,8 +35,8 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     boolean done;
 
     /**
-     * Constructs a SafeObserver by wrapping the given actual Observer.
-     * @param downstream the actual Observer to wrap, not null (not validated)
+     * Constructs a {@code SafeObserver} by wrapping the given actual {@link Observer}.
+     * @param downstream the actual {@code Observer} to wrap, not {@code null} (not validated)
      */
     public SafeObserver(@NonNull Observer<? super T> downstream) {
         this.downstream = downstream;

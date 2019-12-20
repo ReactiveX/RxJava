@@ -66,7 +66,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <p>
  * This {@code ReplayProcessor} respects the individual backpressure behavior of its {@code Subscriber}s but
  * does not coordinate their request amounts towards the upstream (because there might not be any) and
- * consumes the upstream in an unbounded manner (requesting {@code Long.MAX_VALUE}).
+ * consumes the upstream in an unbounded manner (requesting {@link Long#MAX_VALUE}).
  * Note that {@code Subscriber}s receive a continuous sequence of values after they subscribed even
  * if an individual item gets delayed due to backpressure.
  * Due to concurrency requirements, a size-bounded {@code ReplayProcessor} may hold strong references to more source
@@ -104,7 +104,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>This {@code ReplayProcessor} respects the individual backpressure behavior of its {@code Subscriber}s but
  *  does not coordinate their request amounts towards the upstream (because there might not be any) and
- *  consumes the upstream in an unbounded manner (requesting {@code Long.MAX_VALUE}).
+ *  consumes the upstream in an unbounded manner (requesting {@long Long#MAX_VALUE}).
  *  Note that {@code Subscriber}s receive a continuous sequence of values after they subscribed even
  *  if an individual item gets delayed due to backpressure.</dd>
  *  <dt><b>Scheduler:</b></dt>

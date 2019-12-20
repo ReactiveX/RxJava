@@ -71,7 +71,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <dl>
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>The processor does not coordinate backpressure for its subscribers and implements a weaker {@code onSubscribe} which
- *  calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the {@code PublishProcessor}
+ *  calls requests {@link Long#MAX_VALUE} from the incoming Subscriptions. This makes it possible to subscribe the {@code PublishProcessor}
  *  to multiple sources (note on serialization though) unlike the standard {@code Subscriber} contract. Child subscribers, however, are not overflown but receive an
  *  {@link IllegalStateException} in case their requested amount is zero.</dd>
  *  <dt><b>Scheduler:</b></dt>

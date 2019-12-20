@@ -25,8 +25,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface SingleOnSubscribe<T> {
 
     /**
-     * Called for each SingleObserver that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link SingleObserver} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull SingleEmitter<T> emitter) throws Throwable;

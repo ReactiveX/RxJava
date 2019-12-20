@@ -49,9 +49,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
  */
 public interface CompletableObserver {
     /**
-     * Called once by the Completable to set a Disposable on this instance which
+     * Called once by the {@link Completable} to set a {@link Disposable} on this instance which
      * then can be used to cancel the subscription at any time.
-     * @param d the Disposable instance to call dispose on for cancellation, not null
+     * @param d the {@code Disposable} instance to call dispose on for cancellation, not null
      */
     void onSubscribe(@NonNull Disposable d);
 
@@ -62,7 +62,7 @@ public interface CompletableObserver {
 
     /**
      * Called once if the deferred computation 'throws' an exception.
-     * @param e the exception, not null.
+     * @param e the exception, not {@code null}.
      */
     void onError(@NonNull Throwable e);
 }

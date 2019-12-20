@@ -16,15 +16,17 @@ package io.reactivex.rxjava3.observers;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.exceptions.CompositeException;
 import io.reactivex.rxjava3.functions.Predicate;
-import io.reactivex.rxjava3.internal.functions.*;
+import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
- * Base class with shared infrastructure to support TestSubscriber and TestObserver.
+ * Base class with shared infrastructure to support
+ * {@link io.reactivex.rxjava3.subscribers.TestSubscriber TestSubscriber} and {@link TestObserver}.
  * @param <T> the value type consumed
- * @param <U> the subclass of this BaseTestConsumer
+ * @param <U> the subclass of this {@code BaseTestConsumer}
  */
 public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     /** The latch that indicates an onError or onComplete has been called. */
@@ -47,26 +49,26 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     protected CharSequence tag;
 
     /**
-     * Indicates that one of the awaitX method has timed out.
+     * Indicates that one of the {@code awaitX} method has timed out.
      * @since 2.0.7
      */
     protected boolean timeout;
 
     public BaseTestConsumer() {
-        this.values = new VolatileSizeArrayList<T>();
-        this.errors = new VolatileSizeArrayList<Throwable>();
+        this.values = new VolatileSizeArrayList<>();
+        this.errors = new VolatileSizeArrayList<>();
         this.done = new CountDownLatch(1);
     }
 
     /**
-     * Returns a shared list of received onNext values.
+     * Returns a shared list of received {@code onNext} values or the single {@code onSuccess} value.
      * <p>
      * Note that accessing the items via certain methods of the {@link List}
      * interface while the upstream is still actively emitting
      * more items may result in a {@code ConcurrentModificationException}.
      * <p>
      * The {@link List#size()} method will return the number of items
-     * already received by this TestObserver/TestSubscriber in a thread-safe
+     * already received by this {@code TestObserver}/{@code TestSubscriber} in a thread-safe
      * manner that can be read via {@link List#get(int)}) method
      * (index range of 0 to {@code List.size() - 1}).
      * <p>
@@ -76,6 +78,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * {@code ConcurrentModificationException}.
      * @return a list of received onNext values
      */
+    @NonNull
     public final List<T> values() {
         return values;
     }
@@ -89,7 +92,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @param message the message to use
      * @return AssertionError the prepared AssertionError instance
      */
-    protected final AssertionError fail(String message) {
+    @NonNull
+    protected final AssertionError fail(@NonNull String message) {
         StringBuilder b = new StringBuilder(64 + message.length());
         b.append(message);
 
@@ -131,11 +135,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Awaits until this TestObserver/TestSubscriber receives an onError or onComplete events.
+     * Awaits until this {@code TestObserver}/{@code TestSubscriber} receives an {@code onError} or {@code onComplete} events.
      * @return this
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U await() throws InterruptedException {
         if (done.getCount() == 0) {
             return (U)this;
@@ -146,14 +151,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Awaits the specified amount of time or until this TestObserver/TestSubscriber
-     * receives an onError or onComplete events, whichever happens first.
+     * Awaits the specified amount of time or until this {@code TestObserver}/{@code TestSubscriber}
+     * receives an {@code onError} or {@code onComplete} events, whichever happens first.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
-     * @return true if the TestObserver/TestSubscriber terminated, false if timeout happened
+     * @return true if the {@code TestObserver}/{@code TestSubscriber} terminated, false if timeout happened
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public final boolean await(long time, TimeUnit unit) throws InterruptedException {
+    public final boolean await(long time, @NonNull TimeUnit unit) throws InterruptedException {
         boolean d = done.getCount() == 0 || (done.await(time, unit));
         timeout = !d;
         return d;
@@ -162,10 +167,11 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     // assertion methods
 
     /**
-     * Assert that this TestObserver/TestSubscriber received exactly one onComplete event.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} received exactly one {@code onComplete} event.
      * @return this
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U assertComplete() {
         long c = completions;
         if (c == 0) {
@@ -178,10 +184,11 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber has not received any onComplete event.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} has not received an {@code onComplete} event.
      * @return this
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U assertNotComplete() {
         long c = completions;
         if (c == 1) {
@@ -194,10 +201,11 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber has not received any onError event.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} has not received an {@code onError} event.
      * @return this
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U assertNoErrors() {
         int s = errors.size();
         if (s != 0) {
@@ -207,9 +215,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber received exactly the specified onError event value.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} received exactly the specified {@code onError} event value.
      *
-     * <p>The comparison is performed via Objects.equals(); since most exceptions don't
+     * <p>The comparison is performed via {@link Objects#equals(Object, Object)}; since most exceptions don't
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
      * overload to test against the class of an error instead of an instance of an error
      * or {@link #assertError(Predicate)} to test with different condition.
@@ -218,31 +226,34 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @see #assertError(Class)
      * @see #assertError(Predicate)
      */
-    public final U assertError(Throwable error) {
+    @NonNull
+    public final U assertError(@NonNull Throwable error) {
         return assertError(Functions.equalsWith(error));
     }
 
     /**
-     * Asserts that this TestObserver/TestSubscriber received exactly one onError event which is an
-     * instance of the specified errorClass class.
-     * @param errorClass the error class to expect
+     * Asserts that this {@code TestObserver}/{@code TestSubscriber} received exactly one {@code onError} event which is an
+     * instance of the specified {@code errorClass} {@link Class}.
+     * @param errorClass the error {@code Class} to expect
      * @return this
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final U assertError(Class<? extends Throwable> errorClass) {
+    @NonNull
+    public final U assertError(@NonNull Class<? extends Throwable> errorClass) {
         return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
     }
 
     /**
-     * Asserts that this TestObserver/TestSubscriber received exactly one onError event for which
-     * the provided predicate returns true.
+     * Asserts that this {@code TestObserver}/{@code TestSubscriber} received exactly one {@code onError} event for which
+     * the provided predicate returns {@code true}.
      * @param errorPredicate
-     *            the predicate that receives the error Throwable
-     *            and should return true for expected errors.
+     *            the predicate that receives the error {@link Throwable}
+     *            and should return {@code true} for expected errors.
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertError(Predicate<Throwable> errorPredicate) {
+    @NonNull
+    public final U assertError(@NonNull Predicate<Throwable> errorPredicate) {
         int s = errors.size();
         if (s == 0) {
             throw fail("No errors");
@@ -272,13 +283,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber received exactly one onNext value which is equal to
-     * the given value with respect to Objects.equals.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} received exactly one {@code onNext} value which is equal to
+     * the given value with respect to {@link Objects#equals(Object, Object)}.
      * @param value the value to expect
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValue(T value) {
+    @NonNull
+    public final U assertValue(@NonNull T value) {
         int s = values.size();
         if (s != 1) {
             throw fail("expected: " + valueAndClass(value) + " but was: " + values);
@@ -291,15 +303,16 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Asserts that this TestObserver/TestSubscriber received exactly one onNext value for which
-     * the provided predicate returns true.
+     * Asserts that this {@code TestObserver}/{@code TestSubscriber} received exactly one {@code onNext} value for which
+     * the provided predicate returns {@code true}.
      * @param valuePredicate
-     *            the predicate that receives the onNext value
-     *            and should return true for the expected value.
+     *            the predicate that receives the {@code onNext} value
+     *            and should return {@code true} for the expected value.
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValue(Predicate<T> valuePredicate) {
+    @NonNull
+    public final U assertValue(@NonNull Predicate<T> valuePredicate) {
         assertValueAt(0, valuePredicate);
 
         if (values.size() > 1) {
@@ -310,8 +323,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
-     * which is equal to the given value with respect to null-safe Object.equals.
+     * Asserts that this {@code TestObserver}/{@code TestSubscriber} received an {@code onNext} value at the given index
+     * which is equal to the given value with respect to {@code null}-safe {@link Objects#equals(Object, Object)}.
      * <p>History: 2.1.3 - experimental
      * @param index the position to assert on
      * @param value the value to expect
@@ -319,7 +332,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @since 2.2
      */
     @SuppressWarnings("unchecked")
-    public final U assertValueAt(int index, T value) {
+    @NonNull
+    public final U assertValueAt(int index, @NonNull T value) {
         int s = values.size();
         if (s == 0) {
             throw fail("No values");
@@ -337,16 +351,17 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
-     * for the provided predicate returns true.
+     * Asserts that this {@code TestObserver}/{@code TestSubscriber} received an {@code onNext} value at the given index
+     * for the provided predicate returns {@code true}.
      * @param index the position to assert on
      * @param valuePredicate
-     *            the predicate that receives the onNext value
-     *            and should return true for the expected value.
+     *            the predicate that receives the {@code onNext} value
+     *            and should return {@code true} for the expected value.
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValueAt(int index, Predicate<T> valuePredicate) {
+    @NonNull
+    public final U assertValueAt(int index, @NonNull Predicate<T> valuePredicate) {
         int s = values.size();
         if (s == 0) {
             throw fail("No values");
@@ -373,11 +388,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Appends the class name to a non-null value.
+     * Appends the class name to a non-{@code null} value or returns {@code "null"}.
      * @param o the object
      * @return the string representation
      */
-    public static String valueAndClass(Object o) {
+    @NonNull
+    public static String valueAndClass(@Nullable Object o) {
         if (o != null) {
             return o + " (class: " + o.getClass().getSimpleName() + ")";
         }
@@ -385,11 +401,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber received the specified number onNext events.
-     * @param count the expected number of onNext events
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} received the specified number {@code onNext} events.
+     * @param count the expected number of {@code onNext} events
      * @return this
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
@@ -399,20 +416,23 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that this TestObserver/TestSubscriber has not received any onNext events.
+     * Assert that this {@code TestObserver}/{@code TestSubscriber} has not received any {@code onNext} events.
      * @return this
      */
+    @NonNull
     public final U assertNoValues() {
         return assertValueCount(0);
     }
 
     /**
-     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order.
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only the specified values in the specified order.
      * @param values the values expected
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValues(T... values) {
+    @SafeVarargs
+    @NonNull
+    public final U assertValues(@NonNull T... values) {
         int s = this.values.size();
         if (s != values.length) {
             throw fail("Value count differs; expected: " + values.length + " " + Arrays.toString(values)
@@ -429,14 +449,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only the specified values in the specified order without terminating.
      * <p>History: 2.1.4 - experimental
      * @param values the values expected
      * @return this
      * @since 2.2
      */
     @SafeVarargs
-    public final U assertValuesOnly(T... values) {
+    @NonNull
+    public final U assertValuesOnly(@NonNull T... values) {
         return assertSubscribed()
                 .assertValues(values)
                 .assertNoErrors()
@@ -444,12 +465,13 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the TestObserver/TestSubscriber received only the specified sequence of values in the same order.
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} received only the specified sequence of values in the same order.
      * @param sequence the sequence of expected values in order
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValueSequence(Iterable<? extends T> sequence) {
+    @NonNull
+    public final U assertValueSequence(@NonNull Iterable<? extends T> sequence) {
         int i = 0;
         Iterator<T> actualIterator = values.iterator();
         Iterator<? extends T> expectedIterator = sequence.iterator();
@@ -482,20 +504,22 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the onSubscribe method was called exactly once.
+     * Assert that the {@code onSubscribe} method was called exactly once.
      * @return this
      */
+    @NonNull
     protected abstract U assertSubscribed();
 
     /**
-     * Assert that the upstream signalled the specified values in order and
+     * Assert that the upstream signaled the specified values in order and
      * completed normally.
      * @param values the expected values, asserted in order
      * @return this
      * @see #assertFailure(Class, Object...)
      */
     @SafeVarargs
-    public final U assertResult(T... values) {
+    @NonNull
+    public final U assertResult(@NonNull T... values) {
         return assertSubscribed()
                 .assertValues(values)
                 .assertNoErrors()
@@ -503,14 +527,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the upstream signalled the specified values in order
-     * and then failed with a specific class or subclass of Throwable.
-     * @param error the expected exception (parent) class
+     * Assert that the upstream signaled the specified values in order
+     * and then failed with a specific class or subclass of {@link Throwable}.
+     * @param error the expected exception (parent) {@link Class}
      * @param values the expected values, asserted in order
      * @return this
      */
     @SafeVarargs
-    public final U assertFailure(Class<? extends Throwable> error, T... values) {
+    @NonNull
+    public final U assertFailure(@NonNull Class<? extends Throwable> error, @NonNull T... values) {
         return assertSubscribed()
                 .assertValues(values)
                 .assertError(error)
@@ -519,14 +544,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
 
     /**
      * Awaits until the internal latch is counted down.
-     * <p>If the wait times out or gets interrupted, the TestObserver/TestSubscriber is cancelled.
+     * <p>If the wait times out or gets interrupted, the {@code TestObserver}/{@code TestSubscriber} is cancelled.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
      * @return this
-     * @throws RuntimeException wrapping an InterruptedException if the wait is interrupted
+     * @throws RuntimeException wrapping an {@link InterruptedException} if the wait is interrupted
      */
     @SuppressWarnings("unchecked")
-    public final U awaitDone(long time, TimeUnit unit) {
+    @NonNull
+    public final U awaitDone(long time, @NonNull TimeUnit unit) {
         try {
             if (!done.await(time, unit)) {
                 timeout = true;
@@ -540,9 +566,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
     }
 
     /**
-     * Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.
+     * Assert that the {@code TestObserver}/{@code TestSubscriber} has received a
+     * {@link io.reactivex.rxjava3.disposables.Disposable Disposable}/{@link org.reactivestreams.Subscription Subscription}
+     * via {@code onSubscribe} but no other events.
      * @return this
      */
+    @NonNull
     public final U assertEmpty() {
         return assertSubscribed()
                 .assertNoValues()
@@ -554,18 +583,19 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * Set the tag displayed along with an assertion failure's
      * other state information.
      * <p>History: 2.0.7 - experimental
-     * @param tag the string to display (null won't print any tag)
+     * @param tag the string to display ({@code null} won't print any tag)
      * @return this
      * @since 2.1
      */
     @SuppressWarnings("unchecked")
-    public final U withTag(CharSequence tag) {
+    @NonNull
+    public final U withTag(@Nullable CharSequence tag) {
         this.tag = tag;
         return (U)this;
     }
 
     /**
-     * Await until the TestObserver/TestSubscriber receives the given
+     * Await until the {@code TestObserver}/{@code TestSubscriber} receives the given
      * number of items or terminates by sleeping 10 milliseconds at a time
      * up to 5000 milliseconds of timeout.
      * <p>History: 2.0.7 - experimental
@@ -574,6 +604,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
      * @since 2.1
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public final U awaitCount(int atLeast) {
         long start = System.currentTimeMillis();
         long timeoutMillis = 5000;

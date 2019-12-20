@@ -1261,7 +1261,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an array of ObservableSources that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
@@ -1313,7 +1313,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each {@code ObservableSource} source
      * @return the new Observable instance with the specified concatenation behavior
@@ -1432,7 +1432,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of ObservableSources that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner ObservableSources; Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrently running inner ObservableSources; {@link Integer#MAX_VALUE}
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
@@ -1482,7 +1482,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of ObservableSources that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner ObservableSources; Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrently running inner ObservableSources; {@link Integer#MAX_VALUE}
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
@@ -3562,7 +3562,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits a range of sequential Integers
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
-     *             {@code Integer.MAX_VALUE}
+     *             {@link Integer#MAX_VALUE}
      * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
      */
     @CheckReturnValue
@@ -3599,7 +3599,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits a range of sequential Longs
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
-     *             {@code Long.MAX_VALUE}
+     *             {@link Long#MAX_VALUE}
      * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
      */
     @CheckReturnValue
