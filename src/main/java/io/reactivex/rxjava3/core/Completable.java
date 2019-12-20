@@ -12,7 +12,7 @@
  */
 package io.reactivex.rxjava3.core;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.reactivestreams.Publisher;
@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.*;
+import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.completable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
@@ -2752,5 +2753,72 @@ public abstract class Completable implements CompletableSource {
         }
         subscribe(to);
         return to;
+    }
+
+    // -------------------------------------------------------------------------
+    // JDK 8 Support
+    // -------------------------------------------------------------------------
+
+    /**
+     * Signals completion (or error) when the {@link CompletionStage} terminates.
+     * <p>
+     * <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.c.png" alt="">
+     * <p>
+     * Note that the operator takes an already instantiated, running or terminated {@code CompletionStage}.
+     * If the optional is to be created per consumer upon subscription, use {@link #defer(Supplier)}
+     * around {@code fromCompletionStage}:
+     * <pre><code>
+     * Maybe.defer(() -&gt; Completable.fromCompletionStage(createCompletionStage()));
+     * </code></pre>
+     * <p>
+     * Canceling the flow can't cancel the execution of the {@code CompletionStage} because {@code CompletionStage}
+     * itself doesn't support cancellation. Instead, the operator detaches from the {@code CompletionStage}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletionStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param stage the CompletionStage to convert to Maybe and signal its terminal value or error
+     * @return the new Completable instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static Completable fromCompletionStage(@NonNull CompletionStage<?> stage) {
+        Objects.requireNonNull(stage, "stage is null");
+        return RxJavaPlugins.onAssembly(new CompletableFromCompletionStage<>(stage));
+    }
+
+    /**
+     * Signals the given default item when the upstream completes or signals the upstream error via
+     * a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="323" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toCompletionStage.c.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <p>
+     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
+     * <pre><code>
+     * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toCompletionStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the type of the default item to signal upon completion
+     * @param defaultItem the item to signal if the upstream is empty
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <T> CompletionStage<T> toCompletionStage(@Nullable T defaultItem) {
+        return subscribeWith(new CompletionStageConsumer<>(true, defaultItem));
     }
 }
