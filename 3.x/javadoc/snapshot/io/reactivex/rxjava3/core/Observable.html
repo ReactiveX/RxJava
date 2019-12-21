@@ -2988,7 +2988,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html"
 <tr id="i338" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Observable.html#subscribe-io.reactivex.rxjava3.core.Observer-">subscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;observer)</code>
-<div class="block">Subscribes the given Observer to this ObservableSource instance.</div>
+<div class="block">Subscribes the given <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> to this <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> instance.</div>
 </td>
 </tr>
 <tr id="i339" class="rowColor">
@@ -5307,7 +5307,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - an array of ObservableSources that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions at a time, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Integer.MAX_VALUE</code></a>
                        is interpreted as indication to subscribe to all sources at once</dd>
 <dd><code>prefetch</code> - the number of elements to prefetch from each ObservableSource source</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -5378,7 +5378,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - an array of <code>ObservableSource</code>s that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+<dd><code>maxConcurrency</code> - the maximum number of concurrent subscriptions at a time, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Integer.MAX_VALUE</code></a>
                        is interpreted as indication to subscribe to all sources at once</dd>
 <dd><code>prefetch</code> - the number of elements to prefetch from each <code>ObservableSource</code> source</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -5535,7 +5535,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - a sequence of ObservableSources that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner ObservableSources; Integer.MAX_VALUE
+<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner ObservableSources; <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Integer.MAX_VALUE</code></a>
                        is interpreted as all inner ObservableSources can be active at the same time</dd>
 <dd><code>prefetch</code> - the number of elements to prefetch from each inner ObservableSource source</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -5604,7 +5604,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/core
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sources</code> - a sequence of ObservableSources that need to be eagerly concatenated</dd>
-<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner ObservableSources; Integer.MAX_VALUE
+<dd><code>maxConcurrency</code> - the maximum number of concurrently running inner ObservableSources; <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Integer.MAX_VALUE</code></a>
                        is interpreted as all inner ObservableSources can be active at the same time</dd>
 <dd><code>prefetch</code> - the number of elements to prefetch from each inner ObservableSource source</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -7930,7 +7930,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.htm
 <dd>an Observable that emits a range of sequential Integers</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>count</code> is less than zero, or if <code>start</code> + <code>count</code> &minus; 1 exceeds
-             <code>Integer.MAX_VALUE</code></dd>
+             <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Integer.MAX_VALUE</code></a></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a></dd>
 </dl>
@@ -7961,7 +7961,7 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Observable.htm
 <dd>an Observable that emits a range of sequential Longs</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>count</code> is less than zero, or if <code>start</code> + <code>count</code> &minus; 1 exceeds
-             <code>Long.MAX_VALUE</code></dd>
+             <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a></dd>
 </dl>
@@ -17881,12 +17881,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/disposables/Disposab
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;void&nbsp;subscribe(<a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;&nbsp;observer)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html#subscribe-io.reactivex.rxjava3.core.Observer-">ObservableSource</a></code></span></div>
-<div class="block">Subscribes the given Observer to this ObservableSource instance.</div>
+<div class="block">Subscribes the given <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> to this <a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> instance.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html#subscribe-io.reactivex.rxjava3.core.Observer-">subscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core">ObservableSource</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="type parameter in Observable">T</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>observer</code> - the Observer, not null</dd>
+<dd><code>observer</code> - the <code>Observer</code>, not <code>null</code></dd>
 </dl>
 </li>
 </ul>

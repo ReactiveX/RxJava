@@ -110,7 +110,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang">@FunctionalInterface</a>
 public interface <span class="typeNameLabel">ObservableOperator&lt;Downstream,Upstream&gt;</span></pre>
-<div class="block">Interface to map/wrap a downstream observer to an upstream observer.</div>
+<div class="block">Interface to map/wrap a downstream <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> to an upstream <code>Observer</code>.</div>
 </li>
 </ul>
 </div>
@@ -132,7 +132,7 @@ public interface <span class="typeNameLabel">ObservableOperator&lt;Downstream,Up
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/ObservableOperator.html" title="type parameter in ObservableOperator">Upstream</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableOperator.html#apply-io.reactivex.rxjava3.core.Observer-">apply</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/ObservableOperator.html" title="type parameter in ObservableOperator">Downstream</a>&gt;&nbsp;observer)</code>
-<div class="block">Applies a function to the child Observer and returns a new parent Observer.</div>
+<div class="block">Applies a function to the child <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and returns a new parent <code>Observer</code>.</div>
 </td>
 </tr>
 </table>
@@ -159,15 +159,15 @@ public interface <span class="typeNameLabel">ObservableOperator&lt;Downstream,Up
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/ObservableOperator.html" title="type parameter in ObservableOperator">Upstream</a>&gt;&nbsp;apply(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/core/ObservableOperator.html" title="type parameter in ObservableOperator">Downstream</a>&gt;&nbsp;observer)
-                                            throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang">Exception</a></pre>
-<div class="block">Applies a function to the child Observer and returns a new parent Observer.</div>
+                                            throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></pre>
+<div class="block">Applies a function to the child <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and returns a new parent <code>Observer</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>observer</code> - the child Observer instance</dd>
+<dd><code>observer</code> - the child <code>Observer</code> instance</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the parent Observer instance</dd>
+<dd>the parent <code>Observer</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang">Exception</a></code> - on failure</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a></code> - on failure</dd>
 </dl>
 </li>
 </ul>

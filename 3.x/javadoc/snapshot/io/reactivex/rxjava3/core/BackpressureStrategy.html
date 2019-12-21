@@ -138,28 +138,29 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html#BUFFER">BUFFER</a></span></code>
-<div class="block">Buffers <em>all</em> onNext values until the downstream consumes it.</div>
+<div class="block">Buffers <em>all</em> <code>onNext</code> values until the downstream consumes it.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html#DROP">DROP</a></span></code>
-<div class="block">Drops the most recent onNext value if the downstream can't keep up.</div>
+<div class="block">Drops the most recent <code>onNext</code> value if the downstream can't keep up.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html#ERROR">ERROR</a></span></code>
-<div class="block">Signals a MissingBackpressureException in case the downstream can't keep up.</div>
+<div class="block">Signals a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>
+ in case the downstream can't keep up.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html#LATEST">LATEST</a></span></code>
-<div class="block">Keeps only the latest onNext value, overwriting any previous value if the
+<div class="block">Keeps only the latest <code>onNext</code> value, overwriting any previous value if the
  downstream can't keep up.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html#MISSING">MISSING</a></span></code>
-<div class="block">OnNext events are written without any buffering or dropping.</div>
+<div class="block">The <code>onNext</code> events are written without any buffering or dropping.</div>
 </td>
 </tr>
 </table>
@@ -226,7 +227,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>MISSING</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html" title="enum in io.reactivex.rxjava3.core">BackpressureStrategy</a> MISSING</pre>
-<div class="block">OnNext events are written without any buffering or dropping.
+<div class="block">The <code>onNext</code> events are written without any buffering or dropping.
  Downstream has to deal with any overflow.
  <p>Useful when one applies one of the custom-parameter onBackpressureXXX operators.</div>
 </li>
@@ -238,7 +239,8 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>ERROR</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html" title="enum in io.reactivex.rxjava3.core">BackpressureStrategy</a> ERROR</pre>
-<div class="block">Signals a MissingBackpressureException in case the downstream can't keep up.</div>
+<div class="block">Signals a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>
+ in case the downstream can't keep up.</div>
 </li>
 </ul>
 <a name="BUFFER">
@@ -248,7 +250,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>BUFFER</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html" title="enum in io.reactivex.rxjava3.core">BackpressureStrategy</a> BUFFER</pre>
-<div class="block">Buffers <em>all</em> onNext values until the downstream consumes it.</div>
+<div class="block">Buffers <em>all</em> <code>onNext</code> values until the downstream consumes it.</div>
 </li>
 </ul>
 <a name="DROP">
@@ -258,7 +260,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>DROP</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html" title="enum in io.reactivex.rxjava3.core">BackpressureStrategy</a> DROP</pre>
-<div class="block">Drops the most recent onNext value if the downstream can't keep up.</div>
+<div class="block">Drops the most recent <code>onNext</code> value if the downstream can't keep up.</div>
 </li>
 </ul>
 <a name="LATEST">
@@ -268,7 +270,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>LATEST</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/BackpressureStrategy.html" title="enum in io.reactivex.rxjava3.core">BackpressureStrategy</a> LATEST</pre>
-<div class="block">Keeps only the latest onNext value, overwriting any previous value if the
+<div class="block">Keeps only the latest <code>onNext</code> value, overwriting any previous value if the
  downstream can't keep up.</div>
 </li>
 </ul>

@@ -142,8 +142,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#ERROR">ERROR</a></span></code>
-<div class="block">The operator will emit a MissingBackpressureException if the downstream didn't request
- enough or in time.</div>
+<div class="block">The operator will emit a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>
+ if the downstream didn't request enough or in time.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -169,7 +169,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a></span></code>
-<div class="block">The operator requests Long.MAX_VALUE from upstream but respects the backpressure
+<div class="block">The operator requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> from upstream but respects the backpressure
  of the downstream.</div>
 </td>
 </tr>
@@ -268,7 +268,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>UNBOUNDED_IN</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html" title="enum in io.reactivex.rxjava3.annotations">BackpressureKind</a> UNBOUNDED_IN</pre>
-<div class="block">The operator requests Long.MAX_VALUE from upstream but respects the backpressure
+<div class="block">The operator requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> from upstream but respects the backpressure
  of the downstream.</div>
 </li>
 </ul>
@@ -279,8 +279,8 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>ERROR</h4>
 <pre>public static final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html" title="enum in io.reactivex.rxjava3.annotations">BackpressureKind</a> ERROR</pre>
-<div class="block">The operator will emit a MissingBackpressureException if the downstream didn't request
- enough or in time.</div>
+<div class="block">The operator will emit a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>
+ if the downstream didn't request enough or in time.</div>
 </li>
 </ul>
 <a name="NONE">

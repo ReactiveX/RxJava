@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the value type consumed</dd>
-<dd><code>U</code> - the subclass of this BaseTestConsumer</dd>
+<dd><code>U</code> - the subclass of this <code>BaseTestConsumer</code></dd>
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
@@ -118,7 +118,8 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public abstract class <span class="typeNameLabel">BaseTestConsumer&lt;T,U extends BaseTestConsumer&lt;T,U&gt;&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
-<div class="block">Base class with shared infrastructure to support TestSubscriber and TestObserver.</div>
+<div class="block">Base class with shared infrastructure to support
+ <a href="../../../../io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers"><code>TestSubscriber</code></a> and <a href="../../../../io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a>.</div>
 </li>
 </ul>
 </div>
@@ -174,7 +175,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#timeout">timeout</a></span></code>
-<div class="block">Indicates that one of the awaitX method has timed out.</div>
+<div class="block">Indicates that one of the <code>awaitX</code> method has timed out.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -218,146 +219,148 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertComplete--">assertComplete</a></span>()</code>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly one onComplete event.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onComplete</code> event.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertEmpty--">assertEmpty</a></span>()</code>
-<div class="block">Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.</div>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> has received a
+ <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>/<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>
+ via <code>onSubscribe</code> but no other events.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-java.lang.Class-">assertError</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorClass)</code>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onError event which is an
- instance of the specified errorClass class.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-java.lang.Class-">assertError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorClass)</code>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onError</code> event which is an
+ instance of the specified <code>errorClass</code> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang"><code>Class</code></a>.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-io.reactivex.rxjava3.functions.Predicate-">assertError</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorPredicate)</code>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onError event for which
- the provided predicate returns true.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-io.reactivex.rxjava3.functions.Predicate-">assertError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorPredicate)</code>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onError</code> event for which
+ the provided predicate returns <code>true</code>.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-java.lang.Throwable-">assertError</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</code>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly the specified onError event value.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-java.lang.Throwable-">assertError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</code>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly the specified <code>onError</code> event value.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertFailure-java.lang.Class-T...-">assertFailure</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;error,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertFailure-java.lang.Class-T...-">assertFailure</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;error,
              <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code>
-<div class="block">Assert that the upstream signalled the specified values in order
- and then failed with a specific class or subclass of Throwable.</div>
+<div class="block">Assert that the upstream signaled the specified values in order
+ and then failed with a specific class or subclass of <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertNoErrors--">assertNoErrors</a></span>()</code>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onError event.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received an <code>onError</code> event.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertNotComplete--">assertNotComplete</a></span>()</code>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onComplete event.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received an <code>onComplete</code> event.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertNoValues--">assertNoValues</a></span>()</code>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onNext events.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received any <code>onNext</code> events.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertResult-T...-">assertResult</a></span>(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code>
-<div class="block">Assert that the upstream signalled the specified values in order and
+<div class="block">Assert that the upstream signaled the specified values in order and
  completed normally.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertSubscribed--">assertSubscribed</a></span>()</code>
-<div class="block">Assert that the onSubscribe method was called exactly once.</div>
+<div class="block">Assert that the <code>onSubscribe</code> method was called exactly once.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValue-io.reactivex.rxjava3.functions.Predicate-">assertValue</a></span>(<a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</code>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onNext value for which
- the provided predicate returns true.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValue-io.reactivex.rxjava3.functions.Predicate-">assertValue</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</code>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onNext</code> value for which
+ the provided predicate returns <code>true</code>.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValue-T-">assertValue</a></span>(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</code>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly one onNext value which is equal to
- the given value with respect to Objects.equals.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onNext</code> value which is equal to
+ the given value with respect to <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html?is-external=true#equals-java.lang.Object-java.lang.Object-" title="class or interface in java.util"><code>Objects.equals(Object, Object)</code></a>.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValueAt-int-io.reactivex.rxjava3.functions.Predicate-">assertValueAt</a></span>(int&nbsp;index,
-             <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</code>
-<div class="block">Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
- for the provided predicate returns true.</div>
+             <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</code>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received an <code>onNext</code> value at the given index
+ for the provided predicate returns <code>true</code>.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValueAt-int-T-">assertValueAt</a></span>(int&nbsp;index,
              <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</code>
-<div class="block">Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
- which is equal to the given value with respect to null-safe Object.equals.</div>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received an <code>onNext</code> value at the given index
+ which is equal to the given value with respect to <code>null</code>-safe <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html?is-external=true#equals-java.lang.Object-java.lang.Object-" title="class or interface in java.util"><code>Objects.equals(Object, Object)</code></a>.</div>
 </td>
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValueCount-int-">assertValueCount</a></span>(int&nbsp;count)</code>
-<div class="block">Assert that this TestObserver/TestSubscriber received the specified number onNext events.</div>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received the specified number <code>onNext</code> events.</div>
 </td>
 </tr>
 <tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValues-T...-">assertValues</a></span>(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified values in the specified order.</div>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order.</div>
 </td>
 </tr>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValueSequence-java.lang.Iterable-">assertValueSequence</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;sequence)</code>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified sequence of values in the same order.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValueSequence-java.lang.Iterable-">assertValueSequence</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;sequence)</code>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified sequence of values in the same order.</div>
 </td>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertValuesOnly-T...-">assertValuesOnly</a></span>(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</code>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.</div>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order without terminating.</div>
 </td>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#await--">await</a></span>()</code>
-<div class="block">Awaits until this TestObserver/TestSubscriber receives an onError or onComplete events.</div>
+<div class="block">Awaits until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 </td>
 </tr>
 <tr id="i20" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#await-long-java.util.concurrent.TimeUnit-">await</a></span>(long&nbsp;time,
-     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
-<div class="block">Awaits the specified amount of time or until this TestObserver/TestSubscriber
- receives an onError or onComplete events, whichever happens first.</div>
+     <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
+<div class="block">Awaits the specified amount of time or until this <code>TestObserver</code>/<code>TestSubscriber</code>
+ receives an <code>onError</code> or <code>onComplete</code> events, whichever happens first.</div>
 </td>
 </tr>
 <tr id="i21" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#awaitCount-int-">awaitCount</a></span>(int&nbsp;atLeast)</code>
-<div class="block">Await until the TestObserver/TestSubscriber receives the given
+<div class="block">Await until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
  number of items or terminates by sleeping 10 milliseconds at a time
  up to 5000 milliseconds of timeout.</div>
 </td>
@@ -365,7 +368,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#awaitDone-long-java.util.concurrent.TimeUnit-">awaitDone</a></span>(long&nbsp;time,
-         <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
+         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Awaits until the internal latch is counted down.</div>
 </td>
 </tr>
@@ -376,8 +379,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i24" class="altColor">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AssertionError.html?is-external=true" title="class or interface in java.lang">AssertionError</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#fail-java.lang.String-">fail</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;message)</code>
+<td class="colFirst"><code>protected <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AssertionError.html?is-external=true" title="class or interface in java.lang">AssertionError</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#fail-java.lang.String-">fail</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;message)</code>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.</div>
 </td>
 </tr>
@@ -388,20 +391,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i26" class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#valueAndClass-java.lang.Object-">valueAndClass</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>&nbsp;o)</code>
-<div class="block">Appends the class name to a non-null value.</div>
+<td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#valueAndClass-java.lang.Object-">valueAndClass</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>&nbsp;o)</code>
+<div class="block">Appends the class name to a non-<code>null</code> value or returns <code>"null"</code>.</div>
 </td>
 </tr>
 <tr id="i27" class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#values--">values</a></span>()</code>
-<div class="block">Returns a shared list of received onNext values.</div>
+<div class="block">Returns a shared list of received <code>onNext</code> values or the single <code>onSuccess</code> value.</div>
 </td>
 </tr>
 <tr id="i28" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#withTag-java.lang.CharSequence-">withTag</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html?is-external=true" title="class or interface in java.lang">CharSequence</a>&nbsp;tag)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#withTag-java.lang.CharSequence-">withTag</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html?is-external=true" title="class or interface in java.lang">CharSequence</a>&nbsp;tag)</code>
 <div class="block">Set the tag displayed along with an assertion failure's
  other state information.</div>
 </td>
@@ -508,7 +511,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>timeout</h4>
 <pre>protected&nbsp;boolean timeout</pre>
-<div class="block">Indicates that one of the awaitX method has timed out.</div>
+<div class="block">Indicates that one of the <code>awaitX</code> method has timed out.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0.7</dd>
@@ -546,15 +549,16 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>values</h4>
-<pre>public final&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;values()</pre>
-<div class="block">Returns a shared list of received onNext values.
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;values()</pre>
+<div class="block">Returns a shared list of received <code>onNext</code> values or the single <code>onSuccess</code> value.
  <p>
  Note that accessing the items via certain methods of the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a>
  interface while the upstream is still actively emitting
  more items may result in a <code>ConcurrentModificationException</code>.
  <p>
  The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true#size--" title="class or interface in java.util"><code>List.size()</code></a> method will return the number of items
- already received by this TestObserver/TestSubscriber in a thread-safe
+ already received by this <code>TestObserver</code>/<code>TestSubscriber</code> in a thread-safe
  manner that can be read via <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true#get-int-" title="class or interface in java.util"><code>List.get(int)</code></a>) method
  (index range of 0 to <code>List.size() - 1</code>).
  <p>
@@ -574,7 +578,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>fail</h4>
-<pre>protected final&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AssertionError.html?is-external=true" title="class or interface in java.lang">AssertionError</a>&nbsp;fail(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;message)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+protected final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AssertionError.html?is-external=true" title="class or interface in java.lang">AssertionError</a>&nbsp;fail(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;message)</pre>
 <div class="block">Fail with the given message and add the sequence of errors as suppressed ones.
  <p>Note this is deliberately the only fail method. Most of the times an assertion
  would fail but it is possible it was due to an exception somewhere. This construct
@@ -593,9 +599,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>await</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;await()
-              throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang">InterruptedException</a></pre>
-<div class="block">Awaits until this TestObserver/TestSubscriber receives an onError or onComplete events.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;await()
+                       throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang">InterruptedException</a></pre>
+<div class="block">Awaits until this <code>TestObserver</code>/<code>TestSubscriber</code> receives an <code>onError</code> or <code>onComplete</code> events.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -611,16 +618,17 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>await</h4>
 <pre>public final&nbsp;boolean&nbsp;await(long&nbsp;time,
-                           <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)
+                           <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                           <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)
                     throws <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang">InterruptedException</a></pre>
-<div class="block">Awaits the specified amount of time or until this TestObserver/TestSubscriber
- receives an onError or onComplete events, whichever happens first.</div>
+<div class="block">Awaits the specified amount of time or until this <code>TestObserver</code>/<code>TestSubscriber</code>
+ receives an <code>onError</code> or <code>onComplete</code> events, whichever happens first.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>time</code> - the waiting time</dd>
 <dd><code>unit</code> - the time unit of the waiting time</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true if the TestObserver/TestSubscriber terminated, false if timeout happened</dd>
+<dd>true if the <code>TestObserver</code>/<code>TestSubscriber</code> terminated, false if timeout happened</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang">InterruptedException</a></code> - if the current thread is interrupted while waiting</dd>
 </dl>
@@ -632,8 +640,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertComplete</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertComplete()</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly one onComplete event.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertComplete()</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onComplete</code> event.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -646,8 +655,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertNotComplete</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNotComplete()</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onComplete event.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNotComplete()</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received an <code>onComplete</code> event.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -660,8 +670,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertNoErrors</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNoErrors()</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onError event.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNoErrors()</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received an <code>onError</code> event.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -674,10 +685,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertError</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly the specified onError event value.
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;error)</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly the specified <code>onError</code> event value.
 
- <p>The comparison is performed via Objects.equals(); since most exceptions don't
+ <p>The comparison is performed via <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html?is-external=true#equals-java.lang.Object-java.lang.Object-" title="class or interface in java.util"><code>Objects.equals(Object, Object)</code></a>; since most exceptions don't
  implement equals(), this assertion may fail. Use the <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-java.lang.Class-"><code>assertError(Class)</code></a>
  overload to test against the class of an error instead of an instance of an error
  or <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html#assertError-io.reactivex.rxjava3.functions.Predicate-"><code>assertError(Predicate)</code></a> to test with different condition.</div>
@@ -698,12 +711,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertError</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorClass)</pre>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onError event which is an
- instance of the specified errorClass class.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorClass)</pre>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onError</code> event which is an
+ instance of the specified <code>errorClass</code> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang"><code>Class</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>errorClass</code> - the error class to expect</dd>
+<dd><code>errorClass</code> - the error <code>Class</code> to expect</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 </dl>
@@ -715,13 +730,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertError</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorPredicate)</pre>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onError event for which
- the provided predicate returns true.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;errorPredicate)</pre>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onError</code> event for which
+ the provided predicate returns <code>true</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>errorPredicate</code> - the predicate that receives the error Throwable
-            and should return true for expected errors.</dd>
+<dd><code>errorPredicate</code> - the predicate that receives the error <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>
+            and should return <code>true</code> for expected errors.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 </dl>
@@ -735,9 +752,11 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValue</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValue(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber received exactly one onNext value which is equal to
- the given value with respect to Objects.equals.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValue(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                    <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onNext</code> value which is equal to
+ the given value with respect to <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html?is-external=true#equals-java.lang.Object-java.lang.Object-" title="class or interface in java.util"><code>Objects.equals(Object, Object)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>value</code> - the value to expect</dd>
@@ -752,13 +771,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValue</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValue(<a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</pre>
-<div class="block">Asserts that this TestObserver/TestSubscriber received exactly one onNext value for which
- the provided predicate returns true.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValue(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</pre>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received exactly one <code>onNext</code> value for which
+ the provided predicate returns <code>true</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>valuePredicate</code> - the predicate that receives the onNext value
-            and should return true for the expected value.</dd>
+<dd><code>valuePredicate</code> - the predicate that receives the <code>onNext</code> value
+            and should return <code>true</code> for the expected value.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 </dl>
@@ -772,10 +793,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValueAt</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueAt(int&nbsp;index,
-                             <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</pre>
-<div class="block">Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
- which is equal to the given value with respect to null-safe Object.equals.
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueAt(int&nbsp;index,
+                                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                      <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&nbsp;value)</pre>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received an <code>onNext</code> value at the given index
+ which is equal to the given value with respect to <code>null</code>-safe <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html?is-external=true#equals-java.lang.Object-java.lang.Object-" title="class or interface in java.util"><code>Objects.equals(Object, Object)</code></a>.
  <p>History: 2.1.3 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -794,15 +817,17 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValueAt</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueAt(int&nbsp;index,
-                             <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</pre>
-<div class="block">Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
- for the provided predicate returns true.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueAt(int&nbsp;index,
+                                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions">Predicate</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;valuePredicate)</pre>
+<div class="block">Asserts that this <code>TestObserver</code>/<code>TestSubscriber</code> received an <code>onNext</code> value at the given index
+ for the provided predicate returns <code>true</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>index</code> - the position to assert on</dd>
-<dd><code>valuePredicate</code> - the predicate that receives the onNext value
-            and should return true for the expected value.</dd>
+<dd><code>valuePredicate</code> - the predicate that receives the <code>onNext</code> value
+            and should return <code>true</code> for the expected value.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 </dl>
@@ -814,8 +839,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>valueAndClass</h4>
-<pre>public static&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;valueAndClass(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>&nbsp;o)</pre>
-<div class="block">Appends the class name to a non-null value.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;valueAndClass(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
+                                                     <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>&nbsp;o)</pre>
+<div class="block">Appends the class name to a non-<code>null</code> value or returns <code>"null"</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>o</code> - the object</dd>
@@ -830,11 +857,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValueCount</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueCount(int&nbsp;count)</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber received the specified number onNext events.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueCount(int&nbsp;count)</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> received the specified number <code>onNext</code> events.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>count</code> - the expected number of onNext events</dd>
+<dd><code>count</code> - the expected number of <code>onNext</code> events</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 </dl>
@@ -846,8 +874,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertNoValues</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNoValues()</pre>
-<div class="block">Assert that this TestObserver/TestSubscriber has not received any onNext events.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertNoValues()</pre>
+<div class="block">Assert that this <code>TestObserver</code>/<code>TestSubscriber</code> has not received any <code>onNext</code> events.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -862,8 +891,11 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValues</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValues(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified values in the specified order.</div>
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/SafeVarargs.html?is-external=true" title="class or interface in java.lang">@SafeVarargs</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValues(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                   <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>values</code> - the values expected</dd>
@@ -881,8 +913,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>assertValuesOnly</h4>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/SafeVarargs.html?is-external=true" title="class or interface in java.lang">@SafeVarargs</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValuesOnly(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValuesOnly(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                       <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified values in the specified order without terminating.
  <p>History: 2.1.4 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -900,8 +934,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>assertValueSequence</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueSequence(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;sequence)</pre>
-<div class="block">Assert that the TestObserver/TestSubscriber received only the specified sequence of values in the same order.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertValueSequence(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                            <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>&gt;&nbsp;sequence)</pre>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> received only the specified sequence of values in the same order.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sequence</code> - the sequence of expected values in order</dd>
@@ -916,8 +952,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>assertSubscribed</h4>
-<pre>protected abstract&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertSubscribed()</pre>
-<div class="block">Assert that the onSubscribe method was called exactly once.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+protected abstract&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertSubscribed()</pre>
+<div class="block">Assert that the <code>onSubscribe</code> method was called exactly once.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -933,8 +970,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <li class="blockList">
 <h4>assertResult</h4>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/SafeVarargs.html?is-external=true" title="class or interface in java.lang">@SafeVarargs</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertResult(<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
-<div class="block">Assert that the upstream signalled the specified values in order and
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertResult(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                   <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
+<div class="block">Assert that the upstream signaled the specified values in order and
  completed normally.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -955,13 +994,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <li class="blockList">
 <h4>assertFailure</h4>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/SafeVarargs.html?is-external=true" title="class or interface in java.lang">@SafeVarargs</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertFailure(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;error,
-                                          <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
-<div class="block">Assert that the upstream signalled the specified values in order
- and then failed with a specific class or subclass of Throwable.</div>
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertFailure(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang">Class</a>&lt;? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&gt;&nbsp;error,
+                                                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                    <a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">T</a>...&nbsp;values)</pre>
+<div class="block">Assert that the upstream signaled the specified values in order
+ and then failed with a specific class or subclass of <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>error</code> - the expected exception (parent) class</dd>
+<dd><code>error</code> - the expected exception (parent) <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang"><code>Class</code></a></dd>
 <dd><code>values</code> - the expected values, asserted in order</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -974,10 +1016,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>awaitDone</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;awaitDone(long&nbsp;time,
-                         <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;awaitDone(long&nbsp;time,
+                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Awaits until the internal latch is counted down.
- <p>If the wait times out or gets interrupted, the TestObserver/TestSubscriber is cancelled.</div>
+ <p>If the wait times out or gets interrupted, the <code>TestObserver</code>/<code>TestSubscriber</code> is cancelled.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>time</code> - the waiting time</dd>
@@ -985,7 +1029,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang">RuntimeException</a></code> - wrapping an InterruptedException if the wait is interrupted</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang">RuntimeException</a></code> - wrapping an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang"><code>InterruptedException</code></a> if the wait is interrupted</dd>
 </dl>
 </li>
 </ul>
@@ -995,8 +1039,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>assertEmpty</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertEmpty()</pre>
-<div class="block">Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.</div>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;assertEmpty()</pre>
+<div class="block">Assert that the <code>TestObserver</code>/<code>TestSubscriber</code> has received a
+ <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>/<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>
+ via <code>onSubscribe</code> but no other events.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
@@ -1009,13 +1056,15 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>withTag</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;withTag(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html?is-external=true" title="class or interface in java.lang">CharSequence</a>&nbsp;tag)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;withTag(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
+                                <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html?is-external=true" title="class or interface in java.lang">CharSequence</a>&nbsp;tag)</pre>
 <div class="block">Set the tag displayed along with an assertion failure's
  other state information.
  <p>History: 2.0.7 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the string to display (null won't print any tag)</dd>
+<dd><code>tag</code> - the string to display (<code>null</code> won't print any tag)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>this</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
@@ -1029,8 +1078,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestCo
 <ul class="blockList">
 <li class="blockList">
 <h4>awaitCount</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;awaitCount(int&nbsp;atLeast)</pre>
-<div class="block">Await until the TestObserver/TestSubscriber receives the given
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="type parameter in BaseTestConsumer">U</a>&nbsp;awaitCount(int&nbsp;atLeast)</pre>
+<div class="block">Await until the <code>TestObserver</code>/<code>TestSubscriber</code> receives the given
  number of items or terminates by sleeping 10 milliseconds at a time
  up to 5000 milliseconds of timeout.
  <p>History: 2.0.7 - experimental</div>

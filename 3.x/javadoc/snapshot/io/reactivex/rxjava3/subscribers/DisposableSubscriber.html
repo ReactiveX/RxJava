@@ -118,11 +118,11 @@ var activeTableTab = "activeTableTab";
 <pre>public abstract class <span class="typeNameLabel">DisposableSubscriber&lt;T&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html" title="interface in io.reactivex.rxjava3.core">FlowableSubscriber</a>&lt;T&gt;, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></pre>
-<div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing Disposable.
+<div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>.
 
  <p>All pre-implemented final methods are thread-safe.
 
- <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onStart--"><code>onStart()</code></a> requests Long.MAX_VALUE by default. Override
+ <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onStart--"><code>onStart()</code></a> requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> by default. Override
  the method to request a custom <em>positive</em> amount. Use the protected <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#request-long-"><code>request(long)</code></a>
  to request more items and <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#cancel--"><code>cancel()</code></a> to cancel the sequence from within an
  <code>onNext</code> implementation.
@@ -204,8 +204,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#cancel--">cancel</a></span>()</code>
-<div class="block">Cancels the Subscription set via onSubscribe or makes sure a
- Subscription set asynchronously (later) is cancelled immediately.</div>
+<div class="block">Cancels the Subscription set via <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a> or makes sure a
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> set asynchronously (later) is cancelled immediately.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -223,7 +223,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onStart--">onStart</a></span>()</code>
-<div class="block">Called once the single upstream Subscription is set via onSubscribe.</div>
+<div class="block">Called once the single upstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> is set via <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a>.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -237,7 +237,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#request-long-">request</a></span>(long&nbsp;n)</code>
-<div class="block">Requests the specified amount from the upstream if its Subscription is set via
+<div class="block">Requests the specified amount from the upstream if its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> is set via
  onSubscribe already.</div>
 </td>
 </tr>
@@ -324,7 +324,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>onStart</h4>
 <pre>protected&nbsp;void&nbsp;onStart()</pre>
-<div class="block">Called once the single upstream Subscription is set via onSubscribe.</div>
+<div class="block">Called once the single upstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> is set via <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a>.</div>
 </li>
 </ul>
 <a name="request-long-">
@@ -334,11 +334,11 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>request</h4>
 <pre>protected final&nbsp;void&nbsp;request(long&nbsp;n)</pre>
-<div class="block">Requests the specified amount from the upstream if its Subscription is set via
+<div class="block">Requests the specified amount from the upstream if its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> is set via
  onSubscribe already.
- <p>Note that calling this method before a Subscription is set via onSubscribe
- leads to NullPointerException and meant to be called from inside onStart or
- onNext.</div>
+ <p>Note that calling this method before a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> is set via <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a>
+ leads to <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang"><code>NullPointerException</code></a> and meant to be called from inside <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onStart--"><code>onStart()</code></a> or
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>n</code> - the request amount, positive</dd>
@@ -352,8 +352,8 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>cancel</h4>
 <pre>protected final&nbsp;void&nbsp;cancel()</pre>
-<div class="block">Cancels the Subscription set via onSubscribe or makes sure a
- Subscription set asynchronously (later) is cancelled immediately.
+<div class="block">Cancels the Subscription set via <a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a> or makes sure a
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> set asynchronously (later) is cancelled immediately.
  <p>This method is thread-safe and can be exposed as a public API.</div>
 </li>
 </ul>

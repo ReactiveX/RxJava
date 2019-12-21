@@ -110,7 +110,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang">@FunctionalInterface</a>
 public interface <span class="typeNameLabel">ObservableConverter&lt;T,R&gt;</span></pre>
-<div class="block">Convenience interface and callback used by the <a href="../../../../io/reactivex/rxjava3/core/Observable.html#to-io.reactivex.rxjava3.core.ObservableConverter-"><code>Observable.to(io.reactivex.rxjava3.core.ObservableConverter&lt;T, ? extends R&gt;)</code></a> operator to turn an Observable into another
+<div class="block">Convenience interface and callback used by the <a href="../../../../io/reactivex/rxjava3/core/Observable.html#to-io.reactivex.rxjava3.core.ObservableConverter-"><code>Observable.to(io.reactivex.rxjava3.core.ObservableConverter&lt;T, ? extends R&gt;)</code></a> operator to turn an <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> into another
  value fluently.
  <p>History: 2.1.7 - experimental</div>
 <dl>
@@ -138,7 +138,7 @@ public interface <span class="typeNameLabel">ObservableConverter&lt;T,R&gt;</spa
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/ObservableConverter.html" title="type parameter in ObservableConverter">R</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableConverter.html#apply-io.reactivex.rxjava3.core.Observable-">apply</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/ObservableConverter.html" title="type parameter in ObservableConverter">T</a>&gt;&nbsp;upstream)</code>
-<div class="block">Applies a function to the upstream Observable and returns a converted value of type <code>R</code>.</div>
+<div class="block">Applies a function to the upstream <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> and returns a converted value of type <code>R</code>.</div>
 </td>
 </tr>
 </table>
@@ -165,10 +165,10 @@ public interface <span class="typeNameLabel">ObservableConverter&lt;T,R&gt;</spa
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 <a href="../../../../io/reactivex/rxjava3/core/ObservableConverter.html" title="type parameter in ObservableConverter">R</a>&nbsp;apply(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/ObservableConverter.html" title="type parameter in ObservableConverter">T</a>&gt;&nbsp;upstream)</pre>
-<div class="block">Applies a function to the upstream Observable and returns a converted value of type <code>R</code>.</div>
+<div class="block">Applies a function to the upstream <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> and returns a converted value of type <code>R</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>upstream</code> - the upstream Observable instance</dd>
+<dd><code>upstream</code> - the upstream <code>Observable</code> instance</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the converted value</dd>
 </dl>

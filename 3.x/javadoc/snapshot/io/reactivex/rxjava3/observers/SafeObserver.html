@@ -118,7 +118,7 @@ var activeTableTab = "activeTableTab";
 <pre>public final class <span class="typeNameLabel">SafeObserver&lt;T&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;T&gt;, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></pre>
-<div class="block">Wraps another Subscriber and ensures all onXXX methods conform the protocol
+<div class="block">Wraps another <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> and ensures all <code>onXXX</code> methods conform the protocol
  (except the requirement for serialized access).</div>
 </li>
 </ul>
@@ -139,7 +139,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html#SafeObserver-io.reactivex.rxjava3.core.Observer-">SafeObserver</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&gt;&nbsp;downstream)</code>
-<div class="block">Constructs a SafeObserver by wrapping the given actual Observer.</div>
+<div class="block">Constructs a <code>SafeObserver</code> by wrapping the given actual <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -172,26 +172,26 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html#onComplete--">onComplete</a></span>()</code>
-<div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has finished sending push-based notifications.</div>
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has finished sending push-based notifications.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
-<div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.</div>
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html#onNext-T-">onNext</a></span>(<a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&nbsp;t)</code>
-<div class="block">Provides the Observer with a new item to observe.</div>
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with a new item to observe.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
-<div class="block">Provides the Observer with the means of cancelling (disposing) the
- connection (channel) with the Observable in both
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with the means of cancelling (disposing) the
+ connection (channel) with the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> in both
  synchronous (from within <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>Observer.onNext(Object)</code></a>) and asynchronous manner.</div>
 </td>
 </tr>
@@ -232,10 +232,10 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <h4>SafeObserver</h4>
 <pre>public&nbsp;SafeObserver(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                     <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&gt;&nbsp;downstream)</pre>
-<div class="block">Constructs a SafeObserver by wrapping the given actual Observer.</div>
+<div class="block">Constructs a <code>SafeObserver</code> by wrapping the given actual <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>downstream</code> - the actual Observer to wrap, not null (not validated)</dd>
+<dd><code>downstream</code> - the actual <code>Observer</code> to wrap, not <code>null</code> (not validated)</dd>
 </dl>
 </li>
 </ul>
@@ -256,14 +256,14 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">Observer</a></code></span></div>
-<div class="block">Provides the Observer with the means of cancelling (disposing) the
- connection (channel) with the Observable in both
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with the means of cancelling (disposing) the
+ connection (channel) with the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> in both
  synchronous (from within <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>Observer.onNext(Object)</code></a>) and asynchronous manner.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>d</code> - the Disposable instance whose <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a> can
+<dd><code>d</code> - the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance whose <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a> can
  be called anytime to cancel the connection</dd>
 </dl>
 </li>
@@ -311,7 +311,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <pre>public&nbsp;void&nbsp;onNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                    <a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-">Observer</a></code></span></div>
-<div class="block">Provides the Observer with a new item to observe.
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> with a new item to observe.
  <p>
  The <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> may call this method 0 or more times.
  <p>
@@ -334,9 +334,9 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <pre>public&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                     <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-">Observer</a></code></span></div>
-<div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has experienced an error condition.
  <p>
- If the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> calls this method, it will not thereafter call <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>Observer.onNext(T)</code></a> or
+ If the <code>Observable</code> calls this method, it will not thereafter call <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onNext-T-"><code>Observer.onNext(T)</code></a> or
  <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onComplete--"><code>Observer.onComplete()</code></a>.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -354,9 +354,9 @@ implements <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="
 <h4>onComplete</h4>
 <pre>public&nbsp;void&nbsp;onComplete()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onComplete--">Observer</a></code></span></div>
-<div class="block">Notifies the Observer that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has finished sending push-based notifications.
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> has finished sending push-based notifications.
  <p>
- The <a href="../../../../io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> will not call this method if it calls <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>Observer.onError(java.lang.Throwable)</code></a>.</div>
+ The <code>Observable</code> will not call this method if it calls <a href="../../../../io/reactivex/rxjava3/core/Observer.html#onError-java.lang.Throwable-"><code>Observer.onError(java.lang.Throwable)</code></a>.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/core/Observer.html#onComplete--">onComplete</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core">Observer</a>&lt;<a href="../../../../io/reactivex/rxjava3/observers/SafeObserver.html" title="type parameter in SafeObserver">T</a>&gt;</code></dd>

@@ -200,32 +200,32 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#add-io.reactivex.rxjava3.disposables.Disposable-">add</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;resource)</code>
-<div class="block">Adds a resource to this ResourceObserver.</div>
+<div class="block">Adds a resource to this <code>ResourceCompletableObserver</code>.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#dispose--">dispose</a></span>()</code>
 <div class="block">Cancels the main disposable (if any) and disposes the resources associated with
- this ResourceObserver (if any).</div>
+ this <code>ResourceCompletableObserver</code> (if any).</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#isDisposed--">isDisposed</a></span>()</code>
-<div class="block">Returns true if this ResourceObserver has been disposed/cancelled.</div>
+<div class="block">Returns true if this <code>ResourceCompletableObserver</code> has been disposed/cancelled.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#onStart--">onStart</a></span>()</code>
-<div class="block">Called once the upstream sets a Subscription on this ResourceObserver.</div>
+<div class="block">Called once the upstream sets a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this <code>ResourceCompletableObserver</code>.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
-<div class="block">Called once by the Completable to set a Disposable on this instance which
+<div class="block">Called once by the <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> to set a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this instance which
  then can be used to cancel the subscription at any time.</div>
 </td>
 </tr>
@@ -290,12 +290,12 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <h4>add</h4>
 <pre>public final&nbsp;void&nbsp;add(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                       <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;resource)</pre>
-<div class="block">Adds a resource to this ResourceObserver.</div>
+<div class="block">Adds a resource to this <code>ResourceCompletableObserver</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>resource</code> - the resource to add</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if resource is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if resource is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -308,13 +308,13 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <pre>public final&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">CompletableObserver</a></code></span></div>
-<div class="block">Called once by the Completable to set a Disposable on this instance which
+<div class="block">Called once by the <a href="../../../../io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> to set a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this instance which
  then can be used to cancel the subscription at any time.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>d</code> - the Disposable instance to call dispose on for cancellation, not null</dd>
+<dd><code>d</code> - the <code>Disposable</code> instance to call dispose on for cancellation, not null</dd>
 </dl>
 </li>
 </ul>
@@ -325,7 +325,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <li class="blockList">
 <h4>onStart</h4>
 <pre>protected&nbsp;void&nbsp;onStart()</pre>
-<div class="block">Called once the upstream sets a Subscription on this ResourceObserver.
+<div class="block">Called once the upstream sets a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this <code>ResourceCompletableObserver</code>.
 
  <p>You can perform initialization at this moment. The default
  implementation does nothing.</div>
@@ -339,10 +339,10 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <h4>dispose</h4>
 <pre>public final&nbsp;void&nbsp;dispose()</pre>
 <div class="block">Cancels the main disposable (if any) and disposes the resources associated with
- this ResourceObserver (if any).
+ this <code>ResourceCompletableObserver</code> (if any).
 
- <p>This method can be called before the upstream calls onSubscribe at which
- case the main Disposable will be immediately disposed.</div>
+ <p>This method can be called before the upstream calls <a href="../../../../io/reactivex/rxjava3/observers/ResourceCompletableObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>onSubscribe(Disposable)</code></a> at which
+ case the main <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> will be immediately disposed.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--">dispose</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></dd>
@@ -356,12 +356,12 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.ht
 <li class="blockList">
 <h4>isDisposed</h4>
 <pre>public final&nbsp;boolean&nbsp;isDisposed()</pre>
-<div class="block">Returns true if this ResourceObserver has been disposed/cancelled.</div>
+<div class="block">Returns true if this <code>ResourceCompletableObserver</code> has been disposed/cancelled.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#isDisposed--">isDisposed</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true if this ResourceObserver has been disposed/cancelled</dd>
+<dd>true if this <code>ResourceCompletableObserver</code> has been disposed/cancelled</dd>
 </dl>
 </li>
 </ul>

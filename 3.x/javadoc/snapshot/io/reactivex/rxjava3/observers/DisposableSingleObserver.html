@@ -118,7 +118,7 @@ var activeTableTab = "activeTableTab";
 <pre>public abstract class <span class="typeNameLabel">DisposableSingleObserver&lt;T&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core">SingleObserver</a>&lt;T&gt;, <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></pre>
-<div class="block">An abstract <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that allows asynchronous cancellation by implementing Disposable.
+<div class="block">An abstract <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that allows asynchronous cancellation by implementing <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>.
 
  <p>All pre-implemented final methods are thread-safe.
 
@@ -196,13 +196,13 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onStart--">onStart</a></span>()</code>
-<div class="block">Called once the single upstream Disposable is set via onSubscribe.</div>
+<div class="block">Called once the single upstream <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> is set via <a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>onSubscribe(Disposable)</code></a>.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
-<div class="block">Provides the SingleObserver with the means of cancelling (disposing) the
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> with the means of cancelling (disposing) the
  connection (channel) with the Single in both
  synchronous (from within <code>onSubscribe(Disposable)</code> itself) and asynchronous manner.</div>
 </td>
@@ -269,7 +269,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 <pre>public final&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">SingleObserver</a></code></span></div>
-<div class="block">Provides the SingleObserver with the means of cancelling (disposing) the
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> with the means of cancelling (disposing) the
  connection (channel) with the Single in both
  synchronous (from within <code>onSubscribe(Disposable)</code> itself) and asynchronous manner.</div>
 <dl>
@@ -288,7 +288,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/SingleObserver.html" t
 <li class="blockList">
 <h4>onStart</h4>
 <pre>protected&nbsp;void&nbsp;onStart()</pre>
-<div class="block">Called once the single upstream Disposable is set via onSubscribe.</div>
+<div class="block">Called once the single upstream <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> is set via <a href="../../../../io/reactivex/rxjava3/observers/DisposableSingleObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-"><code>onSubscribe(Disposable)</code></a>.</div>
 </li>
 </ul>
 <a name="isDisposed--">

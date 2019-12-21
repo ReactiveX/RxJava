@@ -165,7 +165,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
  <p>
  This <code>ReplayProcessor</code> respects the individual backpressure behavior of its <code>Subscriber</code>s but
  does not coordinate their request amounts towards the upstream (because there might not be any) and
- consumes the upstream in an unbounded manner (requesting <code>Long.MAX_VALUE</code>).
+ consumes the upstream in an unbounded manner (requesting <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a>).
  Note that <code>Subscriber</code>s receive a continuous sequence of values after they subscribed even
  if an individual item gets delayed due to backpressure.
  Due to concurrency requirements, a size-bounded <code>ReplayProcessor</code> may hold strong references to more source
@@ -203,7 +203,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
   <dt><b>Backpressure:</b></dt>
   <dd>This <code>ReplayProcessor</code> respects the individual backpressure behavior of its <code>Subscriber</code>s but
   does not coordinate their request amounts towards the upstream (because there might not be any) and
-  consumes the upstream in an unbounded manner (requesting <code>Long.MAX_VALUE</code>).
+  consumes the upstream in an unbounded manner (requesting <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a>).
   Note that <code>Subscriber</code>s receive a continuous sequence of values after they subscribed even
   if an individual item gets delayed due to backpressure.</dd>
   <dt><b>Scheduler:</b></dt>

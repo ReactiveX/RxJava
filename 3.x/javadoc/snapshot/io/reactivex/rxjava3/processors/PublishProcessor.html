@@ -175,7 +175,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The processor does not coordinate backpressure for its subscribers and implements a weaker <code>onSubscribe</code> which
-  calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the <code>PublishProcessor</code>
+  calls requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> from the incoming Subscriptions. This makes it possible to subscribe the <code>PublishProcessor</code>
   to multiple sources (note on serialization though) unlike the standard <code>Subscriber</code> contract. Child subscribers, however, are not overflown but receive an
   <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang"><code>IllegalStateException</code></a> in case their requested amount is zero.</dd>
   <dt><b>Scheduler:</b></dt>

@@ -100,7 +100,7 @@
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../io/reactivex/rxjava3/subscribers/DisposableSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">DisposableSubscriber</a>&lt;T&gt;</td>
 <td class="colLast">
-<div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing Disposable.</div>
+<div class="block">An abstract Subscriber that allows asynchronous, external cancellation by implementing <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -113,20 +113,21 @@
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../io/reactivex/rxjava3/subscribers/SafeSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">SafeSubscriber</a>&lt;T&gt;</td>
 <td class="colLast">
-<div class="block">Wraps another Subscriber and ensures all onXXX methods conform the protocol
+<div class="block">Wraps another <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> and ensures all <code>onXXX</code> methods conform the protocol
  (except the requirement for serialized access).</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a href="../../../../io/reactivex/rxjava3/subscribers/SerializedSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">SerializedSubscriber</a>&lt;T&gt;</td>
 <td class="colLast">
-<div class="block">Serializes access to the onNext, onError and onComplete methods of another Subscriber.</div>
+<div class="block">Serializes access to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a>, <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onError-java.lang.Throwable-" title="class or interface in org.reactivestreams"><code>Subscriber.onError(Throwable)</code></a> and
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onComplete--" title="class or interface in org.reactivestreams"><code>Subscriber.onComplete()</code></a> methods of another <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../io/reactivex/rxjava3/subscribers/TestSubscriber.html" title="class in io.reactivex.rxjava3.subscribers">TestSubscriber</a>&lt;T&gt;</td>
 <td class="colLast">
-<div class="block">A subscriber that records events and allows making assertions about them.</div>
+<div class="block">A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a> implementation that records events and allows making assertions about them.</div>
 </td>
 </tr>
 </tbody>

@@ -164,27 +164,27 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava3.core">ObservableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html" title="type parameter in ObservableEmitter">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html#serialize--">serialize</a></span>()</code>
-<div class="block">Ensures that calls to onNext, onError and onComplete are properly serialized.</div>
+<div class="block">Ensures that calls to <code>onNext</code>, <code>onError</code> and <code>onComplete</code> are properly serialized.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html#setCancellable-io.reactivex.rxjava3.functions.Cancellable-">setCancellable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions">Cancellable</a>&nbsp;c)</code>
-<div class="block">Sets a Cancellable on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
- or <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> will be disposed/cancelled.</div>
+<div class="block">Sets a <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
+ or <code>Cancellable</code> will be disposed/cancelled.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html#setDisposable-io.reactivex.rxjava3.disposables.Disposable-">setDisposable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
-<div class="block">Sets a Disposable on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
+<div class="block">Sets a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this emitter; any previous <code>Disposable</code>
  or <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> will be disposed/cancelled.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html#tryOnError-java.lang.Throwable-">tryOnError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>
-<div class="block">Attempts to emit the specified <code>Throwable</code> error if the downstream
+<div class="block">Attempts to emit the specified <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error if the downstream
  hasn't cancelled the sequence or is otherwise terminated, returning false
  if the emission is not allowed to happen due to lifecycle restrictions.</div>
 </td>
@@ -219,11 +219,12 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <h4>setDisposable</h4>
 <pre>void&nbsp;setDisposable(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
                    <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
-<div class="block">Sets a Disposable on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
- or <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> will be disposed/cancelled.</div>
+<div class="block">Sets a <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> on this emitter; any previous <code>Disposable</code>
+ or <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> will be disposed/cancelled.
+ <p>This method is thread-safe.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>d</code> - the disposable, null is allowed</dd>
+<dd><code>d</code> - the <code>Disposable</code>, <code>null</code> is allowed</dd>
 </dl>
 </li>
 </ul>
@@ -235,11 +236,12 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <h4>setCancellable</h4>
 <pre>void&nbsp;setCancellable(<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
                     <a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions">Cancellable</a>&nbsp;c)</pre>
-<div class="block">Sets a Cancellable on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
- or <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> will be disposed/cancelled.</div>
+<div class="block">Sets a <a href="../../../../io/reactivex/rxjava3/functions/Cancellable.html" title="interface in io.reactivex.rxjava3.functions"><code>Cancellable</code></a> on this emitter; any previous <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
+ or <code>Cancellable</code> will be disposed/cancelled.
+ <p>This method is thread-safe.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>c</code> - the cancellable resource, null is allowed</dd>
+<dd><code>c</code> - the <code>Cancellable</code> resource, <code>null</code> is allowed</dd>
 </dl>
 </li>
 </ul>
@@ -268,10 +270,10 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <h4>serialize</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava3.core">ObservableEmitter</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html" title="type parameter in ObservableEmitter">T</a>&gt;&nbsp;serialize()</pre>
-<div class="block">Ensures that calls to onNext, onError and onComplete are properly serialized.</div>
+<div class="block">Ensures that calls to <code>onNext</code>, <code>onError</code> and <code>onComplete</code> are properly serialized.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the serialized ObservableEmitter</dd>
+<dd>the serialized <a href="../../../../io/reactivex/rxjava3/core/ObservableEmitter.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableEmitter</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -283,16 +285,16 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Emitter.html" title="inte
 <h4>tryOnError</h4>
 <pre>boolean&nbsp;tryOnError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
-<div class="block">Attempts to emit the specified <code>Throwable</code> error if the downstream
+<div class="block">Attempts to emit the specified <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> error if the downstream
  hasn't cancelled the sequence or is otherwise terminated, returning false
  if the emission is not allowed to happen due to lifecycle restrictions.
  <p>
- Unlike <a href="../../../../io/reactivex/rxjava3/core/Emitter.html#onError-java.lang.Throwable-"><code>Emitter.onError(Throwable)</code></a>, the <code>RxJavaPlugins.onError</code> is not called
- if the error could not be delivered.
+ Unlike <a href="../../../../io/reactivex/rxjava3/core/Emitter.html#onError-java.lang.Throwable-"><code>Emitter.onError(Throwable)</code></a>, the <a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxjavaPlugins.onError</code></a>
+ is not called if the error could not be delivered.
  <p>History: 2.1.1 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>t</code> - the throwable error to signal if possible</dd>
+<dd><code>t</code> - the <code>Throwable</code> error to signal if possible</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if successful, false if the downstream is not able to accept further
  events</dd>

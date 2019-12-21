@@ -148,7 +148,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 
  <p>All pre-implemented final methods are thread-safe.
 
- <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#onStart--"><code>onStart()</code></a> requests Long.MAX_VALUE by default. Override
+ <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#onStart--"><code>onStart()</code></a> requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> by default. Override
  the method to request a custom <em>positive</em> amount.
 
  <p>Note that calling <a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#request-long-"><code>request(long)</code></a> from <a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#onStart--"><code>onStart()</code></a> may trigger
@@ -206,7 +206,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#cancel--">cancel</a></span>()</code>
-<div class="block">Cancels the upstream's Subscription.</div>
+<div class="block">Cancels the upstream's <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -227,7 +227,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/DefaultSubscriber.html#request-long-">request</a></span>(long&nbsp;n)</code>
-<div class="block">Requests from the upstream Subscription.</div>
+<div class="block">Requests from the upstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -306,7 +306,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>request</h4>
 <pre>protected final&nbsp;void&nbsp;request(long&nbsp;n)</pre>
-<div class="block">Requests from the upstream Subscription.</div>
+<div class="block">Requests from the upstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>n</code> - the request amount, positive</dd>
@@ -320,7 +320,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>cancel</h4>
 <pre>protected final&nbsp;void&nbsp;cancel()</pre>
-<div class="block">Cancels the upstream's Subscription.</div>
+<div class="block">Cancels the upstream's <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a>.</div>
 </li>
 </ul>
 <a name="onStart--">

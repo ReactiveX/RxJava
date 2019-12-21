@@ -172,21 +172,21 @@ var activeTableTab = "activeTableTab";
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</code>
-<div class="block">Notifies the MaybeObserver that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has experienced an error condition.</div>
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has experienced an error condition.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onSubscribe-io.reactivex.rxjava3.disposables.Disposable-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</code>
-<div class="block">Provides the MaybeObserver with the means of cancelling (disposing) the
- connection (channel) with the Maybe in both
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> with the means of cancelling (disposing) the
+ connection (channel) with the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> in both
  synchronous (from within <code>onSubscribe(Disposable)</code> itself) and asynchronous manner.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onSuccess-T-">onSuccess</a></span>(<a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="type parameter in MaybeObserver">T</a>&nbsp;t)</code>
-<div class="block">Notifies the MaybeObserver with one item and that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has finished sending
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> with one item and that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has finished sending
  push-based notifications.</div>
 </td>
 </tr>
@@ -213,12 +213,12 @@ var activeTableTab = "activeTableTab";
 <h4>onSubscribe</h4>
 <pre>void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;d)</pre>
-<div class="block">Provides the MaybeObserver with the means of cancelling (disposing) the
- connection (channel) with the Maybe in both
+<div class="block">Provides the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> with the means of cancelling (disposing) the
+ connection (channel) with the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> in both
  synchronous (from within <code>onSubscribe(Disposable)</code> itself) and asynchronous manner.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>d</code> - the Disposable instance whose <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a> can
+<dd><code>d</code> - the <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> instance whose <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--"><code>Disposable.dispose()</code></a> can
  be called anytime to cancel the connection</dd>
 </dl>
 </li>
@@ -233,13 +233,13 @@ var activeTableTab = "activeTableTab";
 <h4>onSuccess</h4>
 <pre>void&nbsp;onSuccess(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
                <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="type parameter in MaybeObserver">T</a>&nbsp;t)</pre>
-<div class="block">Notifies the MaybeObserver with one item and that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has finished sending
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> with one item and that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has finished sending
  push-based notifications.
  <p>
  The <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> will not call this method if it calls <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onError-java.lang.Throwable-"><code>onError(java.lang.Throwable)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>t</code> - the item emitted by the Maybe</dd>
+<dd><code>t</code> - the item emitted by the <code>Maybe</code></dd>
 </dl>
 </li>
 </ul>
@@ -251,12 +251,12 @@ var activeTableTab = "activeTableTab";
 <h4>onError</h4>
 <pre>void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
              <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;e)</pre>
-<div class="block">Notifies the MaybeObserver that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has experienced an error condition.
+<div class="block">Notifies the <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a> that the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> has experienced an error condition.
  <p>
  If the <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> calls this method, it will not thereafter call <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html#onSuccess-T-"><code>onSuccess(T)</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>e</code> - the exception encountered by the Maybe</dd>
+<dd><code>e</code> - the exception encountered by the <code>Maybe</code></dd>
 </dl>
 </li>
 </ul>

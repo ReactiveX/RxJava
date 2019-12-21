@@ -133,7 +133,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
  <code>ResourceSubscriber</code> and then add/remove resources to/from the <code>CompositeDisposable</code>
  freely.
 
- <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#onStart--"><code>onStart()</code></a> requests Long.MAX_VALUE by default. Override
+ <p>The default <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#onStart--"><code>onStart()</code></a> requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> by default. Override
  the method to request a custom <em>positive</em> amount. Use the protected <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#request-long-"><code>request(long)</code></a>
  to request more items and <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#dispose--"><code>dispose()</code></a> to cancel the sequence from within an
  <code>onNext</code> implementation.
@@ -220,26 +220,26 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#add-io.reactivex.rxjava3.disposables.Disposable-">add</a></span>(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;resource)</code>
-<div class="block">Adds a resource to this AsyncObserver.</div>
+<div class="block">Adds a resource to this <code>ResourceSubscriber</code>.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#dispose--">dispose</a></span>()</code>
 <div class="block">Cancels the subscription (if any) and disposes the resources associated with
- this AsyncObserver (if any).</div>
+ this <code>ResourceSubscriber</code> (if any).</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#isDisposed--">isDisposed</a></span>()</code>
-<div class="block">Returns true if this AsyncObserver has been disposed/cancelled.</div>
+<div class="block">Returns true if this <code>ResourceSubscriber</code> has been disposed/cancelled.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#onStart--">onStart</a></span>()</code>
-<div class="block">Called once the upstream sets a Subscription on this AsyncObserver.</div>
+<div class="block">Called once the upstream sets a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> on this <code>ResourceSubscriber</code>.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -316,12 +316,12 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>add</h4>
 <pre>public final&nbsp;void&nbsp;add(<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;resource)</pre>
-<div class="block">Adds a resource to this AsyncObserver.</div>
+<div class="block">Adds a resource to this <code>ResourceSubscriber</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>resource</code> - the resource to add</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if resource is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>resource</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -355,10 +355,10 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>onStart</h4>
 <pre>protected&nbsp;void&nbsp;onStart()</pre>
-<div class="block">Called once the upstream sets a Subscription on this AsyncObserver.
+<div class="block">Called once the upstream sets a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> on this <code>ResourceSubscriber</code>.
 
  <p>You can perform initialization at this moment. The default
- implementation requests Long.MAX_VALUE from upstream.</div>
+ implementation requests <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a> from upstream.</div>
 </li>
 </ul>
 <a name="request-long-">
@@ -370,7 +370,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <pre>protected final&nbsp;void&nbsp;request(long&nbsp;n)</pre>
 <div class="block">Request the specified amount of elements from upstream.
 
- <p>This method can be called before the upstream calls onSubscribe().
+ <p>This method can be called before the upstream calls <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a>.
  When the subscription happens, all missed requests are requested.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -386,10 +386,10 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <h4>dispose</h4>
 <pre>public final&nbsp;void&nbsp;dispose()</pre>
 <div class="block">Cancels the subscription (if any) and disposes the resources associated with
- this AsyncObserver (if any).
+ this <code>ResourceSubscriber</code> (if any).
 
- <p>This method can be called before the upstream calls onSubscribe at which
- case the Subscription will be immediately cancelled.</div>
+ <p>This method can be called before the upstream calls <a href="../../../../io/reactivex/rxjava3/subscribers/ResourceSubscriber.html#onSubscribe-org.reactivestreams.Subscription-"><code>onSubscribe(Subscription)</code></a> at which
+ case the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> will be immediately cancelled.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#dispose--">dispose</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></dd>
@@ -403,12 +403,12 @@ implements <a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.htm
 <li class="blockList">
 <h4>isDisposed</h4>
 <pre>public final&nbsp;boolean&nbsp;isDisposed()</pre>
-<div class="block">Returns true if this AsyncObserver has been disposed/cancelled.</div>
+<div class="block">Returns true if this <code>ResourceSubscriber</code> has been disposed/cancelled.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#isDisposed--">isDisposed</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true if this AsyncObserver has been disposed/cancelled</dd>
+<dd>true if this <code>ResourceSubscriber</code> has been disposed/cancelled</dd>
 </dl>
 </li>
 </ul>

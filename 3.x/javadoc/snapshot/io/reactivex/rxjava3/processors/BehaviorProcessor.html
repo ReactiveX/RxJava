@@ -208,7 +208,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
   that returns true if any of the <code>Subscriber</code>s is not ready to receive <code>onNext</code> events. If
   there are no <code>Subscriber</code>s to the processor, <code>offer()</code> always succeeds.
   If the <code>BehaviorProcessor</code> is (optionally) subscribed to another <code>Publisher</code>, this upstream
-  <code>Publisher</code> is consumed in an unbounded fashion (requesting <code>Long.MAX_VALUE</code>).</dd>
+  <code>Publisher</code> is consumed in an unbounded fashion (requesting <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true#MAX_VALUE" title="class or interface in java.lang"><code>Long.MAX_VALUE</code></a>).</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>BehaviorProcessor</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> and
   the <code>Subscriber</code>s get notified on the thread the respective <code>onXXX</code> methods were invoked.</dd>
