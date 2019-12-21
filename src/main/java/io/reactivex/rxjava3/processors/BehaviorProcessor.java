@@ -108,7 +108,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *  that returns true if any of the {@code Subscriber}s is not ready to receive {@code onNext} events. If
  *  there are no {@code Subscriber}s to the processor, {@code offer()} always succeeds.
  *  If the {@code BehaviorProcessor} is (optionally) subscribed to another {@code Publisher}, this upstream
- *  {@code Publisher} is consumed in an unbounded fashion (requesting {@code Long.MAX_VALUE}).</dd>
+ *  {@code Publisher} is consumed in an unbounded fashion (requesting {@link Long#MAX_VALUE}).</dd>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code BehaviorProcessor} does not operate by default on a particular {@link io.reactivex.rxjava3.core.Scheduler} and
  *  the {@code Subscriber}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
@@ -229,7 +229,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     /**
      * Constructs a BehaviorProcessor with the given initial value.
      * @param defaultValue the initial value, not null (verified)
-     * @throws NullPointerException if {@code defaultValue} is null
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      * @since 2.0
      */
     BehaviorProcessor(T defaultValue) {

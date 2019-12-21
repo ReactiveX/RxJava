@@ -218,7 +218,7 @@ public final class QueueDrainHelper {
     }
 
     /**
-     * Requests Long.MAX_VALUE if prefetch is negative or the exact
+     * Requests {@link Long#MAX_VALUE} if prefetch is negative or the exact
      * amount if prefetch is positive.
      * @param s the Subscription to request from
      * @param prefetch the prefetch value
@@ -383,7 +383,7 @@ public final class QueueDrainHelper {
      * in completed mode, requests no-longer reach the upstream but help in draining the queue.
      * <p>
      * The algorithm utilizes the most significant bit (bit 63) of a long value (AtomicLong) since
-     * request amount only goes up to Long.MAX_VALUE (bits 0-62) and negative values aren't
+     * request amount only goes up to {@link Long#MAX_VALUE} (bits 0-62) and negative values aren't
      * allowed.
      *
      * @param <T> the value type emitted

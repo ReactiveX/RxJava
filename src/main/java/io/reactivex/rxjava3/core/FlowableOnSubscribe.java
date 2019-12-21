@@ -25,8 +25,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface FlowableOnSubscribe<T> {
 
     /**
-     * Called for each Subscriber that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link org.reactivestreams.Subscriber Subscriber} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull FlowableEmitter<T> emitter) throws Throwable;

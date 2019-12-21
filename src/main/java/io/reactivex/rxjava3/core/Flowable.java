@@ -1434,7 +1434,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an array of Publishers that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
      *                       is interpreted as an indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
@@ -1503,7 +1503,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param <T> the value type
      * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, {@link Integer#MAX_VALUE}
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each {@code Publisher} source
      * @return the new Flowable instance with the specified concatenation behavior
@@ -1635,7 +1635,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of Publishers that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner Publishers; Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrently running inner Publishers; {@link Integer#MAX_VALUE}
      *                       is interpreted as all inner Publishers can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
@@ -1695,7 +1695,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param <T> the value type
      * @param sources a sequence of Publishers that need to be eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrently running inner Publishers; Integer.MAX_VALUE
+     * @param maxConcurrency the maximum number of concurrently running inner Publishers; {@link Integer#MAX_VALUE}
      *                       is interpreted as all inner Publishers can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
@@ -3976,7 +3976,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits a range of sequential Integers
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
-     *             {@code Integer.MAX_VALUE}
+     *             {@link Integer#MAX_VALUE}
      * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
      */
     @CheckReturnValue
@@ -4016,7 +4016,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits a range of sequential Longs
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
-     *             {@code Long.MAX_VALUE}
+     *             {@link Long#MAX_VALUE}
      * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
      */
     @CheckReturnValue
@@ -6258,7 +6258,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6293,7 +6293,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6330,7 +6330,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6375,7 +6375,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6408,7 +6408,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -6445,7 +6445,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6484,7 +6484,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6536,7 +6536,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@link Long#MAX_VALUE}
      *      upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -6571,7 +6571,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given Publishers and
-     *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>
+     *      buffers data. It requests {@link Long#MAX_VALUE} upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6607,7 +6607,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given Publishers and
-     *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>
+     *      buffers data. It requests {@link Long#MAX_VALUE} upstream and does not obey downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6652,7 +6652,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the {@code Publisher}
-     *      {@code boundary} and buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey
+     *      {@code boundary} and buffers data. It requests {@link Long#MAX_VALUE} upstream and does not obey
      *      downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6686,7 +6686,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the {@code Publisher}
-     *      {@code boundary} and buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey
+     *      {@code boundary} and buffers data. It requests {@link Long#MAX_VALUE} upstream and does not obey
      *      downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6723,7 +6723,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the {@code Publisher}
-     *      {@code boundary} and buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey
+     *      {@code boundary} and buffers data. It requests {@link Long#MAX_VALUE} upstream and does not obey
      *      downstream requests.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8503,7 +8503,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator forwards the backpressure requests to this Publisher once
-     *  the subscription happens and requests Long.MAX_VALUE from the other Publisher</dd>
+     *  the subscription happens and requests {@link Long#MAX_VALUE} from the other Publisher</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10004,9 +10004,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * waits until the upstream and all CompletableSources complete, optionally delaying all errors.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
+     *  <dd>If {@code maxConcurrency == }{@link Integer#MAX_VALUE} the operator consumes the upstream in an unbounded manner.
      *  Otherwise, the operator expects the upstream to honor backpressure. If the upstream doesn't support backpressure
-     *  the operator behaves as if {@code maxConcurrency == Integer.MAX_VALUE} was used.</dd>
+     *  the operator behaves as if {@code maxConcurrency == }{@link Integer#MAX_VALUE} was used.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10198,9 +10198,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * in no particular order, into a single Flowable sequence, optionally delaying all errors.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
+     *  <dd>If {@code maxConcurrency == }{@link Integer#MAX_VALUE} the operator consumes the upstream in an unbounded manner.
      *  Otherwise, the operator expects the upstream to honor backpressure. If the upstream doesn't support backpressure
-     *  the operator behaves as if {@code maxConcurrency == Integer.MAX_VALUE} was used.</dd>
+     *  the operator behaves as if {@code maxConcurrency == }{@link Integer#MAX_VALUE} was used.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10247,9 +10247,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * in no particular order, into a single Flowable sequence, optionally delaying all errors.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
+     *  <dd>If {@code maxConcurrency == }{@link Integer#MAX_VALUE} the operator consumes the upstream in an unbounded manner.
      *  Otherwise, the operator expects the upstream to honor backpressure. If the upstream doesn't support backpressure
-     *  the operator behaves as if {@code maxConcurrency == Integer.MAX_VALUE} was used.</dd>
+     *  the operator behaves as if {@code maxConcurrency == }{@link Integer#MAX_VALUE} was used.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10415,7 +10415,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -10473,7 +10473,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -10532,7 +10532,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -10596,7 +10596,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -10661,7 +10661,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -10774,7 +10774,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * coordination of the {@code groupBy} operator. Such hangs can be usually avoided by using
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
-     * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * {@link Integer#MAX_VALUE} if the number of expected groups is unknown.
      * <p>
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
@@ -12337,7 +12337,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Requests {@code n} initially from the upstream and then 75% of {@code n} subsequently
      * after 75% of {@code n} values have been emitted to the downstream.
      *
-     * <p>This operator allows preventing the downstream to trigger unbounded mode via {@code request(Long.MAX_VALUE)}
+     * <p>This operator allows preventing the downstream to trigger unbounded mode via {@code request(}{@link Long#MAX_VALUE}{@code )}
      * or compensate for the per-item overhead of small and frequent requests.
      *
      * <dl>
@@ -17224,7 +17224,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Observables don't support backpressure thus the current Flowable is consumed in an unbounded
-     *  manner (by requesting Long.MAX_VALUE).</dd>
+     *  manner (by requesting {@link Long#MAX_VALUE}).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -18552,8 +18552,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------
     /**
-     * Creates a TestSubscriber that requests Long.MAX_VALUE and subscribes
-     * it to this Flowable.
+     * Creates a {@link TestSubscriber} that requests {@link Long#MAX_VALUE} and subscribes
+     * it to this {@code Flowable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned TestSubscriber consumes this Flowable in an unbounded fashion.</dd>

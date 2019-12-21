@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
- * <p>The default {@link #onStart()} requests Long.MAX_VALUE by default. Override
+ * <p>The default {@link #onStart()} requests {@link Long#MAX_VALUE} by default. Override
  * the method to request a custom <em>positive</em> amount.
  *
  * <p>Note that calling {@link #request(long)} from {@link #onStart()} may trigger
@@ -85,7 +85,7 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
     }
 
     /**
-     * Requests from the upstream Subscription.
+     * Requests from the upstream {@link Subscription}.
      * @param n the request amount, positive
      */
     protected final void request(long n) {
@@ -96,7 +96,7 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
     }
 
     /**
-     * Cancels the upstream's Subscription.
+     * Cancels the upstream's {@link Subscription}.
      */
     protected final void cancel() {
         Subscription s = this.upstream;

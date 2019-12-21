@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to compose Observables.
+ * Interface to compose {@link Observable}s.
  *
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
@@ -24,10 +24,10 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface ObservableTransformer<Upstream, Downstream> {
     /**
-     * Applies a function to the upstream Observable and returns an ObservableSource with
+     * Applies a function to the upstream {@link Observable} and returns an {@link ObservableSource} with
      * optionally different element type.
-     * @param upstream the upstream Observable instance
-     * @return the transformed ObservableSource instance
+     * @param upstream the upstream {@code Observable} instance
+     * @return the transformed {@code ObservableSource} instance
      */
     @NonNull
     ObservableSource<Downstream> apply(@NonNull Observable<Upstream> upstream);

@@ -37,7 +37,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     /**
      * Creates a CompositeDisposables with the given array of initial elements.
      * @param disposables the array of Disposables to start with
-     * @throws NullPointerException if {@code disposables} or any of its array items is null
+     * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
      */
     public CompositeDisposable(@NonNull Disposable... disposables) {
         Objects.requireNonNull(disposables, "disposables is null");
@@ -51,7 +51,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     /**
      * Creates a CompositeDisposables with the given Iterable sequence of initial elements.
      * @param disposables the Iterable sequence of Disposables to start with
-     * @throws NullPointerException if {@code disposables} or any of its items is null
+     * @throws NullPointerException if {@code disposables} or any of its items is {@code null}
      */
     public CompositeDisposable(@NonNull Iterable<? extends Disposable> disposables) {
         Objects.requireNonNull(disposables, "disposables is null");
@@ -90,7 +90,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * container has been disposed.
      * @param disposable the disposable to add, not null
      * @return true if successful, false if this container has been disposed
-     * @throws NullPointerException if {@code disposable} is null
+     * @throws NullPointerException if {@code disposable} is {@code null}
      */
     @Override
     public boolean add(@NonNull Disposable disposable) {
@@ -117,7 +117,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * disposes them all if the container has been disposed.
      * @param disposables the array of Disposables
      * @return true if the operation was successful, false if the container has been disposed
-     * @throws NullPointerException if {@code disposables} or any of its array items is null
+     * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
      */
     public boolean addAll(@NonNull Disposable... disposables) {
         Objects.requireNonNull(disposables, "disposables is null");
@@ -163,7 +163,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * container.
      * @param disposable the disposable to remove, not null
      * @return true if the operation was successful
-     * @throws NullPointerException if {@code disposable} is null
+     * @throws NullPointerException if {@code disposable} is {@code null}
      */
     @Override
     public boolean delete(@NonNull Disposable disposable) {

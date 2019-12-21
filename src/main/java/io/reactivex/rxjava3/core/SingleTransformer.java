@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to compose Singles.
+ * Interface to compose {@link Single}s.
  *
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
@@ -24,10 +24,10 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface SingleTransformer<Upstream, Downstream> {
     /**
-     * Applies a function to the upstream Single and returns a SingleSource with
+     * Applies a function to the upstream {@link Single} and returns a {@link SingleSource} with
      * optionally different element type.
-     * @param upstream the upstream Single instance
-     * @return the transformed SingleSource instance
+     * @param upstream the upstream {@code Single} instance
+     * @return the transformed {@code SingleSource} instance
      */
     @NonNull
     SingleSource<Downstream> apply(@NonNull Single<Upstream> upstream);

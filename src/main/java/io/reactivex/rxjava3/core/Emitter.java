@@ -29,13 +29,13 @@ public interface Emitter<T> {
 
     /**
      * Signal a normal value.
-     * @param value the value to signal, not null
+     * @param value the value to signal, not {@code null}
      */
     void onNext(@NonNull T value);
 
     /**
-     * Signal a Throwable exception.
-     * @param error the Throwable to signal, not null
+     * Signal a {@link Throwable} exception.
+     * @param error the {@code Throwable} to signal, not {@code null}
      */
     void onError(@NonNull Throwable error);
 

@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to map/wrap a downstream observer to an upstream observer.
+ * Interface to map/wrap a downstream {@link MaybeObserver} to an upstream {@code MaybeObserver}.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
@@ -23,11 +23,11 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface MaybeOperator<Downstream, Upstream> {
     /**
-     * Applies a function to the child MaybeObserver and returns a new parent MaybeObserver.
-     * @param observer the child MaybeObserver instance
-     * @return the parent MaybeObserver instance
-     * @throws Exception on failure
+     * Applies a function to the child {@link MaybeObserver} and returns a new parent {@code MaybeObserver}.
+     * @param observer the child {@code MaybeObserver} instance
+     * @return the parent {@code MaybeObserver} instance
+     * @throws Throwable on failure
      */
     @NonNull
-    MaybeObserver<? super Upstream> apply(@NonNull MaybeObserver<? super Downstream> observer) throws Exception;
+    MaybeObserver<? super Upstream> apply(@NonNull MaybeObserver<? super Downstream> observer) throws Throwable;
 }

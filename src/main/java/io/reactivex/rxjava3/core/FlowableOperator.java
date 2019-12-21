@@ -18,7 +18,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to map/wrap a downstream subscriber to an upstream subscriber.
+ * Interface to map/wrap a downstream {@link Subscriber} to an upstream {@code Subscriber}.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
@@ -26,11 +26,11 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface FlowableOperator<Downstream, Upstream> {
     /**
-     * Applies a function to the child Subscriber and returns a new parent Subscriber.
-     * @param subscriber the child Subscriber instance
-     * @return the parent Subscriber instance
-     * @throws Exception on failure
+     * Applies a function to the child {@link Subscriber} and returns a new parent {@code Subscriber}.
+     * @param subscriber the child {@code Subscriber} instance
+     * @return the parent {@code Subscriber} instance
+     * @throws Throwable on failure
      */
     @NonNull
-    Subscriber<? super Upstream> apply(@NonNull Subscriber<? super Downstream> subscriber) throws Exception;
+    Subscriber<? super Upstream> apply(@NonNull Subscriber<? super Downstream> subscriber) throws Throwable;
 }

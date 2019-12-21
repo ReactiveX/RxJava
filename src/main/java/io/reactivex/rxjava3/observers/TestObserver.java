@@ -14,19 +14,24 @@ package io.reactivex.rxjava3.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 
 /**
- * An Observer that records events and allows making assertions about them.
+ * An {@link Observer}, {@link MaybeObserver}, {@link SingleObserver} and
+ * {@link CompletableObserver} composite that can record events from
+ * {@link Observable}s, {@link Maybe}s, {@link Single}s and {@link Completable}s
+ *  and allows making assertions about them.
  *
- * <p>You can override the onSubscribe, onNext, onError, onComplete, onSuccess and
- * cancel methods but not the others (this is by design).
+ * <p>You can override the {@link #onSubscribe(Disposable)}, {@link #onNext(Object)}, {@link #onError(Throwable)},
+ * {@link #onComplete()} and {@link #onSuccess(Object)} methods but not the others (this is by design).
  *
- * <p>The TestObserver implements Disposable for convenience where dispose calls cancel.
+ * <p>The {@code TestObserver} implements {@link Disposable} for convenience where dispose calls cancel.
  *
  * @param <T> the value type
+ * @see io.reactivex.rxjava3.subscribers.TestSubscriber
  */
 public class TestObserver<T>
 extends BaseTestConsumer<T, TestObserver<T>>
@@ -35,25 +40,27 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     private final Observer<? super T> downstream;
 
     /** Holds the current subscription if any. */
-    private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    private final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     /**
-     * Constructs a non-forwarding TestObserver.
+     * Constructs a non-forwarding {@code TestObserver}.
      * @param <T> the value type received
-     * @return the new TestObserver instance
+     * @return the new {@code TestObserver} instance
      */
+    @NonNull
     public static <T> TestObserver<T> create() {
-        return new TestObserver<T>();
+        return new TestObserver<>();
     }
 
     /**
-     * Constructs a forwarding TestObserver.
+     * Constructs a forwarding {@code TestObserver}.
      * @param <T> the value type received
-     * @param delegate the actual Observer to forward events to
-     * @return the new TestObserver instance
+     * @param delegate the actual {@link Observer} to forward events to
+     * @return the new {@code TestObserver} instance
      */
-    public static <T> TestObserver<T> create(Observer<? super T> delegate) {
-        return new TestObserver<T>(delegate);
+    @NonNull
+    public static <T> TestObserver<T> create(@NonNull Observer<? super T> delegate) {
+        return new TestObserver<>(delegate);
     }
 
     /**
@@ -64,15 +71,15 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     /**
-     * Constructs a forwarding TestObserver.
-     * @param downstream the actual Observer to forward events to
+     * Constructs a forwarding {@code TestObserver}.
+     * @param downstream the actual {@link Observer} to forward events to
      */
-    public TestObserver(Observer<? super T> downstream) {
+    public TestObserver(@NonNull Observer<? super T> downstream) {
         this.downstream = downstream;
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         lastThread = Thread.currentThread();
 
         if (d == null) {
@@ -91,7 +98,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -111,7 +118,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -164,18 +171,19 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
 
     // state retrieval methods
     /**
-     * Returns true if this TestObserver received a subscription.
-     * @return true if this TestObserver received a subscription
+     * Returns true if this {@code TestObserver} received a subscription.
+     * @return true if this {@code TestObserver} received a subscription
      */
     public final boolean hasSubscription() {
         return upstream.get() != null;
     }
 
     /**
-     * Assert that the onSubscribe method was called exactly once.
-     * @return this;
+     * Assert that the {@link #onSubscribe(Disposable)} method was called exactly once.
+     * @return this
      */
     @Override
+    @NonNull
     protected final TestObserver<T> assertSubscribed() {
         if (upstream.get() == null) {
             throw fail("Not subscribed!");
@@ -184,7 +192,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     }
 
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         onNext(value);
         onComplete();
     }

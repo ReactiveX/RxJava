@@ -25,8 +25,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface ObservableOnSubscribe<T> {
 
     /**
-     * Called for each Observer that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link Observer} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull ObservableEmitter<T> emitter) throws Throwable;

@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to map/wrap a downstream observer to an upstream observer.
+ * Interface to map/wrap a downstream {@link Observer} to an upstream {@code Observer}.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
@@ -24,11 +24,11 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface ObservableOperator<Downstream, Upstream> {
     /**
-     * Applies a function to the child Observer and returns a new parent Observer.
-     * @param observer the child Observer instance
-     * @return the parent Observer instance
-     * @throws Exception on failure
+     * Applies a function to the child {@link Observer} and returns a new parent {@code Observer}.
+     * @param observer the child {@code Observer} instance
+     * @return the parent {@code Observer} instance
+     * @throws Throwable on failure
      */
     @NonNull
-    Observer<? super Upstream> apply(@NonNull Observer<? super Downstream> observer) throws Exception;
+    Observer<? super Upstream> apply(@NonNull Observer<? super Downstream> observer) throws Throwable;
 }

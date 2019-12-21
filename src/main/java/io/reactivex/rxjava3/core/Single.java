@@ -2346,7 +2346,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="214" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delaySubscription.p.png" alt="">
      * <p>If the delaying source signals an error, that error is re-emitted and no subscription
      * to the current Single happens.
-     * <p>The other source is consumed in an unbounded manner (requesting Long.MAX_VALUE from it).
+     * <p>The other source is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE} from it).
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      * <dd>The {@code other} publisher is consumed in an unbounded fashion but will be

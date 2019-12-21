@@ -14,6 +14,7 @@ package io.reactivex.rxjava3.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -21,7 +22,7 @@ import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * Wraps another Subscriber and ensures all onXXX methods conform the protocol
+ * Wraps another {@link Subscriber} and ensures all {@code onXXX} methods conform the protocol
  * (except the requirement for serialized access).
  *
  * @param <T> the value type
@@ -35,15 +36,15 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
     boolean done;
 
     /**
-     * Constructs a SafeSubscriber by wrapping the given actual Subscriber.
-     * @param downstream the actual Subscriber to wrap, not null (not validated)
+     * Constructs a {@code SafeSubscriber} by wrapping the given actual {@link Subscriber}.
+     * @param downstream the actual {@code Subscriber} to wrap, not {@code null} (not validated)
      */
-    public SafeSubscriber(Subscriber<? super T> downstream) {
+    public SafeSubscriber(@NonNull Subscriber<? super T> downstream) {
         this.downstream = downstream;
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.validate(this.upstream, s)) {
             this.upstream = s;
             try {
@@ -65,7 +66,7 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -124,7 +125,7 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

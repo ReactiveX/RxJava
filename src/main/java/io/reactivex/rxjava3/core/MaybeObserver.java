@@ -56,32 +56,32 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public interface MaybeObserver<T> {
 
     /**
-     * Provides the MaybeObserver with the means of cancelling (disposing) the
-     * connection (channel) with the Maybe in both
+     * Provides the {@link MaybeObserver} with the means of cancelling (disposing) the
+     * connection (channel) with the {@link Maybe} in both
      * synchronous (from within {@code onSubscribe(Disposable)} itself) and asynchronous manner.
-     * @param d the Disposable instance whose {@link Disposable#dispose()} can
+     * @param d the {@link Disposable} instance whose {@link Disposable#dispose()} can
      * be called anytime to cancel the connection
      */
     void onSubscribe(@NonNull Disposable d);
 
     /**
-     * Notifies the MaybeObserver with one item and that the {@link Maybe} has finished sending
+     * Notifies the {@link MaybeObserver} with one item and that the {@link Maybe} has finished sending
      * push-based notifications.
      * <p>
      * The {@link Maybe} will not call this method if it calls {@link #onError}.
      *
      * @param t
-     *          the item emitted by the Maybe
+     *          the item emitted by the {@code Maybe}
      */
     void onSuccess(@NonNull T t);
 
     /**
-     * Notifies the MaybeObserver that the {@link Maybe} has experienced an error condition.
+     * Notifies the {@link MaybeObserver} that the {@link Maybe} has experienced an error condition.
      * <p>
      * If the {@link Maybe} calls this method, it will not thereafter call {@link #onSuccess}.
      *
      * @param e
-     *          the exception encountered by the Maybe
+     *          the exception encountered by the {@code Maybe}
      */
     void onError(@NonNull Throwable e);
 

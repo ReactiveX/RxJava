@@ -68,7 +68,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *  <dd>The {@code AsyncProcessor} honors the backpressure of the downstream {@code Subscriber}s and won't emit
  *  its single value to a particular {@code Subscriber} until that {@code Subscriber} has requested an item.
  *  When the {@code AsyncProcessor} is subscribed to a {@link io.reactivex.rxjava3.core.Flowable}, the processor consumes this
- *  {@code Flowable} in an unbounded manner (requesting `Long.MAX_VALUE`) as only the very last upstream item is
+ *  {@code Flowable} in an unbounded manner (requesting {@link Long#MAX_VALUE}) as only the very last upstream item is
  *  retained by it.
  *  </dd>
  *  <dt><b>Scheduler:</b></dt>

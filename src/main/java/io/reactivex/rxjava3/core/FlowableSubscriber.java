@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Represents a Reactive-Streams inspired Subscriber that is RxJava 2 only
+ * Represents a Reactive-Streams inspired {@link Subscriber} that is RxJava 2 only
  * and weakens rules §1.3 and §3.9 of the specification for gaining performance.
  *
  * <p>History: 2.0.7 - experimental; 2.1 - beta

@@ -16,7 +16,7 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Interface to compose Maybes.
+ * Interface to compose {@link Maybe}s.
  *
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
@@ -24,10 +24,10 @@ import io.reactivex.rxjava3.annotations.NonNull;
 @FunctionalInterface
 public interface MaybeTransformer<Upstream, Downstream> {
     /**
-     * Applies a function to the upstream Maybe and returns a MaybeSource with
+     * Applies a function to the upstream {@link Maybe} and returns a {@link MaybeSource} with
      * optionally different element type.
-     * @param upstream the upstream Maybe instance
-     * @return the transformed MaybeSource instance
+     * @param upstream the upstream {@code Maybe} instance
+     * @return the transformed {@code MaybeSource} instance
      */
     @NonNull
     MaybeSource<Downstream> apply(@NonNull Maybe<Upstream> upstream);

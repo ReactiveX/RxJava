@@ -53,7 +53,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  */
 public abstract class DisposableCompletableObserver implements CompletableObserver, Disposable {
 
-    final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     @Override
     public final void onSubscribe(@NonNull Disposable d) {
@@ -63,7 +63,7 @@ public abstract class DisposableCompletableObserver implements CompletableObserv
     }
 
     /**
-     * Called once the single upstream Disposable is set via onSubscribe.
+     * Called once the single upstream {@link Disposable} is set via {@link #onSubscribe(Disposable)}.
      */
     protected void onStart() {
     }

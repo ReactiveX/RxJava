@@ -24,9 +24,9 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface CompletableSource {
 
     /**
-     * Subscribes the given CompletableObserver to this CompletableSource instance.
-     * @param co the CompletableObserver, not null
-     * @throws NullPointerException if {@code co} is null
+     * Subscribes the given {@link CompletableObserver} to this {@code CompletableSource} instance.
+     * @param observer the {@code CompletableObserver}, not {@code null}
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
-    void subscribe(@NonNull CompletableObserver co);
+    void subscribe(@NonNull CompletableObserver observer);
 }

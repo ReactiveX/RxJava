@@ -29,11 +29,11 @@ public final class Timed<T> {
     final TimeUnit unit;
 
     /**
-     * Constructs a Timed instance with the given value and time information.
+     * Constructs a {@code Timed} instance with the given value and time information.
      * @param value the value to hold
      * @param time the time to hold
      * @param unit the time unit, not null
-     * @throws NullPointerException if unit is null
+     * @throws NullPointerException if unit is {@code null}
      */
     public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
         this.value = value;
@@ -69,7 +69,7 @@ public final class Timed<T> {
 
     /**
      * Returns the contained time value in the time unit specified.
-     * @param unit the time unt
+     * @param unit the time unit
      * @return the converted time
      */
     public long time(@NonNull TimeUnit unit) {

@@ -16,20 +16,19 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.observers.BaseTestConsumer;
 
 /**
- * A subscriber that records events and allows making assertions about them.
+ * A {@link Subscriber} implementation that records events and allows making assertions about them.
  *
- * <p>You can override the onSubscribe, onNext, onError, onComplete, request and
- * cancel methods but not the others (this is by design).
- *
- * <p>The TestSubscriber implements Disposable for convenience where dispose calls cancel.
+ * <p>You can override the {@link #onSubscribe(Subscription)}, {@link #onNext(Object)}, {@link #onError(Throwable)} and
+ * {@link #onComplete()} methods but not the others (this is by design).
  *
  * <p>When calling the default request method, you are requesting on behalf of the
- * wrapped actual subscriber.
+ * wrapped actual {@link Subscriber} if any.
  *
  * @param <T> the value type
  */
@@ -49,78 +48,82 @@ implements FlowableSubscriber<T>, Subscription {
     private final AtomicLong missedRequested;
 
     /**
-     * Creates a TestSubscriber with Long.MAX_VALUE initial request.
+     * Creates a {@code TestSubscriber} with {@link Long#MAX_VALUE} initial request amount.
      * @param <T> the value type
-     * @return the new TestSubscriber instance.
+     * @return the new {@code TestSubscriber} instance.
+     * @see #create(long)
      */
+    @NonNull
     public static <T> TestSubscriber<T> create() {
-        return new TestSubscriber<T>();
+        return new TestSubscriber<>();
     }
 
     /**
-     * Creates a TestSubscriber with the given initial request.
+     * Creates a {@code TestSubscriber} with the given initial request amount.
      * @param <T> the value type
      * @param initialRequested the initial requested amount
-     * @return the new TestSubscriber instance.
+     * @return the new {@code TestSubscriber} instance.
      */
+    @NonNull
     public static <T> TestSubscriber<T> create(long initialRequested) {
-        return new TestSubscriber<T>(initialRequested);
+        return new TestSubscriber<>(initialRequested);
     }
 
     /**
-     * Constructs a forwarding TestSubscriber.
+     * Constructs a forwarding {@code TestSubscriber}.
      * @param <T> the value type received
-     * @param delegate the actual Subscriber to forward events to
+     * @param delegate the actual {@link Subscriber} to forward events to
      * @return the new TestObserver instance
      */
-    public static <T> TestSubscriber<T> create(Subscriber<? super T> delegate) {
-        return new TestSubscriber<T>(delegate);
+    public static <T> TestSubscriber<T> create(@NonNull Subscriber<? super T> delegate) {
+        return new TestSubscriber<>(delegate);
     }
 
     /**
-     * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
+     * Constructs a non-forwarding {@code TestSubscriber} with an initial request value of {@link Long#MAX_VALUE}.
      */
     public TestSubscriber() {
         this(EmptySubscriber.INSTANCE, Long.MAX_VALUE);
     }
 
     /**
-     * Constructs a non-forwarding TestSubscriber with the specified initial request value.
-     * <p>The TestSubscriber doesn't validate the initialRequest value so one can
+     * Constructs a non-forwarding {@code TestSubscriber} with the specified initial request value.
+     * <p>The {@code TestSubscriber} doesn't validate the {@code initialRequest} amount so one can
      * test sources with invalid values as well.
-     * @param initialRequest the initial request value
+     * @param initialRequest the initial request amount
      */
     public TestSubscriber(long initialRequest) {
         this(EmptySubscriber.INSTANCE, initialRequest);
     }
 
     /**
-     * Constructs a forwarding TestSubscriber but leaves the requesting to the wrapped subscriber.
-     * @param downstream the actual Subscriber to forward events to
+     * Constructs a forwarding {@code TestSubscriber} but leaves the requesting to the wrapped {@link Subscriber}.
+     * @param downstream the actual {@code Subscriber} to forward events to
      */
-    public TestSubscriber(Subscriber<? super T> downstream) {
+    public TestSubscriber(@NonNull Subscriber<? super T> downstream) {
         this(downstream, Long.MAX_VALUE);
     }
 
     /**
-     * Constructs a forwarding TestSubscriber with the specified initial request value.
-     * <p>The TestSubscriber doesn't validate the initialRequest value so one can
+     * Constructs a forwarding {@code TestSubscriber} with the specified initial request amount
+     * and an actual {@link Subscriber} to forward events to.
+     * <p>The {@code TestSubscriber} doesn't validate the initialRequest value so one can
      * test sources with invalid values as well.
-     * @param actual the actual Subscriber to forward events to
-     * @param initialRequest the initial request value
+     * @param actual the actual {@code Subscriber} to forward events to
+     * @param initialRequest the initial request amount
      */
-    public TestSubscriber(Subscriber<? super T> actual, long initialRequest) {
+    public TestSubscriber(@NonNull Subscriber<? super T> actual, long initialRequest) {
         super();
         if (initialRequest < 0) {
             throw new IllegalArgumentException("Negative initial request not allowed");
         }
         this.downstream = actual;
-        this.upstream = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<>();
         this.missedRequested = new AtomicLong(initialRequest);
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         lastThread = Thread.currentThread();
 
         if (s == null) {
@@ -153,7 +156,7 @@ implements FlowableSubscriber<T>, Subscription {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -172,7 +175,7 @@ implements FlowableSubscriber<T>, Subscription {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (!checkSubscriptionOnce) {
             checkSubscriptionOnce = true;
             if (upstream.get() == null) {
@@ -225,8 +228,8 @@ implements FlowableSubscriber<T>, Subscription {
     }
 
     /**
-     * Returns true if this TestSubscriber has been cancelled.
-     * @return true if this TestSubscriber has been cancelled
+     * Returns true if this {@code TestSubscriber} has been cancelled.
+     * @return true if this {@code TestSubscriber} has been cancelled
      */
     public final boolean isCancelled() {
         return cancelled;
@@ -245,8 +248,8 @@ implements FlowableSubscriber<T>, Subscription {
     // state retrieval methods
 
     /**
-     * Returns true if this TestSubscriber received a subscription.
-     * @return true if this TestSubscriber received a subscription
+     * Returns true if this {@code TestSubscriber} received a {@link Subscription} via {@link #onSubscribe(Subscription)}.
+     * @return true if this {@code TestSubscriber} received a {@link Subscription} via {@link #onSubscribe(Subscription)}
      */
     public final boolean hasSubscription() {
         return upstream.get() != null;
@@ -255,7 +258,7 @@ implements FlowableSubscriber<T>, Subscription {
     // assertion methods
 
     /**
-     * Assert that the onSubscribe method was called exactly once.
+     * Assert that the {@link #onSubscribe(Subscription)} method was called exactly once.
      * @return this
      */
     @Override

@@ -16,15 +16,15 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Convenience interface and callback used by the compose operator to turn a Completable into another
- * Completable fluently.
+ * Convenience interface and callback used by the compose operator to turn a {@link Completable} into another
+ * {@code Completable} fluently.
  */
 @FunctionalInterface
 public interface CompletableTransformer {
     /**
-     * Applies a function to the upstream Completable and returns a CompletableSource.
-     * @param upstream the upstream Completable instance
-     * @return the transformed CompletableSource instance
+     * Applies a function to the upstream {@link Completable} and returns a {@link CompletableSource}.
+     * @param upstream the upstream {@code Completable} instance
+     * @return the transformed {@code CompletableSource} instance
      */
     @NonNull
     CompletableSource apply(@NonNull Completable upstream);

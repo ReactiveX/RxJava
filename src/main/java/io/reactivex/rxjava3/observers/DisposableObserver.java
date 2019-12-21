@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
 
 /**
- * An abstract {@link Observer} that allows asynchronous cancellation by implementing Disposable.
+ * An abstract {@link Observer} that allows asynchronous cancellation by implementing {@link Disposable}.
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
@@ -66,7 +66,7 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  */
 public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
 
-    final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     @Override
     public final void onSubscribe(@NonNull Disposable d) {

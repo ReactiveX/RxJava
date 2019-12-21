@@ -19,7 +19,10 @@ package io.reactivex.rxjava3.core;
  * Options to deal with buffer overflow when using onBackpressureBuffer.
  */
 public enum BackpressureOverflowStrategy {
-    /** Signal a MissingBackpressureException and terminate the sequence. */
+    /**
+     * Signal a {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException MissingBackpressureException}
+     * and terminate the sequence.
+     */
     ERROR,
     /** Drop the oldest value from the buffer. */
     DROP_OLDEST,

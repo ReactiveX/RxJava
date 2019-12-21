@@ -25,9 +25,9 @@ import io.reactivex.rxjava3.annotations.NonNull;
 public interface ObservableSource<T> {
 
     /**
-     * Subscribes the given Observer to this ObservableSource instance.
-     * @param observer the Observer, not null
-     * @throws NullPointerException if {@code observer} is null
+     * Subscribes the given {@link Observer} to this {@link ObservableSource} instance.
+     * @param observer the {@code Observer}, not {@code null}
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
     void subscribe(@NonNull Observer<? super T> observer);
 }
