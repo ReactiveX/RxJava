@@ -252,7 +252,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1).hide()
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -269,7 +269,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1, 2)
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -349,7 +349,7 @@ public class ObservableSwitchMapSingleTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override

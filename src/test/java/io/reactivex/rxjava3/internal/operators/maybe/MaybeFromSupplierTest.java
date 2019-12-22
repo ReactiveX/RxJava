@@ -197,7 +197,7 @@ public class MaybeFromSupplierTest extends RxJavaTest {
 
         Observer<Object> observer = TestHelper.mockObserver();
 
-        TestObserver<String> outer = new TestObserver<String>(observer);
+        TestObserver<String> outer = new TestObserver<>(observer);
 
         fromSupplierObservable
                 .subscribeOn(Schedulers.computation())

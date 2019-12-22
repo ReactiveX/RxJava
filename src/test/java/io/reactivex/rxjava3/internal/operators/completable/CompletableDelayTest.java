@@ -41,7 +41,7 @@ public class CompletableDelayTest extends RxJavaTest {
     @Test
     public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> thread = new AtomicReference<>();
 
         Completable.error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())

@@ -167,7 +167,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void arrayFirstCancels() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.concatArray(new Completable() {
             @Override
@@ -191,7 +191,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
     @Test
     public void iterableFirstCancels() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.concat(Arrays.asList(new Completable() {
             @Override
@@ -215,7 +215,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
             final Completable c = Completable.concatArray(a);
 
-            final TestObserver<Void> to = new TestObserver<Void>();
+            final TestObserver<Void> to = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -244,7 +244,7 @@ public class CompletableConcatTest extends RxJavaTest {
 
             final Completable c = Completable.concat(Arrays.asList(a));
 
-            final TestObserver<Void> to = new TestObserver<Void>();
+            final TestObserver<Void> to = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override

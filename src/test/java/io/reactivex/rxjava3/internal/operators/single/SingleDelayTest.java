@@ -138,7 +138,7 @@ public class SingleDelayTest extends RxJavaTest {
     @Test
     public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> thread = new AtomicReference<>();
 
         Single.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())

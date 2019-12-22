@@ -156,7 +156,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(1, 100, 100, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Single<Integer>>() {
             @Override
             public Single<Integer> apply(Integer v) throws Exception {
                 return Single.just(v);
@@ -168,7 +168,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 20, 100, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<>(100, 20, 100, new Function<Integer, Single<Integer>>() {
             @Override
             public Single<Integer> apply(Integer v) throws Exception {
                 return Single.just(v);
@@ -180,7 +180,7 @@ public class SingleZipIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 100, 5, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<>(100, 100, 5, new Function<Integer, Single<Integer>>() {
             @Override
             public Single<Integer> apply(Integer v) throws Exception {
                 return Single.just(v);

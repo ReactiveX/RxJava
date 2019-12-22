@@ -39,7 +39,7 @@ public class SingleDoAfterTerminateTest extends RxJavaTest {
         }
     };
 
-    private final TestObserver<Integer> to = new TestObserver<Integer>();
+    private final TestObserver<Integer> to = new TestObserver<>();
 
     @Test
     public void just() {

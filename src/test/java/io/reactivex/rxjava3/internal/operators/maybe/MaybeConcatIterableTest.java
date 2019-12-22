@@ -90,7 +90,7 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrows() {
-        Maybe.concat(new CrashingMappedIterable<Maybe<Integer>>(100, 1, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.concat(new CrashingMappedIterable<>(100, 1, 100, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(1);
@@ -102,7 +102,7 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrows() {
-        Maybe.concat(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 1, new Function<Integer, Maybe<Integer>>() {
+        Maybe.concat(new CrashingMappedIterable<>(100, 100, 1, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(1);
@@ -114,7 +114,7 @@ public class MaybeConcatIterableTest extends RxJavaTest {
 
     @Test
     public void nextReturnsNull() {
-        Maybe.concat(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.concat(new CrashingMappedIterable<>(100, 100, 100, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return null;

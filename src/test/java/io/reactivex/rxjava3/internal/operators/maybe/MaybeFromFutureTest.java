@@ -29,7 +29,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void cancelImmediately() {
-        FutureTask<Integer> ft = new FutureTask<Integer>(Functions.justCallable(1));
+        FutureTask<Integer> ft = new FutureTask<>(Functions.justCallable(1));
 
         Maybe.fromFuture(ft).test(true)
         .assertEmpty();
@@ -37,7 +37,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void timeout() {
-        FutureTask<Integer> ft = new FutureTask<Integer>(Functions.justCallable(1));
+        FutureTask<Integer> ft = new FutureTask<>(Functions.justCallable(1));
 
         Maybe.fromFuture(ft, 1, TimeUnit.MILLISECONDS).test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -46,7 +46,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void timedWait() {
-        FutureTask<Integer> ft = new FutureTask<Integer>(Functions.justCallable(1));
+        FutureTask<Integer> ft = new FutureTask<>(Functions.justCallable(1));
         ft.run();
 
         Maybe.fromFuture(ft, 1, TimeUnit.MILLISECONDS).test()
@@ -56,7 +56,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void interrupt() {
-        FutureTask<Integer> ft = new FutureTask<Integer>(Functions.justCallable(1));
+        FutureTask<Integer> ft = new FutureTask<>(Functions.justCallable(1));
 
         Thread.currentThread().interrupt();
 
@@ -66,9 +66,9 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void cancelWhileRunning() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
-        FutureTask<Object> ft = new FutureTask<Object>(new Runnable() {
+        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
                 to.dispose();
@@ -86,9 +86,9 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void cancelAndCrashWhileRunning() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
-        FutureTask<Object> ft = new FutureTask<Object>(new Runnable() {
+        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
                 to.dispose();
@@ -107,7 +107,7 @@ public class MaybeFromFutureTest extends RxJavaTest {
 
     @Test
     public void futureNull() {
-        FutureTask<Object> ft = new FutureTask<Object>(new Runnable() {
+        FutureTask<Object> ft = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
             }

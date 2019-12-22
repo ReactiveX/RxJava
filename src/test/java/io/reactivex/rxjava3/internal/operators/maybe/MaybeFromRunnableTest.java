@@ -175,7 +175,7 @@ public class MaybeFromRunnableTest extends RxJavaTest {
 
     @Test
     public void cancelWhileRunning() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
         Maybe.fromRunnable(new Runnable() {
             @Override

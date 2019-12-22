@@ -113,7 +113,7 @@ public class CompletableAndThenCompletableabTest extends RxJavaTest {
 
     @Test
     public void andThenFirstCancels() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
         Completable.fromRunnable(new Runnable() {
             @Override
             public void run() {
@@ -129,7 +129,7 @@ public class CompletableAndThenCompletableabTest extends RxJavaTest {
 
     @Test
     public void andThenSecondCancels() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
         Completable.complete()
                 .andThen(Completable.fromRunnable(new Runnable() {
                     @Override

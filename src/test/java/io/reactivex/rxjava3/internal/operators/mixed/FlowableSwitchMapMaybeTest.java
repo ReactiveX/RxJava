@@ -307,7 +307,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -324,7 +324,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1, 2)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -404,7 +404,7 @@ public class FlowableSwitchMapMaybeTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override

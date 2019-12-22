@@ -291,7 +291,7 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
         try {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = pp.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
@@ -368,9 +368,9 @@ public class FlowableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConcatMapMaybeSubscriber<Integer, Integer> operator =
-                new ConcatMapMaybeSubscriber<Integer, Integer>(
+                new ConcatMapMaybeSubscriber<>(
                         ts, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(new BooleanSubscription());
