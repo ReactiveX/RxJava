@@ -1430,7 +1430,6 @@ public class ObservableZipTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void observableSourcesInIterable() {
         ObservableSource<Integer> source = new ObservableSource<Integer>() {

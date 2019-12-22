@@ -818,7 +818,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSources() {
 
         Observable.combineLatestDelayError(Arrays.asList(
@@ -834,7 +833,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSourcesWithError() {
 
         Observable.combineLatestDelayError(Arrays.asList(
@@ -1044,7 +1042,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dontSubscribeIfDone2() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1078,7 +1075,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void combine2Observable2Errors() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1195,7 +1191,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void syncFirstErrorsAfterItemDelayError() {
         Observable.combineLatestDelayError(Arrays.asList(
                     Observable.just(21).concatWith(Observable.<Integer>error(new TestException())),
@@ -1213,7 +1208,6 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         .assertFailure(TestException.class, 42);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void observableSourcesInIterable() {
         ObservableSource<Integer> source = new ObservableSource<Integer>() {

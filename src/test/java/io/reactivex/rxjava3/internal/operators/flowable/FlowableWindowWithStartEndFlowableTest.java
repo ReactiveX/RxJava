@@ -434,7 +434,6 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void mainWindowMissingBackpressure() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
@@ -515,7 +514,6 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         inner.get().test().assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void closingIndicatorFunctionCrash() {
 

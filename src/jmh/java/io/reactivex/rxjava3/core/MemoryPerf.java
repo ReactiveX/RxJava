@@ -184,7 +184,7 @@ public final class MemoryPerf {
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                return new io.reactivex.rxjava3.observers.TestObserver<Object>();
+                return new io.reactivex.rxjava3.observers.TestObserver<>();
             }
         }, "test-consumer", "Rx2Observable");
 
@@ -374,7 +374,7 @@ public final class MemoryPerf {
         checkMemory(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                return new io.reactivex.rxjava3.observers.TestObserver<Object>();
+                return new io.reactivex.rxjava3.observers.TestObserver<>();
             }
         }, "test-consumer", "Rx2Flowable");
 

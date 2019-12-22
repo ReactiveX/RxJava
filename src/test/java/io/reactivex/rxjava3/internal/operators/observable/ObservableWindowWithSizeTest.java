@@ -293,7 +293,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorExact() {
         Observable.error(new TestException())
@@ -302,7 +301,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorSkip() {
         Observable.error(new TestException())
@@ -311,7 +309,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorOverlap() {
         Observable.error(new TestException())

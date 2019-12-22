@@ -498,7 +498,6 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         inner.get().test().assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void closingIndicatorFunctionCrash() {
 
@@ -524,7 +523,6 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         assertFalse(boundary.hasObservers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mainError() {
         Observable.error(new TestException())

@@ -66,7 +66,6 @@ public class ObservableNullTests extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Observable.amb(Arrays.asList(Observable.never(), null))
@@ -99,7 +98,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableOneIsNull() {
         Observable.combineLatest(Arrays.asList(Observable.never(), null), new Function<Object[], Object>() {
@@ -110,13 +108,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
         Observable.combineLatest(Arrays.asList(just1), null, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
         Observable.combineLatest(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -152,7 +148,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableOneIsNull() {
         Observable.combineLatestDelayError(Arrays.asList(Observable.never(), null), new Function<Object[], Object>() {
@@ -163,13 +158,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionNull() {
         Observable.combineLatestDelayError(Arrays.asList(just1), null, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
         Observable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -195,7 +188,6 @@ public class ObservableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
         Observable.concat(Arrays.asList(just1, null)).blockingLast();
@@ -520,7 +512,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
         Observable.merge(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -552,7 +543,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
         Observable.mergeDelayError(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -683,13 +673,11 @@ public class ObservableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionNull() {
         Observable.zip(Arrays.asList(just1, just1), null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionReturnsNull() {
         Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -725,13 +713,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, true, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
         Observable.zip(Arrays.asList(just1, just1), null, true, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
         Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {

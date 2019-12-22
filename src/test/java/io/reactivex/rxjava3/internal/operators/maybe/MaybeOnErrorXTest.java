@@ -66,7 +66,6 @@ public class MaybeOnErrorXTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void onErrorReturnFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
@@ -79,7 +78,6 @@ public class MaybeOnErrorXTest extends RxJavaTest {
         .to(TestHelper.testConsumer()), TestException.class, IOException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void onErrorCompletePredicateThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
@@ -116,7 +114,6 @@ public class MaybeOnErrorXTest extends RxJavaTest {
         .assertFailure(AssertionError.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void onErrorResumeNextFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())

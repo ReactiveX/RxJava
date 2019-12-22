@@ -2390,7 +2390,6 @@ public class FlowableGroupByTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void valueSelectorCrashAndMissingBackpressure() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 

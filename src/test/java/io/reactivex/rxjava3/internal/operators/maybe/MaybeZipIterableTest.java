@@ -38,7 +38,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         }
     };
 
-    @SuppressWarnings("unchecked")
     @Test
     public void firstError() {
         Maybe.zip(Arrays.asList(Maybe.error(new TestException()), Maybe.just(1)), addString)
@@ -46,7 +45,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void secondError() {
         Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.<Integer>error(new TestException())), addString)
@@ -54,7 +52,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -69,7 +66,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipperThrows() {
         Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
@@ -82,7 +78,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipperReturnsNull() {
         Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
@@ -95,7 +90,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void middleError() {
         PublishProcessor<Integer> pp0 = PublishProcessor.create();
@@ -112,7 +106,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -190,7 +183,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
         Maybe.zip(Arrays.asList(null, Maybe.just(1)), new Function<Object[], Object>() {
@@ -202,7 +194,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
         Maybe.zip(Arrays.asList(Maybe.just(1), null), new Function<Object[], Object>() {
@@ -222,7 +213,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void maybeSourcesInIterable() {
         MaybeSource<Integer> source = new MaybeSource<Integer>() {

@@ -129,7 +129,6 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
         TestHelper.checkDisposed(Flowable.just(1).timeInterval());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Flowable.error(new TestException())

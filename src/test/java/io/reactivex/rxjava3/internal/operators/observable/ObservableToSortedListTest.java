@@ -96,7 +96,6 @@ public class ObservableToSortedListTest extends RxJavaTest {
         .assertResult(5, 4, 3, 2, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListCapacityObservable() {
         Observable.just(5, 1, 2, 4, 3).toSortedList(4).toObservable()
@@ -104,7 +103,6 @@ public class ObservableToSortedListTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListComparatorCapacityObservable() {
         Observable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
@@ -152,7 +150,6 @@ public class ObservableToSortedListTest extends RxJavaTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingGet());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListCapacity() {
         Observable.just(5, 1, 2, 4, 3).toSortedList(4)
@@ -160,7 +157,6 @@ public class ObservableToSortedListTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListComparatorCapacity() {
         Observable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {

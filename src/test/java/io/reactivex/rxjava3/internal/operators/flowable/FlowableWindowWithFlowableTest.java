@@ -328,7 +328,6 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         }, false, 1, 1, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressure() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -344,7 +343,6 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressureNoNullPointerException() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

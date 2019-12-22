@@ -167,7 +167,6 @@ public final class FlowableCollectTest extends RxJavaTest {
         assertFalse(added.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectIntoFlowable() {
         Flowable.just(1, 1, 1, 1, 2)
@@ -316,7 +315,6 @@ public final class FlowableCollectTest extends RxJavaTest {
         assertFalse(added.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectInto() {
         Flowable.just(1, 1, 1, 1, 2)

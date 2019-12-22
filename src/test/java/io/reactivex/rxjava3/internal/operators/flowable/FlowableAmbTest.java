@@ -102,7 +102,6 @@ public class FlowableAmbTest extends RxJavaTest {
         Flowable<String> flowable3 = createFlowable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
-        @SuppressWarnings("unchecked")
         Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
@@ -131,7 +130,6 @@ public class FlowableAmbTest extends RxJavaTest {
         Flowable<String> flowable3 = createFlowable(new String[] {},
                 3000, new IOException("fake exception"));
 
-        @SuppressWarnings("unchecked")
         Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
@@ -158,7 +156,6 @@ public class FlowableAmbTest extends RxJavaTest {
         Flowable<String> flowable3 = createFlowable(new String[] {
                 "3" }, 3000, null);
 
-        @SuppressWarnings("unchecked")
         Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
@@ -171,7 +168,6 @@ public class FlowableAmbTest extends RxJavaTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void producerRequestThroughAmb() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
@@ -237,7 +233,6 @@ public class FlowableAmbTest extends RxJavaTest {
         assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
@@ -262,7 +257,6 @@ public class FlowableAmbTest extends RxJavaTest {
         assertEquals(2, count.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void secondaryRequestsPropagatedToChildren() throws InterruptedException {
         //this aync stream should emit first
@@ -302,7 +296,6 @@ public class FlowableAmbTest extends RxJavaTest {
         assertEquals(1, result);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambCancelsOthers() {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
@@ -347,7 +340,6 @@ public class FlowableAmbTest extends RxJavaTest {
         ts2.assertNoErrors();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -370,7 +362,6 @@ public class FlowableAmbTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -393,19 +384,16 @@ public class FlowableAmbTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayEmpty() {
         assertSame(Flowable.empty(), Flowable.ambArray());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArraySingleElement() {
         assertSame(Flowable.never(), Flowable.ambArray(Flowable.never()));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.ambArray(Flowable.never(), Flowable.never()));
@@ -442,7 +430,6 @@ public class FlowableAmbTest extends RxJavaTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            @SuppressWarnings("unchecked")
             TestSubscriberEx<Integer> ts = Flowable.ambArray(pp1, pp2).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
@@ -471,7 +458,6 @@ public class FlowableAmbTest extends RxJavaTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            @SuppressWarnings("unchecked")
             TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
             Runnable r1 = new Runnable() {
@@ -499,7 +485,6 @@ public class FlowableAmbTest extends RxJavaTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            @SuppressWarnings("unchecked")
             TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
             final Throwable ex = new TestException();
@@ -531,7 +516,6 @@ public class FlowableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void nullIterableElement() {
         Flowable.amb(Arrays.asList(Flowable.never(), null, Flowable.never()))
@@ -575,21 +559,18 @@ public class FlowableAmbTest extends RxJavaTest {
         Flowable.just(1).ambWith(error).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOrder() {
         Flowable<Integer> error = Flowable.error(new RuntimeException());
         Flowable.amb(Arrays.asList(Flowable.just(1), error)).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayOrder() {
         Flowable<Integer> error = Flowable.error(new RuntimeException());
         Flowable.ambArray(Flowable.just(1), error).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerSuccessDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -615,7 +596,6 @@ public class FlowableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerErrorDispose() throws Exception {
         final TestException ex = new TestException();
@@ -642,7 +622,6 @@ public class FlowableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerCompleteDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -668,7 +647,6 @@ public class FlowableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void publishersInIterable() {
         Publisher<Integer> source = new Publisher<Integer>() {

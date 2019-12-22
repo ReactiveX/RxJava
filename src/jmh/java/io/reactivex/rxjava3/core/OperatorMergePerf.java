@@ -134,7 +134,7 @@ public class OperatorMergePerf {
         @Setup
         public void setup(final Blackhole bh) {
             this.bh = bh;
-            observables = new ArrayList<Flowable<Integer>>();
+            observables = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 observables.add(Flowable.just(i));
             }

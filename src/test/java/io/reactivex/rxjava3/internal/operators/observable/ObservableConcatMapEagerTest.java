@@ -503,7 +503,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {
         Observable<Integer> source = Observable.just(1);
@@ -540,7 +539,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void badCapacityHint() throws Exception {
         Observable<Integer> source = Observable.just(1);
@@ -564,7 +562,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerIterable() {
         Observable.concatEager(Arrays.asList(Observable.just(1), Observable.just(2)))

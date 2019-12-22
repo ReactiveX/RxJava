@@ -89,7 +89,6 @@ public class SingleConcatTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerIterableTest() {
         PublishProcessor<String> pp1 = PublishProcessor.create();
@@ -163,7 +162,6 @@ public class SingleConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };

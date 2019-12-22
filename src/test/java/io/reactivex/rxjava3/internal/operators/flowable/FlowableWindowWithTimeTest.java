@@ -434,7 +434,6 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void exactBackpressure() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -449,7 +448,6 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void skipBackpressure() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -464,7 +462,6 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void overlapBackpressure() {
         TestScheduler scheduler = new TestScheduler();
 
@@ -866,7 +863,6 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void firstWindowMissingBackpressure() {
         Flowable.never()

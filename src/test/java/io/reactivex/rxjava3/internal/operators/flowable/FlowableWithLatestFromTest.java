@@ -704,7 +704,6 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void combineToNull2() {
         Flowable.just(1)

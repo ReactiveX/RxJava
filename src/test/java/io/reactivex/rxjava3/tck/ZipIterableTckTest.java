@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.functions.Function;
 @Test
 public class ZipIterableTckTest extends BaseTck<Long> {
 
-    @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return

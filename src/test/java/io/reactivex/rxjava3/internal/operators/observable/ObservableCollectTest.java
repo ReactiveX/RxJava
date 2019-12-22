@@ -142,7 +142,6 @@ public final class ObservableCollectTest extends RxJavaTest {
         assertFalse(added.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectIntoObservable() {
         Observable.just(1, 1, 1, 1, 2)
@@ -266,7 +265,6 @@ public final class ObservableCollectTest extends RxJavaTest {
         assertFalse(added.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectInto() {
         Observable.just(1, 1, 1, 1, 2)

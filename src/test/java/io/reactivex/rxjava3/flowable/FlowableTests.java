@@ -1074,7 +1074,6 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void zipIterableObject() {
-        @SuppressWarnings("unchecked")
         final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
         Flowable.zip(flowables, new Function<Object[], Object>() {
             @Override
@@ -1090,7 +1089,6 @@ public class FlowableTests extends RxJavaTest {
 
     @Test
     public void combineLatestObject() {
-        @SuppressWarnings("unchecked")
         final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
         Flowable.combineLatest(flowables, new Function<Object[], Object>() {
             @Override

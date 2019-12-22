@@ -374,7 +374,6 @@ public class ObservableAmbTest extends RxJavaTest {
         Observable.just(1).ambWith(error).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOrder() {
         Observable<Integer> error = Observable.error(new RuntimeException());
@@ -467,7 +466,6 @@ public class ObservableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void observableSourcesInIterable() {
         ObservableSource<Integer> source = new ObservableSource<Integer>() {

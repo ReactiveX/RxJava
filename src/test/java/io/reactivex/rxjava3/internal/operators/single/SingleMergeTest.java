@@ -72,7 +72,6 @@ public class SingleMergeTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeDelayErrorIterable() {
         Single.mergeDelayError(Arrays.asList(

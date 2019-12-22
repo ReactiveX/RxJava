@@ -192,7 +192,6 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void filterFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
@@ -327,7 +326,6 @@ public class ParallelFilterTryTest extends RxJavaTest implements Consumer<Object
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void filterFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)

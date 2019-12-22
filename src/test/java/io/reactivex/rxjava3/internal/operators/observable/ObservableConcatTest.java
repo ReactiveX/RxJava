@@ -271,7 +271,7 @@ public class ObservableConcatTest extends RxJavaTest {
         final Observable<String> even = Observable.fromArray(e);
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        @SuppressWarnings("unchecked")
+
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
         concatF.subscribe(observer);
@@ -310,7 +310,6 @@ public class ObservableConcatTest extends RxJavaTest {
 
         Observer<String> observer = TestHelper.mockObserver();
 
-        @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
@@ -438,7 +437,6 @@ public class ObservableConcatTest extends RxJavaTest {
         Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<>(observer);
 
-        @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
@@ -493,10 +491,12 @@ public class ObservableConcatTest extends RxJavaTest {
         private final T seed;
         private final int size;
 
+        @SafeVarargs
         TestObservable(T... values) {
             this(null, null, values);
         }
 
+        @SafeVarargs
         TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
@@ -799,7 +799,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertFailure(TestException.class, 1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayError() {
         Observable.concatDelayError(
@@ -809,7 +808,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayErrorWithError() {
         Observable.concatDelayError(
@@ -1004,7 +1002,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };
@@ -1025,7 +1022,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayErrorIterable() {
         final int[] calls = { 0 };
@@ -1179,7 +1175,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousIterable() {
         final AtomicInteger counter = new AtomicInteger();

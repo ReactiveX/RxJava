@@ -21,7 +21,6 @@ import io.reactivex.rxjava3.core.Flowable;
 @Test
 public class ConcatIterableEagerTckTest extends BaseTck<Long> {
 
-    @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return

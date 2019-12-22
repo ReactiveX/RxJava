@@ -176,6 +176,7 @@ extends BaseTestConsumer<T, U> {
      * @param values the expected values, asserted in order
      * @return this
      */
+    @SafeVarargs
     public final U assertFailure(Predicate<Throwable> errorPredicate, T... values) {
         return assertSubscribed()
                 .assertValues(values)
@@ -192,6 +193,7 @@ extends BaseTestConsumer<T, U> {
      * @param values the expected values, asserted in order
      * @return this
      */
+    @SafeVarargs
     public final U assertFailureAndMessage(Class<? extends Throwable> error,
             String message, T... values) {
         return assertSubscribed()

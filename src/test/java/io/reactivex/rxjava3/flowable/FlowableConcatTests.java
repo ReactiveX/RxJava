@@ -61,7 +61,6 @@ public class FlowableConcatTests extends RxJavaTest {
         Flowable<String> f2 = Flowable.just("three", "four");
         Flowable<String> f3 = Flowable.just("five", "six");
 
-        @SuppressWarnings("unchecked")
         Iterable<Flowable<String>> is = Arrays.asList(f1, f2, f3);
 
         List<String> values = Flowable.concat(Flowable.fromIterable(is)).toList().blockingGet();

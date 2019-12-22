@@ -62,7 +62,6 @@ public class ObservableConcatTests extends RxJavaTest {
         Observable<String> o2 = Observable.just("three", "four");
         Observable<String> o3 = Observable.just("five", "six");
 
-        @SuppressWarnings("unchecked")
         Iterable<Observable<String>> is = Arrays.asList(o1, o2, o3);
 
         List<String> values = Observable.concat(Observable.fromIterable(is)).toList().blockingGet();

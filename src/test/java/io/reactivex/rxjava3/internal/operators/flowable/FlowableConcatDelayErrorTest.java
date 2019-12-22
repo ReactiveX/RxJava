@@ -252,7 +252,6 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         assertTrue(cex.get(2).toString(), cex.get(2) instanceof TestException);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatDelayErrorIterable() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -266,7 +265,6 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatDelayErrorIterableError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
