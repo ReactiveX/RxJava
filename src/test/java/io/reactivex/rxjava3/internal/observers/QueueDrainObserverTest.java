@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class QueueDrainObserverTest extends RxJavaTest {
 
     static final QueueDrainObserver<Integer, Integer, Integer> createUnordered(TestObserver<Integer> to, final Disposable d) {
-        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmit(t, false, d);
@@ -51,7 +51,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
     }
 
     static final QueueDrainObserver<Integer, Integer, Integer> createOrdered(TestObserver<Integer> to, final Disposable d) {
-        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainObserver<Integer, Integer, Integer>(to, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmit(t, false, d);
@@ -79,7 +79,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
 
     @Test
     public void unorderedSlowPath() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createUnordered(to, d);
         to.onSubscribe(Disposable.empty());
@@ -92,7 +92,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
 
     @Test
     public void orderedSlowPath() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
         to.onSubscribe(Disposable.empty());
@@ -105,7 +105,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
 
     @Test
     public void orderedSlowPathNonEmptyQueue() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Disposable d = Disposable.empty();
         QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
         to.onSubscribe(Disposable.empty());
@@ -120,7 +120,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
     public void unorderedOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
             Disposable d = Disposable.empty();
             final QueueDrainObserver<Integer, Integer, Integer> qd = createUnordered(to, d);
             to.onSubscribe(Disposable.empty());
@@ -142,7 +142,7 @@ public class QueueDrainObserverTest extends RxJavaTest {
     public void orderedOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
             Disposable d = Disposable.empty();
             final QueueDrainObserver<Integer, Integer, Integer> qd = createOrdered(to, d);
             to.onSubscribe(Disposable.empty());

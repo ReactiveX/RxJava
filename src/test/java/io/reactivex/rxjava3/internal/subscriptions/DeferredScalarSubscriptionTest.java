@@ -26,14 +26,14 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void queueSubscriptionSyncRejected() {
-        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(new TestSubscriber<Integer>());
+        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(new TestSubscriber<>());
 
         assertEquals(QueueFuseable.NONE, ds.requestFusion(QueueFuseable.SYNC));
     }
 
     @Test
     public void clear() {
-        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(new TestSubscriber<Integer>());
+        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(new TestSubscriber<>());
 
         ds.value = 1;
 
@@ -45,7 +45,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void cancel() {
-        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(new TestSubscriber<Integer>());
+        DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(new TestSubscriber<>());
 
         assertTrue(ds.tryCancel());
 
@@ -55,7 +55,7 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
     @Test
     public void completeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(new TestSubscriber<Integer>());
+            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(new TestSubscriber<>());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -78,9 +78,9 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
     @Test
     public void requestClearRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(ts);
+            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(ts);
             ts.onSubscribe(ds);
             ds.complete(1);
 
@@ -109,9 +109,9 @@ public class DeferredScalarSubscriptionTest extends RxJavaTest {
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(ts);
+            final DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<>(ts);
             ts.onSubscribe(ds);
             ds.complete(1);
 

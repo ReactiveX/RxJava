@@ -27,7 +27,7 @@ public class BasicFuseableSubscriberTest extends RxJavaTest {
 
     @Test
     public void offerThrows() {
-        BasicFuseableSubscriber<Integer, Integer> fcs = new BasicFuseableSubscriber<Integer, Integer>(new TestSubscriber<Integer>(0L)) {
+        BasicFuseableSubscriber<Integer, Integer> fcs = new BasicFuseableSubscriber<Integer, Integer>(new TestSubscriber<>(0L)) {
 
             @Override
             public void onNext(Integer t) {
@@ -45,7 +45,7 @@ public class BasicFuseableSubscriberTest extends RxJavaTest {
             }
         };
 
-        fcs.onSubscribe(new ScalarSubscription<Integer>(fcs, 1));
+        fcs.onSubscribe(new ScalarSubscription<>(fcs, 1));
 
         TestHelper.assertNoOffer(fcs);
 

@@ -156,7 +156,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(1, 100, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
@@ -168,7 +168,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 20, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<>(100, 20, 100, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
@@ -180,7 +180,7 @@ public class MaybeZipIterableTest extends RxJavaTest {
 
     @Test
     public void nextThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 5, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<>(100, 100, 5, new Function<Integer, Maybe<Integer>>() {
             @Override
             public Maybe<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);

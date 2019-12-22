@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeDoAfterSuccessTest extends RxJavaTest {
 
-    final List<Integer> values = new ArrayList<Integer>();
+    final List<Integer> values = new ArrayList<>();
 
     final Consumer<Integer> afterSuccess = new Consumer<Integer>() {
         @Override

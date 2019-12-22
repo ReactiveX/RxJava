@@ -154,7 +154,7 @@ public class MaybeCacheTest extends RxJavaTest {
     @Test
     public void crossCancelOnSuccess() {
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -178,7 +178,7 @@ public class MaybeCacheTest extends RxJavaTest {
     @Test
     public void crossCancelOnError() {
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -201,7 +201,7 @@ public class MaybeCacheTest extends RxJavaTest {
     @Test
     public void crossCancelOnComplete() {
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 

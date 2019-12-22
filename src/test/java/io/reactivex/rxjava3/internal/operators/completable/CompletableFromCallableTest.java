@@ -142,7 +142,7 @@ public class CompletableFromCallableTest extends RxJavaTest {
 
         Observer<Object> observer = TestHelper.mockObserver();
 
-        TestObserver<String> outer = new TestObserver<String>(observer);
+        TestObserver<String> outer = new TestObserver<>(observer);
 
         fromCallableObservable
                 .subscribeOn(Schedulers.computation())

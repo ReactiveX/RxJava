@@ -30,25 +30,25 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void spscArrayQueueNull() {
-        SpscArrayQueue<Object> q = new SpscArrayQueue<Object>(16);
+        SpscArrayQueue<Object> q = new SpscArrayQueue<>(16);
         q.offer(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void spscLinkedArrayQueueNull() {
-        SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<Object>(16);
+        SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<>(16);
         q.offer(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void mpscLinkedQueueNull() {
-        MpscLinkedQueue<Object> q = new MpscLinkedQueue<Object>();
+        MpscLinkedQueue<Object> q = new MpscLinkedQueue<>();
         q.offer(null);
     }
 
     @Test
     public void spscArrayQueueBiOffer() {
-        SpscArrayQueue<Object> q = new SpscArrayQueue<Object>(16);
+        SpscArrayQueue<Object> q = new SpscArrayQueue<>(16);
         q.offer(1, 2);
 
         assertEquals(1, q.poll());
@@ -58,7 +58,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void spscLinkedArrayQueueBiOffer() {
-        SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<Object>(16);
+        SpscLinkedArrayQueue<Object> q = new SpscLinkedArrayQueue<>(16);
         q.offer(1, 2);
 
         assertEquals(1, q.poll());
@@ -68,7 +68,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void mpscLinkedQueueBiOffer() {
-        MpscLinkedQueue<Object> q = new MpscLinkedQueue<Object>();
+        MpscLinkedQueue<Object> q = new MpscLinkedQueue<>();
         q.offer(1, 2);
 
         assertEquals(1, q.poll());
@@ -78,7 +78,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void spscBiOfferCapacity() {
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(8);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(8);
         assertTrue(q.offer(1, 2));
         assertTrue(q.offer(3, 4));
         assertTrue(q.offer(5, 6));
@@ -90,7 +90,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void spscLinkedNewBufferPeek() {
-        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<Integer>(8);
+        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<>(8);
         assertTrue(q.offer(1, 2));
         assertTrue(q.offer(3, 4));
         assertTrue(q.offer(5, 6));
@@ -107,7 +107,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void mpscOfferPollRace() throws Exception {
-        final MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
+        final MpscLinkedQueue<Integer> q = new MpscLinkedQueue<>();
 
         final AtomicInteger c = new AtomicInteger(3);
 
@@ -160,7 +160,7 @@ public class SimpleQueueTest extends RxJavaTest {
 
     @Test
     public void spscLinkedArrayQueueNoNepotism() {
-        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<Integer>(16);
+        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<>(16);
 
         AtomicReferenceArray<Object> ara = q.producerBuffer;
 

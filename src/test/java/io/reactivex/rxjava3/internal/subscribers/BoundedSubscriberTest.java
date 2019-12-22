@@ -33,9 +33,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onSubscribeThrows() {
-        final List<Object> received = new ArrayList<Object>();
+        final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 received.add(o);
@@ -69,9 +69,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextThrows() {
-        final List<Object> received = new ArrayList<Object>();
+        final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 throw new TestException();
@@ -108,9 +108,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            final List<Object> received = new ArrayList<Object>();
+            final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
                 @Override
                 public void accept(Object o) throws Exception {
                     received.add(o);
@@ -154,9 +154,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
         try {
-            final List<Object> received = new ArrayList<Object>();
+            final List<Object> received = new ArrayList<>();
 
-            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
                 @Override
                 public void accept(Object o) throws Exception {
                     received.add(o);
@@ -196,9 +196,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
     public void onNextThrowsCancelsUpstream() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
-        BoundedSubscriber<Integer> s = new BoundedSubscriber<Integer>(new Consumer<Integer>() {
+        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 throw new TestException();
@@ -237,9 +237,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
     public void onSubscribeThrowsCancelsUpstream() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
-        BoundedSubscriber<Integer> s = new BoundedSubscriber<Integer>(new Consumer<Integer>() {
+        BoundedSubscriber<Integer> s = new BoundedSubscriber<>(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
             }
@@ -285,9 +285,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
             }
         });
 
-        final List<Object> received = new ArrayList<Object>();
+        final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
             @Override
             public void accept(Object v) throws Exception {
                 received.add(v);
@@ -330,9 +330,9 @@ public class BoundedSubscriberTest extends RxJavaTest {
             }
         });
 
-        final List<Object> received = new ArrayList<Object>();
+        final List<Object> received = new ArrayList<>();
 
-        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<>(new Consumer<Object>() {
             @Override
             public void accept(Object v) throws Exception {
                 received.add(v);
@@ -361,7 +361,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
                 Functions.<Subscription>boundedConsumer(128), 128);
@@ -371,7 +371,7 @@ public class BoundedSubscriberTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
                 Functions.<Subscription>boundedConsumer(128), 128);

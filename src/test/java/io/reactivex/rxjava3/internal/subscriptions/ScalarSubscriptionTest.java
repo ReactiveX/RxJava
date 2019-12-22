@@ -26,9 +26,9 @@ public class ScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void badRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-        ScalarSubscription<Integer> sc = new ScalarSubscription<Integer>(ts, 1);
+        ScalarSubscription<Integer> sc = new ScalarSubscription<>(ts, 1);
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -42,9 +42,9 @@ public class ScalarSubscriptionTest extends RxJavaTest {
 
     @Test
     public void noOffer() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
-        ScalarSubscription<Integer> sc = new ScalarSubscription<Integer>(ts, 1);
+        ScalarSubscription<Integer> sc = new ScalarSubscription<>(ts, 1);
 
         TestHelper.assertNoOffer(sc);
     }

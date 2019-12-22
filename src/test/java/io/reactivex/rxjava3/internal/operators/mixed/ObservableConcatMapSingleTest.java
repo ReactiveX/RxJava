@@ -180,7 +180,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         try {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
@@ -313,9 +313,9 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         ConcatMapSingleMainObserver<Integer, Integer> operator =
-                new ConcatMapSingleMainObserver<Integer, Integer>(
+                new ConcatMapSingleMainObserver<>(
                         to, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(Disposable.empty());

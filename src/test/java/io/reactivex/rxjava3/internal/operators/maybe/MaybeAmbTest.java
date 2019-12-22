@@ -37,7 +37,7 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void ambLots() {
-        List<Maybe<Integer>> ms = new ArrayList<Maybe<Integer>>();
+        List<Maybe<Integer>> ms = new ArrayList<>();
 
         for (int i = 0; i < 32; i++) {
             ms.add(Maybe.<Integer>never());

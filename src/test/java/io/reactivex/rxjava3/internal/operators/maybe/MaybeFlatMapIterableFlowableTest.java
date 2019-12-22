@@ -480,7 +480,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final Integer[] a = new Integer[1000];
         Arrays.fill(a, 1);
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
         .flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
@@ -524,7 +524,7 @@ public class MaybeFlatMapIterableFlowableTest extends RxJavaTest {
         final Integer[] a = new Integer[1000];
         Arrays.fill(a, 1);
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.just(1)
         .flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {

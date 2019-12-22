@@ -25,7 +25,7 @@ public class BlockingFirstObserverTest extends RxJavaTest {
 
     @Test
     public void firstValueOnly() {
-        BlockingFirstObserver<Integer> bf = new BlockingFirstObserver<Integer>();
+        BlockingFirstObserver<Integer> bf = new BlockingFirstObserver<>();
         Disposable d = Disposable.empty();
         bf.onSubscribe(d);
 

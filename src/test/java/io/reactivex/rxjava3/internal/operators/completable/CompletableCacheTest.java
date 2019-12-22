@@ -86,7 +86,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void crossDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> to1 = new TestObserver<Void>();
+        final TestObserver<Void> to1 = new TestObserver<>();
 
         final TestObserver<Void> to2 = new TestObserver<Void>() {
             @Override
@@ -111,7 +111,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void crossDisposeOnError() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> to1 = new TestObserver<Void>();
+        final TestObserver<Void> to1 = new TestObserver<>();
 
         final TestObserver<Void> to2 = new TestObserver<Void>() {
             @Override
@@ -174,9 +174,9 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
             final Completable c = ps.ignoreElements().cache();
 
-            final TestObserver<Void> to1 = new TestObserver<Void>();
+            final TestObserver<Void> to1 = new TestObserver<>();
 
-            final TestObserver<Void> to2 = new TestObserver<Void>();
+            final TestObserver<Void> to2 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -209,7 +209,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
 
             final TestObserver<Void> to1 = c.test();
 
-            final TestObserver<Void> to2 = new TestObserver<Void>();
+            final TestObserver<Void> to2 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -237,7 +237,7 @@ public class CompletableCacheTest extends RxJavaTest implements Consumer<Object>
     public void doubleDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         ps.ignoreElements().cache()
         .subscribe(new CompletableObserver() {

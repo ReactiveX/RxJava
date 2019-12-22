@@ -24,7 +24,7 @@ public final class ConsumerSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
+        ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING);
 
         assertFalse(o.hasCustomOnError());
@@ -32,7 +32,7 @@ public final class ConsumerSingleObserverTest extends RxJavaTest {
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
+        ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer());
 
         assertTrue(o.hasCustomOnError());

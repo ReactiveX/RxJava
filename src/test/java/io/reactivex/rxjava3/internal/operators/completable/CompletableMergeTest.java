@@ -43,7 +43,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void cancelAfterFirst() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeArray(new Completable() {
             @Override
@@ -60,7 +60,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void cancelAfterFirstDelayError() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeArrayDelayError(new Completable() {
             @Override
@@ -428,7 +428,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void innerIsDisposed() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(Flowable.just(new Completable() {
             @Override
@@ -494,7 +494,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorIterableCancelAfterHasNext() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(new Iterable<Completable>() {
             @Override
@@ -525,7 +525,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorIterableCancelAfterNext() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(new Iterable<Completable>() {
             @Override

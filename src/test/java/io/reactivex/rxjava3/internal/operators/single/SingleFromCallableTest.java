@@ -169,7 +169,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
         Observer<Object> observer = TestHelper.mockObserver();
 
-        TestObserver<String> outer = new TestObserver<String>(observer);
+        TestObserver<String> outer = new TestObserver<>(observer);
 
         fromCallableObservable
                 .subscribeOn(Schedulers.computation())
@@ -230,7 +230,7 @@ public class SingleFromCallableTest extends RxJavaTest {
 
     @Test
     public void disposedOnCall() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Single.fromCallable(new Callable<Integer>() {
             @Override

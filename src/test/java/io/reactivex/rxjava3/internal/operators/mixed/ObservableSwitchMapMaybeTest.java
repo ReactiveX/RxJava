@@ -283,7 +283,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -300,7 +300,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1, 2)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -380,7 +380,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override

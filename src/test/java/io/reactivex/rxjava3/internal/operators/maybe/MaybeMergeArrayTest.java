@@ -95,7 +95,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void cancel() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
         .subscribe(ts);
@@ -109,7 +109,7 @@ public class MaybeMergeArrayTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void firstErrors() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Maybe.mergeArray(Maybe.<Integer>error(new TestException()), Maybe.<Integer>empty(), Maybe.just(2))
         .subscribe(ts);

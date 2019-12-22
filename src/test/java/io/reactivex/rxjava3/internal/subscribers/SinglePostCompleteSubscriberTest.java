@@ -25,7 +25,7 @@ public class SinglePostCompleteSubscriberTest extends RxJavaTest {
     @Test
     public void requestCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             final SinglePostCompleteSubscriber<Integer, Integer> spc = new SinglePostCompleteSubscriber<Integer, Integer>(ts) {
                 private static final long serialVersionUID = -2848918821531562637L;

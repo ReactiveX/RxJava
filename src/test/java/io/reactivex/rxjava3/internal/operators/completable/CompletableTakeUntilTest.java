@@ -186,7 +186,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            final AtomicReference<CompletableObserver> ref = new AtomicReference<CompletableObserver>();
+            final AtomicReference<CompletableObserver> ref = new AtomicReference<>();
 
             Completable.complete()
             .takeUntil(new Completable() {
@@ -213,7 +213,7 @@ public class CompletableTakeUntilTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            final AtomicReference<CompletableObserver> ref = new AtomicReference<CompletableObserver>();
+            final AtomicReference<CompletableObserver> ref = new AtomicReference<>();
 
             Completable.complete()
             .takeUntil(new Completable() {

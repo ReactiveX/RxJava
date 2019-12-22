@@ -215,7 +215,7 @@ public class MaybeFlatMapBiSelectorTest extends RxJavaTest {
 
     @Test
     public void mapperCancels() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Maybe.just(1)
         .flatMap(new Function<Integer, MaybeSource<Integer>>() {

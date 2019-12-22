@@ -255,7 +255,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -272,7 +272,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1, 2)
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -352,7 +352,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override

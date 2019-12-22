@@ -174,7 +174,7 @@ public class FlowableSwitchMapCompletableTest extends RxJavaTest {
 
     @Test
     public void mapperCancels() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Flowable.range(1, 5).switchMapCompletable(new Function<Integer, CompletableSource>() {
             @Override

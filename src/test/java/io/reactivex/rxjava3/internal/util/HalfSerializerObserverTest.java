@@ -208,7 +208,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<>();
             to.onSubscribe(Disposable.empty());
 
             Runnable r1 = new Runnable() {
@@ -240,7 +240,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<>();
 
             to.onSubscribe(Disposable.empty());
 

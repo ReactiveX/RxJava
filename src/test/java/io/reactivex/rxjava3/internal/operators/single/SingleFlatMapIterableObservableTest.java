@@ -86,7 +86,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -104,7 +104,7 @@ public class SingleFlatMapIterableObservableTest extends RxJavaTest {
 
     @Test
     public void fusedNoSync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override

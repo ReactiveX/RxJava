@@ -262,7 +262,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         try {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
@@ -373,9 +373,9 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         ConcatMapMaybeMainObserver<Integer, Integer> operator =
-                new ConcatMapMaybeMainObserver<Integer, Integer>(
+                new ConcatMapMaybeMainObserver<>(
                         to, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(Disposable.empty());

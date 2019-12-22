@@ -65,7 +65,7 @@ public class SingleDetachTest extends RxJavaTest {
     @Test
     public void cancelDetaches() throws Exception {
         Disposable d = Disposable.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Object> to = new Single<Object>() {
             @Override
@@ -91,7 +91,7 @@ public class SingleDetachTest extends RxJavaTest {
     @Test
     public void errorDetaches() throws Exception {
         Disposable d = Disposable.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Integer> to = new Single<Integer>() {
             @Override
@@ -117,7 +117,7 @@ public class SingleDetachTest extends RxJavaTest {
     @Test
     public void successDetaches() throws Exception {
         Disposable d = Disposable.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Integer> to = new Single<Integer>() {
             @Override

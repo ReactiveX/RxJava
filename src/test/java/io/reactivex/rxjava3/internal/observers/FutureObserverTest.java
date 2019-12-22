@@ -36,7 +36,7 @@ public class FutureObserverTest extends RxJavaTest {
 
     @Before
     public void before() {
-        fo = new FutureObserver<Integer>();
+        fo = new FutureObserver<>();
     }
 
     @Test
@@ -157,7 +157,7 @@ public class FutureObserverTest extends RxJavaTest {
     @Test
     public void cancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
+            final FutureSubscriber<Integer> fo = new FutureSubscriber<>();
 
             Runnable r = new Runnable() {
                 @Override
@@ -188,7 +188,7 @@ public class FutureObserverTest extends RxJavaTest {
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
+                final FutureSubscriber<Integer> fo = new FutureSubscriber<>();
 
                 final TestException ex = new TestException();
 
@@ -218,7 +218,7 @@ public class FutureObserverTest extends RxJavaTest {
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {
             for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-                final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
+                final FutureSubscriber<Integer> fo = new FutureSubscriber<>();
 
                 if (i % 3 == 0) {
                     fo.onSubscribe(new BooleanSubscription());

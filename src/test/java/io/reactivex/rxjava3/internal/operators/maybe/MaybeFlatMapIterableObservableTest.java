@@ -99,7 +99,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -117,7 +117,7 @@ public class MaybeFlatMapIterableObservableTest extends RxJavaTest {
 
     @Test
     public void fusedNoSync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override

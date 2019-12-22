@@ -33,7 +33,7 @@ public class ExceptionHelperTest extends RxJavaTest {
     public void addRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+            final AtomicReference<Throwable> error = new AtomicReference<>();
 
             final TestException ex = new TestException();
 

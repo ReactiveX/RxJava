@@ -155,7 +155,7 @@ public class CompletableTimeoutTest extends RxJavaTest {
 
     @Test
     public void ambRace() {
-        TestObserver<Void> to = new TestObserver<Void>();
+        TestObserver<Void> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         CompositeDisposable cd = new CompositeDisposable();

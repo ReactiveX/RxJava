@@ -427,7 +427,7 @@ public class DeferredScalarSubscriberTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new DeferredScalarSubscriber<Integer, Integer>(new TestSubscriber<Integer>()) {
+        TestHelper.doubleOnSubscribe(new DeferredScalarSubscriber<Integer, Integer>(new TestSubscriber<>()) {
             private static final long serialVersionUID = -4445381578878059054L;
 
             @Override

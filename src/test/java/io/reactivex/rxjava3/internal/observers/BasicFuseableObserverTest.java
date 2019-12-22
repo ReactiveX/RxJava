@@ -25,7 +25,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(to) {
             @Nullable
             @Override
@@ -57,7 +57,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer2() {
-        BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<Integer>()) {
+        BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<>()) {
             @Nullable
             @Override
             public Integer poll() throws Exception {

@@ -45,7 +45,7 @@ public final class CrashingMappedIterable<T> implements Iterable<T> {
         if (--crashOnIterator <= 0) {
             throw new TestException("iterator()");
         }
-        return new CrashingMapperIterator<T>(crashOnHasNext, crashOnNext, mapper);
+        return new CrashingMapperIterator<>(crashOnHasNext, crashOnNext, mapper);
     }
 
     static final class CrashingMapperIterator<T> implements Iterator<T> {

@@ -25,14 +25,14 @@ public class VolatileSizeArrayListTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        List<Integer> list = new VolatileSizeArrayList<Integer>();
+        List<Integer> list = new VolatileSizeArrayList<>();
 
         assertTrue(list.isEmpty());
         assertEquals(0, list.size());
         assertFalse(list.contains(1));
         assertFalse(list.remove((Integer)1));
 
-        list = new VolatileSizeArrayList<Integer>(16);
+        list = new VolatileSizeArrayList<>(16);
         assertTrue(list.add(1));
         assertTrue(list.addAll(Arrays.asList(3, 4, 7)));
         list.add(1, 2);
@@ -81,7 +81,7 @@ public class VolatileSizeArrayListTest extends RxJavaTest {
 
         assertEquals(Arrays.asList(3, 4, 5), list.subList(2, 5));
 
-        VolatileSizeArrayList<Integer> list2 = new VolatileSizeArrayList<Integer>();
+        VolatileSizeArrayList<Integer> list2 = new VolatileSizeArrayList<>();
         list2.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
 
         assertNotEquals(list2, list);
@@ -91,7 +91,7 @@ public class VolatileSizeArrayListTest extends RxJavaTest {
         assertEquals(list2, list);
         assertEquals(list, list2);
 
-        List<Integer> list3 = new ArrayList<Integer>();
+        List<Integer> list3 = new ArrayList<>();
         list3.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
 
         assertNotEquals(list3, list);

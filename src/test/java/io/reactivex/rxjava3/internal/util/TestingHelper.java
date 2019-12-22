@@ -40,7 +40,7 @@ public final class TestingHelper {
 
             @Override
             public List<T> get() {
-                return new ArrayList<T>();
+                return new ArrayList<>();
             }
         };
     }

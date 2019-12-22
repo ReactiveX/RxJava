@@ -39,7 +39,7 @@ public class OpenHashSetTest extends RxJavaTest {
         Value v1 = new Value();
         Value v2 = new Value();
 
-        OpenHashSet<Value> set = new OpenHashSet<Value>();
+        OpenHashSet<Value> set = new OpenHashSet<>();
 
         assertTrue(set.add(v1));
 

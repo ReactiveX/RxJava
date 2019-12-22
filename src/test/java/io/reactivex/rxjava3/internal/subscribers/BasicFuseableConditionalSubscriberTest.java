@@ -75,7 +75,7 @@ public class BasicFuseableConditionalSubscriberTest extends RxJavaTest {
             }
         };
 
-        fcs.onSubscribe(new ScalarSubscription<Integer>(fcs, 1));
+        fcs.onSubscribe(new ScalarSubscription<>(fcs, 1));
 
         TestHelper.assertNoOffer(fcs);
 
