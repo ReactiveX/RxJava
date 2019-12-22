@@ -27,7 +27,7 @@ public class ObservableScanTests extends RxJavaTest {
     public void unsubscribeScan() throws Exception {
 
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+        .scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
             @Override
             public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
                 accum.put("instance", perInstanceEvent.instanceId);

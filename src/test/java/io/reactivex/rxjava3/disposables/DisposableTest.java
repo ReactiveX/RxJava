@@ -160,7 +160,7 @@ public class DisposableTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            AtomicReference<Disposable> target = new AtomicReference<Disposable>();
+            AtomicReference<Disposable> target = new AtomicReference<>();
             Disposable d = Disposable.empty();
 
             DisposableHelper.setOnce(target, d);

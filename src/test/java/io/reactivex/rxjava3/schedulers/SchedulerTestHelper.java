@@ -33,7 +33,7 @@ final class SchedulerTestHelper {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         try {
             CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-            CapturingObserver<Object> observer = new CapturingObserver<Object>();
+            CapturingObserver<Object> observer = new CapturingObserver<>();
             Thread.setDefaultUncaughtExceptionHandler(handler);
             IllegalStateException error = new IllegalStateException("Should be delivered to handler");
             Flowable.error(error)

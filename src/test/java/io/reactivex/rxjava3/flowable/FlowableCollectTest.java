@@ -36,7 +36,7 @@ public final class FlowableCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -109,7 +109,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectorFailureDoesNotResultInTwoErrorEmissionsFlowable() {
         try {
-            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            final List<Throwable> list = new CopyOnWriteArrayList<>();
             RxJavaPlugins.setErrorHandler(addToList(list));
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
@@ -171,7 +171,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectIntoFlowable() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
             public void accept(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
@@ -179,7 +179,7 @@ public final class FlowableCollectTest extends RxJavaTest {
         })
         .toFlowable()
         .test()
-        .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+        .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
 
     @Test
@@ -188,7 +188,7 @@ public final class FlowableCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -261,7 +261,7 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
-            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            final List<Throwable> list = new CopyOnWriteArrayList<>();
             RxJavaPlugins.setErrorHandler(addToList(list));
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
@@ -320,20 +320,20 @@ public final class FlowableCollectTest extends RxJavaTest {
     @Test
     public void collectInto() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
             public void accept(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         })
         .test()
-        .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+        .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
 
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1, 2)
-            .collect(Functions.justSupplier(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+            .collect(Functions.justSupplier(new ArrayList<>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                 @Override
                 public void accept(ArrayList<Integer> a, Integer b) throws Exception {
                     a.add(b);
@@ -341,7 +341,7 @@ public final class FlowableCollectTest extends RxJavaTest {
             }));
 
         TestHelper.checkDisposed(Flowable.just(1, 2)
-                .collect(Functions.justSupplier(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                .collect(Functions.justSupplier(new ArrayList<>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                     @Override
                     public void accept(ArrayList<Integer> a, Integer b) throws Exception {
                         a.add(b);
@@ -354,7 +354,7 @@ public final class FlowableCollectTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
             @Override
             public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justSupplier(new ArrayList<Integer>()),
+                return f.collect(Functions.justSupplier(new ArrayList<>()),
                         new BiConsumer<ArrayList<Integer>, Integer>() {
                             @Override
                             public void accept(ArrayList<Integer> a, Integer b) throws Exception {
@@ -366,7 +366,7 @@ public final class FlowableCollectTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, Single<ArrayList<Integer>>>() {
             @Override
             public Single<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
-                return f.collect(Functions.justSupplier(new ArrayList<Integer>()),
+                return f.collect(Functions.justSupplier(new ArrayList<>()),
                         new BiConsumer<ArrayList<Integer>, Integer>() {
                             @Override
                             public void accept(ArrayList<Integer> a, Integer b) throws Exception {

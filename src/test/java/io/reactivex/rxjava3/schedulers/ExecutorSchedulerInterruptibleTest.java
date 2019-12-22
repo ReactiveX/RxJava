@@ -69,7 +69,7 @@ public class ExecutorSchedulerInterruptibleTest extends AbstractSchedulerConcurr
 
     /** A simple executor which queues tasks and executes them one-by-one if executeOne() is called. */
     static final class TestExecutor implements Executor {
-        final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
+        final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<>();
         @Override
         public void execute(Runnable command) {
             queue.offer(command);

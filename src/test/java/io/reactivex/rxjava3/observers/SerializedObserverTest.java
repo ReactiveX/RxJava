@@ -41,7 +41,7 @@ public class SerializedObserverTest extends RxJavaTest {
     }
 
     private Observer<String> serializedObserver(Observer<String> o) {
-        return new SerializedObserver<String>(o);
+        return new SerializedObserver<>(o);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class SerializedObserverTest extends RxJavaTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
-            Observer<String> w = serializedObserver(new SafeObserver<String>(tw));
+            Observer<String> w = serializedObserver(new SafeObserver<>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -219,7 +219,7 @@ public class SerializedObserverTest extends RxJavaTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
-            Observer<String> w = serializedObserver(new SafeObserver<String>(tw));
+            Observer<String> w = serializedObserver(new SafeObserver<>(tw));
             w.onSubscribe(Disposable.empty());
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
@@ -275,7 +275,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestObserverEx<String> to = new TestObserverEx<String>(new DefaultObserver<String>() {
+                TestObserverEx<String> to = new TestObserverEx<>(new DefaultObserver<String>() {
 
                     @Override
                     public void onComplete() {
@@ -356,7 +356,7 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void threadStarvation() throws InterruptedException {
 
-        TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
+        TestObserver<String> to = new TestObserver<>(new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -552,7 +552,7 @@ public class SerializedObserverTest extends RxJavaTest {
         /**
          * used to store the order and number of events received.
          */
-        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<TestConcurrencySubscriberEvent>();
+        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<>();
         private final int waitTime;
 
         @SuppressWarnings("unused")
@@ -848,7 +848,7 @@ public class SerializedObserverTest extends RxJavaTest {
     public void errorReentry() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+            final AtomicReference<Observer<Integer>> serial = new AtomicReference<>();
 
             TestObserver<Integer> to = new TestObserver<Integer>() {
                 @Override
@@ -858,7 +858,7 @@ public class SerializedObserverTest extends RxJavaTest {
                     super.onNext(v);
                 }
             };
-            SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+            SerializedObserver<Integer> sobs = new SerializedObserver<>(to);
             sobs.onSubscribe(Disposable.empty());
             serial.set(sobs);
 
@@ -875,7 +875,7 @@ public class SerializedObserverTest extends RxJavaTest {
 
     @Test
     public void completeReentry() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        final AtomicReference<Observer<Integer>> serial = new AtomicReference<>();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
@@ -885,7 +885,7 @@ public class SerializedObserverTest extends RxJavaTest {
                 super.onNext(v);
             }
         };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedObserver<Integer> sobs = new SerializedObserver<>(to);
         sobs.onSubscribe(Disposable.empty());
         serial.set(sobs);
 
@@ -898,9 +898,9 @@ public class SerializedObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
-        SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+        SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
         Disposable d = Disposable.empty();
 
@@ -918,9 +918,9 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void onCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+            final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
 
@@ -944,9 +944,9 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void onNextOnCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+            final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
 
@@ -980,9 +980,9 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void onNextOnErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+            final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             Disposable d = Disposable.empty();
 
@@ -1018,9 +1018,9 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void onNextOnErrorRaceDelayError() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to, true);
+            final SerializedObserver<Integer> so = new SerializedObserver<>(to, true);
 
             Disposable d = Disposable.empty();
 
@@ -1059,9 +1059,9 @@ public class SerializedObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+            final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
             so.onSubscribe(Disposable.empty());
 
@@ -1083,9 +1083,9 @@ public class SerializedObserverTest extends RxJavaTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+                TestObserverEx<Integer> to = new TestObserverEx<>();
 
-                final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+                final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
                 Disposable d = Disposable.empty();
 
@@ -1130,9 +1130,9 @@ public class SerializedObserverTest extends RxJavaTest {
     @Test
     public void nullOnNext() {
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
-        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
+        final SerializedObserver<Integer> so = new SerializedObserver<>(to);
 
         Disposable d = Disposable.empty();
 

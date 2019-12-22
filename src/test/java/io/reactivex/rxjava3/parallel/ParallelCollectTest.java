@@ -35,7 +35,7 @@ public class ParallelCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -74,7 +74,7 @@ public class ParallelCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -99,7 +99,7 @@ public class ParallelCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -125,7 +125,7 @@ public class ParallelCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -147,7 +147,7 @@ public class ParallelCollectTest extends RxJavaTest {
             .collect(new Supplier<List<Object>>() {
                 @Override
                 public List<Object> get() throws Exception {
-                    return new ArrayList<Object>();
+                    return new ArrayList<>();
                 }
             }, new BiConsumer<List<Object>, Object>() {
                 @Override

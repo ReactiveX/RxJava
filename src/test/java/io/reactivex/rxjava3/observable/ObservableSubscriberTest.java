@@ -128,7 +128,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
     @Test
     public void subscribeConsumerConsumer() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Observable.just(1).subscribe(new Consumer<Integer>() {
             @Override
@@ -147,7 +147,7 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
     @Test
     public void subscribeConsumerConsumerWithError() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Observable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
             @Override
@@ -175,8 +175,8 @@ public class ObservableSubscriberTest extends RxJavaTest {
 
     @Test
     public void safeSubscriberAlreadySafe() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
-        Observable.just(1).safeSubscribe(new SafeObserver<Integer>(to));
+        TestObserver<Integer> to = new TestObserver<>();
+        Observable.just(1).safeSubscribe(new SafeObserver<>(to));
 
         to.assertResult(1);
     }

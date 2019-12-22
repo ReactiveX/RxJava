@@ -39,7 +39,7 @@ public class NoAnonymousInnerClassesTest {
 
         StringBuilder b = new StringBuilder("Anonymous inner classes found:");
 
-        Queue<File> queue = new ArrayDeque<File>();
+        Queue<File> queue = new ArrayDeque<>();
 
         queue.offer(f);
 

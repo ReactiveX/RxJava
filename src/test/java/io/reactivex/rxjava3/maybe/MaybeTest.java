@@ -896,7 +896,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void observeOnDispose() throws Exception {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
@@ -2282,7 +2282,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void subscribeToOnSuccess() {
-        final List<Integer> values = new ArrayList<Integer>();
+        final List<Integer> values = new ArrayList<>();
 
         Consumer<Integer> onSuccess = new Consumer<Integer>() {
             @Override
@@ -2302,7 +2302,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void subscribeToOnError() {
-        final List<Throwable> values = new ArrayList<Throwable>();
+        final List<Throwable> values = new ArrayList<>();
 
         Consumer<Throwable> onError = new Consumer<Throwable>() {
             @Override
@@ -2323,7 +2323,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void subscribeToOnComplete() {
-        final List<Integer> values = new ArrayList<Integer>();
+        final List<Integer> values = new ArrayList<>();
 
         Action onComplete = new Action() {
             @Override
@@ -2370,7 +2370,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void doOnEventSuccess() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         assertTrue(Maybe.just(1)
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
@@ -2389,7 +2389,7 @@ public class MaybeTest extends RxJavaTest {
     public void doOnEventError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final List<Object> list = new ArrayList<Object>();
+            final List<Object> list = new ArrayList<>();
 
             TestException ex = new TestException();
 
@@ -2413,7 +2413,7 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void doOnEventComplete() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         assertTrue(Maybe.<Integer>empty()
         .doOnEvent(new BiConsumer<Integer, Throwable>() {

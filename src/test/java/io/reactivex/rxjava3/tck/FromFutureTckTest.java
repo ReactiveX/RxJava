@@ -25,7 +25,7 @@ public class FromFutureTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
-        FutureTask<Long> ft = new FutureTask<Long>(new Callable<Long>() {
+        FutureTask<Long> ft = new FutureTask<>(new Callable<Long>() {
             @Override
             public Long call() throws Exception {
                 return 1L;

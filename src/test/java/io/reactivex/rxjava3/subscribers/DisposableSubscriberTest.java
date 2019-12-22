@@ -31,9 +31,9 @@ public class DisposableSubscriberTest extends RxJavaTest {
 
         int start;
 
-        final List<T> values = new ArrayList<T>();
+        final List<T> values = new ArrayList<>();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int completions;
 
@@ -62,7 +62,7 @@ public class DisposableSubscriberTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<Integer>();
+        TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<>();
 
         assertFalse(tc.isDisposed());
         assertEquals(0, tc.start);
@@ -83,7 +83,7 @@ public class DisposableSubscriberTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<Integer>();
+            TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<>();
 
             tc.onSubscribe(new BooleanSubscription());
 
@@ -103,7 +103,7 @@ public class DisposableSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<Integer>();
+        TestDisposableSubscriber<Integer> tc = new TestDisposableSubscriber<>();
 
         assertFalse(tc.isDisposed());
 

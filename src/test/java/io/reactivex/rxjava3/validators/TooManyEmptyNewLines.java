@@ -52,7 +52,7 @@ public class TooManyEmptyNewLines {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
@@ -82,7 +82,7 @@ public class TooManyEmptyNewLines {
                         String fname = u.getName();
                         if (fname.endsWith(".java")) {
 
-                            List<String> lines = new ArrayList<String>();
+                            List<String> lines = new ArrayList<>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
                             try {
                                 for (;;) {

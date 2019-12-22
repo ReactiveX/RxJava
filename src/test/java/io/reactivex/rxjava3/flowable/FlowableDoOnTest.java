@@ -27,7 +27,7 @@ public class FlowableDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnEach() {
-        final AtomicReference<String> r = new AtomicReference<String>();
+        final AtomicReference<String> r = new AtomicReference<>();
         String output = Flowable.just("one").doOnNext(new Consumer<String>() {
             @Override
             public void accept(String v) {
@@ -41,7 +41,7 @@ public class FlowableDoOnTest extends RxJavaTest {
 
     @Test
     public void doOnError() {
-        final AtomicReference<Throwable> r = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> r = new AtomicReference<>();
         Throwable t = null;
         try {
             Flowable.<String> error(new RuntimeException("an error"))

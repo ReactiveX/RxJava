@@ -82,7 +82,7 @@ public class ParamValidationCheckerTest {
     static Map<Class<?>, List<Object>> defaultInstances;
 
     static {
-        overrides = new HashMap<String, List<ParamOverride>>();
+        overrides = new HashMap<>();
 
         // ***********************************************************************************************************************
 
@@ -514,7 +514,7 @@ public class ParamValidationCheckerTest {
 
         // -----------------------------------------------------------------------------------
 
-        ignores = new HashMap<String, List<ParamIgnore>>();
+        ignores = new HashMap<>();
 
         // needs special param validation due to (long)start + end - 1 <= Integer.MAX_VALUE
         addIgnore(new ParamIgnore(Flowable.class, "range", Integer.TYPE, Integer.TYPE));
@@ -544,7 +544,7 @@ public class ParamValidationCheckerTest {
 
         // -----------------------------------------------------------------------------------
 
-        defaultValues = new HashMap<Class<?>, Object>();
+        defaultValues = new HashMap<>();
 
         defaultValues.put(Publisher.class, new NeverPublisher());
         defaultValues.put(Flowable.class, new NeverPublisher());
@@ -645,7 +645,7 @@ public class ParamValidationCheckerTest {
 
         // -----------------------------------------------------------------------------------
 
-        defaultInstances = new HashMap<Class<?>, List<Object>>();
+        defaultInstances = new HashMap<>();
 
 //        addDefaultInstance(Flowable.class, Flowable.empty(), "Empty()");
 //        addDefaultInstance(Flowable.class, Flowable.empty().hide(), "Empty().Hide()");
@@ -677,7 +677,7 @@ public class ParamValidationCheckerTest {
         String key = ignore.toString();
         List<ParamIgnore> list = ignores.get(key);
         if (list == null) {
-            list = new ArrayList<ParamIgnore>();
+            list = new ArrayList<>();
             ignores.put(key, list);
         }
         list.add(ignore);
@@ -687,7 +687,7 @@ public class ParamValidationCheckerTest {
         String key = ignore.toString();
         List<ParamOverride> list = overrides.get(key);
         if (list == null) {
-            list = new ArrayList<ParamOverride>();
+            list = new ArrayList<>();
             overrides.put(key, list);
         }
         list.add(ignore);
@@ -696,7 +696,7 @@ public class ParamValidationCheckerTest {
     static void addDefaultInstance(Class<?> clazz, Object o, String tag) {
         List<Object> list = defaultInstances.get(clazz);
         if (list == null) {
-            list = new ArrayList<Object>();
+            list = new ArrayList<>();
             defaultInstances.put(clazz, list);
         }
         list.add(o);
@@ -786,7 +786,7 @@ public class ParamValidationCheckerTest {
 
                 List<ParamOverride> overrideList = overrides.get(key);
 
-                List<Object> baseObjects = new ArrayList<Object>();
+                List<Object> baseObjects = new ArrayList<>();
 
                 if ((m.getModifiers() & Modifier.STATIC) != 0) {
                     baseObjects.add(null);
@@ -853,7 +853,7 @@ public class ParamValidationCheckerTest {
                             }
                         }
 
-                        List<Object> entryValues = new ArrayList<Object>();
+                        List<Object> entryValues = new ArrayList<>();
 
                         if (entryClass.isPrimitive()) {
                             addCheckPrimitive(params[i], overrideEntry, entryValues);

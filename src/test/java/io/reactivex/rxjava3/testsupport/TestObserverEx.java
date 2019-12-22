@@ -36,7 +36,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
     private final Observer<? super T> downstream;
 
     /** Holds the current subscription if any. */
-    private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    private final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     private QueueDisposable<T> qd;
 

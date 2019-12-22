@@ -33,7 +33,7 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
 
         int complete;
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         @Override
         protected void onStart() {

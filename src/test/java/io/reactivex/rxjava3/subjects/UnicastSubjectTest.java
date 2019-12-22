@@ -43,7 +43,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         UnicastSubject<Integer> ap = UnicastSubject.create();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         ap.subscribe(to);
 
@@ -68,7 +68,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         ap.subscribe(to);
 
@@ -124,7 +124,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
         ap.subscribe(to);
 
         to
@@ -139,7 +139,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(2);
         ap.onNext(3);
         ap.onComplete();
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
         ap.subscribe(to);
 
         to
@@ -303,7 +303,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void rejectSyncFusion() {
         UnicastSubject<Object> p = UnicastSubject.create();
 
-        TestObserverEx<Object> to = new TestObserverEx<Object>(QueueFuseable.SYNC);
+        TestObserverEx<Object> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         p.subscribe(to);
 
@@ -337,7 +337,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Object> p = UnicastSubject.create();
 
-            final TestObserverEx<Object> to = new TestObserverEx<Object>(QueueFuseable.ANY);
+            final TestObserverEx<Object> to = new TestObserverEx<>(QueueFuseable.ANY);
 
             p.subscribe(to);
 
@@ -363,9 +363,11 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void dispose() {
         final int[] calls = { 0 };
 
-        UnicastSubject<Integer> us = new UnicastSubject<Integer>(128, new Runnable() {
+        UnicastSubject<Integer> us = new UnicastSubject<>(128, new Runnable() {
             @Override
-            public void run() { calls[0]++; }
+            public void run() {
+                calls[0]++;
+            }
         });
 
         TestHelper.checkDisposed(us);
@@ -393,8 +395,8 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Integer> us = UnicastSubject.create();
 
-            final TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
-            final TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to1 = new TestObserverEx<>();
+            final TestObserverEx<Integer> to2 = new TestObserverEx<>();
 
             Runnable r1 = new Runnable() {
                 @Override

@@ -33,7 +33,7 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
     @Test
     public void onNextError() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
         Observer<Long> observer = new DefaultObserver<Long>() {
 
@@ -69,7 +69,7 @@ public class ObservableErrorHandlingTests extends RxJavaTest {
     @Test
     public void onNextErrorAcrossThread() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Observable<Long> o = Observable.interval(50, TimeUnit.MILLISECONDS);
         Observer<Long> observer = new DefaultObserver<Long>() {
 

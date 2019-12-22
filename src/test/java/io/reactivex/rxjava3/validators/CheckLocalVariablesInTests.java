@@ -49,7 +49,7 @@ public class CheckLocalVariablesInTests {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ").append(pattern).append("\n");

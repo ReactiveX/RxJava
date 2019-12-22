@@ -31,7 +31,7 @@ public class CompositeExceptionTest extends RxJavaTest {
     private final Throwable ex3 = new Throwable("Ex3", ex2);
 
     private CompositeException getNewCompositeExceptionWithEx123() {
-        List<Throwable> throwables = new ArrayList<Throwable>();
+        List<Throwable> throwables = new ArrayList<>();
         throwables.add(ex1);
         throwables.add(ex2);
         throwables.add(ex3);
@@ -65,7 +65,7 @@ public class CompositeExceptionTest extends RxJavaTest {
             assertEquals("errors is empty", e.getMessage());
         }
         try {
-            new CompositeException(new ArrayList<Throwable>());
+            new CompositeException(new ArrayList<>());
             fail("CompositeException should fail if errors is empty");
         } catch (IllegalArgumentException e) {
             assertEquals("errors is empty", e.getMessage());
@@ -134,7 +134,7 @@ public class CompositeExceptionTest extends RxJavaTest {
 
     @Test
     public void compositeExceptionFromTwoDuplicateComposites() {
-        List<Throwable> exs = new ArrayList<Throwable>();
+        List<Throwable> exs = new ArrayList<>();
         exs.add(getNewCompositeExceptionWithEx123());
         exs.add(getNewCompositeExceptionWithEx123());
         CompositeException cex = new CompositeException(exs);

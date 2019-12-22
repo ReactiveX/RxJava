@@ -41,7 +41,7 @@ public class FlowableZipTests extends RxJavaTest {
                 .flatMap(new Function<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>() {
                     @Override
                     public Publisher<HashMap<String, String>> apply(final GroupedFlowable<String, Event> ge) {
-                            return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+                            return ge.scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
                                         Event perInstanceEvent) {

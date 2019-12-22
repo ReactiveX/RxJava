@@ -45,7 +45,7 @@ import io.reactivex.rxjava3.processors.FlowableProcessor;
     @SuppressWarnings("unchecked")
     RefCountProcessor(FlowableProcessor<T> actual) {
         this.actual = actual;
-        this.upstream = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<>();
         this.subscribers = new AtomicReference<RefCountSubscriber<T>[]>(EMPTY);
     }
 
@@ -75,7 +75,7 @@ import io.reactivex.rxjava3.processors.FlowableProcessor;
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        RefCountSubscriber<T> rcs = new RefCountSubscriber<T>(s, this);
+        RefCountSubscriber<T> rcs = new RefCountSubscriber<>(s, this);
         if (!add(rcs)) {
             EmptySubscription.error(new IllegalStateException("RefCountProcessor terminated"), s);
             return;

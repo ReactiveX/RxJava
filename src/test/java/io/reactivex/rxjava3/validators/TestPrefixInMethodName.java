@@ -37,7 +37,7 @@ public class TestPrefixInMethodName {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ").append(pattern).append("\n");
@@ -66,7 +66,7 @@ public class TestPrefixInMethodName {
                         if (fname.endsWith(".java")) {
 
                             int lineNum = 0;
-                            List<String> lines = new ArrayList<String>();
+                            List<String> lines = new ArrayList<>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
                             //boolean found = false;
                             try {

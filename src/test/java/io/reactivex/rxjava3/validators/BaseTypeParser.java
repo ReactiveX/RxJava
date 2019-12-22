@@ -48,7 +48,7 @@ public final class BaseTypeParser {
     }
 
     public static List<RxMethod> parse(File f, String baseClassName) throws Exception {
-        List<RxMethod> list = new ArrayList<RxMethod>();
+        List<RxMethod> list = new ArrayList<>();
 
         StringBuilder b = JavadocForAnnotations.readFile(f);
 

@@ -166,8 +166,8 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         });
 
         // used to collect results of each thread
-        final List<List<Long>> listOfListsOfValues = Collections.synchronizedList(new ArrayList<List<Long>>());
-        final List<Thread> threads = Collections.synchronizedList(new ArrayList<Thread>());
+        final List<List<Long>> listOfListsOfValues = Collections.synchronizedList(new ArrayList<>());
+        final List<Thread> threads = Collections.synchronizedList(new ArrayList<>());
 
         for (int i = 1; i <= 200; i++) {
             final int count = i;
@@ -200,7 +200,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
         }
 
         // assert all threads got the same results
-        List<Long> sums = new ArrayList<Long>();
+        List<Long> sums = new ArrayList<>();
         for (List<Long> values : listOfListsOfValues) {
             long v = 0;
             for (long l : values) {
@@ -233,7 +233,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
     public void subscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplaySubject<String> subject = ReplaySubject.createUnbounded();
-            final AtomicReference<String> value1 = new AtomicReference<String>();
+            final AtomicReference<String> value1 = new AtomicReference<>();
 
             subject.subscribe(new Consumer<String>() {
 
@@ -296,7 +296,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
     public void raceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<>();
             Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(to);
             to.awaitDone(5, TimeUnit.SECONDS);
             to.assertValueSequence(expected);
@@ -307,7 +307,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
     static class SubjectObserverThread extends Thread {
 
         private final ReplaySubject<String> subject;
-        private final AtomicReference<String> value = new AtomicReference<String>();
+        private final AtomicReference<String> value = new AtomicReference<>();
 
         SubjectObserverThread(ReplaySubject<String> subject) {
             this.subject = subject;
@@ -354,7 +354,7 @@ public class ReplaySubjectBoundedConcurrencyTest extends RxJavaTest {
                     }
                 });
 
-                final AtomicReference<Object> o = new AtomicReference<Object>();
+                final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs
 //                .doOnSubscribe(v -> System.out.println("!! " + j))

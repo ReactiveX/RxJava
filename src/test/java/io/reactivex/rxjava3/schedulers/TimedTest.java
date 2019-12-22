@@ -25,7 +25,7 @@ public class TimedTest extends RxJavaTest {
 
     @Test
     public void properties() {
-        Timed<Integer> timed = new Timed<Integer>(1, 5, TimeUnit.SECONDS);
+        Timed<Integer> timed = new Timed<>(1, 5, TimeUnit.SECONDS);
 
         assertEquals(1, timed.value().intValue());
         assertEquals(5, timed.time());
@@ -35,22 +35,22 @@ public class TimedTest extends RxJavaTest {
 
     @Test
     public void hashCodeOf() {
-        Timed<Integer> t1 = new Timed<Integer>(1, 5, TimeUnit.SECONDS);
+        Timed<Integer> t1 = new Timed<>(1, 5, TimeUnit.SECONDS);
 
         assertEquals(TimeUnit.SECONDS.hashCode() + 31 * (5 + 31 * 1), t1.hashCode());
 
-        Timed<Integer> t2 = new Timed<Integer>(null, 5, TimeUnit.SECONDS);
+        Timed<Integer> t2 = new Timed<>(null, 5, TimeUnit.SECONDS);
 
         assertEquals(TimeUnit.SECONDS.hashCode() + 31 * (5 + 31 * 0), t2.hashCode());
     }
 
     @Test
     public void equalsWith() {
-        Timed<Integer> t1 = new Timed<Integer>(1, 5, TimeUnit.SECONDS);
-        Timed<Integer> t2 = new Timed<Integer>(1, 5, TimeUnit.SECONDS);
-        Timed<Integer> t3 = new Timed<Integer>(2, 5, TimeUnit.SECONDS);
-        Timed<Integer> t4 = new Timed<Integer>(1, 4, TimeUnit.SECONDS);
-        Timed<Integer> t5 = new Timed<Integer>(1, 5, TimeUnit.MINUTES);
+        Timed<Integer> t1 = new Timed<>(1, 5, TimeUnit.SECONDS);
+        Timed<Integer> t2 = new Timed<>(1, 5, TimeUnit.SECONDS);
+        Timed<Integer> t3 = new Timed<>(2, 5, TimeUnit.SECONDS);
+        Timed<Integer> t4 = new Timed<>(1, 4, TimeUnit.SECONDS);
+        Timed<Integer> t5 = new Timed<>(1, 5, TimeUnit.MINUTES);
 
         assertEquals(t1, t1);
         assertEquals(t1, t2);
@@ -83,13 +83,13 @@ public class TimedTest extends RxJavaTest {
 
     @Test
     public void toStringOf() {
-        Timed<Integer> t1 = new Timed<Integer>(1, 5, TimeUnit.SECONDS);
+        Timed<Integer> t1 = new Timed<>(1, 5, TimeUnit.SECONDS);
 
         assertEquals("Timed[time=5, unit=SECONDS, value=1]", t1.toString());
     }
 
     @Test(expected = NullPointerException.class)
     public void timeUnitNullFail() throws Exception {
-        new Timed<Integer>(1, 5, null);
+        new Timed<>(1, 5, null);
     }
 }

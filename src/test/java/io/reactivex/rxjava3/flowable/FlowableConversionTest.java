@@ -44,7 +44,7 @@ public class FlowableConversionTest extends RxJavaTest {
         protected Publisher<T> onSubscribe;
 
         public static <T> CylonDetectorObservable<T> create(Publisher<T> onSubscribe) {
-            return new CylonDetectorObservable<T>(onSubscribe);
+            return new CylonDetectorObservable<>(onSubscribe);
         }
 
         protected CylonDetectorObservable(Publisher<T> onSubscribe) {
@@ -56,7 +56,7 @@ public class FlowableConversionTest extends RxJavaTest {
         }
 
         public <R> CylonDetectorObservable<R> lift(FlowableOperator<? extends R, ? super T> operator) {
-            return x(new RobotConversionFunc<T, R>(operator));
+            return x(new RobotConversionFunc<>(operator));
         }
 
         public <R, O> O x(Function<Publisher<T>, O> operator) {
@@ -76,11 +76,11 @@ public class FlowableConversionTest extends RxJavaTest {
         }
 
         public final CylonDetectorObservable<T> beep(Predicate<? super T> predicate) {
-            return new CylonDetectorObservable<T>(new FlowableFilter<T>(Flowable.fromPublisher(onSubscribe), predicate));
+            return new CylonDetectorObservable<>(new FlowableFilter<>(Flowable.fromPublisher(onSubscribe), predicate));
         }
 
         public final <R> CylonDetectorObservable<R> boop(Function<? super T, ? extends R> func) {
-            return new CylonDetectorObservable<R>(new FlowableMap<T, R>(Flowable.fromPublisher(onSubscribe), func));
+            return new CylonDetectorObservable<>(new FlowableMap<>(Flowable.fromPublisher(onSubscribe), func));
         }
 
         public CylonDetectorObservable<String> DESTROY() {
@@ -147,7 +147,7 @@ public class FlowableConversionTest extends RxJavaTest {
 
     @Test
     public void conversionBetweenObservableClasses() {
-        final TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
+        final TestObserver<String> to = new TestObserver<>(new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -175,7 +175,7 @@ public class FlowableConversionTest extends RxJavaTest {
                     System.out.println(pv);
                 }
             })
-            .to(new ConvertToCylonDetector<Object>())
+            .to(new ConvertToCylonDetector<>())
             .beep(new Predicate<Object>() {
                 @Override
                 public boolean test(Object t) {
@@ -189,7 +189,7 @@ public class FlowableConversionTest extends RxJavaTest {
                 }
             })
             .DESTROY()
-            .x(new ConvertToObservable<String>())
+            .x(new ConvertToObservable<>())
             .reduce("Cylon Detector finished. Report:\n", new BiFunction<String, String, String>() {
                 @Override
                 public String apply(String a, String n) {
@@ -204,7 +204,7 @@ public class FlowableConversionTest extends RxJavaTest {
 
     @Test
     public void convertToConcurrentQueue() {
-        final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
+        final AtomicReference<Throwable> thrown = new AtomicReference<>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
         ConcurrentLinkedQueue<? extends Integer> queue = Flowable.range(0, 5)
                 .flatMap(new Function<Integer, Publisher<Integer>>() {
@@ -228,7 +228,7 @@ public class FlowableConversionTest extends RxJavaTest {
                     .to(new FlowableConverter<Integer, ConcurrentLinkedQueue<Integer>>() {
                         @Override
                         public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
-                            final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
+                            final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
                             onSubscribe.subscribe(new DefaultSubscriber<Integer>() {
                                 @Override
                                 public void onComplete() {

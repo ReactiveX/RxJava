@@ -49,7 +49,7 @@ public class ParallelFlowableTest extends RxJavaTest {
             .sequential()
             ;
 
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             result.subscribe(ts);
 
@@ -77,7 +77,7 @@ public class ParallelFlowableTest extends RxJavaTest {
             .sequential()
             ;
 
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             result.subscribe(ts);
 
@@ -113,7 +113,7 @@ public class ParallelFlowableTest extends RxJavaTest {
                 .sequential()
                 ;
 
-                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
                 result.subscribe(ts);
 
@@ -154,7 +154,7 @@ public class ParallelFlowableTest extends RxJavaTest {
                 .sequential()
                 ;
 
-                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
                 result.subscribe(ts);
 
@@ -176,7 +176,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @Test
     public void reduceFull() {
         for (int i = 1; i <= Runtime.getRuntime().availableProcessors() * 2; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Flowable.range(1, 10)
             .parallel(i)
@@ -205,7 +205,7 @@ public class ParallelFlowableTest extends RxJavaTest {
                 Scheduler scheduler = Schedulers.from(exec);
 
                 try {
-                    TestSubscriber<Long> ts = new TestSubscriber<Long>();
+                    TestSubscriber<Long> ts = new TestSubscriber<>();
 
                     Flowable.range(1, n)
                     .map(new Function<Integer, Long>() {
@@ -239,7 +239,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void toSortedList() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         Flowable.fromArray(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
         .parallel()
@@ -251,7 +251,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void sorted() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
 
         Flowable.fromArray(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
         .parallel()
@@ -278,11 +278,11 @@ public class ParallelFlowableTest extends RxJavaTest {
         Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         };
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         Flowable.range(1, 10)
         .parallel()
         .collect(as, new BiConsumer<List<Integer>, Integer>() {
@@ -310,7 +310,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void from() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         ParallelFlowable.fromArray(Flowable.range(1, 5), Flowable.range(6, 5))
         .sequential()
@@ -325,7 +325,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void concatMapUnordered() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.range(1, 5)
         .parallel()
@@ -347,7 +347,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void flatMapUnordered() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.range(1, 5)
         .parallel()
@@ -377,10 +377,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000)
             .parallel(3)
@@ -424,10 +424,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000).hide()
             .parallel(3)
@@ -471,10 +471,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000).hide()
             .observeOn(s)
@@ -519,10 +519,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000).hide()
             .observeOn(s)
@@ -567,10 +567,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000)
             .observeOn(s)
@@ -615,10 +615,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             Flowable.range(1, 100000)
             .take(1000)
@@ -664,10 +664,10 @@ public class ParallelFlowableTest extends RxJavaTest {
             Supplier<List<Integer>> as = new Supplier<List<Integer>>() {
                 @Override
                 public List<Integer> get() throws Exception {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             };
-            TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+            TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
             UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -711,7 +711,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void emptySourceZeroRequest() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 3).parallel(3).sequential().subscribe(ts);
 
@@ -762,7 +762,7 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void badParallelismStage() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 10)
         .parallel(2)
@@ -774,9 +774,9 @@ public class ParallelFlowableTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void badParallelismStage2() {
-        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
-        TestSubscriber<Integer> ts3 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts1 = new TestSubscriber<>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<>();
+        TestSubscriber<Integer> ts3 = new TestSubscriber<>();
 
         Flowable.range(1, 10)
         .parallel(2)
@@ -1305,7 +1305,7 @@ public class ParallelFlowableTest extends RxJavaTest {
         TestSubscriber<Object>[] consumers = new TestSubscriber[n + 1];
 
         for (int i = 0; i <= n; i++) {
-            consumers[i] = new TestSubscriber<Object>();
+            consumers[i] = new TestSubscriber<>();
         }
 
         source.subscribe(consumers);
@@ -1323,7 +1323,7 @@ public class ParallelFlowableTest extends RxJavaTest {
 
     @Test
     public void mergeBiFunction() throws Exception {
-        MergerBiFunction<Integer> f = new MergerBiFunction<Integer>(Functions.<Integer>naturalComparator());
+        MergerBiFunction<Integer> f = new MergerBiFunction<>(Functions.<Integer>naturalComparator());
 
         assertEquals(0, f.apply(Collections.<Integer>emptyList(), Collections.<Integer>emptyList()).size());
 
@@ -1331,12 +1331,12 @@ public class ParallelFlowableTest extends RxJavaTest {
 
         for (int i = 0; i < 4; i++) {
             int k = 0;
-            List<Integer> list1 = new ArrayList<Integer>();
+            List<Integer> list1 = new ArrayList<>();
             for (int j = 0; j < i; j++) {
                 list1.add(k++);
             }
 
-            List<Integer> list2 = new ArrayList<Integer>();
+            List<Integer> list2 = new ArrayList<>();
             for (int j = i; j < 4; j++) {
                 list2.add(k++);
             }

@@ -32,7 +32,7 @@ public class UnicastProcessorTckTest extends IdentityProcessorVerification<Integ
     @Override
     public Processor<Integer, Integer> createIdentityProcessor(int bufferSize) {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
-        return new RefCountProcessor<Integer>(up);
+        return new RefCountProcessor<>(up);
     }
 
     @Override

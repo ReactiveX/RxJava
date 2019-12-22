@@ -31,7 +31,7 @@ public class JavadocFindUnescapedAngleBrackets {
 
         base = base.getParentFile().getParentFile();
 
-        Queue<File[]> files = new ArrayDeque<File[]>();
+        Queue<File[]> files = new ArrayDeque<>();
 
         files.offer(base.listFiles());
 

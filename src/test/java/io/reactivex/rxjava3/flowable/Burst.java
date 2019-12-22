@@ -58,12 +58,12 @@ public final class Burst<T> extends Flowable<T> {
 
     @SafeVarargs
     public static <T> Builder<T> items(T... items) {
-        return new Builder<T>(Arrays.asList(items));
+        return new Builder<>(Arrays.asList(items));
     }
 
     final class BurstSubscription implements Subscription {
         private final Subscriber<? super T> subscriber;
-        final Queue<T> q = new ConcurrentLinkedQueue<T>(items);
+        final Queue<T> q = new ConcurrentLinkedQueue<>(items);
         final AtomicLong requested = new AtomicLong();
         volatile boolean cancelled;
 
@@ -121,7 +121,7 @@ public final class Burst<T> extends Flowable<T> {
         }
 
         public Flowable<T> create() {
-            return new Burst<T>(error, items);
+            return new Burst<>(error, items);
         }
 
     }

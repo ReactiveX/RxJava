@@ -52,7 +52,7 @@ public class FixLicenseHeaders {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         File parent = f.getParentFile().getParentFile();
         dirs.offer(parent);
@@ -73,7 +73,7 @@ public class FixLicenseHeaders {
                     } else {
                         if (u.getName().endsWith(".java")) {
 
-                            List<String> lines = new ArrayList<String>();
+                            List<String> lines = new ArrayList<>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
                             try {
                                 for (;;) {

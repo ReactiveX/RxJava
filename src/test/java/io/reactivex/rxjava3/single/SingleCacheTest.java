@@ -89,7 +89,7 @@ public class SingleCacheTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.single(-99).cache();
 
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override
@@ -114,7 +114,7 @@ public class SingleCacheTest extends RxJavaTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.single(-99).cache();
 
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
             @Override

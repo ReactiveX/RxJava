@@ -268,7 +268,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void rejectSyncFusion() {
         UnicastProcessor<Object> p = UnicastProcessor.create();
 
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.SYNC);
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>().setInitialFusionMode(QueueFuseable.SYNC);
 
         p.subscribe(ts);
 
@@ -302,7 +302,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Object> p = UnicastProcessor.create();
 
-            final TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>().setInitialFusionMode(QueueFuseable.ANY);
+            final TestSubscriberEx<Object> ts = new TestSubscriberEx<>().setInitialFusionMode(QueueFuseable.ANY);
 
             p.subscribe(ts);
 
@@ -329,8 +329,8 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Integer> us = UnicastProcessor.create();
 
-            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
-            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
+            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
             Runnable r1 = new Runnable() {
                 @Override

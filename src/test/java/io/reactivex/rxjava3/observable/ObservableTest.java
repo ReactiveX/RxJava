@@ -66,7 +66,7 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void fromIterable() {
-        ArrayList<String> items = new ArrayList<String>();
+        ArrayList<String> items = new ArrayList<>();
         items.add("one");
         items.add("two");
         items.add("three");
@@ -367,7 +367,7 @@ public class ObservableTest extends RxJavaTest {
     public void customObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
@@ -415,7 +415,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void customObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
@@ -458,7 +458,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void customObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         // FIXME custom built???
         Observable.just("1", "2").concatWith(Observable.<String>error(new Supplier<Throwable>() {
             @Override
@@ -678,7 +678,7 @@ public class ObservableTest extends RxJavaTest {
     @Test
     public void takeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         Observable.just("1", "2", "three", "4").take(3)
         .safeSubscribe(new DefaultObserver<String>() {
 
@@ -729,9 +729,9 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void ofTypeWithPolymorphism() {
-        ArrayList<Integer> l1 = new ArrayList<Integer>();
+        ArrayList<Integer> l1 = new ArrayList<>();
         l1.add(1);
-        LinkedList<Integer> l2 = new LinkedList<Integer>();
+        LinkedList<Integer> l2 = new LinkedList<>();
         l2.add(2);
 
         @SuppressWarnings("rawtypes")
@@ -921,21 +921,21 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void mergeWith() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(to);
         to.assertValues(1, 2);
     }
 
     @Test
     public void concatWith() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(to);
         to.assertValues(1, 2);
     }
 
     @Test
     public void ambWith() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.just(1).ambWith(Observable.just(2)).subscribe(to);
         to.assertValue(1);
     }
@@ -967,7 +967,7 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void compose() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
 
         Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
             @Override
@@ -1048,7 +1048,7 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void extend() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
         final Object value = new Object();
         Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
             @Override
@@ -1065,7 +1065,7 @@ public class ObservableTest extends RxJavaTest {
 
     @Test
     public void asExtend() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
         final Object value = new Object();
         Object returned = Observable.just(value).to(new ObservableConverter<Object, Object>() {
             @Override

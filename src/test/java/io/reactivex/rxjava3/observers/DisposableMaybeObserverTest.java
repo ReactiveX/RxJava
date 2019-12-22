@@ -31,9 +31,9 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
         int start;
 
-        final List<T> values = new ArrayList<T>();
+        final List<T> values = new ArrayList<>();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int complete;
 
@@ -62,7 +62,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestMaybe<Integer> tc = new TestMaybe<Integer>();
+        TestMaybe<Integer> tc = new TestMaybe<>();
 
         assertFalse(tc.isDisposed());
         assertEquals(0, tc.start);
@@ -85,7 +85,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestMaybe<Integer> tc = new TestMaybe<Integer>();
+            TestMaybe<Integer> tc = new TestMaybe<>();
 
             tc.onSubscribe(Disposable.empty());
 
@@ -105,7 +105,7 @@ public class DisposableMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestMaybe<Integer> tc = new TestMaybe<Integer>();
+        TestMaybe<Integer> tc = new TestMaybe<>();
         tc.dispose();
 
         assertTrue(tc.isDisposed());
