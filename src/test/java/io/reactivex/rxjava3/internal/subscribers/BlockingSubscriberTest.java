@@ -29,12 +29,12 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new BlockingSubscriber<Integer>(new ArrayDeque<Object>()));
+        TestHelper.doubleOnSubscribe(new BlockingSubscriber<Integer>(new ArrayDeque<>()));
     }
 
     @Test
     public void cancel() {
-        BlockingSubscriber<Integer> bq = new BlockingSubscriber<Integer>(new ArrayDeque<Object>());
+        BlockingSubscriber<Integer> bq = new BlockingSubscriber<>(new ArrayDeque<>());
 
         assertFalse(bq.isCancelled());
 
@@ -54,7 +54,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void blockingFirstTimeout() {
-        BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
+        BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<>();
 
         Thread.currentThread().interrupt();
 
@@ -68,7 +68,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
 
     @Test
     public void blockingFirstTimeout2() {
-        BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
+        BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<>();
 
         bf.onSubscribe(new BooleanSubscription());
 
@@ -85,7 +85,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
     @Test
     public void cancelOnRequest() {
 
-        final BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
+        final BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<>();
 
         final AtomicBoolean b = new AtomicBoolean();
 
@@ -109,7 +109,7 @@ public class BlockingSubscriberTest extends RxJavaTest {
     @Test
     public void cancelUpfront() {
 
-        final BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<Integer>();
+        final BlockingFirstSubscriber<Integer> bf = new BlockingFirstSubscriber<>();
 
         final AtomicBoolean b = new AtomicBoolean();
 

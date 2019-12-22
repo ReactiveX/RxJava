@@ -29,7 +29,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void strictMode() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             @Override
@@ -94,8 +94,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void normalOnNext() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
         Flowable.range(1, 5).subscribe(wrapper);
 
@@ -104,8 +104,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void normalOnNextBackpressured() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
-        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
+        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
         Flowable.range(1, 5).subscribe(wrapper);
 
@@ -120,8 +120,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void normalOnError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .subscribe(wrapper);
@@ -131,7 +131,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void deferredRequest() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             @Override
@@ -163,7 +163,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestZero() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             @Override
@@ -195,7 +195,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void requestNegative() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             @Override
@@ -227,7 +227,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void cancelAfterOnComplete() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             Subscription upstream;
@@ -269,7 +269,7 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void cancelAfterOnError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
             Subscription upstream;
@@ -311,8 +311,8 @@ public class StrictSubscriberTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<Integer>(ts);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        SubscriberWrapper<Integer> wrapper = new SubscriberWrapper<>(ts);
 
         new Flowable<Integer>() {
             @Override

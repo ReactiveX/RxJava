@@ -32,7 +32,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class QueueDrainSubscriberTest extends RxJavaTest {
 
     static final QueueDrainSubscriber<Integer, Integer, Integer> createUnordered(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmitMax(t, false, d);
@@ -60,7 +60,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static final QueueDrainSubscriber<Integer, Integer, Integer> createOrdered(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmitMax(t, false, d);
@@ -88,7 +88,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static final QueueDrainSubscriber<Integer, Integer, Integer> createUnorderedReject(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathEmitMax(t, false, d);
@@ -116,7 +116,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     }
 
     static final QueueDrainSubscriber<Integer, Integer, Integer> createOrderedReject(TestSubscriber<Integer> ts, final Disposable d) {
-        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<Integer>(4)) {
+        return new QueueDrainSubscriber<Integer, Integer, Integer>(ts, new SpscArrayQueue<>(4)) {
             @Override
             public void onNext(Integer t) {
                 fastPathOrderedEmitMax(t, false, d);
@@ -145,7 +145,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void unorderedFastPathNoRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -159,7 +159,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void orderedFastPathNoRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -173,7 +173,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void acceptBadRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -191,7 +191,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void unorderedFastPathRequest1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -205,7 +205,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void orderedFastPathRequest1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -219,7 +219,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void unorderedSlowPath() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -232,7 +232,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void orderedSlowPath() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -245,7 +245,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void orderedSlowPathNonEmptyQueue() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -261,7 +261,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     public void unorderedOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+            TestSubscriber<Integer> ts = new TestSubscriber<>(1);
             Disposable d = Disposable.empty();
             final QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnordered(ts, d);
             ts.onSubscribe(new BooleanSubscription());
@@ -284,7 +284,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
     public void orderedOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+            TestSubscriber<Integer> ts = new TestSubscriber<>(1);
             Disposable d = Disposable.empty();
             final QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrdered(ts, d);
             ts.onSubscribe(new BooleanSubscription());
@@ -305,7 +305,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void unorderedFastPathReject() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createUnorderedReject(ts, d);
         ts.onSubscribe(new BooleanSubscription());
@@ -321,7 +321,7 @@ public class QueueDrainSubscriberTest extends RxJavaTest {
 
     @Test
     public void orderedFastPathReject() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
         Disposable d = Disposable.empty();
         QueueDrainSubscriber<Integer, Integer, Integer> qd = createOrderedReject(ts, d);
         ts.onSubscribe(new BooleanSubscription());

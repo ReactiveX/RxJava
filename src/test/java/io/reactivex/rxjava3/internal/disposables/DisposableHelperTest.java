@@ -54,7 +54,7 @@ public class DisposableHelperTest extends RxJavaTest {
     @Test
     public void disposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
+            final AtomicReference<Disposable> d = new AtomicReference<>();
 
             Runnable r = new Runnable() {
                 @Override
@@ -70,7 +70,7 @@ public class DisposableHelperTest extends RxJavaTest {
     @Test
     public void setReplace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
+            final AtomicReference<Disposable> d = new AtomicReference<>();
 
             Runnable r = new Runnable() {
                 @Override
@@ -86,7 +86,7 @@ public class DisposableHelperTest extends RxJavaTest {
     @Test
     public void setRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
+            final AtomicReference<Disposable> d = new AtomicReference<>();
 
             Runnable r = new Runnable() {
                 @Override
@@ -101,7 +101,7 @@ public class DisposableHelperTest extends RxJavaTest {
 
     @Test
     public void setReplaceNull() {
-        final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> d = new AtomicReference<>();
 
         DisposableHelper.dispose(d);
 
@@ -112,7 +112,7 @@ public class DisposableHelperTest extends RxJavaTest {
     @Test
     public void dispose() {
         Disposable u = Disposable.empty();
-        final AtomicReference<Disposable> d = new AtomicReference<Disposable>(u);
+        final AtomicReference<Disposable> d = new AtomicReference<>(u);
 
         DisposableHelper.dispose(d);
 
@@ -121,7 +121,7 @@ public class DisposableHelperTest extends RxJavaTest {
 
     @Test
     public void trySet() {
-        AtomicReference<Disposable> ref = new AtomicReference<Disposable>();
+        AtomicReference<Disposable> ref = new AtomicReference<>();
 
         Disposable d1 = Disposable.empty();
 

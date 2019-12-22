@@ -89,8 +89,8 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void postCompleteEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
@@ -108,8 +108,8 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void postCompleteWithRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
@@ -130,8 +130,8 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void completeRequestRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            final ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
+            final ArrayDeque<Integer> queue = new ArrayDeque<>();
             final AtomicLong state = new AtomicLong();
             final BooleanSupplier isCancelled = new BooleanSupplier() {
                 @Override
@@ -165,8 +165,8 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void postCompleteCancelled() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
@@ -194,7 +194,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
                 cancel();
             }
         };
-        ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
@@ -214,7 +214,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void drainMaxLoopMissingBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -259,7 +259,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
         q.offer(1);
 
         QueueDrainHelper.drainMaxLoop(q, ts, false, null, qd);
@@ -269,7 +269,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void drainMaxLoopMissingBackpressureWithResource() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -314,7 +314,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
         q.offer(1);
 
         Disposable d = Disposable.empty();
@@ -328,7 +328,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void drainMaxLoopDontAccept() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -373,7 +373,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
         q.offer(1);
 
         QueueDrainHelper.drainMaxLoop(q, ts, false, null, qd);
@@ -383,7 +383,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void checkTerminatedDelayErrorEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -428,7 +428,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, true, ts, true, q, qd);
 
@@ -437,7 +437,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void checkTerminatedDelayErrorNonEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -482,7 +482,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, false, ts, true, q, qd);
 
@@ -491,7 +491,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void checkTerminatedDelayErrorEmptyError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -536,7 +536,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, true, ts, true, q, qd);
 
@@ -545,7 +545,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void checkTerminatedNonDelayErrorError() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ts.onSubscribe(new BooleanSubscription());
 
         QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
@@ -590,7 +590,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, false, ts, false, q, qd);
 
@@ -599,7 +599,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedDelayErrorEmpty() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -633,7 +633,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, true, to, true, q, null, qd);
 
@@ -642,7 +642,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedDelayErrorEmptyResource() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -676,7 +676,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         Disposable d = Disposable.empty();
 
@@ -689,7 +689,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedDelayErrorNonEmpty() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -723,7 +723,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, false, to, true, q, null, qd);
 
@@ -732,7 +732,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedDelayErrorEmptyError() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -766,7 +766,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, true, to, true, q, null, qd);
 
@@ -775,7 +775,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedNonDelayErrorError() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -809,7 +809,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         QueueDrainHelper.checkTerminated(true, false, to, false, q, null, qd);
 
@@ -818,7 +818,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
 
     @Test
     public void observerCheckTerminatedNonDelayErrorErrorResource() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
@@ -852,7 +852,7 @@ public class QueueDrainHelperTest extends RxJavaTest {
             }
         };
 
-        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<>(32);
 
         Disposable d = Disposable.empty();
 
@@ -866,9 +866,9 @@ public class QueueDrainHelperTest extends RxJavaTest {
     @Test
     public void postCompleteAlreadyComplete() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        Queue<Integer> q = new ArrayDeque<Integer>();
+        Queue<Integer> q = new ArrayDeque<>();
         q.offer(1);
 
         AtomicLong state = new AtomicLong(QueueDrainHelper.COMPLETED_MASK);

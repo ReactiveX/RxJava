@@ -26,7 +26,7 @@ public final class ObservableToFlowabeTestSync {
     }
 
     static List<String> readAllLines(File f) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(f));
             try {
@@ -65,7 +65,7 @@ public final class ObservableToFlowabeTestSync {
 
             Class<?> clazz2 = Class.forName(basepackage + "flowable." + cn);
 
-            Set<String> methods2 = new HashSet<String>();
+            Set<String> methods2 = new HashSet<>();
 
             for (Method m : clazz2.getMethods()) {
                 methods2.add(m.getName());

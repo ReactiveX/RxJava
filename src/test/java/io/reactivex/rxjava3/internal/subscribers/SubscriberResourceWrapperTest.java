@@ -28,9 +28,9 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SubscriberResourceWrapperTest extends RxJavaTest {
 
-    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+    TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-    SubscriberResourceWrapper<Integer> s = new SubscriberResourceWrapper<Integer>(ts);
+    SubscriberResourceWrapper<Integer> s = new SubscriberResourceWrapper<>(ts);
 
     @Test
     public void cancel() {
@@ -94,7 +94,7 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
                     @Override
                     public Subscriber<? super Object> apply(
                             Subscriber<? super Object> s) throws Exception {
-                        return new SubscriberResourceWrapper<Object>(s);
+                        return new SubscriberResourceWrapper<>(s);
                     }
                 });
             }
@@ -107,7 +107,7 @@ public class SubscriberResourceWrapperTest extends RxJavaTest {
             @Override
             public Subscriber<? super Object> apply(
                     Subscriber<? super Object> s) throws Exception {
-                return new SubscriberResourceWrapper<Object>(s);
+                return new SubscriberResourceWrapper<>(s);
             }
         }));
     }

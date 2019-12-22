@@ -32,8 +32,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new DisposableLambdaObserver<Integer>(
-                new TestObserver<Integer>(), Functions.emptyConsumer(), Functions.EMPTY_ACTION
+        TestHelper.doubleOnSubscribe(new DisposableLambdaObserver<>(
+                new TestObserver<>(), Functions.emptyConsumer(), Functions.EMPTY_ACTION
         ));
     }
 
@@ -41,8 +41,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
     public void disposeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<Integer>(
-                    new TestObserver<Integer>(), Functions.emptyConsumer(),
+            DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<>(
+                    new TestObserver<>(), Functions.emptyConsumer(),
                     new Action() {
                         @Override
                         public void run() throws Exception {

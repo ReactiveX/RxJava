@@ -33,7 +33,7 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
     @Test
     public void moreThanMaxWorkers() {
-        final List<Worker> list = new ArrayList<Worker>();
+        final List<Worker> list = new ArrayList<>();
 
         SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 
@@ -49,7 +49,7 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
 
     @Test
     public void getShutdownWorkers() {
-        final List<Worker> list = new ArrayList<Worker>();
+        final List<Worker> list = new ArrayList<>();
 
         ComputationScheduler.NONE.createWorkers(max * 2, new WorkerCallback() {
             @Override
@@ -74,14 +74,14 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
             try {
                 final CountDownLatch cdl = new CountDownLatch(max * 2);
 
-                final Set<String> threads1 = Collections.synchronizedSet(new HashSet<String>());
+                final Set<String> threads1 = Collections.synchronizedSet(new HashSet<>());
 
-                final Set<String> threads2 = Collections.synchronizedSet(new HashSet<String>());
+                final Set<String> threads2 = Collections.synchronizedSet(new HashSet<>());
 
                 Runnable parallel1 = new Runnable() {
                     @Override
                     public void run() {
-                        final List<Worker> list1 = new ArrayList<Worker>();
+                        final List<Worker> list1 = new ArrayList<>();
 
                         SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 
@@ -110,7 +110,7 @@ public class SchedulerMultiWorkerSupportTest extends RxJavaTest {
                 Runnable parallel2 = new Runnable() {
                     @Override
                     public void run() {
-                        final List<Worker> list2 = new ArrayList<Worker>();
+                        final List<Worker> list2 = new ArrayList<>();
 
                         SchedulerMultiWorkerSupport mws = (SchedulerMultiWorkerSupport)Schedulers.computation();
 

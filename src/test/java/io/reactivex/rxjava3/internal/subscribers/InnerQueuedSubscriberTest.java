@@ -44,9 +44,9 @@ public class InnerQueuedSubscriberTest extends RxJavaTest {
             }
         };
 
-        InnerQueuedSubscriber<Integer> inner = new InnerQueuedSubscriber<Integer>(support, 4);
+        InnerQueuedSubscriber<Integer> inner = new InnerQueuedSubscriber<>(support, 4);
 
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
 
         inner.onSubscribe(new Subscription() {
             @Override

@@ -27,7 +27,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
+        BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
         bmo.dispose();
 
         Disposable d = Disposable.empty();
@@ -37,7 +37,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
 
     @Test
     public void blockingGetDefault() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
+        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
 
         Schedulers.single().scheduleDirect(new Runnable() {
             @Override
@@ -51,7 +51,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
 
     @Test
     public void blockingAwait() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
+        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
 
         Schedulers.single().scheduleDirect(new Runnable() {
             @Override
@@ -65,7 +65,7 @@ public class BlockingMultiObserverTest extends RxJavaTest {
 
     @Test
     public void blockingGetDefaultInterrupt() {
-        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<Integer>();
+        final BlockingMultiObserver<Integer> bmo = new BlockingMultiObserver<>();
 
         Thread.currentThread().interrupt();
         try {

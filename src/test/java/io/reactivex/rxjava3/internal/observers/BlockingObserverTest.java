@@ -25,9 +25,9 @@ public class BlockingObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        Queue<Object> q = new ArrayDeque<Object>();
+        Queue<Object> q = new ArrayDeque<>();
 
-        BlockingObserver<Object> bo = new BlockingObserver<Object>(q);
+        BlockingObserver<Object> bo = new BlockingObserver<>(q);
 
         bo.dispose();
 

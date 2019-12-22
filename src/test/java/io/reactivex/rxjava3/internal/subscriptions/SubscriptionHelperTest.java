@@ -54,7 +54,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void set() {
-        AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+        AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -71,7 +71,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void replace() {
-        AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+        AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
         BooleanSubscription bs1 = new BooleanSubscription();
 
@@ -89,7 +89,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
     @Test
     public void cancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
             Runnable r = new Runnable() {
                 @Override
@@ -105,7 +105,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
     @Test
     public void setRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
             final BooleanSubscription bs1 = new BooleanSubscription();
             final BooleanSubscription bs2 = new BooleanSubscription();
@@ -133,7 +133,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
     @Test
     public void replaceRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
             final BooleanSubscription bs1 = new BooleanSubscription();
             final BooleanSubscription bs2 = new BooleanSubscription();
@@ -161,7 +161,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void cancelAndChange() {
-        AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+        AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
 
         SubscriptionHelper.cancel(atomicSubscription);
 
@@ -180,7 +180,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void invalidDeferredRequest() {
-        AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+        AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
         AtomicLong r = new AtomicLong();
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -196,7 +196,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
     @Test
     public void deferredRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<Subscription>();
+            final AtomicReference<Subscription> atomicSubscription = new AtomicReference<>();
             final AtomicLong r = new AtomicLong();
 
             final AtomicLong q = new AtomicLong();
@@ -237,7 +237,7 @@ public class SubscriptionHelperTest extends RxJavaTest {
 
     @Test
     public void setOnceAndRequest() {
-        AtomicReference<Subscription> ref = new AtomicReference<Subscription>();
+        AtomicReference<Subscription> ref = new AtomicReference<>();
 
         Subscription sub = mock(Subscription.class);
 

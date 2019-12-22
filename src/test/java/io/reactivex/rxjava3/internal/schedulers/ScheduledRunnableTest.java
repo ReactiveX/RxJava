@@ -65,7 +65,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
 
-            final FutureTask<Object> ft = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, 0);
+            final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, 0);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -94,7 +94,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
 
-            final FutureTask<Object> ft = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, 0);
+            final FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, 0);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -266,7 +266,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
 
-            final FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null);
+            final FutureTask<Void> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -316,7 +316,7 @@ public class ScheduledRunnableTest extends RxJavaTest {
             final ScheduledRunnable run = new ScheduledRunnable(r0, set);
             set.add(run);
 
-            final FutureTask<Void> ft = new FutureTask<Void>(run, null);
+            final FutureTask<Void> ft = new FutureTask<>(run, null);
 
             Runnable r2 = new Runnable() {
                 @Override
