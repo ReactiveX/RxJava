@@ -52,7 +52,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
 
         withTimeout.subscribe(ts);
 
@@ -67,7 +67,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
 
         withTimeout.subscribe(ts);
 
@@ -83,7 +83,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
 
         withTimeout.subscribe(subscriber);
 
@@ -93,8 +93,8 @@ public class FlowableTimeoutTests extends RxJavaTest {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         withTimeout.subscribe(subscriber);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -107,7 +107,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         withTimeout.subscribe(subscriber);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
@@ -120,7 +120,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         withTimeout.subscribe(subscriber);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
@@ -135,7 +135,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -158,7 +158,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -181,7 +181,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -204,7 +204,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -234,7 +234,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
+        final TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
 
         new Thread(new Runnable() {
 
@@ -283,7 +283,7 @@ public class FlowableTimeoutTests extends RxJavaTest {
         TestScheduler testScheduler = new TestScheduler();
         Flowable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
         observableWithTimeout.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);

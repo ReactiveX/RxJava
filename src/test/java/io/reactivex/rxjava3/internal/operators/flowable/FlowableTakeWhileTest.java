@@ -236,7 +236,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
                 return t1 < 100;
             }
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(5L);
 
         source.subscribe(ts);
 
@@ -257,7 +257,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
                 return t1 < 2;
             }
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.subscribe(ts);
 
@@ -269,7 +269,7 @@ public class FlowableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void errorCauseIncludesLastValue() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
         Flowable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {

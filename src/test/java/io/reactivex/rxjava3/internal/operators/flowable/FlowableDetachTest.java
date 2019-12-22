@@ -35,9 +35,9 @@ public class FlowableDetachTest extends RxJavaTest {
     public void just() throws Exception {
         o = new Object();
 
-        WeakReference<Object> wr = new WeakReference<Object>(o);
+        WeakReference<Object> wr = new WeakReference<>(o);
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
@@ -56,7 +56,7 @@ public class FlowableDetachTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.error(new TestException()).onTerminateDetach().subscribe(ts);
 
@@ -67,7 +67,7 @@ public class FlowableDetachTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.empty().onTerminateDetach().subscribe(ts);
 
@@ -78,7 +78,7 @@ public class FlowableDetachTest extends RxJavaTest {
 
     @Test
     public void range() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.range(1, 1000).onTerminateDetach().subscribe(ts);
 
@@ -91,9 +91,9 @@ public class FlowableDetachTest extends RxJavaTest {
     public void backpressured() throws Exception {
         o = new Object();
 
-        WeakReference<Object> wr = new WeakReference<Object>(o);
+        WeakReference<Object> wr = new WeakReference<>(o);
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0L);
 
         Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
@@ -117,9 +117,9 @@ public class FlowableDetachTest extends RxJavaTest {
     public void justUnsubscribed() throws Exception {
         o = new Object();
 
-        WeakReference<Object> wr = new WeakReference<Object>(o);
+        WeakReference<Object> wr = new WeakReference<>(o);
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0);
 
         Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
@@ -135,9 +135,9 @@ public class FlowableDetachTest extends RxJavaTest {
 
     @Test
     public void deferredUpstreamProducer() {
-        final AtomicReference<Subscriber<? super Object>> subscriber = new AtomicReference<Subscriber<? super Object>>();
+        final AtomicReference<Subscriber<? super Object>> subscriber = new AtomicReference<>();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0);
 
         Flowable.unsafeCreate(new Publisher<Object>() {
             @Override

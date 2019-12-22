@@ -289,7 +289,7 @@ public class FlowableDebounceTest extends RxJavaTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
         Flowable.merge(
                 Flowable.just(1),
                 Flowable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
@@ -305,7 +305,7 @@ public class FlowableDebounceTest extends RxJavaTest {
     @Test
     public void debounceDefaultScheduler() throws Exception {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 1000).debounce(1, TimeUnit.SECONDS).subscribe(ts);
 
@@ -330,7 +330,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
         TestHelper.checkDisposed(PublishProcessor.create().debounce(Functions.justFunction(Flowable.never())));
 
-        Disposable d = new FlowableDebounceTimed.DebounceEmitter<Integer>(1, 1, null);
+        Disposable d = new FlowableDebounceTimed.DebounceEmitter<>(1, 1, null);
         assertFalse(d.isDisposed());
 
         d.dispose();
@@ -426,7 +426,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposeInOnNext() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         BehaviorProcessor.createDefault(1)
         .debounce(new Function<Integer, Flowable<Object>>() {
@@ -444,7 +444,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposedInOnComplete() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         new Flowable<Integer>() {
             @Override
@@ -461,7 +461,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void emitLate() {
-        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
+        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
 
         TestSubscriber<Integer> ts = Flowable.range(1, 2)
         .debounce(new Function<Integer, Flowable<Integer>>() {
@@ -505,7 +505,7 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedDisposedIgnoredBySource() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         new Flowable<Integer>() {
             @Override
@@ -528,13 +528,13 @@ public class FlowableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedLateEmit() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        DebounceTimedSubscriber<Integer> sub = new DebounceTimedSubscriber<Integer>(
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        DebounceTimedSubscriber<Integer> sub = new DebounceTimedSubscriber<>(
                 ts, 1, TimeUnit.SECONDS, new TestScheduler().createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
-        DebounceEmitter<Integer> de = new DebounceEmitter<Integer>(1, 50, sub);
+        DebounceEmitter<Integer> de = new DebounceEmitter<>(1, 50, sub);
         de.emit();
         de.emit();
 

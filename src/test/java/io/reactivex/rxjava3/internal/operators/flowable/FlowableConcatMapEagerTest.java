@@ -276,8 +276,8 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Before
     public void before() {
-        ts = new TestSubscriber<Object>();
-        tsBp = new TestSubscriber<Object>(0L);
+        ts = new TestSubscriber<>();
+        tsBp = new TestSubscriber<>(0L);
     }
 
     @Test
@@ -642,7 +642,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void maxConcurrent5() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 100).doOnRequest(new LongConsumer() {
             @Override
             public void accept(long reqCount) {
@@ -955,7 +955,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void mapperCancels() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1).hide()
         .concatMapEager(new Function<Integer, Flowable<Integer>>() {
@@ -1097,7 +1097,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Flowable.just(1)
             .concatMapEager(Functions.justFunction(pp))
@@ -1157,7 +1157,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     public void maxConcurrencyOf2() {
         List<Integer>[] list = new ArrayList[100];
         for (int i = 0; i < 100; i++) {
-            List<Integer> lst = new ArrayList<Integer>();
+            List<Integer> lst = new ArrayList<>();
             list[i] = lst;
             for (int k = 1; k <= 10; k++) {
                 lst.add((i) * 10 + k);

@@ -205,8 +205,8 @@ public class FlowableRefCountTest extends RxJavaTest {
                 .publish().refCount();
 
         for (int i = 0; i < 10; i++) {
-            TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
-            TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+            TestSubscriber<Long> ts1 = new TestSubscriber<>();
+            TestSubscriber<Long> ts2 = new TestSubscriber<>();
             r.subscribe(ts1);
             r.subscribe(ts2);
             try {
@@ -248,7 +248,7 @@ public class FlowableRefCountTest extends RxJavaTest {
                     }
                 });
 
-        TestSubscriberEx<Long> s = new TestSubscriberEx<Long>();
+        TestSubscriberEx<Long> s = new TestSubscriberEx<>();
         f.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(s);
         System.out.println("send unsubscribe");
         // wait until connected
@@ -293,7 +293,7 @@ public class FlowableRefCountTest extends RxJavaTest {
                     }
                 });
 
-        TestSubscriberEx<Long> s = new TestSubscriberEx<Long>();
+        TestSubscriberEx<Long> s = new TestSubscriberEx<>();
 
         f.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
         System.out.println("send unsubscribe");
@@ -386,7 +386,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         Flowable<Long> interval = Flowable.interval(100, TimeUnit.MILLISECONDS, s).publish().refCount();
 
         // subscribe list1
-        final List<Long> list1 = new ArrayList<Long>();
+        final List<Long> list1 = new ArrayList<>();
         Disposable d1 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -401,7 +401,7 @@ public class FlowableRefCountTest extends RxJavaTest {
         assertEquals(1L, list1.get(1).longValue());
 
         // subscribe list2
-        final List<Long> list2 = new ArrayList<Long>();
+        final List<Long> list2 = new ArrayList<>();
         Disposable d2 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -446,7 +446,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
-        final List<Long> list3 = new ArrayList<Long>();
+        final List<Long> list3 = new ArrayList<>();
         interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -517,8 +517,8 @@ public class FlowableRefCountTest extends RxJavaTest {
         })
         .publish().refCount();
 
-        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
-        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
         combined.subscribe(ts1);
         combined.subscribe(ts2);
@@ -1184,7 +1184,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts1 = source.test(0);
 
-            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1388,7 +1388,7 @@ public class FlowableRefCountTest extends RxJavaTest {
 
     @Test
     public void timeoutResetsSource() {
-        TestConnectableFlowable<Object> tcf = new TestConnectableFlowable<Object>();
+        TestConnectableFlowable<Object> tcf = new TestConnectableFlowable<>();
         FlowableRefCount<Object> o = (FlowableRefCount<Object>)tcf.refCount();
 
         RefConnection rc = new RefConnection(o);

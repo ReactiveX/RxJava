@@ -117,13 +117,13 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void remove() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
         it.remove();
     }
 
     @Test
     public void dispose() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
 
         assertFalse(it.isDisposed());
 
@@ -134,7 +134,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test
     public void interruptWait() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
 
         try {
             Thread.currentThread().interrupt();
@@ -147,7 +147,7 @@ public class BlockingFlowableToIteratorTest extends RxJavaTest {
 
     @Test(expected = NoSuchElementException.class)
     public void emptyThrowsNoSuch() {
-        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<>(128);
         it.onComplete();
         it.next();
     }

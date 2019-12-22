@@ -450,7 +450,7 @@ public class FlowableSwitchTest extends RxJavaTest {
         publishCompleted(o2, 50);
         publishCompleted(o3, 55);
 
-        final TestSubscriberEx<String> testSubscriber = new TestSubscriberEx<String>();
+        final TestSubscriberEx<String> testSubscriber = new TestSubscriberEx<>();
         Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
             private int requested;
@@ -549,7 +549,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void initialRequestsAreAdditive() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                           .map(
@@ -568,7 +568,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void initialRequestsDontOverflow() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Flowable<Long>>() {
@@ -585,7 +585,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void secondaryRequestsDontOverflow() throws InterruptedException {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Function<Long, Flowable<Long>>() {
@@ -639,7 +639,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchOnNextPrefetch() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
@@ -656,7 +656,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchOnNextDelayError() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
@@ -673,7 +673,7 @@ public class FlowableSwitchTest extends RxJavaTest {
 
     @Test
     public void switchOnNextDelayErrorPrefetch() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
@@ -1082,7 +1082,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     @Test
     public void drainCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -1176,7 +1176,7 @@ public class FlowableSwitchTest extends RxJavaTest {
     public void undeliverableUponCancel() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Flowable.just(1)
             .map(new Function<Integer, Integer>() {

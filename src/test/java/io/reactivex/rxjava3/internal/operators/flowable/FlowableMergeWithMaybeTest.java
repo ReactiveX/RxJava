@@ -230,7 +230,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-            final TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<Integer>(0));
+            final TestSubscriber<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestSubscriber<>(0));
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -259,7 +259,7 @@ public class FlowableMergeWithMaybeTest extends RxJavaTest {
     public void onErrorMainOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Subscriber<?>> subscriber = new AtomicReference<Subscriber<?>>();
+            final AtomicReference<Subscriber<?>> subscriber = new AtomicReference<>();
             TestSubscriber<Integer> ts = new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> s) {

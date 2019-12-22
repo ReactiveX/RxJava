@@ -173,7 +173,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onErrorThrows() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
         Flowable.error(new TestException())
         .doOnError(new Consumer<Throwable>() {
@@ -691,7 +691,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).doOnEach(new TestSubscriber<Integer>()));
+        TestHelper.checkDisposed(Flowable.just(1).doOnEach(new TestSubscriber<>()));
     }
 
     @Test
@@ -699,7 +699,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<Object> f) throws Exception {
-                return f.doOnEach(new TestSubscriber<Object>());
+                return f.doOnEach(new TestSubscriber<>());
             }
         });
     }
@@ -736,7 +736,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
                 .compose(new FlowableTransformer<Integer, Integer>() {
                     @Override
                     public Publisher<Integer> apply(Flowable<Integer> v) {
-                        return new FlowableDoOnEach<Integer>(v,
+                        return new FlowableDoOnEach<>(v,
                                 new Consumer<Integer>() {
                                     @Override
                                     public void accept(Integer v) throws Exception {
@@ -752,7 +752,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
                                 Functions.EMPTY_ACTION
                                 ,
                                 Functions.EMPTY_ACTION
-                                );
+                        );
                     }
                 })
         .publish();
@@ -866,7 +866,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
                 .compose(new FlowableTransformer<Integer, Integer>() {
                     @Override
                     public Publisher<Integer> apply(Flowable<Integer> v) {
-                        return new FlowableDoOnEach<Integer>(v,
+                        return new FlowableDoOnEach<>(v,
                                 new Consumer<Integer>() {
                                     @Override
                                     public void accept(Integer v) throws Exception {
@@ -882,7 +882,7 @@ public class FlowableDoOnEachTest extends RxJavaTest {
                                 Functions.EMPTY_ACTION
                                 ,
                                 Functions.EMPTY_ACTION
-                                );
+                        );
                     }
                 })
         .filter(Functions.alwaysTrue())

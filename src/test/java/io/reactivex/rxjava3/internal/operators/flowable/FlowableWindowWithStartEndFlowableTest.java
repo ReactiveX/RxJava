@@ -46,8 +46,8 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
 
     @Test
     public void flowableBasedOpenerAndCloser() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
@@ -96,7 +96,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -128,7 +128,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
                 stringFlowable.subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<String>(list));
+                        lists.add(new ArrayList<>(list));
                         list.clear();
                     }
 
@@ -153,7 +153,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         PublishProcessor<Integer> open = PublishProcessor.create();
         final PublishProcessor<Integer> close = PublishProcessor.create();
 
-        TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
+        TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<>();
 
         source.window(open, new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -197,7 +197,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
         PublishProcessor<Integer> open = PublishProcessor.create();
         final PublishProcessor<Integer> close = PublishProcessor.create();
 
-        TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
+        TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<>();
 
         source.window(open, new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -481,7 +481,7 @@ public class FlowableWindowWithStartEndFlowableTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstream() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>just(1).concatWith(Flowable.<Integer>never()),
                 Functions.justFunction(Flowable.never()))

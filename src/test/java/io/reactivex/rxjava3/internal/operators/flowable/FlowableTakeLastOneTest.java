@@ -30,7 +30,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfManyReturnsLast() {
-        TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> s = new TestSubscriberEx<>();
         Flowable.range(1, 10).takeLast(1).subscribe(s);
         s.assertValue(10);
         s.assertNoErrors();
@@ -41,7 +41,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfEmptyReturnsEmpty() {
-        TestSubscriberEx<Object> s = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> s = new TestSubscriberEx<>();
         Flowable.empty().takeLast(1).subscribe(s);
         s.assertNoValues();
         s.assertNoErrors();
@@ -52,7 +52,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfOneReturnsLast() {
-        TestSubscriberEx<Integer> s = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> s = new TestSubscriberEx<>();
         Flowable.just(1).takeLast(1).subscribe(s);
         s.assertValue(1);
         s.assertNoErrors();
@@ -81,7 +81,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastWithBackpressure() {
-        MySubscriber<Integer> s = new MySubscriber<Integer>(0);
+        MySubscriber<Integer> s = new MySubscriber<>(0);
         Flowable.just(1).takeLast(1).subscribe(s);
         assertEquals(0, s.list.size());
         s.requestMore(1);
@@ -111,7 +111,7 @@ public class FlowableTakeLastOneTest extends RxJavaTest {
             this.initialRequest = initialRequest;
         }
 
-        final List<T> list = new ArrayList<T>();
+        final List<T> list = new ArrayList<>();
 
         public void requestMore(long n) {
             request(n);

@@ -384,7 +384,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
         };
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
+            final TestSubscriber<Boolean> ts = new TestSubscriber<>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -487,7 +487,7 @@ public class FlowableSequenceEqualTest extends RxJavaTest {
         };
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestObserver<Boolean> to = new TestObserver<Boolean>();
+            final TestObserver<Boolean> to = new TestObserver<>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 

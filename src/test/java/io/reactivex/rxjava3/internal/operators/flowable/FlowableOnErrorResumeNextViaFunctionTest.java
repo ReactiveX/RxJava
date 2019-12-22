@@ -39,7 +39,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Flowable<String> w = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
@@ -79,7 +79,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithAsyncExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
@@ -176,7 +176,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber, Long.MAX_VALUE);
         flowable.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
 
@@ -228,7 +228,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, 100000)
                 .onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {
 

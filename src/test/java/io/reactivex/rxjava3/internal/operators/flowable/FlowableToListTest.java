@@ -92,7 +92,7 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void backpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList().toFlowable();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(0L);
 
         w.subscribe(ts);
 

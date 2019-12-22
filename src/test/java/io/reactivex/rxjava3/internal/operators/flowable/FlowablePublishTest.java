@@ -128,7 +128,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         });
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.merge(fast, slow).subscribe(ts);
         is.connect();
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -148,7 +148,7 @@ public class FlowablePublishTest extends RxJavaTest {
             }
 
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         xs.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
 
             @Override
@@ -175,7 +175,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void takeUntilWithPublishedStream() {
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2);
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConnectableFlowable<Integer> xsp = xs.publish();
         xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
 
@@ -211,7 +211,7 @@ public class FlowablePublishTest extends RxJavaTest {
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
 
-        final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
@@ -259,7 +259,7 @@ public class FlowablePublishTest extends RxJavaTest {
         cf.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+        TestSubscriber<Long> subscriber = new TestSubscriber<>();
         cf.subscribe(subscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
@@ -271,7 +271,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void subscribeAfterDisconnectThenConnect() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
-        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
 
         source.subscribe(ts1);
 
@@ -283,7 +283,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         source.reset();
 
-        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
         source.subscribe(ts2);
 
@@ -301,7 +301,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void noSubscriberRetentionOnCompleted() {
         FlowablePublish<Integer> source = (FlowablePublish<Integer>)Flowable.just(1).publish();
 
-        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
 
         source.subscribe(ts1);
 
@@ -353,7 +353,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void zeroRequested() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
 
         source.subscribe(ts);
 
@@ -408,9 +408,9 @@ public class FlowablePublishTest extends RxJavaTest {
         Flowable<Integer> obs = cf.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
@@ -435,9 +435,9 @@ public class FlowablePublishTest extends RxJavaTest {
         Flowable<Integer> obs = cf.observeOn(ImmediateThinScheduler.INSTANCE);
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
@@ -461,9 +461,9 @@ public class FlowablePublishTest extends RxJavaTest {
         ConnectableFlowable<Integer> cf = Flowable.range(0, 1000).observeOn(ImmediateThinScheduler.INSTANCE).publish();
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
                     tss.add(ts);
                     cf.subscribe(ts);
                 }
@@ -488,9 +488,9 @@ public class FlowablePublishTest extends RxJavaTest {
         Flowable<Integer> obs = cf.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestSubscriberEx<Integer>> tss = new ArrayList<TestSubscriberEx<Integer>>();
+                List<TestSubscriberEx<Integer>> tss = new ArrayList<>();
                 for (int k = 1; k < j; k++) {
-                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                    TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
@@ -539,7 +539,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final TestSubscriber<Integer> ts = cf.test();
 
-            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -694,7 +694,7 @@ public class FlowablePublishTest extends RxJavaTest {
             final ConnectableFlowable<Integer> cf = pp.publish();
 
             final Disposable d = cf.connect();
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -938,7 +938,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void disposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            final AtomicReference<Disposable> ref = new AtomicReference<Disposable>();
+            final AtomicReference<Disposable> ref = new AtomicReference<>();
 
             final ConnectableFlowable<Integer> cf = new Flowable<Integer>() {
                 @Override
@@ -963,7 +963,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void removeNotPresent() {
-        final AtomicReference<PublishConnection<Integer>> ref = new AtomicReference<PublishConnection<Integer>>();
+        final AtomicReference<PublishConnection<Integer>> ref = new AtomicReference<>();
 
         final ConnectableFlowable<Integer> cf = new Flowable<Integer>() {
             @Override
@@ -976,7 +976,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         cf.connect();
 
-        ref.get().add(new InnerSubscription<Integer>(new TestSubscriber<Integer>(), ref.get()));
+        ref.get().add(new InnerSubscription<>(new TestSubscriber<>(), ref.get()));
         ref.get().remove(null);
     }
 
@@ -999,7 +999,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ts1.assertResult(1);
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
         cf.subscribe(ts2);
 
         ts2
@@ -1012,7 +1012,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void subscriberLiveSwap() {
         final ConnectableFlowable<Integer> cf = Flowable.range(1, 5).publish();
 
-        final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+        final TestSubscriber<Integer> ts2 = new TestSubscriber<>(0);
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
             @Override
@@ -1038,7 +1038,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void selectorSubscriberSwap() {
-        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
         Flowable.range(1, 5).publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
             @Override
@@ -1061,7 +1061,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void leavingSubscriberOverrequests() {
-        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -1205,7 +1205,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void publishFunctionCancelOuterAfterOneInner() {
-        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -1231,7 +1231,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
     @Test
     public void publishFunctionCancelOuterAfterOneInnerBackpressured() {
-        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -1261,7 +1261,7 @@ public class FlowablePublishTest extends RxJavaTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+            final AtomicReference<Flowable<Integer>> ref = new AtomicReference<>();
 
             pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
                 @Override
@@ -1300,9 +1300,9 @@ public class FlowablePublishTest extends RxJavaTest {
 
         ConnectableFlowable<Integer> cf = pp.publish();
 
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-        final AtomicReference<InnerSubscription<Integer>> ref = new AtomicReference<InnerSubscription<Integer>>();
+        final AtomicReference<InnerSubscription<Integer>> ref = new AtomicReference<>();
 
         cf.subscribe(new FlowableSubscriber<Integer>() {
             @SuppressWarnings("unchecked")
@@ -1500,7 +1500,7 @@ public class FlowablePublishTest extends RxJavaTest {
     @Test
     public void altConnectCrash() {
         try {
-            new FlowablePublish<Integer>(Flowable.<Integer>empty(), 128)
+            new FlowablePublish<>(Flowable.<Integer>empty(), 128)
             .connect(new Consumer<Disposable>() {
                 @Override
                 public void accept(Disposable t) throws Exception {
@@ -1517,7 +1517,7 @@ public class FlowablePublishTest extends RxJavaTest {
     public void altConnectRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             final ConnectableFlowable<Integer> cf =
-                    new FlowablePublish<Integer>(Flowable.<Integer>never(), 128);
+                    new FlowablePublish<>(Flowable.<Integer>never(), 128);
 
             Runnable r = new Runnable() {
                 @Override

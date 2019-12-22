@@ -408,7 +408,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeInner() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
             @Override

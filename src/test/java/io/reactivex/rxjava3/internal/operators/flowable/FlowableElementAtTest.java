@@ -72,7 +72,7 @@ public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void elementAtConstrainsUpstreamRequests() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
             .doOnRequest(new LongConsumer() {
                 @Override
@@ -88,7 +88,7 @@ public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void elementAtWithDefaultConstrainsUpstreamRequests() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
             .doOnRequest(new LongConsumer() {
                 @Override

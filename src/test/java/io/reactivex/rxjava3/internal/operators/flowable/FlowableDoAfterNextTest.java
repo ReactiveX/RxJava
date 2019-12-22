@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableDoAfterNextTest extends RxJavaTest {
 
-    final List<Integer> values = new ArrayList<Integer>();
+    final List<Integer> values = new ArrayList<>();
 
     final Consumer<Integer> afterNext = new Consumer<Integer>() {
         @Override

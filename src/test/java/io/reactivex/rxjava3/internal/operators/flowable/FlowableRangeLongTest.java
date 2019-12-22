@@ -98,7 +98,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void backpressureViaRequest() {
         Flowable<Long> f = Flowable.rangeLong(1, Flowable.bufferSize());
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>(0L);
 
         ts.assertNoValues();
         ts.request(1);
@@ -119,14 +119,14 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void noBackpressure() {
-        ArrayList<Long> list = new ArrayList<Long>(Flowable.bufferSize() * 2);
+        ArrayList<Long> list = new ArrayList<>(Flowable.bufferSize() * 2);
         for (long i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
         }
 
         Flowable<Long> f = Flowable.rangeLong(1, list.size());
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -139,11 +139,11 @@ public class FlowableRangeLongTest extends RxJavaTest {
     void withBackpressureOneByOne(long start) {
         Flowable<Long> source = Flowable.rangeLong(start, 100);
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>(0L);
         ts.request(1);
         source.subscribe(ts);
 
-        List<Long> list = new ArrayList<Long>(100);
+        List<Long> list = new ArrayList<>(100);
         for (long i = 0; i < 100; i++) {
             list.add(i + start);
             ts.request(1);
@@ -154,11 +154,11 @@ public class FlowableRangeLongTest extends RxJavaTest {
     void withBackpressureAllAtOnce(long start) {
         Flowable<Long> source = Flowable.rangeLong(start, 100);
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>(0L);
         ts.request(100);
         source.subscribe(ts);
 
-        List<Long> list = new ArrayList<Long>(100);
+        List<Long> list = new ArrayList<>(100);
         for (long i = 0; i < 100; i++) {
             list.add(i + start);
         }
@@ -184,11 +184,11 @@ public class FlowableRangeLongTest extends RxJavaTest {
     public void withBackpressureRequestWayMore() {
         Flowable<Long> source = Flowable.rangeLong(50, 100);
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(0L);
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>(0L);
         ts.request(150);
         source.subscribe(ts);
 
-        List<Long> list = new ArrayList<Long>(100);
+        List<Long> list = new ArrayList<>(100);
         for (long i = 0; i < 100; i++) {
             list.add(i + 50);
         }
@@ -257,7 +257,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void nearMaxValueWithoutBackpressure() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts = new TestSubscriber<>();
         Flowable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(ts);
 
         ts.assertComplete();
@@ -267,7 +267,7 @@ public class FlowableRangeLongTest extends RxJavaTest {
 
     @Test
     public void nearMaxValueWithBackpressure() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(3L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(3L);
         Flowable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(ts);
 
         ts.assertComplete();

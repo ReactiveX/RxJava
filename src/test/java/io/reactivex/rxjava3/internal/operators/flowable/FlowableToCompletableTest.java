@@ -73,7 +73,7 @@ public class FlowableToCompletableTest extends RxJavaTest {
 
     @Test
     public void neverObservable() {
-        TestSubscriberEx<String> subscriber = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> subscriber = new TestSubscriberEx<>();
         Completable cmp = Flowable.<String>never().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 

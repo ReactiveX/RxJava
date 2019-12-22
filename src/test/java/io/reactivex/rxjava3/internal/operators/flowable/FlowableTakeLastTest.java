@@ -96,7 +96,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
 
     @Test
     public void backpressure1() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(ts);
@@ -107,7 +107,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
 
     @Test
     public void backpressure2() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -283,7 +283,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
 
     @Test
     public void requestOverflow() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
         Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
 
             @Override

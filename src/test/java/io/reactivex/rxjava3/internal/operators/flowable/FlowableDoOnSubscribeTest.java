@@ -66,7 +66,7 @@ public class FlowableDoOnSubscribeTest extends RxJavaTest {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
-        final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<Subscriber<? super Integer>>();
+        final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<>();
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override

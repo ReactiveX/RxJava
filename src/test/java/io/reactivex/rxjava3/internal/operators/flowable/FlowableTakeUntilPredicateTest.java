@@ -142,7 +142,7 @@ public class FlowableTakeUntilPredicateTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(5L);
 
         Flowable.range(1, 1000).takeUntil(new Predicate<Integer>() {
             @Override
@@ -158,7 +158,7 @@ public class FlowableTakeUntilPredicateTest extends RxJavaTest {
 
     @Test
     public void errorIncludesLastValueAsCause() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = new Predicate<String>() {
             @Override

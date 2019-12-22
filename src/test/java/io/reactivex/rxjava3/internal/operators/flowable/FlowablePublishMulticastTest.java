@@ -32,7 +32,7 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void asyncFusedInput() {
-        MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -51,7 +51,7 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void fusionRejectedInput() {
-        MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
         mp.onSubscribe(new QueueSubscription<Integer>() {
 
@@ -106,10 +106,10 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
     public void addRemoveRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+            final MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-            final MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
-            final MulticastSubscription<Integer> ms2 = new MulticastSubscription<Integer>(null, mp);
+            final MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
+            final MulticastSubscription<Integer> ms2 = new MulticastSubscription<>(null, mp);
 
             assertTrue(mp.add(ms1));
 
@@ -133,9 +133,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void removeNotFound() {
-        MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
+        MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
         assertTrue(mp.add(ms1));
 
         mp.remove(null);
@@ -143,9 +143,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void errorAllCancelled() {
-        MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
+        MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
         assertTrue(mp.add(ms1));
 
         ms1.set(Long.MIN_VALUE);
@@ -155,9 +155,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void completeAllCancelled() {
-        MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
+        MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
         assertTrue(mp.add(ms1));
 
         ms1.set(Long.MIN_VALUE);
@@ -167,9 +167,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void cancelledWhileFindingRequests() {
-        final MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        final MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
+        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
 
         assertTrue(mp.add(ms1));
 
@@ -182,9 +182,9 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void negativeRequest() {
-        final MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        final MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
-        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(null, mp);
+        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(null, mp);
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -198,19 +198,19 @@ public class FlowablePublishMulticastTest extends RxJavaTest {
 
     @Test
     public void outputCancellerDoubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new OutputCanceller<Object>(new TestSubscriber<Object>(), null));
+        TestHelper.doubleOnSubscribe(new OutputCanceller<>(new TestSubscriber<>(), null));
     }
 
     @Test
     public void dontDropItemsWhenNoReadyConsumers() {
-        final MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);
+        final MulticastProcessor<Integer> mp = new MulticastProcessor<>(128, true);
 
         mp.onSubscribe(new BooleanSubscription());
 
         mp.onNext(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<Integer>(ts, mp);
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        final MulticastSubscription<Integer> ms1 = new MulticastSubscription<>(ts, mp);
         ts.onSubscribe(ms1);
 
         assertTrue(mp.add(ms1));

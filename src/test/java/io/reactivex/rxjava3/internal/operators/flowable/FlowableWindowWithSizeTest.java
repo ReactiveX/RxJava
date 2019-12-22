@@ -99,7 +99,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeNonOverlapping() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
@@ -121,7 +121,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeNonOverlappingAsyncSource() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -145,7 +145,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeOverlapping() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
 
@@ -164,7 +164,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeOverlappingAsyncSource() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
                 .doOnNext(new Consumer<Integer>() {
@@ -187,7 +187,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -198,7 +198,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void backpressureOuter() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10).window(3);
 
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -271,7 +271,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void takeFlatMapCompletes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final int indicator = 999999999;
 
@@ -293,7 +293,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void backpressureOuterInexact() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(0L);
 
         Flowable.range(1, 5)
         .window(2, 1)
@@ -476,7 +476,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamSize() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10)
         .take(1)
@@ -530,7 +530,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamSkip() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, 10)
         .take(1)
@@ -584,7 +584,7 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamOverlap() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(5, 3)
         .take(1)

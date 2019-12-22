@@ -1063,7 +1063,7 @@ public class FlowableCreateTest extends RxJavaTest {
     @Test
     public void emittersHasToString() {
         Map<BackpressureStrategy, Class<? extends FlowableEmitter>> emitterMap =
-                new HashMap<BackpressureStrategy, Class<? extends FlowableEmitter>>();
+                new HashMap<>();
 
         emitterMap.put(BackpressureStrategy.MISSING, FlowableCreate.MissingEmitter.class);
         emitterMap.put(BackpressureStrategy.ERROR, FlowableCreate.ErrorAsyncEmitter.class);

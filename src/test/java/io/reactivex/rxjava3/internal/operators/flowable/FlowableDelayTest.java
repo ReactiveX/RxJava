@@ -218,7 +218,7 @@ public class FlowableDelayTest extends RxJavaTest {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
         result.subscribe(ts);
         ts.cancel();
@@ -232,7 +232,7 @@ public class FlowableDelayTest extends RxJavaTest {
     @Test
     public void delayWithFlowableNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        final List<PublishProcessor<Integer>> delays = new ArrayList<PublishProcessor<Integer>>();
+        final List<PublishProcessor<Integer>> delays = new ArrayList<>();
         final int n = 10;
         for (int i = 0; i < n; i++) {
             PublishProcessor<Integer> delay = PublishProcessor.create();
@@ -577,7 +577,7 @@ public class FlowableDelayTest extends RxJavaTest {
         int n = 3;
 
         PublishProcessor<Integer> source = PublishProcessor.create();
-        final List<PublishProcessor<Integer>> subjects = new ArrayList<PublishProcessor<Integer>>();
+        final List<PublishProcessor<Integer>> subjects = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             subjects.add(PublishProcessor.<Integer> create());
         }
@@ -625,7 +625,7 @@ public class FlowableDelayTest extends RxJavaTest {
             }
 
         });
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         delayed.subscribe(ts);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
@@ -634,7 +634,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithTimedDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
@@ -662,7 +662,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSubscriptionTimedDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -691,7 +691,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSelectorDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(new Function<Integer, Flowable<Long>>() {
 
@@ -726,7 +726,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSelectorDelayAndSubscriptionDelay() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(Flowable.defer(new Supplier<Flowable<Long>>() {
 
@@ -771,7 +771,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
 
@@ -794,7 +794,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
@@ -820,7 +820,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
@@ -847,7 +847,7 @@ public class FlowableDelayTest extends RxJavaTest {
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.delaySubscription(Flowable.defer(new Supplier<Publisher<Integer>>() {
             @Override
@@ -904,7 +904,7 @@ public class FlowableDelayTest extends RxJavaTest {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
         result.subscribe(ts);
         ts.cancel();
@@ -918,7 +918,7 @@ public class FlowableDelayTest extends RxJavaTest {
     @Test
     public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> thread = new AtomicReference<>();
 
         Flowable.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())

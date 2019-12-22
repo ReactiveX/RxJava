@@ -174,7 +174,7 @@ public class FlowableAmbTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void producerRequestThroughAmb() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
@@ -225,7 +225,7 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, Flowable.bufferSize() * 2)
                 .ambWith(Flowable.range(0, Flowable.bufferSize() * 2))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -254,7 +254,7 @@ public class FlowableAmbTest extends RxJavaTest {
         //this stream emits second
         Flowable<Integer> f2 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.ambArray(f1, f2).subscribe(ts);
         ts.request(1);
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -271,7 +271,7 @@ public class FlowableAmbTest extends RxJavaTest {
         //this stream emits second
         Flowable<Integer> f2 = Flowable.fromArray(4, 5, 6)
                 .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
 
         Flowable.ambArray(f1, f2).subscribe(ts);
         // before first emission request 20 more
@@ -309,7 +309,7 @@ public class FlowableAmbTest extends RxJavaTest {
         PublishProcessor<Integer> source2 = PublishProcessor.create();
         PublishProcessor<Integer> source3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.ambArray(source1, source2, source3).subscribe(ts);
 
@@ -327,8 +327,8 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void multipleUse() {
-        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
-        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<>();
 
         Flowable<Long> amb = Flowable.timer(100, TimeUnit.MILLISECONDS).ambWith(Flowable.timer(200, TimeUnit.MILLISECONDS));
 
@@ -541,7 +541,7 @@ public class FlowableAmbTest extends RxJavaTest {
 
     @Test
     public void iteratorThrows() {
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
                 return Flowable.never();
@@ -550,7 +550,7 @@ public class FlowableAmbTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "iterator()");
 
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 1, 100, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<>(100, 1, 100, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
                 return Flowable.never();
@@ -559,7 +559,7 @@ public class FlowableAmbTest extends RxJavaTest {
         .to(TestHelper.<Integer>testConsumer())
         .assertFailureAndMessage(TestException.class, "hasNext()");
 
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 100, 1, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<>(100, 100, 1, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
                 return Flowable.never();

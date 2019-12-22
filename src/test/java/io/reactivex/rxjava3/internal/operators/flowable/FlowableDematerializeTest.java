@@ -141,7 +141,7 @@ public class FlowableDematerializeTest extends RxJavaTest {
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(subscriber);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(subscriber);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());

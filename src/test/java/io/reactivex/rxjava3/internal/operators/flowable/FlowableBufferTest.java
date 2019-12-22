@@ -272,7 +272,7 @@ public class FlowableBufferTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -302,7 +302,7 @@ public class FlowableBufferTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.never();
 
         Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(subscriber, 0L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(subscriber, 0L);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {
@@ -730,7 +730,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestThroughBufferWithSize1() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(3L);
 
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -761,7 +761,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestThroughBufferWithSize2() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
         final AtomicLong requested = new AtomicLong();
 
         Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -789,7 +789,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestThroughBufferWithSize3() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(3L);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -818,7 +818,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestThroughBufferWithSize4() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -845,7 +845,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestOverflowThroughBufferWithSize1() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
 
@@ -874,7 +874,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
     @Test
     public void producerRequestOverflowThroughBufferWithSize2() {
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
 
@@ -1249,7 +1249,7 @@ public class FlowableBufferTest extends RxJavaTest {
     }
 
     static HashSet<Integer> set(Integer... values) {
-        return new HashSet<Integer>(Arrays.asList(values));
+        return new HashSet<>(Arrays.asList(values));
     }
 
     @SuppressWarnings("unchecked")
@@ -1259,7 +1259,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
@@ -1273,7 +1273,7 @@ public class FlowableBufferTest extends RxJavaTest {
         .buffer(3, 3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
@@ -1317,7 +1317,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -1337,7 +1337,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -1357,7 +1357,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -1419,7 +1419,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -1439,7 +1439,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -1459,7 +1459,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -1497,7 +1497,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
@@ -1515,7 +1515,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (++calls == 1) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
@@ -1533,7 +1533,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
@@ -1624,7 +1624,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, true)
         .test();
@@ -2204,7 +2204,7 @@ public class FlowableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }).test();
 
@@ -2226,7 +2226,7 @@ public class FlowableBufferTest extends RxJavaTest {
             }
         };
 
-        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
+        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<>();
         Flowable<Integer> b = new Flowable<Integer>() {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
@@ -2303,10 +2303,10 @@ public class FlowableBufferTest extends RxJavaTest {
     public void timedInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<Integer, List<Integer>>(
-                ts, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+        BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<>(
+                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2322,7 +2322,7 @@ public class FlowableBufferTest extends RxJavaTest {
 
         assertTrue(sub.isDisposed());
 
-        sub.buffer = new ArrayList<Integer>();
+        sub.buffer = new ArrayList<>();
         sub.enter();
         sub.onComplete();
     }
@@ -2353,10 +2353,10 @@ public class FlowableBufferTest extends RxJavaTest {
     public void timedSkipInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<Integer, List<Integer>>(
-                ts, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
+                ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2372,19 +2372,20 @@ public class FlowableBufferTest extends RxJavaTest {
     public void timedSkipCancelWhenSecondBuffer() {
         TestScheduler sch = new TestScheduler();
 
-        final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        final TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
-        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<Integer, List<Integer>>(
+        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<>(
                 ts, new Supplier<List<Integer>>() {
-                    int calls;
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        if (++calls == 2) {
-                            ts.cancel();
-                        }
-                        return new ArrayList<Integer>();
-                    }
-                }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
+            int calls;
+
+            @Override
+            public List<Integer> get() throws Exception {
+                if (++calls == 2) {
+                    ts.cancel();
+                }
+                return new ArrayList<>();
+            }
+        }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(new BooleanSubscription());
 
@@ -2397,11 +2398,11 @@ public class FlowableBufferTest extends RxJavaTest {
     public void timedSizeBufferAlreadyCleared() {
         TestScheduler sch = new TestScheduler();
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
-                new BufferExactBoundedSubscriber<Integer, List<Integer>>(
-                        ts, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
+                new BufferExactBoundedSubscriber<>(
+                        ts, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 

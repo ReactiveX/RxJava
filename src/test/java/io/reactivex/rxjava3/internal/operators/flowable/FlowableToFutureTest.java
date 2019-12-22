@@ -38,7 +38,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
         Flowable.fromFuture(future).subscribe(ts);
 
@@ -60,7 +60,7 @@ public class FlowableToFutureTest extends RxJavaTest {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
         Flowable.fromFuture(future, scheduler).subscribe(ts);
 
@@ -80,7 +80,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
         Flowable.fromFuture(future).subscribe(ts);
 
@@ -101,7 +101,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
         ts.cancel();
 
         Flowable.fromFuture(future).subscribe(ts);
@@ -147,7 +147,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
+        TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
         Flowable<Object> futureObservable = Flowable.fromFuture(future);
 
         futureObservable.subscribeOn(Schedulers.computation()).subscribe(ts);
@@ -163,9 +163,9 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
 
-        FutureTask<Integer> f = new FutureTask<Integer>(new Runnable() {
+        FutureTask<Integer> f = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
 
@@ -187,7 +187,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutNoTimeout() {
-        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
 
@@ -207,7 +207,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutTimeout() {
-        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
 
@@ -225,7 +225,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
     @Test
     public void withTimeoutNoTimeoutScheduler() {
-        FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
+        FutureTask<Integer> task = new FutureTask<>(new Runnable() {
             @Override
             public void run() {
 

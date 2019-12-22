@@ -74,7 +74,7 @@ public class FlowableSingleTest extends RxJavaTest {
 
     @Test
     public void singleDoesNotRequestMoreThanItNeedsIf1Then2RequestedFlowable() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -115,7 +115,7 @@ public class FlowableSingleTest extends RxJavaTest {
 
     @Test
     public void singleDoesNotRequestMoreThanItNeedsIf3RequestedFlowable() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -155,7 +155,7 @@ public class FlowableSingleTest extends RxJavaTest {
 
     @Test
     public void singleRequestsExactlyWhatItNeedsIf1RequestedFlowable() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.just(1)
         //
                 .doOnRequest(new LongConsumer() {
@@ -705,7 +705,7 @@ public class FlowableSingleTest extends RxJavaTest {
     @Test
     public void singleElementOperatorDoNotSwallowExceptionWhenDone() {
         final Throwable exception = new RuntimeException("some error");
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         try {
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {

@@ -38,7 +38,7 @@ public class FlowableFromSourceTest extends RxJavaTest {
     public void before() {
         source = new PublishAsyncEmitter();
         sourceNoCancel = new PublishAsyncEmitterNoCancel();
-        ts = new TestSubscriberEx<Integer>(0L);
+        ts = new TestSubscriberEx<>(0L);
     }
 
     @Test

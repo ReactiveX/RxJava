@@ -39,7 +39,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
 
     @Test
     public void noBackpressureSupport() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes
@@ -53,7 +53,7 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {
@@ -110,17 +110,19 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
     public void fixBackpressureBoundedBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch backpressureCallback = new CountDownLatch(1);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {
             }
 
             @Override
-            public void onComplete() { }
+            public void onComplete() {
+            }
 
             @Override
-            public void onError(Throwable e) { }
+            public void onError(Throwable e) {
+            }
 
             @Override
             public void onNext(Long t) {

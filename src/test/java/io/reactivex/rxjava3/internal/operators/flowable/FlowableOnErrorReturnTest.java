@@ -39,7 +39,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
     public void resumeNext() {
         TestFlowable f = new TestFlowable("one");
         Flowable<String> w = Flowable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -74,7 +74,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
     public void functionThrowsError() {
         TestFlowable f = new TestFlowable("one");
         Flowable<String> w = Flowable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -132,7 +132,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
         });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber, Long.MAX_VALUE);
         flowable.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
 
@@ -146,7 +146,7 @@ public class FlowableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {
 

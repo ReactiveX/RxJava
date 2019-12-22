@@ -40,7 +40,7 @@ public class FlowableIntervalTest extends RxJavaTest {
 
     @Test
     public void cancelledOnRun() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts = new TestSubscriber<>();
         IntervalSubscriber is = new IntervalSubscriber(ts);
         ts.onSubscribe(is);
 

@@ -236,7 +236,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
                 .unsafeCreate(so)
                 .retry(retry5);
 
-        FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<Long>(subscriber);
+        FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<>(subscriber);
 
         f.subscribe(async);
 
@@ -263,7 +263,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
-        FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<Long>(subscriber);
+        FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<>(subscriber);
 
         f.subscribe(async);
 
@@ -279,7 +279,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue2826() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         Flowable.just(1).map(new Function<Integer, Integer>() {
@@ -313,7 +313,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue3008RetryWithPredicate() {
-        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override
@@ -341,7 +341,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue3008RetryInfinite() {
-        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override
@@ -365,7 +365,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
 
         Flowable<Integer> source = Flowable
                 .just(1)
@@ -377,7 +377,7 @@ public class FlowableRetryWithPredicateTest extends RxJavaTest {
                     }
                 });
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(3L);
         source
         .retry(new BiPredicate<Integer, Throwable>() {
             @Override
