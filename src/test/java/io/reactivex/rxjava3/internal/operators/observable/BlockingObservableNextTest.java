@@ -63,7 +63,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
     }
 
     static <T> Iterable<T> next(ObservableSource<T> source) {
-        return new BlockingObservableNext<T>(source);
+        return new BlockingObservableNext<>(source);
     }
 
     @Test
@@ -356,7 +356,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverError() {
-        NextObserver<Integer> no = new NextObserver<Integer>();
+        NextObserver<Integer> no = new NextObserver<>();
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -370,7 +370,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnNext() throws Exception {
-        NextObserver<Integer> no = new NextObserver<Integer>();
+        NextObserver<Integer> no = new NextObserver<>();
 
         no.setWaiting();
         no.onNext(Notification.createOnNext(1));
@@ -383,7 +383,7 @@ public class BlockingObservableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnCompleteOnNext() throws Exception {
-        NextObserver<Integer> no = new NextObserver<Integer>();
+        NextObserver<Integer> no = new NextObserver<>();
 
         no.setWaiting();
         no.onNext(Notification.<Integer>createOnComplete());

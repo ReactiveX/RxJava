@@ -55,7 +55,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc).toObservable();
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "a");
         expected.put(2, "bb");
         expected.put(3, "ccc");
@@ -74,7 +74,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate).toObservable();
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "aa");
         expected.put(2, "bbbb");
         expected.put(3, "cccccc");
@@ -102,7 +102,7 @@ public class ObservableToMapTest extends RxJavaTest {
         };
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr).toObservable();
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "a");
         expected.put(2, "bb");
         expected.put(3, "ccc");
@@ -132,7 +132,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr).toObservable();
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "aa");
         expected.put(2, "bbbb");
         expected.put(3, "cccccc");
@@ -178,7 +178,7 @@ public class ObservableToMapTest extends RxJavaTest {
             }
         }, mapFactory).toObservable();
 
-        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
         expected.put(3, "ccc");
         expected.put(4, "dddd");
@@ -214,7 +214,7 @@ public class ObservableToMapTest extends RxJavaTest {
             }
         }, mapFactory).toObservable();
 
-        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
         expected.put(3, "ccc");
         expected.put(4, "dddd");
@@ -232,7 +232,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "a");
         expected.put(2, "bb");
         expected.put(3, "ccc");
@@ -250,7 +250,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "aa");
         expected.put(2, "bbbb");
         expected.put(3, "cccccc");
@@ -277,7 +277,7 @@ public class ObservableToMapTest extends RxJavaTest {
         };
         Single<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "a");
         expected.put(2, "bb");
         expected.put(3, "ccc");
@@ -306,7 +306,7 @@ public class ObservableToMapTest extends RxJavaTest {
 
         Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
 
-        Map<Integer, String> expected = new HashMap<Integer, String>();
+        Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "aa");
         expected.put(2, "bbbb");
         expected.put(3, "cccccc");
@@ -351,7 +351,7 @@ public class ObservableToMapTest extends RxJavaTest {
             }
         }, mapFactory);
 
-        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
         expected.put(3, "ccc");
         expected.put(4, "dddd");
@@ -386,7 +386,7 @@ public class ObservableToMapTest extends RxJavaTest {
             }
         }, mapFactory);
 
-        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        Map<Integer, String> expected = new LinkedHashMap<>();
         expected.put(2, "bb");
         expected.put(3, "ccc");
         expected.put(4, "dddd");

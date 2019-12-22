@@ -465,7 +465,7 @@ public class ObservableSingleTest extends RxJavaTest {
     @Test
     public void singleElementOperatorDoNotSwallowExceptionWhenDone() {
         final Throwable exception = new RuntimeException("some error");
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         try {
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {

@@ -112,7 +112,7 @@ public class ObservableMergeTest extends RxJavaTest {
     public void mergeList() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
-        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
+        List<Observable<String>> listOfObservables = new ArrayList<>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
@@ -191,7 +191,7 @@ public class ObservableMergeTest extends RxJavaTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         Observable<String> m = Observable.merge(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
-        TestObserver<String> to = new TestObserver<String>(stringObserver);
+        TestObserver<String> to = new TestObserver<>(stringObserver);
         m.subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -408,7 +408,7 @@ public class ObservableMergeTest extends RxJavaTest {
         AtomicBoolean os2 = new AtomicBoolean(false);
         Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
-        TestObserverEx<Long> to = new TestObserverEx<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<>();
         Observable.merge(o1, o2).subscribe(to);
 
         // we haven't incremented time so nothing should be received yet
@@ -450,7 +450,7 @@ public class ObservableMergeTest extends RxJavaTest {
             AtomicBoolean os2 = new AtomicBoolean(false);
             Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
-            TestObserver<Long> to = new TestObserver<Long>();
+            TestObserver<Long> to = new TestObserver<>();
             Observable.merge(o1, o2).subscribe(to);
 
             // we haven't incremented time so nothing should be received yet
@@ -523,7 +523,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o, o, o);
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<>();
             merge.subscribe(to);
 
             to.awaitDone(3, TimeUnit.SECONDS);
@@ -576,7 +576,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o, o, o);
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
             merge.subscribe(to);
 
             to.awaitDone(5, TimeUnit.SECONDS);
@@ -623,7 +623,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
         for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o, o, o);
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
             merge.subscribe(to);
 
             to.awaitDone(5, TimeUnit.SECONDS);
@@ -806,7 +806,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1AsyncStreamOf1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(1, 1).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -815,7 +815,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1AsyncStreamOf1000() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(1, 1000).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -824,7 +824,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge10AsyncStreamOf1000() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(10, 1000).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -833,7 +833,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1000AsyncStreamOf1000() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(1000, 1000).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -842,7 +842,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge2000AsyncStreamOf100() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(2000, 100).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -851,7 +851,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge100AsyncStreamOf1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNAsyncStreamsOfN(100, 1).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -873,7 +873,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1SyncStreamOf1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNSyncStreamsOfN(1, 1).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -882,7 +882,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1SyncStreamOf1000000() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNSyncStreamsOfN(1, 1000000).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -891,7 +891,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1000SyncStreamOf1000() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNSyncStreamsOfN(1000, 1000).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -900,7 +900,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge10000SyncStreamOf10() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNSyncStreamsOfN(10000, 10).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -909,7 +909,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void merge1000000SyncStreamOf1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         mergeNSyncStreamsOfN(1000000, 1).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -956,7 +956,7 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void mergeManyAsyncSingle() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable<Observable<Integer>> os = Observable.range(1, 10000)
         .map(new Function<Integer, Observable<Integer>>() {
 
@@ -1004,7 +1004,7 @@ public class ObservableMergeTest extends RxJavaTest {
     ;
 
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserverEx<Integer> to) {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             list.add(i);
         }
@@ -1022,12 +1022,12 @@ public class ObservableMergeTest extends RxJavaTest {
 
     @Test
     public void fastMergeFullScalar() {
-        runMerge(toScalar, new TestObserverEx<Integer>());
+        runMerge(toScalar, new TestObserverEx<>());
     }
 
     @Test
     public void fastMergeHiddenScalar() {
-        runMerge(toHiddenScalar, new TestObserverEx<Integer>());
+        runMerge(toHiddenScalar, new TestObserverEx<>());
     }
 
     @Test

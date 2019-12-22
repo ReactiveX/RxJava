@@ -27,7 +27,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Single.just(100))
@@ -38,7 +38,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void mainError() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.<Integer>error(new TestException())
         .concatWith(Single.just(100))
@@ -49,7 +49,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void otherError() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Single.<Integer>error(new TestException()))
@@ -60,7 +60,7 @@ public class ObservableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void takeMain() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Single.just(100))

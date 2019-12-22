@@ -126,7 +126,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         });
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.merge(fast, slow).subscribe(to);
         is.connect();
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -146,7 +146,7 @@ public class ObservablePublishTest extends RxJavaTest {
             }
 
         });
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         xs.publish(new Function<Observable<Integer>, Observable<Integer>>() {
 
             @Override
@@ -173,7 +173,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void takeUntilWithPublishedStream() {
         Observable<Integer> xs = Observable.range(0, Flowable.bufferSize() * 2);
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         ConnectableObservable<Integer> xsp = xs.publish();
         xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
 
@@ -209,7 +209,7 @@ public class ObservablePublishTest extends RxJavaTest {
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
 
-        final TestObserver<Integer> to2 = new TestObserver<Integer>();
+        final TestObserver<Integer> to2 = new TestObserver<>();
 
         final TestObserver<Integer> to1 = new TestObserver<Integer>() {
             @Override
@@ -257,7 +257,7 @@ public class ObservablePublishTest extends RxJavaTest {
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        TestObserverEx<Long> to = new TestObserverEx<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<>();
         co.subscribe(to);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
@@ -270,7 +270,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void subscribeAfterDisconnectThenConnect() {
         ConnectableObservable<Integer> source = Observable.just(1).publish();
 
-        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<>();
 
         source.subscribe(to1);
 
@@ -282,7 +282,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
         source.reset();
 
-        TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to2 = new TestObserverEx<>();
 
         source.subscribe(to2);
 
@@ -300,7 +300,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void noSubscriberRetentionOnCompleted() {
         ObservablePublish<Integer> source = (ObservablePublish<Integer>)Observable.just(1).publish();
 
-        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<>();
 
         source.subscribe(to1);
 
@@ -382,9 +382,9 @@ public class ObservablePublishTest extends RxJavaTest {
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
-                List<TestObserverEx<Integer>> tos = new ArrayList<TestObserverEx<Integer>>();
+                List<TestObserverEx<Integer>> tos = new ArrayList<>();
                 for (int k = 1; k < j; k++) {
-                    TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+                    TestObserverEx<Integer> to = new TestObserverEx<>();
                     tos.add(to);
                     obs.subscribe(to);
                 }
@@ -480,7 +480,7 @@ public class ObservablePublishTest extends RxJavaTest {
 
             final TestObserver<Integer> to = co.test();
 
-            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+            final TestObserver<Integer> to2 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -628,7 +628,7 @@ public class ObservablePublishTest extends RxJavaTest {
             final ConnectableObservable<Integer> co = ps.publish();
 
             final Disposable d = co.connect();
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -762,7 +762,7 @@ public class ObservablePublishTest extends RxJavaTest {
     @Test
     public void altConnectCrash() {
         try {
-            new ObservablePublish<Integer>(Observable.<Integer>empty())
+            new ObservablePublish<>(Observable.<Integer>empty())
             .connect(new Consumer<Disposable>() {
                 @Override
                 public void accept(Disposable t) throws Exception {
@@ -779,7 +779,7 @@ public class ObservablePublishTest extends RxJavaTest {
     public void altConnectRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             final ConnectableObservable<Integer> co =
-                    new ObservablePublish<Integer>(Observable.<Integer>never());
+                    new ObservablePublish<>(Observable.<Integer>never());
 
             Runnable r = new Runnable() {
                 @Override

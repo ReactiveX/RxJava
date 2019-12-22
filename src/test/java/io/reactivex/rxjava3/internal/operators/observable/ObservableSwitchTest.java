@@ -995,7 +995,7 @@ public class ObservableSwitchTest extends RxJavaTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
-                final AtomicReference<Observer<? super Integer>> obs1 = new AtomicReference<Observer<? super Integer>>();
+                final AtomicReference<Observer<? super Integer>> obs1 = new AtomicReference<>();
                 final Observable<Integer> ps1 = new Observable<Integer>() {
                     @Override
                     protected void subscribeActual(
@@ -1003,7 +1003,7 @@ public class ObservableSwitchTest extends RxJavaTest {
                         obs1.set(observer);
                     }
                 };
-                final AtomicReference<Observer<? super Integer>> obs2 = new AtomicReference<Observer<? super Integer>>();
+                final AtomicReference<Observer<? super Integer>> obs2 = new AtomicReference<>();
                 final Observable<Integer> ps2 = new Observable<Integer>() {
                     @Override
                     protected void subscribeActual(
@@ -1203,7 +1203,7 @@ public class ObservableSwitchTest extends RxJavaTest {
     public void undeliverableUponCancel() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.just(1)
             .map(new Function<Integer, Integer>() {

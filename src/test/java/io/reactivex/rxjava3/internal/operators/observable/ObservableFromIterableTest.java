@@ -119,7 +119,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
     public void noBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         o.subscribe(to);
 
@@ -132,7 +132,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
             o.subscribe(to);
 
@@ -235,7 +235,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test
     public void fusionWithConcatMap() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
         new Function<Integer, ObservableSource<Integer>>() {
@@ -266,7 +266,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextCancels() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.fromIterable(new Iterable<Integer>() {
             @Override
@@ -303,7 +303,7 @@ public class ObservableFromIterableTest extends RxJavaTest {
 
     @Test
     public void fusionRejected() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         Observable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(to);

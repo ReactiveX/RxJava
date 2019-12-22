@@ -73,7 +73,7 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
 
         assertFalse(it.isDisposed());
 
@@ -84,7 +84,7 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     @Test
     public void interruptWait() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
 
         try {
             Thread.currentThread().interrupt();
@@ -97,14 +97,14 @@ public class BlockingObservableToIteratorTest extends RxJavaTest {
 
     @Test(expected = NoSuchElementException.class)
     public void emptyThrowsNoSuch() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
         it.onComplete();
         it.next();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void remove() {
-        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<>(128);
         it.remove();
     }
 

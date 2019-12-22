@@ -273,7 +273,7 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -303,7 +303,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Integer> source = Observable.never();
 
         Observer<List<Integer>> o = TestHelper.mockObserver();
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>(o);
+        TestObserver<List<Integer>> to = new TestObserver<>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {
@@ -781,7 +781,7 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     static HashSet<Integer> set(Integer... values) {
-        return new HashSet<Integer>(Arrays.asList(values));
+        return new HashSet<>(Arrays.asList(values));
     }
 
     @SuppressWarnings("unchecked")
@@ -791,7 +791,7 @@ public class ObservableBufferTest extends RxJavaTest {
         .buffer(3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
@@ -805,7 +805,7 @@ public class ObservableBufferTest extends RxJavaTest {
         .buffer(3, 3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
@@ -865,7 +865,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -885,7 +885,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -905,7 +905,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -925,7 +925,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -945,7 +945,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -965,7 +965,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -1016,7 +1016,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
@@ -1034,7 +1034,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
@@ -1134,7 +1134,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, true)
         .test();
@@ -1587,7 +1587,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }).test();
 
@@ -1609,7 +1609,7 @@ public class ObservableBufferTest extends RxJavaTest {
             }
         };
 
-        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
         Observable<Integer> b = new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
@@ -1653,10 +1653,10 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<Integer, List<Integer>>(
-                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+        BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<>(
+                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
         sub.onSubscribe(Disposable.empty());
 
@@ -1672,7 +1672,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         assertTrue(sub.isDisposed());
 
-        sub.buffer = new ArrayList<Integer>();
+        sub.buffer = new ArrayList<>();
         sub.enter();
         sub.onComplete();
     }
@@ -1703,10 +1703,10 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSkipInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
-                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
+                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(Disposable.empty());
 
@@ -1722,19 +1722,20 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSkipCancelWhenSecondBuffer() {
         TestScheduler sch = new TestScheduler();
 
-        final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        final TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
+        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
                 to, new Supplier<List<Integer>>() {
-                    int calls;
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        if (++calls == 2) {
-                            to.dispose();
-                        }
-                        return new ArrayList<Integer>();
-                    }
-                }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
+            int calls;
+
+            @Override
+            public List<Integer> get() throws Exception {
+                if (++calls == 2) {
+                    to.dispose();
+                }
+                return new ArrayList<>();
+            }
+        }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
         sub.onSubscribe(Disposable.empty());
 
@@ -1747,11 +1748,11 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSizeBufferAlreadyCleared() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
         BufferExactBoundedObserver<Integer, List<Integer>> sub =
-                new BufferExactBoundedObserver<Integer, List<Integer>>(
-                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
+                new BufferExactBoundedObserver<>(
+                        to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 
@@ -1790,10 +1791,10 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactState() {
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<Integer, List<Integer>>(
-                to, 1, Functions.justSupplier((List<Integer>)new ArrayList<Integer>())
+        BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<>(
+                to, 1, Functions.justSupplier((List<Integer>) new ArrayList<Integer>())
         );
 
         sub.onComplete();

@@ -77,7 +77,7 @@ public class ObservableFromTest extends RxJavaTest {
 
     @Test
     public void fusionRejected() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         Observable.fromArray(1, 2, 3)
         .subscribe(to);

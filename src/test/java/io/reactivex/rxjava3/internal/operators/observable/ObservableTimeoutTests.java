@@ -51,7 +51,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
 
         withTimeout.subscribe(to);
 
@@ -66,7 +66,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
 
         withTimeout.subscribe(to);
 
@@ -82,7 +82,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        TestObserverEx<String> observer = new TestObserverEx<String>();
+        TestObserverEx<String> observer = new TestObserverEx<>();
 
         withTimeout.subscribe(observer);
 
@@ -92,7 +92,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        TestObserverEx<String> observer = new TestObserverEx<String>();
+        TestObserverEx<String> observer = new TestObserverEx<>();
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
@@ -104,7 +104,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
@@ -117,7 +117,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
     @Test
     public void shouldErrorIfUnderlyingErrors() {
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
@@ -132,7 +132,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         source.subscribe(to);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -155,7 +155,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         source.subscribe(to);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -178,7 +178,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         source.subscribe(to);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -201,7 +201,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         source.subscribe(to);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -231,7 +231,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final TestObserverEx<String> observer = new TestObserverEx<String>();
+        final TestObserverEx<String> observer = new TestObserverEx<>();
 
         new Thread(new Runnable() {
 
@@ -280,7 +280,7 @@ public class ObservableTimeoutTests extends RxJavaTest {
         TestScheduler testScheduler = new TestScheduler();
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        TestObserverEx<String> observer = new TestObserverEx<String>();
+        TestObserverEx<String> observer = new TestObserverEx<>();
         observableWithTimeout.subscribe(observer);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);

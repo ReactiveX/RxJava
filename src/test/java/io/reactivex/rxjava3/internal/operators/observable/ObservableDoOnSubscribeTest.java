@@ -69,7 +69,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
-        final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<>();
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override

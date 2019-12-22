@@ -91,7 +91,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         result.subscribe(to);
 
@@ -117,7 +117,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         result.subscribe(to);
 
@@ -143,7 +143,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         result.subscribe(to);
 
@@ -170,7 +170,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         result.subscribe(to);
 
@@ -198,7 +198,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         result.subscribe(to);
 
@@ -226,7 +226,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER_ERROR);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         result.subscribe(to);
 
@@ -252,7 +252,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
         Observable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         result.subscribe(to);
 
@@ -276,7 +276,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         PublishSubject<String> ps3 = PublishSubject.create();
         PublishSubject<String> main = PublishSubject.create();
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         main.withLatestFrom(new Observable[] { ps1, ps2, ps3 }, toArray)
         .subscribe(to);
@@ -323,7 +323,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         PublishSubject<String> ps3 = PublishSubject.create();
         PublishSubject<String> main = PublishSubject.create();
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         main.withLatestFrom(Arrays.<Observable<?>>asList(ps1, ps2, ps3), toArray)
         .subscribe(to);
@@ -368,8 +368,8 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         for (String val : new String[] { "1" /*, null*/ }) {
             int n = 35;
             for (int i = 0; i < n; i++) {
-                List<Observable<?>> sources = new ArrayList<Observable<?>>();
-                List<String> expected = new ArrayList<String>();
+                List<Observable<?>> sources = new ArrayList<>();
+                List<String> expected = new ArrayList<>();
                 expected.add(val);
 
                 for (int j = 0; j < i; j++) {
@@ -377,7 +377,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
                     expected.add(String.valueOf(val));
                 }
 
-                TestObserver<String> to = new TestObserver<String>();
+                TestObserver<String> to = new TestObserver<>();
 
                 PublishSubject<String> main = PublishSubject.create();
 
@@ -397,7 +397,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withEmpty() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.range(1, 3).withLatestFrom(
                 new Observable<?>[] { Observable.just(1), Observable.empty() }, toArray)
@@ -410,7 +410,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withError() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.range(1, 3).withLatestFrom(
                 new Observable<?>[] { Observable.just(1), Observable.error(new TestException()) }, toArray)
@@ -423,7 +423,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withMainError() {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.error(new TestException()).withLatestFrom(
                 new Observable<?>[] { Observable.just(1), Observable.just(1) }, toArray)
@@ -438,7 +438,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     public void with2Others() {
         Observable<Integer> just = Observable.just(1);
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
         just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -457,7 +457,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     public void with3Others() {
         Observable<Integer> just = Observable.just(1);
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
         just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -476,7 +476,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     public void with4Others() {
         Observable<Integer> just = Observable.just(1);
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
         just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -511,7 +511,7 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
     @Test
     public void manyIteratorThrows() {
         Observable.just(1)
-        .withLatestFrom(new CrashingMappedIterable<Observable<Integer>>(1, 100, 100, new Function<Integer, Observable<Integer>>() {
+        .withLatestFrom(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) throws Exception {
                 return Observable.just(2);

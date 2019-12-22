@@ -33,9 +33,9 @@ public class ObservableDetachTest extends RxJavaTest {
     public void just() throws Exception {
         o = new Object();
 
-        WeakReference<Object> wr = new WeakReference<Object>(o);
+        WeakReference<Object> wr = new WeakReference<>(o);
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         Observable.just(o).count().toObservable().onTerminateDetach().subscribe(to);
 
@@ -54,7 +54,7 @@ public class ObservableDetachTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         Observable.error(new TestException()).onTerminateDetach().subscribe(to);
 
@@ -65,7 +65,7 @@ public class ObservableDetachTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         Observable.empty().onTerminateDetach().subscribe(to);
 
@@ -76,7 +76,7 @@ public class ObservableDetachTest extends RxJavaTest {
 
     @Test
     public void range() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         Observable.range(1, 1000).onTerminateDetach().subscribe(to);
 
@@ -89,7 +89,7 @@ public class ObservableDetachTest extends RxJavaTest {
     public void justUnsubscribed() throws Exception {
         o = new Object();
 
-        WeakReference<Object> wr = new WeakReference<Object>(o);
+        WeakReference<Object> wr = new WeakReference<>(o);
 
         TestObserver<Long> to = Observable.just(o).count().toObservable().onTerminateDetach().test();
 

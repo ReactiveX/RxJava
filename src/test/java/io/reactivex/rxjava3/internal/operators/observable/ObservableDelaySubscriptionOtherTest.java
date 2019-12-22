@@ -32,7 +32,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noPrematureSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -65,7 +65,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noMultipleSubscriptions() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -99,7 +99,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void completeTriggersSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -132,7 +132,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noPrematureSubscriptionToError() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -165,7 +165,7 @@ public class ObservableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noSubscriptionIfOtherErrors() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 

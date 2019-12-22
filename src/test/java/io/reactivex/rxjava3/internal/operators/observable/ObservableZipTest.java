@@ -350,7 +350,7 @@ public class ObservableZipTest extends RxJavaTest {
         PublishSubject<String> r2 = PublishSubject.create();
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
 
         Observable.zip(r1, r2, zipr2).subscribe(to);
 
@@ -768,7 +768,7 @@ public class ObservableZipTest extends RxJavaTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new Consumer<String>() {
 
             @Override
@@ -795,7 +795,7 @@ public class ObservableZipTest extends RxJavaTest {
                     }
                 }).take(5);
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
         os.subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
@@ -820,7 +820,7 @@ public class ObservableZipTest extends RxJavaTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new DefaultObserver<String>() {
 
             @Override
@@ -884,7 +884,7 @@ public class ObservableZipTest extends RxJavaTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         o.subscribe(new Consumer<String>() {
 
             @Override
@@ -913,7 +913,7 @@ public class ObservableZipTest extends RxJavaTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         o.subscribe(new Consumer<String>() {
 
             @Override
@@ -940,7 +940,7 @@ public class ObservableZipTest extends RxJavaTest {
             }
         });
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         o.subscribe(to);
         to.awaitDone(200, TimeUnit.MILLISECONDS);
         to.assertNoValues();
@@ -974,7 +974,7 @@ public class ObservableZipTest extends RxJavaTest {
         Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2);
         Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1089,7 +1089,7 @@ public class ObservableZipTest extends RxJavaTest {
                         return i1 + i2;
                     }
                 });
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
@@ -1404,7 +1404,7 @@ public class ObservableZipTest extends RxJavaTest {
     public void firstErrorPreventsSecondSubscription() {
         final AtomicInteger counter = new AtomicInteger();
 
-        List<Observable<?>> observableList = new ArrayList<Observable<?>>();
+        List<Observable<?>> observableList = new ArrayList<>();
         observableList.add(Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e)

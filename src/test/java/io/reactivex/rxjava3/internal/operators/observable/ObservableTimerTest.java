@@ -64,7 +64,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
     @Test
     public void timerPeriodically() {
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
 
         Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(to);
 
@@ -92,7 +92,7 @@ public class ObservableTimerTest extends RxJavaTest {
     @Test
     public void interval() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
         w.subscribe(to);
 
         to.assertNoValues();
@@ -117,8 +117,8 @@ public class ObservableTimerTest extends RxJavaTest {
     public void withMultipleSubscribersStartingAtSameTime() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
 
-        TestObserver<Long> to1 = new TestObserver<Long>();
-        TestObserver<Long> to2 = new TestObserver<Long>();
+        TestObserver<Long> to1 = new TestObserver<>();
+        TestObserver<Long> to2 = new TestObserver<>();
 
         w.subscribe(to1);
         w.subscribe(to2);
@@ -154,7 +154,7 @@ public class ObservableTimerTest extends RxJavaTest {
     public void withMultipleStaggeredSubscribers() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
 
-        TestObserver<Long> to1 = new TestObserver<Long>();
+        TestObserver<Long> to1 = new TestObserver<>();
 
         w.subscribe(to1);
 
@@ -162,7 +162,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
 
-        TestObserver<Long> to2 = new TestObserver<Long>();
+        TestObserver<Long> to2 = new TestObserver<>();
 
         w.subscribe(to2);
 
@@ -194,7 +194,7 @@ public class ObservableTimerTest extends RxJavaTest {
     public void withMultipleStaggeredSubscribersAndPublish() {
         ConnectableObservable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler).publish();
 
-        TestObserver<Long> to1 = new TestObserver<Long>();
+        TestObserver<Long> to1 = new TestObserver<>();
 
         w.subscribe(to1);
         w.connect();
@@ -203,7 +203,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
 
-        TestObserver<Long> to2 = new TestObserver<Long>();
+        TestObserver<Long> to2 = new TestObserver<>();
         w.subscribe(to2);
 
         to1.assertValues(0L, 1L);
@@ -348,7 +348,7 @@ public class ObservableTimerTest extends RxJavaTest {
 
     @Test
     public void cancelledAndRun() {
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
         to.onSubscribe(Disposable.empty());
         TimerObserver tm = new TimerObserver(to);
 

@@ -94,14 +94,14 @@ public class ObservableRangeTest extends RxJavaTest {
 
     @Test
     public void noBackpressure() {
-        ArrayList<Integer> list = new ArrayList<Integer>(Flowable.bufferSize() * 2);
+        ArrayList<Integer> list = new ArrayList<>(Flowable.bufferSize() * 2);
         for (int i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
         }
 
         Observable<Integer> o = Observable.range(1, list.size());
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         o.subscribe(to);
 
@@ -138,7 +138,7 @@ public class ObservableRangeTest extends RxJavaTest {
 
     @Test
     public void nearMaxValueWithoutBackpressure() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(to);
 
         to.assertComplete();
@@ -158,7 +158,7 @@ public class ObservableRangeTest extends RxJavaTest {
 
     @Test
     public void requestWrongFusion() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         Observable.range(1, 5)
         .subscribe(to);

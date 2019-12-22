@@ -53,7 +53,7 @@ public final class Burst<T> extends Observable<T> {
 
     @SafeVarargs
     public static <T> Builder<T> items(T... items) {
-        return new Builder<T>(Arrays.asList(items));
+        return new Builder<>(Arrays.asList(items));
     }
 
     public static final class Builder<T> {
@@ -71,7 +71,7 @@ public final class Burst<T> extends Observable<T> {
         }
 
         public Observable<T> create() {
-            return new Burst<T>(error, items);
+            return new Burst<>(error, items);
         }
 
     }

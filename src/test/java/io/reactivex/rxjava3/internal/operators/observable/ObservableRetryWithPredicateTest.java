@@ -235,7 +235,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
                 .unsafeCreate(so)
                 .retry(retry5);
 
-        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(observer);
+        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<>(observer);
 
         o.subscribe(async);
 
@@ -262,7 +262,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
-        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(observer);
+        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<>(observer);
 
         o.subscribe(async);
 
@@ -278,7 +278,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue2826() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1).map(new Function<Integer, Integer>() {
@@ -312,7 +312,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue3008RetryWithPredicate() {
-        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override
@@ -340,7 +340,7 @@ public class ObservableRetryWithPredicateTest extends RxJavaTest {
 
     @Test
     public void issue3008RetryInfinite() {
-        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final List<Long> list = new CopyOnWriteArrayList<>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
         Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override

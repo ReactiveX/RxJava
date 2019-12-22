@@ -729,7 +729,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         buf.addLast(new Node(4));
         buf.addLast(new Node(5));
 
-        List<Integer> values = new ArrayList<Integer>();
+        List<Integer> values = new ArrayList<>();
         buf.collect(values);
 
         Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
@@ -753,8 +753,8 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void timedAndSizedTruncation() {
         TestScheduler test = new TestScheduler();
-        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test, false);
-        List<Integer> values = new ArrayList<Integer>();
+        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<>(2, 2000, TimeUnit.MILLISECONDS, test, false);
+        List<Integer> values = new ArrayList<>();
 
         buf.next(1);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -792,12 +792,12 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     @Test
     public void timedAndSizedTruncationError() {
         TestScheduler test = new TestScheduler();
-        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test, false);
+        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<>(2, 2000, TimeUnit.MILLISECONDS, test, false);
 
         Assert.assertFalse(buf.hasCompleted());
         Assert.assertFalse(buf.hasError());
 
-        List<Integer> values = new ArrayList<Integer>();
+        List<Integer> values = new ArrayList<>();
 
         buf.next(1);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -835,8 +835,8 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void sizedTruncation() {
-        SizeBoundReplayBuffer<Integer> buf = new SizeBoundReplayBuffer<Integer>(2, false);
-        List<Integer> values = new ArrayList<Integer>();
+        SizeBoundReplayBuffer<Integer> buf = new SizeBoundReplayBuffer<>(2, false);
+        List<Integer> values = new ArrayList<>();
 
         buf.next(1);
         buf.next(2);
@@ -871,7 +871,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void coldReplayNoBackpressure() {
         Observable<Integer> source = Observable.range(0, 1000).replay().autoConnect();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.subscribe(to);
 
@@ -949,7 +949,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
     @Test
     public void take() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         Observable<Integer> cached = Observable.range(1, 100).replay().autoConnect();
         cached.take(10).subscribe(to);
@@ -965,7 +965,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
     public void async() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to1 = new TestObserverEx<>();
 
             Observable<Integer> cached = source.replay().autoConnect();
 
@@ -976,7 +976,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
             to1.assertTerminated();
             assertEquals(10000, to1.values().size());
 
-            TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to2 = new TestObserverEx<>();
             cached.observeOn(Schedulers.computation()).subscribe(to2);
 
             to2.awaitDone(2, TimeUnit.SECONDS);
@@ -995,14 +995,14 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
         Observable<Long> output = cached.observeOn(Schedulers.computation());
 
-        List<TestObserverEx<Long>> list = new ArrayList<TestObserverEx<Long>>(100);
+        List<TestObserverEx<Long>> list = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {
-            TestObserverEx<Long> to = new TestObserverEx<Long>();
+            TestObserverEx<Long> to = new TestObserverEx<>();
             list.add(to);
             output.skip(i * 10).take(10).subscribe(to);
         }
 
-        List<Long> expected = new ArrayList<Long>();
+        List<Long> expected = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             expected.add((long)(i - 10));
         }
@@ -1036,7 +1036,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
             }
         });
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         firehose.replay().autoConnect().observeOn(Schedulers.computation()).takeLast(100).subscribe(to);
 
         to.awaitDone(3, TimeUnit.SECONDS);
@@ -1052,14 +1052,14 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .replay().autoConnect();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         source.subscribe(to);
 
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to.assertNotComplete();
         Assert.assertEquals(1, to.errors().size());
 
-        TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to2 = new TestObserverEx<>();
         source.subscribe(to2);
 
         to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -1130,8 +1130,8 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableObservable<Integer> co = Observable.range(1, 3).replay();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
-            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<>();
+            final TestObserver<Integer> to2 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1156,8 +1156,8 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableObservable<Integer> co = Observable.range(1, 3).replay();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
-            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<>();
+            final TestObserver<Integer> to2 = new TestObserver<>();
 
             co.subscribe(to1);
 
@@ -1256,7 +1256,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
             final ConnectableObservable<Integer> co = ps.replay();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1285,7 +1285,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
 
             final ConnectableObservable<Integer> co = ps.replay();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<>();
 
             co.subscribe(to1);
 
@@ -1314,7 +1314,7 @@ public class ObservableReplayEagerTruncateTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableObservable<Integer> co = Observable.range(1, 1000).replay();
 
-            final TestObserver<Integer> to1 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<>();
 
             co.connect();
 

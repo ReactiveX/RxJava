@@ -33,7 +33,7 @@ public class ObservableForEachTest extends RxJavaTest {
 
     @Test
     public void forEachWile() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5)
         .doOnNext(new Consumer<Integer>() {
@@ -54,7 +54,7 @@ public class ObservableForEachTest extends RxJavaTest {
 
     @Test
     public void forEachWileWithError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
         .doOnNext(new Consumer<Integer>() {

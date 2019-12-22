@@ -219,7 +219,7 @@ public class ObservableDelayTest extends RxJavaTest {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
 
         result.subscribe(to);
         to.dispose();
@@ -233,7 +233,7 @@ public class ObservableDelayTest extends RxJavaTest {
     @Test
     public void delayWithObservableNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
-        final List<PublishSubject<Integer>> delays = new ArrayList<PublishSubject<Integer>>();
+        final List<PublishSubject<Integer>> delays = new ArrayList<>();
         final int n = 10;
         for (int i = 0; i < n; i++) {
             PublishSubject<Integer> delay = PublishSubject.create();
@@ -584,7 +584,7 @@ public class ObservableDelayTest extends RxJavaTest {
         int n = 3;
 
         PublishSubject<Integer> source = PublishSubject.create();
-        final List<PublishSubject<Integer>> subjects = new ArrayList<PublishSubject<Integer>>();
+        final List<PublishSubject<Integer>> subjects = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             subjects.add(PublishSubject.<Integer> create());
         }
@@ -632,7 +632,7 @@ public class ObservableDelayTest extends RxJavaTest {
             }
 
         });
-        TestObserver<Integer> observer = new TestObserver<Integer>();
+        TestObserver<Integer> observer = new TestObserver<>();
         delayed.subscribe(observer);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
@@ -641,7 +641,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithTimedDelay() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
@@ -669,7 +669,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSubscriptionTimedDelay() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -698,7 +698,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSelectorDelay() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(new Function<Integer, Observable<Long>>() {
 
@@ -733,7 +733,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
     @Test
     public void backpressureWithSelectorDelayAndSubscriptionDelay() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
                 , new Function<Integer, Observable<Long>>() {
@@ -773,7 +773,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         ps.delay(1, TimeUnit.SECONDS, test).subscribe(to);
 
@@ -796,7 +796,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.delaySubscription(ps).subscribe(to);
 
@@ -817,7 +817,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.delaySubscription(ps).subscribe(to);
 
@@ -839,7 +839,7 @@ public class ObservableDelayTest extends RxJavaTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.delaySubscription(ps).subscribe(to);
 
@@ -866,7 +866,7 @@ public class ObservableDelayTest extends RxJavaTest {
     @Test
     public void onErrorCalledOnScheduler() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> thread = new AtomicReference<>();
 
         Observable.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())

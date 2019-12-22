@@ -247,7 +247,7 @@ public class ObservableAnyTest extends RxJavaTest {
 
     @Test
     public void predicateThrowsExceptionAndValueInCauseMessageObservable() {
-        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {
@@ -469,7 +469,7 @@ public class ObservableAnyTest extends RxJavaTest {
 
     @Test
     public void predicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {

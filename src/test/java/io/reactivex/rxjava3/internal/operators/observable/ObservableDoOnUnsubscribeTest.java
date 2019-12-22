@@ -68,11 +68,11 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
                     }
                 });
 
-        List<Disposable> subscriptions = new ArrayList<Disposable>();
-        List<TestObserver<Long>> subscribers = new ArrayList<TestObserver<Long>>();
+        List<Disposable> subscriptions = new ArrayList<>();
+        List<TestObserver<Long>> subscribers = new ArrayList<>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestObserver<Long> observer = new TestObserver<Long>();
+            TestObserver<Long> observer = new TestObserver<>();
             subscriptions.add(observer);
             longs.subscribe(observer);
             subscribers.add(observer);
@@ -131,11 +131,11 @@ public class ObservableDoOnUnsubscribeTest extends RxJavaTest {
                 .publish()
                 .refCount();
 
-        List<Disposable> subscriptions = new ArrayList<Disposable>();
-        List<TestObserver<Long>> subscribers = new ArrayList<TestObserver<Long>>();
+        List<Disposable> subscriptions = new ArrayList<>();
+        List<TestObserver<Long>> subscribers = new ArrayList<>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestObserver<Long> observer = new TestObserver<Long>();
+            TestObserver<Long> observer = new TestObserver<>();
             longs.subscribe(observer);
             subscriptions.add(observer);
             subscribers.add(observer);

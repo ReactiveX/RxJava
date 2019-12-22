@@ -37,7 +37,7 @@ public class ObservableToFutureTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
 
         Observable.fromFuture(future).subscribe(to);
 
@@ -59,7 +59,7 @@ public class ObservableToFutureTest extends RxJavaTest {
         Observer<Object> o = TestHelper.mockObserver();
 
         TestScheduler scheduler = new TestScheduler();
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
 
         Observable.fromFuture(future, scheduler).subscribe(to);
 
@@ -79,7 +79,7 @@ public class ObservableToFutureTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
 
         Observable.fromFuture(future).subscribe(to);
 
@@ -100,7 +100,7 @@ public class ObservableToFutureTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
         to.dispose();
 
         Observable.fromFuture(future).subscribe(to);
@@ -146,7 +146,7 @@ public class ObservableToFutureTest extends RxJavaTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        TestObserver<Object> to = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<>(o);
         Observable<Object> futureObservable = Observable.fromFuture(future);
 
         futureObservable.subscribeOn(Schedulers.computation()).subscribe(to);

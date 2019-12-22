@@ -178,7 +178,7 @@ public class ObservableAmbTest extends RxJavaTest {
         //this stream emits second
         Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.ambArray(o1, o2).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -212,7 +212,7 @@ public class ObservableAmbTest extends RxJavaTest {
         PublishSubject<Integer> source2 = PublishSubject.create();
         PublishSubject<Integer> source3 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable.ambArray(source1, source2, source3).subscribe(to);
 

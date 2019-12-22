@@ -36,7 +36,7 @@ public final class ObservableCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -85,7 +85,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectorFailureDoesNotResultInTwoErrorEmissionsObservable() {
         try {
-            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            final List<Throwable> list = new CopyOnWriteArrayList<>();
             RxJavaPlugins.setErrorHandler(addToList(list));
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
@@ -146,14 +146,14 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectIntoObservable() {
         Observable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
             public void accept(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         }).toObservable()
         .test()
-        .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+        .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
 
     @Test
@@ -162,7 +162,7 @@ public final class ObservableCollectTest extends RxJavaTest {
         .collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -211,7 +211,7 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
-            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            final List<Throwable> list = new CopyOnWriteArrayList<>();
             RxJavaPlugins.setErrorHandler(addToList(list));
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
@@ -270,14 +270,14 @@ public final class ObservableCollectTest extends RxJavaTest {
     @Test
     public void collectInto() {
         Observable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+        .collectInto(new HashSet<>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
             public void accept(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         })
         .test()
-        .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+        .assertResult(new HashSet<>(Arrays.asList(1, 2)));
     }
 
     @Test
@@ -285,7 +285,7 @@ public final class ObservableCollectTest extends RxJavaTest {
         TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -297,7 +297,7 @@ public final class ObservableCollectTest extends RxJavaTest {
         TestHelper.checkDisposed(Observable.range(1, 3).collect(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
@@ -315,7 +315,7 @@ public final class ObservableCollectTest extends RxJavaTest {
                 return o.collect(new Supplier<List<Integer>>() {
                     @Override
                     public List<Integer> get() throws Exception {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override
@@ -332,7 +332,7 @@ public final class ObservableCollectTest extends RxJavaTest {
                 return o.collect(new Supplier<List<Integer>>() {
                     @Override
                     public List<Integer> get() throws Exception {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override
@@ -352,7 +352,7 @@ public final class ObservableCollectTest extends RxJavaTest {
                 return o.collect(new Supplier<List<Integer>>() {
                     @Override
                     public List<Integer> get() throws Exception {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override

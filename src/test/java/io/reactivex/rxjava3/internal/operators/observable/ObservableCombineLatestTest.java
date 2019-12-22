@@ -436,8 +436,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
-            List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
-            List<Object> values = new ArrayList<Object>();
+            List<Observable<Integer>> sources = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
             for (int j = 0; j < i; j++) {
                 sources.add(Observable.just(j));
                 values.add(j);
@@ -467,8 +467,8 @@ public class ObservableCombineLatestTest extends RxJavaTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
-            List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
-            List<Object> values = new ArrayList<Object>();
+            List<Observable<Integer>> sources = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
             for (int j = 0; j < i; j++) {
                 sources.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 values.add(j);
@@ -753,7 +753,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
                     }
                 }).take(SIZE);
 
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
 
         Observable.combineLatest(timer, Observable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
             @Override
@@ -873,7 +873,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void cancelWhileSubscribing() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
         Observable.combineLatest(
                 Observable.just(1)

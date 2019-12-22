@@ -105,7 +105,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         grouped.flatMap(new Function<GroupedObservable<Integer, String>, Observable<String>>() {
 
@@ -148,13 +148,13 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     private static <K, V> Map<K, Collection<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
 
-        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
+        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<>();
 
         observable.doOnNext(new Consumer<GroupedObservable<K, V>>() {
 
             @Override
             public void accept(final GroupedObservable<K, V> o) {
-                result.put(o.getKey(), new ConcurrentLinkedQueue<V>());
+                result.put(o.getKey(), new ConcurrentLinkedQueue<>());
                 o.subscribe(new Consumer<V>() {
 
                     @Override
@@ -597,7 +597,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -676,7 +676,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -768,7 +768,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -845,7 +845,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupsWithNestedSubscribeOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -902,7 +902,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupsWithNestedObserveOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
@@ -1027,7 +1027,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void groupByBackpressure() throws InterruptedException {
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.range(1, 4000)
                 .groupBy(IS_EVEN2)
@@ -1154,7 +1154,7 @@ public class ObservableGroupByTest extends RxJavaTest {
             }
         });
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
         m.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("ts .get " + to.values());
@@ -1170,7 +1170,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         Observable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         m.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, to.errors().size());
@@ -1182,7 +1182,7 @@ public class ObservableGroupByTest extends RxJavaTest {
         Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Observable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         m.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, to.errors().size());
@@ -1196,7 +1196,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         m.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -1210,7 +1210,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void exceptionIfSubscribeToChildMoreThanOnce() {
         Observable<Integer> source = Observable.just(0);
 
-        final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
+        final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<>();
 
         Observable<GroupedObservable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
@@ -1239,7 +1239,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
         Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         m.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, to.errors().size());
@@ -1248,7 +1248,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupByBackpressure3() throws InterruptedException {
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
@@ -1305,7 +1305,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void groupByBackpressure2() throws InterruptedException {
 
-        TestObserver<String> to = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<>();
 
         Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
@@ -1346,7 +1346,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void groupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         Observable.just("a", "b", "c").groupBy(new Function<String, String>() {
 
             @Override
@@ -1382,7 +1382,7 @@ public class ObservableGroupByTest extends RxJavaTest {
                     }
                 }
         );
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         o.groupBy(new Function<Integer, Integer>() {
 
@@ -1400,11 +1400,11 @@ public class ObservableGroupByTest extends RxJavaTest {
     @Test
     public void groupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
-        final TestObserverEx<Integer> inner1 = new TestObserverEx<Integer>();
-        final TestObserverEx<Integer> inner2 = new TestObserverEx<Integer>();
+        final TestObserverEx<Integer> inner1 = new TestObserverEx<>();
+        final TestObserverEx<Integer> inner2 = new TestObserverEx<>();
 
         final TestObserverEx<GroupedObservable<Integer, Integer>> outer
-                = new TestObserverEx<GroupedObservable<Integer, Integer>>(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
+                = new TestObserverEx<>(new DefaultObserver<GroupedObservable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {
@@ -1546,7 +1546,7 @@ public class ObservableGroupByTest extends RxJavaTest {
     public void cancelOverFlatmapRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<>();
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -1589,7 +1589,7 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void abandonedGroupsNoDataloss() {
-        final List<GroupedObservable<Integer, Integer>> groups = new ArrayList<GroupedObservable<Integer, Integer>>();
+        final List<GroupedObservable<Integer, Integer>> groups = new ArrayList<>();
 
         Observable.range(1, 1000)
         .groupBy(new Function<Integer, Integer>() {
@@ -1618,8 +1618,8 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void newGroupValueSelectorFails() {
-        TestObserver<Object> to1 = new TestObserver<Object>();
-        final TestObserver<Object> to2 = new TestObserver<Object>();
+        TestObserver<Object> to1 = new TestObserver<>();
+        final TestObserver<Object> to2 = new TestObserver<>();
 
         Observable.just(1)
         .groupBy(Functions.<Integer>identity(), new Function<Integer, Object>() {
@@ -1645,8 +1645,8 @@ public class ObservableGroupByTest extends RxJavaTest {
 
     @Test
     public void existingGroupValueSelectorFails() {
-        TestObserver<Object> to1 = new TestObserver<Object>();
-        final TestObserver<Object> to2 = new TestObserver<Object>();
+        TestObserver<Object> to1 = new TestObserver<>();
+        final TestObserver<Object> to2 = new TestObserver<>();
 
         Observable.just(1, 2)
         .groupBy(Functions.justFunction(1), new Function<Integer, Object>() {

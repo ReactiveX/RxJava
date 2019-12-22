@@ -329,7 +329,7 @@ public class ObservableTimeoutWithSelectorTest extends RxJavaTest {
 
         }).when(o).onComplete();
 
-        final TestObserver<Integer> to = new TestObserver<Integer>(o);
+        final TestObserver<Integer> to = new TestObserver<>(o);
 
         new Thread(new Runnable() {
 

@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class ObservableMapNotificationTest extends RxJavaTest {
     @Test
     public void just() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         Observable.just(1)
         .flatMap(
                 new Function<Integer, Observable<Object>>() {

@@ -338,13 +338,13 @@ public class ObservableFlatMapTest extends RxJavaTest {
             }
         }, m);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
+        Set<Integer> expected = new HashSet<>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
         Assert.assertEquals(expected.size(), to.values().size());
@@ -369,13 +369,13 @@ public class ObservableFlatMapTest extends RxJavaTest {
             }
         }, m);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.subscribe(to);
 
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
-        Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
+        Set<Integer> expected = new HashSet<>(Arrays.asList(
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
@@ -415,7 +415,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserverEx<Object> to = new TestObserverEx<Object>(o);
+        TestObserverEx<Object> to = new TestObserverEx<>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
         source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(to);
@@ -440,7 +440,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<>();
             Observable.range(0, 1000)
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 final Random rnd = new Random();
@@ -464,7 +464,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
             to.assertNoErrors();
             List<Integer> list = to.values();
             if (list.size() < 1000) {
-                Set<Integer> set = new HashSet<Integer>(list);
+                Set<Integer> set = new HashSet<>(list);
                 for (int j = 0; j < 1000; j++) {
                     if (!set.contains(j)) {
                         System.out.println(j + " missing");
@@ -478,7 +478,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapIntPassthruAsync() {
         for (int i = 0; i < 1000; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
             Observable.range(1, 1000).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -497,7 +497,7 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
             Observable.just(1, 2).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -972,10 +972,10 @@ public class ObservableFlatMapTest extends RxJavaTest {
     @Test
     public void fusedSourceCrashResumeWithNextSource() {
         final UnicastSubject<Integer> fusedSource = UnicastSubject.create();
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         ObservableFlatMap.MergeObserver<Integer, Integer> merger =
-                new ObservableFlatMap.MergeObserver<Integer, Integer>(to, new Function<Integer, Observable<Integer>>() {
+                new ObservableFlatMap.MergeObserver<>(to, new Function<Integer, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> apply(Integer t)
                             throws Exception {
@@ -984,7 +984,9 @@ public class ObservableFlatMapTest extends RxJavaTest {
                                     .map(new Function<Integer, Integer>() {
                                         @Override
                                         public Integer apply(Integer v)
-                                                throws Exception { throw new TestException(); }
+                                                throws Exception {
+                                            throw new TestException();
+                                        }
                                     })
                                     .compose(TestHelper.<Integer>observableStripBoundary());
                         }

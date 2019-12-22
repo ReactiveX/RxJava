@@ -37,7 +37,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
             Observable<Integer> w = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                 @Override
@@ -53,7 +53,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
                 }
             });
 
-            TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> observer = new TestObserverEx<>();
 
             w.subscribeOn(uiEventLoop).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
@@ -87,7 +87,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
         UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
-            final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
+            final AtomicReference<Thread> subscribeThread = new AtomicReference<>();
             Observable<Integer> w = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                 @Override
@@ -103,7 +103,7 @@ public class ObservableUnsubscribeOnTest extends RxJavaTest {
                 }
             });
 
-            TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> observer = new TestObserverEx<>();
 
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
