@@ -121,7 +121,7 @@ public class ObservableFromCallableTest extends RxJavaTest {
 
         Observer<Object> observer = TestHelper.mockObserver();
 
-        TestObserver<String> outer = new TestObserver<String>(observer);
+        TestObserver<String> outer = new TestObserver<>(observer);
 
         fromCallableObservable
                 .subscribeOn(Schedulers.computation())
@@ -262,7 +262,7 @@ public class ObservableFromCallableTest extends RxJavaTest {
 
     @Test
     public void disposedOnCall() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.fromCallable(new Callable<Integer>() {
             @Override
@@ -280,7 +280,7 @@ public class ObservableFromCallableTest extends RxJavaTest {
     public void disposedOnCallThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<>();
 
             Observable.fromCallable(new Callable<Integer>() {
                 @Override

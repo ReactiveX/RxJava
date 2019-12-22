@@ -115,7 +115,7 @@ public class ObservableDistinctTest extends RxJavaTest {
 
     @Test
     public void fusedSync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
         .distinct()
@@ -127,7 +127,7 @@ public class ObservableDistinctTest extends RxJavaTest {
 
     @Test
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 

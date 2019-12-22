@@ -68,7 +68,7 @@ public class ObservableFilterTest extends RxJavaTest {
 
     @Test
     public void fusedSync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 5)
         .filter(new Predicate<Integer>() {
@@ -85,7 +85,7 @@ public class ObservableFilterTest extends RxJavaTest {
 
     @Test
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -106,7 +106,7 @@ public class ObservableFilterTest extends RxJavaTest {
 
     @Test
     public void fusedReject() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .filter(new Predicate<Integer>() {

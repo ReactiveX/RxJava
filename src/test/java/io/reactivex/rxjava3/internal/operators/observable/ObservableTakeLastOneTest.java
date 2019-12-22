@@ -28,7 +28,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfManyReturnsLast() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         Observable.range(1, 10).takeLast(1).subscribe(to);
         to.assertValue(10);
         to.assertNoErrors();
@@ -37,7 +37,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfEmptyReturnsEmpty() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         Observable.empty().takeLast(1).subscribe(to);
         to.assertNoValues();
         to.assertNoErrors();
@@ -46,7 +46,7 @@ public class ObservableTakeLastOneTest extends RxJavaTest {
 
     @Test
     public void lastOfOneReturnsLast() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         Observable.just(1).takeLast(1).subscribe(to);
         to.assertValue(1);
         to.assertNoErrors();

@@ -114,7 +114,7 @@ public class ObservableScanTest extends RxJavaTest {
 
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -181,7 +181,7 @@ public class ObservableScanTest extends RxJavaTest {
 
                     @Override
                     public List<Integer> get() {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
 
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -208,7 +208,7 @@ public class ObservableScanTest extends RxJavaTest {
 
         }).take(1);
 
-        TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> observer = new TestObserverEx<>();
 
         o.subscribe(observer);
         observer.assertValue(0);
@@ -220,7 +220,7 @@ public class ObservableScanTest extends RxJavaTest {
     public void initialValueEmittedNoProducer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -310,7 +310,7 @@ public class ObservableScanTest extends RxJavaTest {
     public void scanFunctionThrowsAndUpstreamErrorsDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
         final RuntimeException err2 = new RuntimeException();
-        final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+        final List<Throwable> list = new CopyOnWriteArrayList<>();
         final Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) throws Exception {

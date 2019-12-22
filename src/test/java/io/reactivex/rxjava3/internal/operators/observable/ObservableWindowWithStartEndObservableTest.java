@@ -47,8 +47,8 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
 
     @Test
     public void observableBasedOpenerAndCloser() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
@@ -97,7 +97,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -129,7 +129,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
                 stringObservable.subscribe(new DefaultObserver<String>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<String>(list));
+                        lists.add(new ArrayList<>(list));
                         list.clear();
                     }
 
@@ -154,7 +154,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
 
-        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        TestObserver<Observable<Integer>> to = new TestObserver<>();
 
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
@@ -199,7 +199,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
 
-        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        TestObserver<Observable<Integer>> to = new TestObserver<>();
 
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
@@ -464,7 +464,7 @@ public class ObservableWindowWithStartEndObservableTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstream() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(Observable.<Integer>just(1).concatWith(Observable.<Integer>never()),
                 Functions.justFunction(Observable.never()))

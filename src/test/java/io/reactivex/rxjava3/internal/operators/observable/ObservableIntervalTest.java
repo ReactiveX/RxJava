@@ -40,7 +40,7 @@ public class ObservableIntervalTest extends RxJavaTest {
 
     @Test
     public void cancelledOnRun() {
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
         IntervalObserver is = new IntervalObserver(to);
         to.onSubscribe(is);
 

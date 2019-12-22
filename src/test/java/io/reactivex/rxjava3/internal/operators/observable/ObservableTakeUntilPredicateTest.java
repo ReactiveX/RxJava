@@ -141,7 +141,7 @@ public class ObservableTakeUntilPredicateTest extends RxJavaTest {
 
     @Test
     public void errorIncludesLastValueAsCause() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = (new Predicate<String>() {
             @Override

@@ -102,7 +102,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
     @Test
     public void withCompletionCausingError() {
-        TestObserverEx<Notification<Integer>> to = new TestObserverEx<Notification<Integer>>();
+        TestObserverEx<Notification<Integer>> to = new TestObserverEx<>();
         final RuntimeException ex = new RuntimeException("boo");
         Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -119,7 +119,7 @@ public class ObservableMaterializeTest extends RxJavaTest {
 
         boolean onComplete;
         boolean onError;
-        List<Notification<String>> notifications = new Vector<Notification<String>>();
+        List<Notification<String>> notifications = new Vector<>();
 
         @Override
         public void onComplete() {

@@ -164,7 +164,7 @@ public class ObservableRepeatTest extends RxJavaTest {
                 .repeat(3)
                 .distinct();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         src.subscribe(to);
 
@@ -176,8 +176,8 @@ public class ObservableRepeatTest extends RxJavaTest {
     /** Issue #2844: wrong target of request. */
     @Test
     public void repeatRetarget() {
-        final List<Integer> concatBase = new ArrayList<Integer>();
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        final List<Integer> concatBase = new ArrayList<>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.just(1, 2)
         .repeat(5)
         .concatMap(new Function<Integer, Observable<Integer>>() {

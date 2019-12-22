@@ -59,7 +59,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
     static final class OneCallablePublisher implements ObservableSource<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Observer<? super Integer> observer) {
-            ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(observer, 1);
+            ScalarDisposable<Integer> sd = new ScalarDisposable<>(observer, 1);
             observer.onSubscribe(sd);
             sd.run();
         }
@@ -72,7 +72,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void tryScalarXMap() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer f) throws Exception {
@@ -85,7 +85,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void emptyXMap() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -99,7 +99,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperCrashes() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -113,7 +113,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToJust() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -127,7 +127,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToEmpty() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -141,7 +141,7 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToCrashingCallable() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -179,8 +179,8 @@ public class ObservableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void scalarDisposableStateCheck() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
-        ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(to, 1);
+        TestObserver<Integer> to = new TestObserver<>();
+        ScalarDisposable<Integer> sd = new ScalarDisposable<>(to, 1);
         to.onSubscribe(sd);
 
         assertFalse(sd.isDisposed());
@@ -213,8 +213,8 @@ public class ObservableScalarXMapTest extends RxJavaTest {
     @Test
     public void scalarDisposableRunDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
-            final ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(to, 1);
+            TestObserver<Integer> to = new TestObserver<>();
+            final ScalarDisposable<Integer> sd = new ScalarDisposable<>(to, 1);
             to.onSubscribe(sd);
 
             Runnable r1 = new Runnable() {

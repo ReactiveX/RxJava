@@ -99,7 +99,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void syncFused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doFinally(this)
@@ -113,7 +113,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void syncFusedBoundary() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .doFinally(this)
@@ -127,7 +127,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void asyncFused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -144,7 +144,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void asyncFusedBoundary() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -206,7 +206,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void syncFusedConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Observable.range(1, 5)
         .doFinally(this)
@@ -221,7 +221,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void nonFused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .doFinally(this)
@@ -235,7 +235,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void nonFusedConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .doFinally(this)
@@ -250,7 +250,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void syncFusedBoundaryConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .doFinally(this)
@@ -265,7 +265,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void asyncFusedConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -283,7 +283,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void asyncFusedBoundaryConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -446,7 +446,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void eventOrdering() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
 
         Observable.error(new TestException())
         .doOnDispose(new Action() {
@@ -486,7 +486,7 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void eventOrdering2() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
 
         Observable.just(1)
         .doOnDispose(new Action() {

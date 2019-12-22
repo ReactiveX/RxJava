@@ -90,7 +90,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
 
     @Test
     public void backpressure1() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, 100000).takeLast(1)
         .observeOn(Schedulers.newThread())
         .map(newSlowProcessor()).subscribe(to);
@@ -101,7 +101,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
 
     @Test
     public void backpressure2() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(1, 100000).takeLast(Flowable.bufferSize() * 4)
         .observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);

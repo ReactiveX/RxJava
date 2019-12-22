@@ -27,8 +27,8 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestObserver<Object> to = new TestObserver<Object>();
-        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<Object>(to);
+        TestObserver<Object> to = new TestObserver<>();
+        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<>(to);
 
         Disposable d = Disposable.empty();
 
@@ -43,16 +43,16 @@ public class ObservableResourceWrapperTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestObserver<Object> to = new TestObserver<Object>();
-        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<Object>(to);
+        TestObserver<Object> to = new TestObserver<>();
+        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<>(to);
 
         TestHelper.doubleOnSubscribe(orw);
     }
 
     @Test
     public void onErrorDisposes() {
-        TestObserver<Object> to = new TestObserver<Object>();
-        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<Object>(to);
+        TestObserver<Object> to = new TestObserver<>();
+        ObserverResourceWrapper<Object> orw = new ObserverResourceWrapper<>(to);
 
         Disposable d = Disposable.empty();
         Disposable d1 = Disposable.empty();

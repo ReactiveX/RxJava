@@ -60,11 +60,11 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
         subject.onComplete();
 
         inOrder.verify(observer, times(1)).onNext(
-                new Timed<Integer>(1, 1000, TIME_UNIT));
+                new Timed<>(1, 1000, TIME_UNIT));
         inOrder.verify(observer, times(1)).onNext(
-                new Timed<Integer>(2, 2000, TIME_UNIT));
+                new Timed<>(2, 2000, TIME_UNIT));
         inOrder.verify(observer, times(1)).onNext(
-                new Timed<Integer>(3, 3000, TIME_UNIT));
+                new Timed<>(3, 3000, TIME_UNIT));
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }

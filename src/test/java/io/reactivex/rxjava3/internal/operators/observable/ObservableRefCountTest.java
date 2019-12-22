@@ -190,8 +190,8 @@ public class ObservableRefCountTest extends RxJavaTest {
                 .publish().refCount();
 
         for (int i = 0; i < 10; i++) {
-            TestObserver<Long> to1 = new TestObserver<Long>();
-            TestObserver<Long> to2 = new TestObserver<Long>();
+            TestObserver<Long> to1 = new TestObserver<>();
+            TestObserver<Long> to2 = new TestObserver<>();
             r.subscribe(to1);
             r.subscribe(to2);
             try {
@@ -233,7 +233,7 @@ public class ObservableRefCountTest extends RxJavaTest {
                     }
                 });
 
-        TestObserverEx<Long> observer = new TestObserverEx<Long>();
+        TestObserverEx<Long> observer = new TestObserverEx<>();
         o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(observer);
         System.out.println("send unsubscribe");
         // wait until connected
@@ -278,7 +278,7 @@ public class ObservableRefCountTest extends RxJavaTest {
                     }
                 });
 
-        TestObserverEx<Long> observer = new TestObserverEx<Long>();
+        TestObserverEx<Long> observer = new TestObserverEx<>();
 
         o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(observer);
         System.out.println("send unsubscribe");
@@ -367,7 +367,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         Observable<Long> interval = Observable.interval(100, TimeUnit.MILLISECONDS, s).publish().refCount();
 
         // subscribe list1
-        final List<Long> list1 = new ArrayList<Long>();
+        final List<Long> list1 = new ArrayList<>();
         Disposable d1 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -382,7 +382,7 @@ public class ObservableRefCountTest extends RxJavaTest {
         assertEquals(1L, list1.get(1).longValue());
 
         // subscribe list2
-        final List<Long> list2 = new ArrayList<Long>();
+        final List<Long> list2 = new ArrayList<>();
         Disposable d2 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -427,7 +427,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
-        final List<Long> list3 = new ArrayList<Long>();
+        final List<Long> list3 = new ArrayList<>();
         interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
@@ -498,8 +498,8 @@ public class ObservableRefCountTest extends RxJavaTest {
         })
         .publish().refCount();
 
-        TestObserverEx<Integer> to1 = new TestObserverEx<Integer>();
-        TestObserverEx<Integer> to2 = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to1 = new TestObserverEx<>();
+        TestObserverEx<Integer> to2 = new TestObserverEx<>();
 
         combined.subscribe(to1);
         combined.subscribe(to2);
@@ -1133,7 +1133,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
             final TestObserver<Integer> to1 = source.test();
 
-            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+            final TestObserver<Integer> to2 = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1337,7 +1337,7 @@ public class ObservableRefCountTest extends RxJavaTest {
 
     @Test
     public void timeoutResetsSource() {
-        TestConnectableObservable<Object> tco = new TestConnectableObservable<Object>();
+        TestConnectableObservable<Object> tco = new TestConnectableObservable<>();
         ObservableRefCount<Object> o = (ObservableRefCount<Object>)tco.refCount();
 
         RefConnection rc = new RefConnection(o);

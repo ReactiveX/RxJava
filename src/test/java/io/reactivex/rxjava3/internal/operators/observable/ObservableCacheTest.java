@@ -36,11 +36,11 @@ import io.reactivex.rxjava3.testsupport.*;
 public class ObservableCacheTest extends RxJavaTest {
     @Test
     public void coldReplayNoBackpressure() {
-        ObservableCache<Integer> source = new ObservableCache<Integer>(Observable.range(0, 1000), 16);
+        ObservableCache<Integer> source = new ObservableCache<>(Observable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.subscribe(to);
 
@@ -119,9 +119,9 @@ public class ObservableCacheTest extends RxJavaTest {
 
     @Test
     public void take() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
-        ObservableCache<Integer> cached = new ObservableCache<Integer>(Observable.range(1, 1000), 16);
+        ObservableCache<Integer> cached = new ObservableCache<>(Observable.range(1, 1000), 16);
         cached.take(10).subscribe(to);
 
         to.assertNoErrors();
@@ -135,9 +135,9 @@ public class ObservableCacheTest extends RxJavaTest {
     public void async() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            TestObserver<Integer> to1 = new TestObserver<Integer>();
+            TestObserver<Integer> to1 = new TestObserver<>();
 
-            ObservableCache<Integer> cached = new ObservableCache<Integer>(source, 16);
+            ObservableCache<Integer> cached = new ObservableCache<>(source, 16);
 
             cached.observeOn(Schedulers.computation()).subscribe(to1);
 
@@ -146,7 +146,7 @@ public class ObservableCacheTest extends RxJavaTest {
             to1.assertComplete();
             assertEquals(10000, to1.values().size());
 
-            TestObserver<Integer> to2 = new TestObserver<Integer>();
+            TestObserver<Integer> to2 = new TestObserver<>();
             cached.observeOn(Schedulers.computation()).subscribe(to2);
 
             to2.awaitDone(2, TimeUnit.SECONDS);
@@ -161,18 +161,18 @@ public class ObservableCacheTest extends RxJavaTest {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        ObservableCache<Long> cached = new ObservableCache<Long>(source, 16);
+        ObservableCache<Long> cached = new ObservableCache<>(source, 16);
 
         Observable<Long> output = cached.observeOn(Schedulers.computation());
 
-        List<TestObserver<Long>> list = new ArrayList<TestObserver<Long>>(100);
+        List<TestObserver<Long>> list = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {
-            TestObserver<Long> to = new TestObserver<Long>();
+            TestObserver<Long> to = new TestObserver<>();
             list.add(to);
             output.skip(i * 10).take(10).subscribe(to);
         }
 
-        List<Long> expected = new ArrayList<Long>();
+        List<Long> expected = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             expected.add((long)(i - 10));
         }
@@ -206,7 +206,7 @@ public class ObservableCacheTest extends RxJavaTest {
             }
         });
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(to);
 
         to.awaitDone(3, TimeUnit.SECONDS);
@@ -222,14 +222,14 @@ public class ObservableCacheTest extends RxJavaTest {
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .cache();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         source.subscribe(to);
 
         to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         to.assertNotComplete();
         to.assertError(TestException.class);
 
-        TestObserver<Integer> to2 = new TestObserver<Integer>();
+        TestObserver<Integer> to2 = new TestObserver<>();
         source.subscribe(to2);
 
         to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -296,7 +296,7 @@ public class ObservableCacheTest extends RxJavaTest {
 
             cache.test();
 
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Runnable r1 = new Runnable() {
                 @Override

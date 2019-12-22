@@ -148,7 +148,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
@@ -167,7 +167,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
     @Test
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
 

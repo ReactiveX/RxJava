@@ -306,7 +306,7 @@ public class ObservableMapTest extends RxJavaTest {
 //    }
 
     private static Map<String, String> getMap(String prefix) {
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;
@@ -350,7 +350,7 @@ public class ObservableMapTest extends RxJavaTest {
 
     @Test
     public void fusedSync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 5)
         .map(Functions.<Integer>identity())
@@ -362,7 +362,7 @@ public class ObservableMapTest extends RxJavaTest {
 
     @Test
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -378,7 +378,7 @@ public class ObservableMapTest extends RxJavaTest {
 
     @Test
     public void fusedReject() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .map(Functions.<Integer>identity())

@@ -252,7 +252,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
     public void mergeList() {
         final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
-        List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
+        List<Observable<String>> listOfObservables = new ArrayList<>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
@@ -433,7 +433,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void errorInParentObservable() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         Observable.mergeDelayError(
                 Observable.just(Observable.just(1), Observable.just(2))
                         .startWithItem(Observable.<Integer> error(new RuntimeException()))
@@ -462,7 +462,7 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
 
             Observer<String> stringObserver = TestHelper.mockObserver();
 
-            TestObserverEx<String> to = new TestObserverEx<String>(stringObserver);
+            TestObserverEx<String> to = new TestObserverEx<>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
             m.subscribe(to);
             System.out.println("testErrorInParentObservableDelayed | " + i);

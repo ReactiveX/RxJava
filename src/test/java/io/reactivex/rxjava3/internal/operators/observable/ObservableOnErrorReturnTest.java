@@ -37,7 +37,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
     public void resumeNext() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -72,7 +72,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
     public void functionThrowsError() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -130,7 +130,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         });
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         observable.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
 
@@ -144,7 +144,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {
 

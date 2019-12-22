@@ -58,7 +58,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void completedOkObservable() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         Observable.range(1, 10).ignoreElements().toObservable().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -67,7 +67,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void errorReceivedObservable() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().toObservable().subscribe(to);
         to.assertNoValues();
@@ -120,7 +120,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void completedOk() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         Observable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -129,7 +129,7 @@ public class ObservableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void errorReceived() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         TestException ex = new TestException("boo");
         Observable.error(ex).ignoreElements().subscribe(to);
         to.assertNoValues();

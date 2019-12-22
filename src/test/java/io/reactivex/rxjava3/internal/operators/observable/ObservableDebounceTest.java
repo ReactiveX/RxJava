@@ -288,7 +288,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> observer = new TestObserverEx<>();
 
         Observable.merge(
                 Observable.just(1),
@@ -317,7 +317,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
         TestHelper.checkDisposed(PublishSubject.create().debounce(Functions.justFunction(Observable.never())));
 
-        Disposable d = new ObservableDebounceTimed.DebounceEmitter<Integer>(1, 1, null);
+        Disposable d = new ObservableDebounceTimed.DebounceEmitter<>(1, 1, null);
         assertFalse(d.isDisposed());
 
         d.dispose();
@@ -395,7 +395,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposeInOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         BehaviorSubject.createDefault(1)
         .debounce(new Function<Integer, ObservableSource<Object>>() {
@@ -413,7 +413,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposedInOnComplete() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         new Observable<Integer>() {
             @Override
@@ -430,7 +430,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void emitLate() {
-        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
 
         TestObserver<Integer> to = Observable.range(1, 2)
         .debounce(new Function<Integer, ObservableSource<Integer>>() {
@@ -469,7 +469,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedDisposedIgnoredBySource() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         new Observable<Integer>() {
             @Override
@@ -487,13 +487,13 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedLateEmit() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
-        DebounceTimedObserver<Integer> sub = new DebounceTimedObserver<Integer>(
+        TestObserver<Integer> to = new TestObserver<>();
+        DebounceTimedObserver<Integer> sub = new DebounceTimedObserver<>(
                 to, 1, TimeUnit.SECONDS, new TestScheduler().createWorker());
 
         sub.onSubscribe(Disposable.empty());
 
-        DebounceEmitter<Integer> de = new DebounceEmitter<Integer>(1, 50, sub);
+        DebounceEmitter<Integer> de = new DebounceEmitter<>(1, 50, sub);
         de.run();
         de.run();
 

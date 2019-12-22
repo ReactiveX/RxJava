@@ -36,7 +36,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable
         .unsafeCreate(new ObservableSource<Integer>() {
@@ -74,7 +74,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void onError() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
@@ -147,7 +147,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void unsubscribeInfiniteStream() throws InterruptedException {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         final AtomicInteger count = new AtomicInteger();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
@@ -174,7 +174,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
     public void cancelBeforeActualSubscribe() {
         TestScheduler test = new TestScheduler();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         Observable.just(1).hide()
                 .subscribeOn(test).subscribe(to);

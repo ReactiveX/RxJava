@@ -146,7 +146,7 @@ public class ObservableOnErrorResumeWithTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
                 .onErrorResumeWith(Observable.just(1))
                 .observeOn(Schedulers.computation())

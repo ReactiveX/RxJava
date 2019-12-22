@@ -93,14 +93,14 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
     @Test
     public void noBackpressure() {
-        ArrayList<Long> list = new ArrayList<Long>(Flowable.bufferSize() * 2);
+        ArrayList<Long> list = new ArrayList<>(Flowable.bufferSize() * 2);
         for (long i = 1; i <= Flowable.bufferSize() * 2 + 1; i++) {
             list.add(i);
         }
 
         Observable<Long> o = Observable.rangeLong(1, list.size());
 
-        TestObserverEx<Long> to = new TestObserverEx<Long>();
+        TestObserverEx<Long> to = new TestObserverEx<>();
 
         o.subscribe(to);
 
@@ -137,7 +137,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
     @Test
     public void nearMaxValueWithoutBackpressure() {
-        TestObserver<Long> to = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<>();
         Observable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(to);
 
         to.assertComplete();
@@ -171,7 +171,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Long> to = new TestObserverEx<Long>(QueueFuseable.ANY);
+        TestObserverEx<Long> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.rangeLong(1, 2).subscribe(to);
 
@@ -181,7 +181,7 @@ public class ObservableRangeLongTest extends RxJavaTest {
 
     @Test
     public void fusedReject() {
-        TestObserverEx<Long> to = new TestObserverEx<Long>(QueueFuseable.ASYNC);
+        TestObserverEx<Long> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
         Observable.rangeLong(1, 2).subscribe(to);
 

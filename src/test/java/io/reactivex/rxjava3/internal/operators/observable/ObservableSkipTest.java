@@ -138,7 +138,7 @@ public class ObservableSkipTest extends RxJavaTest {
 
     @Test
     public void requestOverflowDoesNotOccur() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         Observable.range(1, 10).skip(5).subscribe(to);
 

@@ -197,7 +197,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Before
     public void before() {
-        to = new TestObserver<Object>();
+        to = new TestObserver<>();
     }
 
     @Test
@@ -723,7 +723,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void mapperCancels() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1).hide()
         .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
@@ -837,7 +837,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     public void maxConcurrencyOf2() {
         List<Integer>[] list = new ArrayList[100];
         for (int i = 0; i < 100; i++) {
-            List<Integer> lst = new ArrayList<Integer>();
+            List<Integer> lst = new ArrayList<>();
             list[i] = lst;
             for (int k = 1; k <= 10; k++) {
                 lst.add((i) * 10 + k);

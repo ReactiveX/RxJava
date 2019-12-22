@@ -84,7 +84,7 @@ public class ObservableSkipLastTest extends RxJavaTest {
     @Test
     public void skipLastWithBackpressure() {
         Observable<Integer> o = Observable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         o.observeOn(Schedulers.computation()).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();

@@ -42,14 +42,14 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void whenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
-            List<Observable<String>> os = new ArrayList<Observable<String>>();
+            List<Observable<String>> os = new ArrayList<>();
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
             Iterator<String> iter = Observable.merge(os, 1).blockingIterable().iterator();
-            List<String> actual = new ArrayList<String>();
+            List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -65,8 +65,8 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
             int maxConcurrent = 2 + (times % 10);
             AtomicInteger subscriptionCount = new AtomicInteger(0);
 
-            List<Observable<String>> os = new ArrayList<Observable<String>>();
-            List<SubscriptionCheckObservable> scos = new ArrayList<SubscriptionCheckObservable>();
+            List<Observable<String>> os = new ArrayList<>();
+            List<SubscriptionCheckObservable> scos = new ArrayList<>();
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
@@ -74,7 +74,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
             }
 
             Iterator<String> iter = Observable.merge(os, maxConcurrent).blockingIterable().iterator();
-            List<String> actual = new ArrayList<String>();
+            List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -126,7 +126,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void mergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
-        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
+        List<Observable<Integer>> sourceList = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
@@ -142,7 +142,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void mergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
-        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
+        List<Observable<Integer>> sourceList = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
@@ -158,9 +158,9 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simple() {
         for (int i = 1; i < 100; i++) {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
-            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
-            List<Integer> result = new ArrayList<Integer>(i);
+            TestObserverEx<Integer> to = new TestObserverEx<>();
+            List<Observable<Integer>> sourceList = new ArrayList<>(i);
+            List<Integer> result = new ArrayList<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j));
                 result.add(j);
@@ -177,9 +177,9 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simpleOneLess() {
         for (int i = 2; i < 100; i++) {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
-            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
-            List<Integer> result = new ArrayList<Integer>(i);
+            TestObserverEx<Integer> to = new TestObserverEx<>();
+            List<Observable<Integer>> sourceList = new ArrayList<>(i);
+            List<Integer> result = new ArrayList<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j));
                 result.add(j);
@@ -209,9 +209,9 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simpleAsync() {
         for (int i = 1; i < 50; i++) {
-            TestObserver<Integer> to = new TestObserver<Integer>();
-            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
-            Set<Integer> expected = new HashSet<Integer>(i);
+            TestObserver<Integer> to = new TestObserver<>();
+            List<Observable<Integer>> sourceList = new ArrayList<>(i);
+            Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -221,7 +221,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
             to.awaitDone(1, TimeUnit.SECONDS);
             to.assertNoErrors();
-            Set<Integer> actual = new HashSet<Integer>(to.values());
+            Set<Integer> actual = new HashSet<>(to.values());
 
             assertEquals(expected, actual);
         }
@@ -241,9 +241,9 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
             }
-            TestObserver<Integer> to = new TestObserver<Integer>();
-            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
-            Set<Integer> expected = new HashSet<Integer>(i);
+            TestObserver<Integer> to = new TestObserver<>();
+            List<Observable<Integer>> sourceList = new ArrayList<>(i);
+            Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -253,7 +253,7 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
             to.awaitDone(1, TimeUnit.SECONDS);
             to.assertNoErrors();
-            Set<Integer> actual = new HashSet<Integer>(to.values());
+            Set<Integer> actual = new HashSet<>(to.values());
 
             assertEquals(expected, actual);
         }
@@ -261,13 +261,13 @@ public class ObservableMergeMaxConcurrentTest extends RxJavaTest {
 
     @Test
     public void take() throws Exception {
-        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
+        List<Observable<Integer>> sourceList = new ArrayList<>(3);
 
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable.merge(sourceList, 2).take(5).subscribe(to);
 

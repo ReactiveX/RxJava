@@ -344,7 +344,7 @@ public class ObservableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeInner() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
         Observable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
             @Override

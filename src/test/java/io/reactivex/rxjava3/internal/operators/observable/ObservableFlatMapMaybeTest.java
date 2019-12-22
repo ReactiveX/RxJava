@@ -429,7 +429,7 @@ public class ObservableFlatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeInner() {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
 
         Observable.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Object>>() {
             @Override

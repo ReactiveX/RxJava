@@ -24,7 +24,7 @@ public class ObservableRedoTest extends RxJavaTest {
 
     @Test
     public void redoCancel() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1)
         .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {

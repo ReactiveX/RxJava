@@ -190,7 +190,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.takeUntil(until).subscribe(to);
 
@@ -217,7 +217,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.takeUntil(until).subscribe(to);
 
@@ -242,7 +242,7 @@ public class ObservableTakeUntilTest extends RxJavaTest {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> until = PublishSubject.create();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         source.takeUntil(until).take(1).subscribe(to);
 

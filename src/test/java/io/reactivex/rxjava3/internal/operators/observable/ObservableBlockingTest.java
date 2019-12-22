@@ -48,7 +48,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumer() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -64,7 +64,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumer() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -80,7 +80,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumerError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         TestException ex = new TestException();
 
@@ -100,7 +100,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumerAction() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Consumer<Object> cons = new Consumer<Object>() {
             @Override
@@ -123,7 +123,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeObserver() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -156,7 +156,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeObserverError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         final TestException ex = new TestException();
 
@@ -232,7 +232,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void disposeUpFront() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         to.dispose();
         Observable.just(1).blockingSubscribe(to);
 
@@ -242,7 +242,7 @@ public class ObservableBlockingTest extends RxJavaTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void delayed() throws Exception {
-        final TestObserver<Object> to = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<>();
         final Observer[] s = { null };
 
         Schedulers.single().scheduleDirect(new Runnable() {
@@ -271,14 +271,14 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void interrupt() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         Thread.currentThread().interrupt();
         Observable.never().blockingSubscribe(to);
     }
 
     @Test
     public void onCompleteDelayed() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
 
         Observable.empty().delay(100, TimeUnit.MILLISECONDS)
         .blockingSubscribe(to);
@@ -288,7 +288,7 @@ public class ObservableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingCancelUpfront() {
-        BlockingFirstObserver<Integer> o = new BlockingFirstObserver<Integer>();
+        BlockingFirstObserver<Integer> o = new BlockingFirstObserver<>();
 
         assertFalse(o.isDisposed());
         o.dispose();

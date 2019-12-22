@@ -140,7 +140,7 @@ public class ObservableDematerializeTest extends RxJavaTest {
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(observer);
+        TestObserverEx<Integer> to = new TestObserverEx<>(observer);
         dematerialize.subscribe(to);
 
         System.out.println(to.errors());
