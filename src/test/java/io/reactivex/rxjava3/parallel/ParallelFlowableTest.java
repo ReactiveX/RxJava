@@ -236,7 +236,6 @@ public class ParallelFlowableTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedList() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>();

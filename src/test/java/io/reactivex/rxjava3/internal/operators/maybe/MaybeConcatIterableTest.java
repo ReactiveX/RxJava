@@ -29,7 +29,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeConcatIterableTest extends RxJavaTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void take() {
         Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.just(2), Maybe.just(3)))
@@ -50,7 +49,6 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.<Integer>error(new TestException()), Maybe.just(3)))
@@ -58,7 +56,6 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         .assertFailure(TestException.class, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void successCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -124,7 +121,6 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
@@ -144,7 +140,6 @@ public class MaybeConcatIterableTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };

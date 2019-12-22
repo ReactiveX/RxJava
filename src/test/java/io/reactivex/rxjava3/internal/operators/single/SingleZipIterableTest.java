@@ -38,7 +38,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         }
     };
 
-    @SuppressWarnings("unchecked")
     @Test
     public void firstError() {
         Single.zip(Arrays.asList(Single.error(new TestException()), Single.just(1)), addString)
@@ -46,7 +45,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void secondError() {
         Single.zip(Arrays.asList(Single.just(1), Single.<Integer>error(new TestException())), addString)
@@ -54,7 +52,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -69,7 +66,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipperThrows() {
         Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
@@ -82,7 +78,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipperReturnsNull() {
         Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
@@ -95,7 +90,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void middleError() {
         PublishProcessor<Integer> pp0 = PublishProcessor.create();
@@ -112,7 +106,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -190,7 +183,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
         Single.zip(Arrays.asList(null, Single.just(1)), new Function<Object[], Object>() {
@@ -202,7 +194,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
         Single.zip(Arrays.asList(Single.just(1), null), new Function<Object[], Object>() {
@@ -238,7 +229,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zip(Arrays.asList(Single.just(1)), Functions.justFunction(null))
@@ -246,7 +236,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleSourcesInIterable() {
         SingleSource<Integer> source = new SingleSource<Integer>() {

@@ -167,7 +167,6 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mapFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
@@ -302,7 +301,6 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mapFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)

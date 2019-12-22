@@ -71,7 +71,6 @@ public class SingleAmbTest extends RxJavaTest {
         to.assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableWithFirstFires() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -93,7 +92,6 @@ public class SingleAmbTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableWithSecondFires() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -272,7 +270,6 @@ public class SingleAmbTest extends RxJavaTest {
         Single.just(1).ambWith(error).test().assertValue(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOrder() {
         Single<Integer> error = Single.error(new RuntimeException());
@@ -343,7 +340,6 @@ public class SingleAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleSourcesInIterable() {
         SingleSource<Integer> source = new SingleSource<Integer>() {

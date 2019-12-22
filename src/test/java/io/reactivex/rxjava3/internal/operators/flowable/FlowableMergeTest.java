@@ -1343,7 +1343,6 @@ public class FlowableMergeTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void negativeMaxConcurrent() {
         try {
@@ -1354,7 +1353,6 @@ public class FlowableMergeTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zeroMaxConcurrent() {
         try {

@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.core.Flowable;
 @Test
 public class MergeIterableTckTest extends BaseTck<Long> {
 
-    @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return

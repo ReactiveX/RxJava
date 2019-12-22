@@ -579,7 +579,6 @@ public class ObservableWithLatestFromTest extends RxJavaTest {
         .assertFailure(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void combineToNull2() {
         Observable.just(1)

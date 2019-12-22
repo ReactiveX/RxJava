@@ -163,7 +163,6 @@ public class SingleZipTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noDisposeOnAllSuccess2() {
         final AtomicInteger counter = new AtomicInteger();

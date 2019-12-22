@@ -499,7 +499,6 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayError() {
         Observable.mergeDelayError(Arrays.asList(Observable.just(1), Observable.just(2)))
@@ -515,7 +514,6 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorWithError() {
         Observable.mergeDelayError(
@@ -561,7 +559,6 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         .assertFailure(TestException.class, 1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorMaxConcurrency() {
         Observable.mergeDelayError(
@@ -571,7 +568,6 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
         Observable.mergeDelayError(

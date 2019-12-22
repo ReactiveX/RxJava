@@ -283,7 +283,7 @@ public class FlowableConcatTest {
         final Flowable<String> even = Flowable.fromArray(e);
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        @SuppressWarnings("unchecked")
+
         TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
         concatF.subscribe(subscriber);
@@ -322,7 +322,6 @@ public class FlowableConcatTest {
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        @SuppressWarnings("unchecked")
         TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
@@ -450,7 +449,6 @@ public class FlowableConcatTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<>(subscriber, 0L);
 
-        @SuppressWarnings("unchecked")
         TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
@@ -506,10 +504,12 @@ public class FlowableConcatTest {
         private final T seed;
         private final int size;
 
+        @SafeVarargs
         TestObservable(T... values) {
             this(null, null, values);
         }
 
+        @SafeVarargs
         TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
@@ -1055,7 +1055,6 @@ public class FlowableConcatTest {
         .assertResult(1, 1, 1, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayError() {
         Flowable.concatArrayDelayError(Flowable.just(1), Flowable.just(2),
@@ -1064,7 +1063,6 @@ public class FlowableConcatTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayErrorWithError() {
         Flowable.concatArrayDelayError(Flowable.just(1), Flowable.just(2),
@@ -1074,7 +1072,6 @@ public class FlowableConcatTest {
         .assertFailure(TestException.class, 1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayError() {
         Flowable.concatDelayError(
@@ -1084,7 +1081,6 @@ public class FlowableConcatTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayErrorWithError() {
         Flowable.concatDelayError(
@@ -1163,13 +1159,11 @@ public class FlowableConcatTest {
         .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {
         assertSame(Flowable.empty(), Flowable.concatArrayDelayError());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleElementArray() {
         assertSame(Flowable.never(), Flowable.concatArrayDelayError(Flowable.never()));
@@ -1200,13 +1194,11 @@ public class FlowableConcatTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayEmpty() {
         assertSame(Flowable.empty(), Flowable.concatArray());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArraySingleElement() {
         assertSame(Flowable.never(), Flowable.concatArray(Flowable.never()));
@@ -1537,7 +1529,6 @@ public class FlowableConcatTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
@@ -1558,7 +1549,6 @@ public class FlowableConcatTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
@@ -1579,7 +1569,6 @@ public class FlowableConcatTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };
@@ -1600,7 +1589,6 @@ public class FlowableConcatTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayErrorIterable() {
         final int[] calls = { 0 };
@@ -1621,7 +1609,6 @@ public class FlowableConcatTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousArray() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1640,7 +1627,6 @@ public class FlowableConcatTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousIterable() {
         final AtomicInteger counter = new AtomicInteger();

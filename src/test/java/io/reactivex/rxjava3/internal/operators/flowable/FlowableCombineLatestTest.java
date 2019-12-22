@@ -802,7 +802,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void combineLatestRequestOverflow() throws InterruptedException {
-        @SuppressWarnings("unchecked")
         List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
                 Flowable.fromArray(5, 6, 7, 8));
         Flowable<Integer> f = Flowable.combineLatest(sources, new Function<Object[], Integer>() {
@@ -864,7 +863,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         assertFalse(errorOccurred.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void combineLatestIterable() {
         Flowable<Integer> source = Flowable.just(1);
@@ -916,7 +914,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void firstJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -936,7 +933,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void secondJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -956,7 +952,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void oneErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -976,7 +971,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void twoErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -996,7 +990,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bothError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -1140,7 +1133,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSources() {
 
         Flowable.combineLatestDelayError(Arrays.asList(
@@ -1156,7 +1148,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSourcesWithError() {
 
         Flowable.combineLatestDelayError(Arrays.asList(
@@ -1366,7 +1357,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dontSubscribeIfDone2() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1400,7 +1390,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void combine2Flowable2Errors() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1534,7 +1523,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void syncFirstErrorsAfterItemDelayError() {
         Flowable.combineLatestDelayError(Arrays.asList(
                     Flowable.just(21).concatWith(Flowable.<Integer>error(new TestException())),
@@ -1552,7 +1540,6 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         .assertFailure(TestException.class, 42);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void publishersInIterable() {
         Publisher<Integer> source = new Publisher<Integer>() {

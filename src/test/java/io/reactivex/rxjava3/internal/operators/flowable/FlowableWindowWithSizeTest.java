@@ -290,7 +290,6 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         ts.assertValueCount(22);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void backpressureOuterInexact() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<>(0L);
@@ -364,7 +363,6 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorExact() {
         Flowable.error(new TestException())
@@ -373,7 +371,6 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorSkip() {
         Flowable.error(new TestException())
@@ -382,7 +379,6 @@ public class FlowableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorOverlap() {
         Flowable.error(new TestException())

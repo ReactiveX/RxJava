@@ -510,7 +510,6 @@ public class SingleTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void toFlowableIterableRemove() {
-        @SuppressWarnings("unchecked")
         Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Arrays.asList(Single.just(1)));
 
         Iterator<? extends Flowable<Integer>> iterator = f.iterator();
@@ -520,7 +519,6 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void zipIterableObject() {
-        @SuppressWarnings("unchecked")
         final List<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(4));
         Single.zip(singles, new Function<Object[], Object>() {
             @Override

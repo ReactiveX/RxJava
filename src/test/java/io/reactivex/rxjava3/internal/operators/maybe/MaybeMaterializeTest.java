@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class MaybeMaterializeTest extends RxJavaTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void success() {
         Maybe.just(1)
         .materialize()
@@ -33,7 +32,6 @@ public class MaybeMaterializeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void error() {
         TestException ex = new TestException();
         Maybe.error(ex)
@@ -43,7 +41,6 @@ public class MaybeMaterializeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void empty() {
         Maybe.empty()
         .materialize()

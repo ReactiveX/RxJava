@@ -1368,7 +1368,6 @@ public class FlowablePublishTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void splitCombineSubscriberChangeAfterOnNext() {
         Flowable<Integer> source = Flowable.range(0, 20)
         .doOnSubscribe(new Consumer<Subscription>() {
@@ -1436,7 +1435,6 @@ public class FlowablePublishTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void splitCombineSubscriberChangeAfterOnNextFused() {
         Flowable<Integer> source = Flowable.range(0, 20)
         .publish(10)

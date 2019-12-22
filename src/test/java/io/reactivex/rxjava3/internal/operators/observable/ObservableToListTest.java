@@ -85,7 +85,6 @@ public class ObservableToListTest extends RxJavaTest {
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHintObservable() {
         Observable.range(1, 10)
@@ -154,7 +153,6 @@ public class ObservableToListTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {
         Observable.range(1, 10)
@@ -170,7 +168,6 @@ public class ObservableToListTest extends RxJavaTest {
         TestHelper.checkDisposed(Observable.just(1).toList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Observable.error(new TestException())
@@ -180,7 +177,6 @@ public class ObservableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorSingle() {
         Observable.error(new TestException())
@@ -189,7 +185,6 @@ public class ObservableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectionSupplierThrows() {
         Observable.just(1)
@@ -204,7 +199,6 @@ public class ObservableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectionSupplierReturnsNull() {
         Observable.just(1)
@@ -220,7 +214,6 @@ public class ObservableToListTest extends RxJavaTest {
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleCollectionSupplierThrows() {
         Observable.just(1)
@@ -234,7 +227,6 @@ public class ObservableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleCollectionSupplierReturnsNull() {
         Observable.just(1)

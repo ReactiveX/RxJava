@@ -1401,7 +1401,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterable() {
         Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.just(2)))
@@ -1409,7 +1408,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableEmpty() {
         Maybe.concat(Arrays.asList(Maybe.empty(), Maybe.empty()))
@@ -1417,7 +1415,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableBackpressured() {
         TestSubscriber<Integer> ts = Maybe.concat(Arrays.asList(Maybe.just(1), Maybe.just(2)))
@@ -1434,7 +1431,6 @@ public class MaybeTest extends RxJavaTest {
         ts.assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableBackpressuredNonEager() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1624,7 +1620,6 @@ public class MaybeTest extends RxJavaTest {
         Maybe.just(1).ambWith(error).test().assertValue(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOrder() {
         Maybe<Integer> error = Maybe.error(new RuntimeException());
@@ -1772,7 +1767,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable1SignalsSuccess() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1795,7 +1789,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2SignalsSuccess() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1818,7 +1811,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2SignalsSuccessWithOverlap() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1842,7 +1834,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable1SignalsError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1864,7 +1855,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2SignalsError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1886,7 +1876,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2SignalsErrorWithOverlap() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1909,7 +1898,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertFailureAndMessage(TestException.class, "2");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable1SignalsComplete() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1931,7 +1919,6 @@ public class MaybeTest extends RxJavaTest {
         to.assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2SignalsComplete() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -1968,7 +1955,6 @@ public class MaybeTest extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Maybe.amb(Arrays.asList(null, Maybe.just(1)))
@@ -2188,7 +2174,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterable() {
         Maybe.merge(Arrays.asList(Maybe.just(1), Maybe.just(2), Maybe.just(3)))
@@ -2493,7 +2478,6 @@ public class MaybeTest extends RxJavaTest {
         assertFalse(Maybe.concatArrayDelayError(Maybe.never()) instanceof MaybeConcatArrayDelayError);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayError() {
         Maybe.concatDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
@@ -2539,7 +2523,6 @@ public class MaybeTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerIterable() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -2638,7 +2621,6 @@ public class MaybeTest extends RxJavaTest {
         assertSame(Flowable.empty(), Maybe.mergeArrayDelayError());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayError() {
         Maybe.mergeDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
@@ -2900,7 +2882,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult("[1]");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipIterable() {
         Maybe.zip(
@@ -3048,7 +3029,6 @@ public class MaybeTest extends RxJavaTest {
 
     @Test
     public void zipIterableObject() {
-        @SuppressWarnings("unchecked")
         final List<Maybe<Integer>> maybes = Arrays.asList(Maybe.just(1), Maybe.just(4));
         Maybe.zip(maybes, new Function<Object[], Object>() {
             @Override

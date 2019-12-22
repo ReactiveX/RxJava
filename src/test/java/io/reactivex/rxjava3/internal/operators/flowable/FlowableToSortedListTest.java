@@ -112,7 +112,6 @@ public class FlowableToSortedListTest extends RxJavaTest {
         .assertResult(5, 4, 3, 2, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListCapacityFlowable() {
         Flowable.just(5, 1, 2, 4, 3).toSortedList(4).toFlowable()
@@ -120,7 +119,6 @@ public class FlowableToSortedListTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListComparatorCapacityFlowable() {
         Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
@@ -178,7 +176,6 @@ public class FlowableToSortedListTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListCapacity() {
         Flowable.just(5, 1, 2, 4, 3).toSortedList(4)
@@ -186,7 +183,6 @@ public class FlowableToSortedListTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void toSortedListComparatorCapacity() {
         Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {

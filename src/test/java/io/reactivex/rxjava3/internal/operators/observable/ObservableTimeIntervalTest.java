@@ -128,7 +128,6 @@ public class ObservableTimeIntervalTest extends RxJavaTest {
         TestHelper.checkDisposed(Observable.just(1).timeInterval());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Observable.error(new TestException())

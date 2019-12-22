@@ -1422,7 +1422,6 @@ public class FlowableZipTest extends RxJavaTest {
         .assertResult("929");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipArrayEmpty() {
         assertSame(Flowable.empty(), Flowable.zipArray(Functions.<Object[]>identity(), false, 16));
@@ -1897,7 +1896,6 @@ public class FlowableZipTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void publishersInIterable() {
         Publisher<Integer> source = new Publisher<Integer>() {

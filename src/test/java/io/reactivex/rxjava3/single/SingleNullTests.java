@@ -49,7 +49,6 @@ public class SingleNullTests extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Single.amb(Arrays.asList(null, just1))
@@ -85,7 +84,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingSubscribe();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
         Single.concat(Arrays.asList(just1, null)).blockingSubscribe();
@@ -249,7 +247,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingSubscribe();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
         Single.merge(Arrays.asList(null, just1)).blockingSubscribe();
@@ -384,7 +381,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
         Single.zip(Arrays.asList(null, just1), new Function<Object[], Object>() {
@@ -395,13 +391,11 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionNull() {
         Single.zip(Arrays.asList(just1, just1), null).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionReturnsNull() {
         Single.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -529,7 +523,6 @@ public class SingleNullTests extends RxJavaTest {
         }, (Single<Integer>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
         Single.zip(Arrays.asList(just1, null), new Function<Object[], Object>() {

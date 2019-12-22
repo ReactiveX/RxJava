@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class CompletableMaterializeTest extends RxJavaTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void error() {
         TestException ex = new TestException();
         Completable.error(ex)
@@ -34,7 +33,6 @@ public class CompletableMaterializeTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void empty() {
         Completable.complete()
         .materialize()

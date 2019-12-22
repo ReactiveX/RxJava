@@ -764,7 +764,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertFalse(observer.isDisposed());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimeSkipDefault() {
         Observable.range(1, 5).buffer(1, 1, TimeUnit.MINUTES)
@@ -772,7 +771,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferBoundaryHint() {
         Observable.range(1, 5).buffer(Observable.timer(1, TimeUnit.MINUTES), 2)
@@ -784,7 +782,6 @@ public class ObservableBufferTest extends RxJavaTest {
         return new HashSet<>(Arrays.asList(values));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
@@ -798,7 +795,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
@@ -813,7 +809,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows() {
         Observable.just(1)
         .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -827,7 +822,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows2() {
         Observable.just(1)
         .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -841,7 +835,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows3() {
         Observable.just(1)
         .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -855,7 +848,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows4() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -875,7 +867,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows5() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -895,7 +886,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows6() {
         Observable.<Integer>never()
         .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -915,7 +905,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -935,7 +924,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull2() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -955,7 +943,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull3() {
         Observable.<Integer>never()
         .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -996,7 +983,6 @@ public class ObservableBufferTest extends RxJavaTest {
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never(), Functions.justFunction(Observable.never())));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void restartTimer() {
         Observable.range(1, 5)
@@ -1005,7 +991,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSupplierCrash2() {
         Observable.range(1, 2)
@@ -1023,7 +1008,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class, Arrays.asList(1));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipSupplierCrash2() {
         Observable.range(1, 2)
@@ -1041,7 +1025,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipError() {
         Observable.<Integer>error(new TestException())
@@ -1050,7 +1033,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipOverlap() {
         Observable.range(1, 5)
@@ -1065,7 +1047,6 @@ public class ObservableBufferTest extends RxJavaTest {
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactError() {
         Observable.error(new TestException())
@@ -1074,7 +1055,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedSkipError() {
         Observable.error(new TestException())
@@ -1083,7 +1063,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedOverlapError() {
         Observable.error(new TestException())
@@ -1092,7 +1071,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactEmpty() {
         Observable.empty()
@@ -1101,7 +1079,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedSkipEmpty() {
         Observable.empty()
@@ -1110,7 +1087,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedOverlapEmpty() {
         Observable.empty()
@@ -1119,7 +1095,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactSupplierCrash() {
         TestScheduler scheduler = new TestScheduler();
@@ -1149,7 +1124,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class, Arrays.asList(1));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactBoundedError() {
         TestScheduler scheduler = new TestScheduler();
@@ -1207,7 +1181,6 @@ public class ObservableBufferTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelExact() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1227,7 +1200,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelSkip() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1247,7 +1219,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelOverlap() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1268,7 +1239,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void boundaryOpenCloseDisposedOnComplete() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1344,7 +1314,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openClosemainError() {
         Observable.error(new TestException())
         .buffer(Observable.never(), Functions.justFunction(Observable.never()))
@@ -1353,7 +1322,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openClosebadSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1391,7 +1359,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseOpenCompletes() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1420,7 +1387,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseOpenCompletesNoBuffers() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1449,7 +1415,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseTake() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1473,7 +1438,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseBadOpen() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1517,7 +1481,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseBadClose() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1574,7 +1537,6 @@ public class ObservableBufferTest extends RxJavaTest {
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferExactBoundarySecondBufferCrash() {
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -1596,7 +1558,6 @@ public class ObservableBufferTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferExactBoundaryBadSource() {
         Observable<Integer> ps = new Observable<Integer>() {
@@ -1814,7 +1775,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void bufferExactFailingSupplier() {
         Observable.empty()
                 .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Supplier<List<Object>>() {

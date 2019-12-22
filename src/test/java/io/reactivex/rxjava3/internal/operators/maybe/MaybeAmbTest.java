@@ -50,7 +50,6 @@ public class MaybeAmbTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambFirstDone() {
         Maybe.amb(Arrays.asList(Maybe.just(1), Maybe.just(2)))
@@ -58,7 +57,6 @@ public class MaybeAmbTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dispose() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -76,7 +74,6 @@ public class MaybeAmbTest extends RxJavaTest {
         assertFalse(pp2.hasSubscribers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -255,7 +252,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void maybeSourcesInIterable() {
         MaybeSource<Integer> source = new MaybeSource<Integer>() {

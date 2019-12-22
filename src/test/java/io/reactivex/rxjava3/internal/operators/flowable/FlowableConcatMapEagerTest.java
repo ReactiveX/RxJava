@@ -298,7 +298,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness2() {
         final AtomicInteger count = new AtomicInteger();
@@ -323,7 +322,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness3() {
         final AtomicInteger count = new AtomicInteger();
@@ -348,7 +346,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness4() {
         final AtomicInteger count = new AtomicInteger();
@@ -373,7 +370,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness5() {
         final AtomicInteger count = new AtomicInteger();
@@ -398,7 +394,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness6() {
         final AtomicInteger count = new AtomicInteger();
@@ -423,7 +418,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness7() {
         final AtomicInteger count = new AtomicInteger();
@@ -448,7 +442,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness8() {
         final AtomicInteger count = new AtomicInteger();
@@ -473,7 +466,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         tsBp.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness9() {
         final AtomicInteger count = new AtomicInteger();
@@ -507,7 +499,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerError() {
         Flowable.concatArrayEager(Flowable.just(1), Flowable.error(new TestException())).subscribe(ts);
@@ -517,7 +508,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerEmpty() {
         Flowable.concatArrayEager(Flowable.empty(), Flowable.empty()).subscribe(ts);
@@ -552,7 +542,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void backpressure() {
         Flowable.concatArrayEager(Flowable.just(1), Flowable.just(1)).subscribe(tsBp);
 
@@ -662,7 +651,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         Assert.assertEquals(1, (long) requests.get(5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {
         Flowable<Integer> source = Flowable.just(1);
@@ -699,7 +687,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void badCapacityHint() throws Exception {
         Flowable<Integer> source = Flowable.just(1);
@@ -730,7 +717,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .assertResult();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerOne() {
         Flowable.concatEager(Arrays.asList(Flowable.just(1)))
@@ -738,7 +724,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerTwo() {
         Flowable.concatEager(Arrays.asList(Flowable.just(1), Flowable.just(2)))
@@ -770,7 +755,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerIterable() {
         Flowable.concatEager(Arrays.asList(Flowable.just(1), Flowable.just(2)))
@@ -1193,7 +1177,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        @SuppressWarnings("unchecked")
         TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(pp1, pp2, pp3)
         .test();
 
