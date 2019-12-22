@@ -76,7 +76,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
         Subscriber<Object> observerD = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
+        TestSubscriber<Object> ts = new TestSubscriber<>(observerA);
 
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -227,7 +227,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         processor.subscribe(ts);
 
         processor.onNext("one");
@@ -258,7 +258,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
-        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
+        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
         Subscriber<String> subscriber1 = new DefaultSubscriber<String>() {
 
             @Override
@@ -279,7 +279,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         };
 
-        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<String>();
+        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<>();
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
@@ -806,7 +806,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rs.onNext(3);
         rs.onComplete();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         rs.subscribe(ts);
 
@@ -834,7 +834,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rs.onNext(3);
         rs.onComplete();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         rs.subscribe(ts);
 
@@ -862,7 +862,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         rs.onNext(3);
         rs.onComplete();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         rs.subscribe(ts);
 
@@ -1026,7 +1026,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void subscribeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             final ReplayProcessor<Integer> rp = ReplayProcessor.create();
 

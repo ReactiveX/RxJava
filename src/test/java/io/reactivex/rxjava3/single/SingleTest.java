@@ -35,14 +35,14 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void helloWorld() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("Hello World!").toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("Hello World!"));
     }
 
     @Test
     public void helloWorld2() {
-        final AtomicReference<String> v = new AtomicReference<String>();
+        final AtomicReference<String> v = new AtomicReference<>();
         Single.just("Hello World!").subscribe(new SingleObserver<String>() {
 
             @Override
@@ -66,7 +66,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void map() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("A")
                 .map(new Function<String, String>() {
                     @Override
@@ -80,7 +80,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void zip() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
 
@@ -96,7 +96,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void zipWith() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         Single.just("A").zipWith(Single.just("B"), new BiFunction<String, String, String>() {
             @Override
@@ -110,7 +110,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void merge() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
 
@@ -120,7 +120,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void mergeWith() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         Single.just("A").mergeWith(Single.just("B")).subscribe(ts);
         ts.assertValueSequence(Arrays.asList("A", "B"));
@@ -128,7 +128,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void createSuccess() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
@@ -143,7 +143,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void createError() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> observer) {
@@ -158,7 +158,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void async() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single.just("Hello")
                 .subscribeOn(Schedulers.io())
                 .map(new Function<String, String>() {
@@ -183,7 +183,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void flatMap() throws InterruptedException {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
         Single.just("Hello").flatMap(new Function<String, Single<String>>() {
             @Override
             public Single<String> apply(String s) {
@@ -200,7 +200,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void timeout() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> observer) {
@@ -222,7 +222,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void timeoutWithFallback() {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> observer) {
@@ -245,7 +245,7 @@ public class SingleTest extends RxJavaTest {
 
     @Test
     public void unsubscribe() throws InterruptedException {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final AtomicBoolean interrupted = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(2);
@@ -436,7 +436,7 @@ public class SingleTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(0L);
+        TestSubscriber<String> ts = new TestSubscriber<>(0L);
 
         s.toFlowable().subscribe(ts);
 
@@ -450,7 +450,7 @@ public class SingleTest extends RxJavaTest {
     @Test
     public void toObservable() {
         Flowable<String> a = Single.just("a").toFlowable();
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         a.subscribe(ts);
         ts.assertValue("a");
         ts.assertNoErrors();

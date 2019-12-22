@@ -88,7 +88,7 @@ implements FlowableSubscriber<T>, Subscription {
             throw new IllegalArgumentException("Negative initial request not allowed");
         }
         this.downstream = actual;
-        this.upstream = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<>();
         this.missedRequested = new AtomicLong(initialRequest);
     }
 

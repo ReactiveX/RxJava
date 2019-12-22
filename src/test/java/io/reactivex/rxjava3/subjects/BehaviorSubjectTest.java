@@ -136,7 +136,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         Observer<Object> observerB = TestHelper.mockObserver();
         Observer<Object> observerC = TestHelper.mockObserver();
 
-        TestObserver<Object> to = new TestObserver<Object>(observerA);
+        TestObserver<Object> to = new TestObserver<>(observerA);
 
         channel.subscribe(to);
         channel.subscribe(observerB);
@@ -389,7 +389,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                     }
                 });
 
-                final AtomicReference<Object> o = new AtomicReference<Object>();
+                final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new DefaultObserver<Object>() {
@@ -679,7 +679,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
-            final TestObserver<Object> to = new TestObserver<Object>();
+            final TestObserver<Object> to = new TestObserver<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -706,7 +706,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
-            final TestObserver<Object> to = new TestObserver<Object>();
+            final TestObserver<Object> to = new TestObserver<>();
 
             final TestException ex = new TestException();
 
@@ -735,9 +735,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         BehaviorSubject<Integer> bs = BehaviorSubject.create();
         bs.onNext(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
-        BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+        BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
         to.onSubscribe(bd);
 
         assertFalse(bd.isDisposed());
@@ -766,9 +766,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             BehaviorSubject<Integer> bs = BehaviorSubject.create();
             bs.onNext(1);
 
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
             to.onSubscribe(bd);
 
             Runnable r1 = new Runnable() {
@@ -795,9 +795,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             BehaviorSubject<Integer> bs = BehaviorSubject.create();
             bs.onNext(1);
 
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
-            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
             to.onSubscribe(bd);
 
             Runnable r1 = new Runnable() {
@@ -822,9 +822,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         BehaviorSubject<Integer> bs = BehaviorSubject.create();
         bs.onNext(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
-        final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+        final BehaviorDisposable<Integer> bd = new BehaviorDisposable<>(to, bs);
         to.onSubscribe(bd);
 
         bd.emitting = true;

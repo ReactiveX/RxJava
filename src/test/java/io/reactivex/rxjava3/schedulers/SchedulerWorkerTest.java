@@ -76,7 +76,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
         Scheduler.Worker w = s.createWorker();
 
         try {
-            final List<Long> times = new ArrayList<Long>();
+            final List<Long> times = new ArrayList<>();
 
             Disposable d = w.schedulePeriodically(new Runnable() {
                 @Override
@@ -118,7 +118,7 @@ public class SchedulerWorkerTest extends RxJavaTest {
         Scheduler.Worker w = s.createWorker();
 
         try {
-            final List<Long> times = new ArrayList<Long>();
+            final List<Long> times = new ArrayList<>();
 
             Disposable d = w.schedulePeriodically(new Runnable() {
                 @Override

@@ -239,10 +239,10 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         Flowable.fromFuture(f).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -256,24 +256,24 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-      FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+      FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Flowable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2392,7 +2392,7 @@ public class FlowableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, null);
     }
@@ -2412,7 +2412,7 @@ public class FlowableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, new Function<Integer, Collection<Integer>>() {
             @Override

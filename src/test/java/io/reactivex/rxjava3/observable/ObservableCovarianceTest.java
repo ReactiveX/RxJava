@@ -66,7 +66,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
     @Test
     public void groupByCompose() {
         Observable<Movie> movies = Observable.just(new HorrorMovie(), new ActionMovie(), new Movie());
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         movies
         .groupBy(new Function<Movie, Object>() {
             @Override
@@ -187,9 +187,9 @@ public class ObservableCovarianceTest extends RxJavaTest {
             } else {
                 // diff the two
                 List<Movie> newList = listOfLists.get(1);
-                List<Movie> oldList = new ArrayList<Movie>(listOfLists.get(0));
+                List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-                Set<Movie> delta = new LinkedHashSet<Movie>();
+                Set<Movie> delta = new LinkedHashSet<>();
                 delta.addAll(newList);
                 // remove all that match in old
                 delta.removeAll(oldList);
@@ -211,7 +211,7 @@ public class ObservableCovarianceTest extends RxJavaTest {
         @Override
         public Observable<Movie> apply(Observable<List<Movie>> movieList) {
             return movieList
-                .startWithItem(new ArrayList<Movie>())
+                .startWithItem(new ArrayList<>())
                 .buffer(2, 1)
                 .skip(1)
                 .flatMap(calculateDelta);

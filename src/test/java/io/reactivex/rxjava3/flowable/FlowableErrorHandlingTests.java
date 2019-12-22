@@ -35,7 +35,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
     @Test
     public void onNextError() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
         Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
 
@@ -72,7 +72,7 @@ public class FlowableErrorHandlingTests extends RxJavaTest {
     @Test
     public void onNextErrorAcrossThread() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> caughtError = new AtomicReference<>();
         Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
         Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
 

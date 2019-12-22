@@ -289,10 +289,10 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         Observable.fromFuture(f).subscribe(to);
         to.assertNoValues();
         to.assertNotComplete();
@@ -306,24 +306,24 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
+        Observable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
+        Observable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Observable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         Observable.fromFuture(f, null);
     }
 
@@ -2385,7 +2385,7 @@ public class ObservableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, null);
     }
@@ -2405,7 +2405,7 @@ public class ObservableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, new Function<Integer, Collection<Integer>>() {
             @Override

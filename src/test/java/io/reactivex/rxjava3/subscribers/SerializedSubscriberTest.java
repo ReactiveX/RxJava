@@ -42,7 +42,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     }
 
     private Subscriber<String> serializedSubscriber(Subscriber<String> subscriber) {
-        return new SerializedSubscriber<String>(subscriber);
+        return new SerializedSubscriber<>(subscriber);
     }
 
     @Test
@@ -164,7 +164,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -220,7 +220,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<>(tw));
             w.onSubscribe(new BooleanSubscription());
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
@@ -276,7 +276,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriberEx<String> ts = new TestSubscriberEx<String>(new DefaultSubscriber<String>() {
+                TestSubscriberEx<String> ts = new TestSubscriberEx<>(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -357,7 +357,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void threadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(new DefaultSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -553,7 +553,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
         /**
          * Used to store the order and number of events received.
          */
-        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<TestConcurrencySubscriberEvent>();
+        private final LinkedBlockingQueue<TestConcurrencySubscriberEvent> events = new LinkedBlockingQueue<>();
         private final int waitTime;
 
         @SuppressWarnings("unused")
@@ -849,7 +849,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
     public void errorReentry() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+            final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
 
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
                 @Override
@@ -859,7 +859,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                     super.onNext(v);
                 }
             };
-            SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+            SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(ts);
             sobs.onSubscribe(new BooleanSubscription());
             serial.set(sobs);
 
@@ -876,7 +876,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
     @Test
     public void completeReentry() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<>();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -886,7 +886,7 @@ public class SerializedSubscriberTest extends RxJavaTest {
                 super.onNext(v);
             }
         };
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<>(ts);
         sobs.onSubscribe(new BooleanSubscription());
         serial.set(sobs);
 
@@ -899,9 +899,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+        SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
         BooleanSubscription bs = new BooleanSubscription();
 
@@ -915,9 +915,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void onCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
             BooleanSubscription bs = new BooleanSubscription();
 
@@ -941,9 +941,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void onNextOnCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
             BooleanSubscription bs = new BooleanSubscription();
 
@@ -977,9 +977,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void onNextOnErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
             BooleanSubscription bs = new BooleanSubscription();
 
@@ -1015,9 +1015,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void onNextOnErrorRaceDelayError() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts, true);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts, true);
 
             BooleanSubscription bs = new BooleanSubscription();
 
@@ -1056,9 +1056,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
             so.onSubscribe(new BooleanSubscription());
 
@@ -1079,9 +1079,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+                TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-                final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+                final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
                 BooleanSubscription bs = new BooleanSubscription();
 
@@ -1124,9 +1124,9 @@ public class SerializedSubscriberTest extends RxJavaTest {
     @Test
     public void nullOnNext() {
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+        final SerializedSubscriber<Integer> so = new SerializedSubscriber<>(ts);
 
         so.onSubscribe(new BooleanSubscription());
 

@@ -71,12 +71,12 @@ public class ParallelFromPublisherTest extends RxJavaTest {
 
         @Override
         public Publisher<T> apply(Flowable<T> upstream) {
-            return new StripBoundary<T>(upstream);
+            return new StripBoundary<>(upstream);
         }
 
         @Override
         protected void subscribeActual(Subscriber<? super T> s) {
-            source.subscribe(new StripBoundarySubscriber<T>(s));
+            source.subscribe(new StripBoundarySubscriber<>(s));
         }
 
         static final class StripBoundarySubscriber<T> extends BasicFuseableSubscriber<T, T> {
@@ -117,7 +117,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
                 throw new TestException();
             }
         })
-        .compose(new StripBoundary<Object>(null))
+        .compose(new StripBoundary<>(null))
         .parallel()
         .sequential()
         .test()
@@ -137,7 +137,7 @@ public class ParallelFromPublisherTest extends RxJavaTest {
                 throw new TestException();
             }
         })
-        .compose(new StripBoundary<Object>(null))
+        .compose(new StripBoundary<>(null))
         .parallel()
         .sequential()
         .test()
@@ -148,8 +148,8 @@ public class ParallelFromPublisherTest extends RxJavaTest {
 
     @Test
     public void boundaryConfinement() {
-        final Set<String> between = new HashSet<String>();
-        final ConcurrentHashMap<String, String> processing = new ConcurrentHashMap<String, String>();
+        final Set<String> between = new HashSet<>();
+        final ConcurrentHashMap<String, String> processing = new ConcurrentHashMap<>();
 
         TestSubscriberEx<Object> ts = Flowable.range(1, 10)
         .observeOn(Schedulers.single(), false, 1)

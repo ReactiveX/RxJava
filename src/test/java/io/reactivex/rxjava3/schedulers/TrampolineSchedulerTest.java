@@ -63,7 +63,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
     @Test
     public void nestedTrampolineWithUnsubscribe() {
-        final ArrayList<String> workDone = new ArrayList<String>();
+        final ArrayList<String> workDone = new ArrayList<>();
         final CompositeDisposable workers = new CompositeDisposable();
         Worker worker = Schedulers.trampoline().createWorker();
         try {
@@ -107,7 +107,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     public void trampolineWorkerHandlesConcurrentScheduling() {
         final Worker trampolineWorker = Schedulers.trampoline().createWorker();
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
-        final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(subscriber);
+        final TestSubscriber<Disposable> ts = new TestSubscriber<>(subscriber);
 
         // Spam the trampoline with actions.
         Flowable.range(0, 50)

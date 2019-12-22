@@ -41,7 +41,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
+        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -62,7 +62,7 @@ public class SafeSubscriberTest extends RxJavaTest {
 
         Subscriber<String> w = TestHelper.mockSubscriber();
 
-        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
+        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
 
         t.sendOnNext("one");
         t.sendOnError(new RuntimeException("bad"));
@@ -82,7 +82,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
+        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
@@ -103,7 +103,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         Flowable<String> st = Flowable.unsafeCreate(t);
 
         Subscriber<String> w = TestHelper.mockSubscriber();
-        st.subscribe(new SafeSubscriber<String>(new TestSubscriber<String>(w)));
+        st.subscribe(new SafeSubscriber<>(new TestSubscriber<>(w)));
 
         t.sendOnNext("one");
         t.sendOnCompleted();
@@ -159,7 +159,7 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextFailure() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
+        AtomicReference<Throwable> onError = new AtomicReference<>();
         try {
             OBSERVER_ONNEXT_FAIL(onError).onNext("one");
             fail("expects exception to be thrown");
@@ -172,9 +172,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextFailureSafe() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
+        AtomicReference<Throwable> onError = new AtomicReference<>();
         try {
-            SafeSubscriber<String> safeObserver = new SafeSubscriber<String>(OBSERVER_ONNEXT_FAIL(onError));
+            SafeSubscriber<String> safeObserver = new SafeSubscriber<>(OBSERVER_ONNEXT_FAIL(onError));
             safeObserver.onSubscribe(new BooleanSubscription());
             safeObserver.onNext("one");
             assertNotNull(onError.get());
@@ -187,7 +187,7 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onCompleteFailure() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
+        AtomicReference<Throwable> onError = new AtomicReference<>();
         try {
             OBSERVER_ONCOMPLETED_FAIL(onError).onComplete();
             fail("expects exception to be thrown");
@@ -341,16 +341,16 @@ public class SafeSubscriberTest extends RxJavaTest {
             public void onComplete() {
             }
         };
-        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(actual);
+        SafeSubscriber<Integer> s = new SafeSubscriber<>(actual);
 
         assertSame(actual, s.downstream);
     }
 
     @Test
     public void dispose() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         BooleanSubscription bs = new BooleanSubscription();
 
@@ -365,9 +365,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextAfterComplete() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         BooleanSubscription bs = new BooleanSubscription();
 
@@ -386,9 +386,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextNull() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         BooleanSubscription bs = new BooleanSubscription();
 
@@ -401,9 +401,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextWithoutOnSubscribe() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         so.onNext(1);
 
@@ -412,9 +412,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorWithoutOnSubscribe() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         so.onError(new TestException());
 
@@ -426,9 +426,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onCompleteWithoutOnSubscribe() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         so.onComplete();
 
@@ -437,9 +437,9 @@ public class SafeSubscriberTest extends RxJavaTest {
 
     @Test
     public void onNextNormal() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
+        SafeSubscriber<Integer> so = new SafeSubscriber<>(ts);
 
         BooleanSubscription bs = new BooleanSubscription();
 
@@ -520,7 +520,7 @@ public class SafeSubscriberTest extends RxJavaTest {
         }
 
         public SafeSubscriber<Object> toSafe() {
-            return new SafeSubscriber<Object>(this);
+            return new SafeSubscriber<>(this);
         }
 
         public CrashDummy assertError(Class<? extends Throwable> clazz) {

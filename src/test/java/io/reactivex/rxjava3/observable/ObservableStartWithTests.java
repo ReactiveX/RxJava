@@ -35,7 +35,7 @@ public class ObservableStartWithTests extends RxJavaTest {
 
     @Test
     public void startWithIterable() {
-        List<String> li = new ArrayList<String>();
+        List<String> li = new ArrayList<>();
         li.add("alpha");
         li.add("beta");
         List<String> values = Observable.just("one", "two").startWithIterable(li).toList().blockingGet();
@@ -48,7 +48,7 @@ public class ObservableStartWithTests extends RxJavaTest {
 
     @Test
     public void startWithObservable() {
-        List<String> li = new ArrayList<String>();
+        List<String> li = new ArrayList<>();
         li.add("alpha");
         li.add("beta");
         List<String> values = Observable.just("one", "two")

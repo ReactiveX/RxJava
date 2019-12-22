@@ -135,7 +135,7 @@ public class ParallelRunOnTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorConditionalBackpressured() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0L);
 
         Flowable.error(new TestException())
         .parallel(1)
@@ -150,7 +150,7 @@ public class ParallelRunOnTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void emptyConditionalBackpressured() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
+        TestSubscriber<Object> ts = new TestSubscriber<>(0L);
 
         Flowable.empty()
         .parallel(1)

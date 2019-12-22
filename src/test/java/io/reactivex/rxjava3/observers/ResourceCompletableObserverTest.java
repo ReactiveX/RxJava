@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class ResourceCompletableObserverTest extends RxJavaTest {
     static final class TestResourceCompletableObserver extends ResourceCompletableObserver {
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int complete;
 

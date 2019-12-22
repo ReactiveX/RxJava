@@ -81,7 +81,7 @@ public class InternalWrongNaming {
     }
 
     static List<String> readFile(File u) throws Exception {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         BufferedReader in = new BufferedReader(new FileReader(u));
         try {

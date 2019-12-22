@@ -31,7 +31,7 @@ public class ObservableWindowTests extends RxJavaTest {
 
     @Test
     public void window() {
-        final ArrayList<List<Integer>> lists = new ArrayList<List<Integer>>();
+        final ArrayList<List<Integer>> lists = new ArrayList<>();
 
         Observable.concat(
             Observable.just(1, 2, 3, 4, 5, 6)

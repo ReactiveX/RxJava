@@ -41,7 +41,7 @@ public class ObservableZipTests extends RxJavaTest {
                 .flatMap(new Function<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>() {
                     @Override
                     public Observable<HashMap<String, String>> apply(final GroupedObservable<String, Event> ge) {
-                            return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+                            return ge.scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
                                         Event perInstanceEvent) {

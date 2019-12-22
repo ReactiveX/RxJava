@@ -74,7 +74,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         Observer<Object> observerB = TestHelper.mockObserver();
         Observer<Object> observerC = TestHelper.mockObserver();
         Observer<Object> observerD = TestHelper.mockObserver();
-        TestObserver<Object> to = new TestObserver<Object>(observerA);
+        TestObserver<Object> to = new TestObserver<>(observerA);
 
         channel.subscribe(to);
         channel.subscribe(observerB);
@@ -225,7 +225,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         ReplaySubject<String> subject = ReplaySubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         subject.subscribe(to);
 
         subject.onNext("one");
@@ -256,7 +256,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     @Test
     public void newSubscriberDoesntBlockExisting() throws InterruptedException {
 
-        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<String>();
+        final AtomicReference<String> lastValueForSubscriber1 = new AtomicReference<>();
         Observer<String> observer1 = new DefaultObserver<String>() {
 
             @Override
@@ -277,7 +277,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         };
 
-        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<String>();
+        final AtomicReference<String> lastValueForSubscriber2 = new AtomicReference<>();
         final CountDownLatch oneReceived = new CountDownLatch(1);
         final CountDownLatch makeSlow = new CountDownLatch(1);
         final CountDownLatch completed = new CountDownLatch(1);
@@ -940,7 +940,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     @Test
     public void subscribeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestObserver<Integer> to = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<>();
 
             final ReplaySubject<Integer> rp = ReplaySubject.create();
 

@@ -25,7 +25,7 @@ public class DefaultSubscriberTest extends RxJavaTest {
 
     static final class RequestEarly extends DefaultSubscriber<Integer> {
 
-        final List<Object> events = new ArrayList<Object>();
+        final List<Object> events = new ArrayList<>();
 
         RequestEarly() {
             request(5);

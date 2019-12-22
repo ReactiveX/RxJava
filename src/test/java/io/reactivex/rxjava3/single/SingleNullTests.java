@@ -177,7 +177,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f).blockingGet();
     }
@@ -189,7 +189,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;
@@ -199,7 +199,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;
@@ -209,14 +209,14 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f, 1, TimeUnit.SECONDS).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;

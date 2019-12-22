@@ -66,7 +66,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
     @Test
     public void groupByCompose() {
         Flowable<Movie> movies = Flowable.just(new HorrorMovie(), new ActionMovie(), new Movie());
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
 
         movies
         .groupBy(new Function<Movie, Object>() {
@@ -188,9 +188,9 @@ public class FlowableCovarianceTest extends RxJavaTest {
             } else {
                 // diff the two
                 List<Movie> newList = listOfLists.get(1);
-                List<Movie> oldList = new ArrayList<Movie>(listOfLists.get(0));
+                List<Movie> oldList = new ArrayList<>(listOfLists.get(0));
 
-                Set<Movie> delta = new LinkedHashSet<Movie>();
+                Set<Movie> delta = new LinkedHashSet<>();
                 delta.addAll(newList);
                 // remove all that match in old
                 delta.removeAll(oldList);
@@ -212,7 +212,7 @@ public class FlowableCovarianceTest extends RxJavaTest {
         @Override
         public Publisher<Movie> apply(Flowable<List<Movie>> movieList) {
             return movieList
-                .startWithItem(new ArrayList<Movie>())
+                .startWithItem(new ArrayList<>())
                 .buffer(2, 1)
                 .skip(1)
                 .flatMap(calculateDelta);

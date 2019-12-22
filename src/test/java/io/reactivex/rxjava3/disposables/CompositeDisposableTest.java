@@ -72,7 +72,7 @@ public class CompositeDisposableTest extends RxJavaTest {
             }));
         }
 
-        final List<Thread> threads = new ArrayList<Thread>();
+        final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final Thread t = new Thread() {
                 @Override
@@ -253,7 +253,7 @@ public class CompositeDisposableTest extends RxJavaTest {
 
         }));
 
-        final List<Thread> threads = new ArrayList<Thread>();
+        final List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final Thread t = new Thread() {
                 @Override

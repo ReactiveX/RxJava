@@ -395,7 +395,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             }
         });
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
         // this should call onNext concurrently
         f.subscribe(observer);
 
@@ -414,7 +414,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
 
         Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
 
         f.observeOn(scheduler).subscribe(observer);
 
@@ -449,7 +449,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
                     }
                 });
 
-        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
+        ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<>();
 
         f.subscribe(observer);
 
@@ -471,7 +471,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
     private static class ConcurrentObserverValidator<T> extends DefaultSubscriber<T> {
 
         final AtomicInteger concurrentCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         final CountDownLatch completed = new CountDownLatch(1);
 
         @Override
@@ -685,7 +685,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
             return;
         }
 
-        final AtomicReference<Disposable> disposable = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> disposable = new AtomicReference<>();
 
         try {
             assertRunnableDecorated(new Runnable() {

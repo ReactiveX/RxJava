@@ -30,9 +30,9 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class ResourceSubscriberTest extends RxJavaTest {
 
     static class TestResourceSubscriber<T> extends ResourceSubscriber<T> {
-        final List<T> values = new ArrayList<T>();
+        final List<T> values = new ArrayList<>();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int complete;
 
@@ -71,13 +71,13 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
         ro.add(null);
     }
 
     @Test
     public void addResources() {
-        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
 
@@ -102,7 +102,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void onCompleteCleansUp() {
-        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
 
@@ -121,7 +121,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> ro = new TestResourceSubscriber<>();
 
         assertFalse(ro.isDisposed());
 
@@ -140,7 +140,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<>();
 
         assertFalse(tc.isDisposed());
         assertEquals(0, tc.start);
@@ -161,7 +161,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<Integer>();
+            TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<>();
 
             tc.onSubscribe(new BooleanSubscription());
 
@@ -181,7 +181,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<Integer>();
+        TestResourceSubscriber<Integer> tc = new TestResourceSubscriber<>();
         tc.dispose();
 
         BooleanSubscription bs = new BooleanSubscription();
@@ -219,7 +219,7 @@ public class ResourceSubscriberTest extends RxJavaTest {
 
     static final class RequestEarly extends ResourceSubscriber<Integer> {
 
-        final List<Object> events = new ArrayList<Object>();
+        final List<Object> events = new ArrayList<>();
 
         RequestEarly() {
             request(5);

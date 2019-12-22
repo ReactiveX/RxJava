@@ -32,8 +32,8 @@ public class SerializedSubjectTest extends RxJavaTest {
 
     @Test
     public void basic() {
-        SerializedSubject<String> subject = new SerializedSubject<String>(PublishSubject.<String> create());
-        TestObserver<String> to = new TestObserver<String>();
+        SerializedSubject<String> subject = new SerializedSubject<>(PublishSubject.<String>create());
+        TestObserver<String> to = new TestObserver<>();
         subject.subscribe(to);
         subject.onNext("hello");
         subject.onComplete();
@@ -417,7 +417,7 @@ public class SerializedSubjectTest extends RxJavaTest {
 
     @Test
     public void onNextOnNextRace() {
-        Set<Integer> expectedSet = new HashSet<Integer>(Arrays.asList(1, 2));
+        Set<Integer> expectedSet = new HashSet<>(Arrays.asList(1, 2));
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
@@ -446,7 +446,7 @@ public class SerializedSubjectTest extends RxJavaTest {
             .assertValueCount(2)
             ;
 
-            Set<Integer> actualSet = new HashSet<Integer>(to.values());
+            Set<Integer> actualSet = new HashSet<>(to.values());
             assertEquals("" + actualSet, expectedSet, actualSet);
         }
     }
