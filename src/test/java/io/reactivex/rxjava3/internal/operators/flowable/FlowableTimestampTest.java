@@ -53,9 +53,9 @@ public class FlowableTimestampTest extends RxJavaTest {
 
         InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(2, 100, TimeUnit.MILLISECONDS));
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(2, 100, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(3, 200, TimeUnit.MILLISECONDS));
 
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber, never()).onComplete();
@@ -77,9 +77,9 @@ public class FlowableTimestampTest extends RxJavaTest {
 
         InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(1, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(2, 0, TimeUnit.MILLISECONDS));
-        inOrder.verify(subscriber, times(1)).onNext(new Timed<Integer>(3, 200, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(1, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(2, 0, TimeUnit.MILLISECONDS));
+        inOrder.verify(subscriber, times(1)).onNext(new Timed<>(3, 200, TimeUnit.MILLISECONDS));
 
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber, never()).onComplete();

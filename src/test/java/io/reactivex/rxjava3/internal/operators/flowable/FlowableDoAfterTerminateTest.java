@@ -91,7 +91,7 @@ public class FlowableDoAfterTerminateTest extends RxJavaTest {
             Action finallyAction = Mockito.mock(Action.class);
             doThrow(new IllegalStateException()).when(finallyAction).run();
 
-            TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+            TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
             Flowable
                     .just("value")

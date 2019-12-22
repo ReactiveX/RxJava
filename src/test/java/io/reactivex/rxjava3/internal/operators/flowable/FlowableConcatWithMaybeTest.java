@@ -27,7 +27,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalEmpty() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Maybe.<Integer>fromAction(new Action() {
@@ -43,7 +43,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalNonEmpty() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Maybe.just(100))
@@ -68,7 +68,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void mainError() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>error(new TestException())
         .concatWith(Maybe.<Integer>fromAction(new Action() {
@@ -84,7 +84,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void otherError() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Maybe.<Integer>error(new TestException()))
@@ -95,7 +95,7 @@ public class FlowableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void takeMain() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Maybe.<Integer>fromAction(new Action() {

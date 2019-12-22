@@ -63,7 +63,7 @@ public class FlowableTimerTest extends RxJavaTest {
 
     @Test
     public void timerPeriodically() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts = new TestSubscriber<>();
 
         Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
 
@@ -91,7 +91,7 @@ public class FlowableTimerTest extends RxJavaTest {
     @Test
     public void interval() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts = new TestSubscriber<>();
         w.subscribe(ts);
 
         ts.assertNoValues();
@@ -116,8 +116,8 @@ public class FlowableTimerTest extends RxJavaTest {
     public void withMultipleSubscribersStartingAtSameTime() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
 
-        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
-        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<>();
 
         w.subscribe(ts1);
         w.subscribe(ts2);
@@ -153,7 +153,7 @@ public class FlowableTimerTest extends RxJavaTest {
     public void withMultipleStaggeredSubscribers() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
 
-        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<>();
 
         w.subscribe(ts1);
 
@@ -161,7 +161,7 @@ public class FlowableTimerTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
 
-        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<>();
 
         w.subscribe(ts2);
 
@@ -193,7 +193,7 @@ public class FlowableTimerTest extends RxJavaTest {
     public void withMultipleStaggeredSubscribersAndPublish() {
         ConnectableFlowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler).publish();
 
-        TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts1 = new TestSubscriber<>();
 
         w.subscribe(ts1);
         w.connect();
@@ -202,7 +202,7 @@ public class FlowableTimerTest extends RxJavaTest {
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
 
-        TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts2 = new TestSubscriber<>();
         w.subscribe(ts2);
 
         ts1.assertValues(0L, 1L);
@@ -309,7 +309,7 @@ public class FlowableTimerTest extends RxJavaTest {
     @Test
     public void timerCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Long> ts = new TestSubscriber<Long>();
+            final TestSubscriber<Long> ts = new TestSubscriber<>();
 
             final TestScheduler scheduler = new TestScheduler();
 

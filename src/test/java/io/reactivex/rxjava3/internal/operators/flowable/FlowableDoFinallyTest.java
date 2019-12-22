@@ -440,7 +440,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void eventOrdering() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
 
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
@@ -480,7 +480,7 @@ public class FlowableDoFinallyTest extends RxJavaTest implements Action {
 
     @Test
     public void eventOrdering2() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
 
         Flowable.just(1)
         .doOnCancel(new Action() {

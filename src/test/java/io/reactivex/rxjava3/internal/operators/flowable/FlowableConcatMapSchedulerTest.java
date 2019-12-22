@@ -366,7 +366,7 @@ public class FlowableConcatMapSchedulerTest extends RxJavaTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
             .concatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override

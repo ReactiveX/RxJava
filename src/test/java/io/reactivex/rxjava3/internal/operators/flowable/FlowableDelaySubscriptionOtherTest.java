@@ -31,7 +31,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noPrematureSubscription() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -64,7 +64,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noMultipleSubscriptions() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -98,7 +98,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     public void completeTriggersSubscription() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -131,7 +131,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noPrematureSubscriptionToError() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -164,7 +164,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
     public void noSubscriptionIfOtherErrors() {
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -198,7 +198,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
 
         PublishProcessor<Object> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -249,7 +249,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.delaySubscription(other).subscribe(ts);
 
@@ -267,7 +267,7 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         source.delaySubscription(other).subscribe(ts);
 

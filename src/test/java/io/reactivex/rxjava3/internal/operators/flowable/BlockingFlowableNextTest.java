@@ -352,7 +352,7 @@ public class BlockingFlowableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverError() {
-        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+        NextSubscriber<Integer> no = new NextSubscriber<>();
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -366,7 +366,7 @@ public class BlockingFlowableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnNext() throws Exception {
-        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+        NextSubscriber<Integer> no = new NextSubscriber<>();
 
         no.setWaiting();
         no.onNext(Notification.createOnNext(1));
@@ -379,7 +379,7 @@ public class BlockingFlowableNextTest extends RxJavaTest {
 
     @Test
     public void nextObserverOnCompleteOnNext() throws Exception {
-        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+        NextSubscriber<Integer> no = new NextSubscriber<>();
 
         no.setWaiting();
         no.onNext(Notification.<Integer>createOnComplete());

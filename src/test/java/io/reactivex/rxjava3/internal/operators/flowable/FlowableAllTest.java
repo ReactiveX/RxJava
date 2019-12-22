@@ -146,7 +146,7 @@ public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void backpressureIfOneRequestedOneShouldBeDelivered() {
-        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<>();
 
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -164,7 +164,7 @@ public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void predicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserverEx<Boolean> to = new TestObserverEx<Boolean>();
+        TestObserverEx<Boolean> to = new TestObserverEx<>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -306,7 +306,7 @@ public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void backpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
-        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
+        TestSubscriber<Boolean> ts = new TestSubscriber<>(0L);
         Flowable.empty().all(new Predicate<Object>() {
             @Override
             public boolean test(Object t1) {
@@ -323,7 +323,7 @@ public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void backpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
-        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>(1L);
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<>(1L);
 
         Flowable.empty().all(new Predicate<Object>() {
             @Override
@@ -343,7 +343,7 @@ public class FlowableAllTest extends RxJavaTest {
 
     @Test
     public void predicateThrowsExceptionAndValueInCauseMessageFlowable() {
-        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<Boolean>();
+        TestSubscriberEx<Boolean> ts = new TestSubscriberEx<>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 

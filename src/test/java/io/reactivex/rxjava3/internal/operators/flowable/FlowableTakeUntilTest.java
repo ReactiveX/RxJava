@@ -190,7 +190,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.takeUntil(until).subscribe(ts);
 
@@ -216,7 +216,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.takeUntil(until).subscribe(ts);
 
@@ -240,7 +240,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.takeUntil(until).take(1).subscribe(ts);
 
@@ -262,7 +262,7 @@ public class FlowableTakeUntilTest extends RxJavaTest {
     public void backpressure() {
         PublishProcessor<Integer> until = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Flowable.range(1, 10).takeUntil(until).subscribe(ts);
 

@@ -102,7 +102,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void backpressureOnEmptyStream() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         Flowable.<Integer> empty().materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -113,7 +113,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void backpressureNoError() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         Flowable.just(1, 2, 3).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -127,7 +127,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void backpressureNoErrorAsync() throws InterruptedException {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         Flowable.just(1, 2, 3)
             .materialize()
             .subscribeOn(Schedulers.computation())
@@ -148,7 +148,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void backpressureWithError() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         Flowable.<Integer> error(new IllegalArgumentException()).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -158,7 +158,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void backpressureWithEmissionThenError() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
         IllegalArgumentException ex = new IllegalArgumentException();
         Flowable.fromIterable(Arrays.asList(1)).concatWith(Flowable.<Integer> error(ex)).materialize()
                 .subscribe(ts);
@@ -175,7 +175,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void withCompletionCausingError() {
-        TestSubscriberEx<Notification<Integer>> ts = new TestSubscriberEx<Notification<Integer>>();
+        TestSubscriberEx<Notification<Integer>> ts = new TestSubscriberEx<>();
         final RuntimeException ex = new RuntimeException("boo");
         Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -190,7 +190,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
     @Test
     public void unsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
-        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<>(0L);
 
         Flowable.<Integer>empty().materialize()
                 .subscribe(ts);
@@ -204,7 +204,7 @@ public class FlowableMaterializeTest extends RxJavaTest {
 
         boolean onComplete;
         boolean onError;
-        List<Notification<String>> notifications = new Vector<Notification<String>>();
+        List<Notification<String>> notifications = new Vector<>();
 
         @Override
         public void onComplete() {

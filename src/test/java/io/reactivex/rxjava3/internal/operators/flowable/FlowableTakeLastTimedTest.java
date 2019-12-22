@@ -208,7 +208,7 @@ public class FlowableTakeLastTimedTest extends RxJavaTest {
     public void continuousDelivery() {
         TestScheduler scheduler = new TestScheduler();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 

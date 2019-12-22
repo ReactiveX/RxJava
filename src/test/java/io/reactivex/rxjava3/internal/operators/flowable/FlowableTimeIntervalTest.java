@@ -61,11 +61,11 @@ public class FlowableTimeIntervalTest extends RxJavaTest {
         processor.onComplete();
 
         inOrder.verify(subscriber, times(1)).onNext(
-                new Timed<Integer>(1, 1000, TIME_UNIT));
+                new Timed<>(1, 1000, TIME_UNIT));
         inOrder.verify(subscriber, times(1)).onNext(
-                new Timed<Integer>(2, 2000, TIME_UNIT));
+                new Timed<>(2, 2000, TIME_UNIT));
         inOrder.verify(subscriber, times(1)).onNext(
-                new Timed<Integer>(3, 3000, TIME_UNIT));
+                new Timed<>(3, 3000, TIME_UNIT));
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }

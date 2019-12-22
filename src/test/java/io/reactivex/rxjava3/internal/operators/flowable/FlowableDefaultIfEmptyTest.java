@@ -57,7 +57,7 @@ public class FlowableDefaultIfEmptyTest extends RxJavaTest {
 
     @Test
     public void backpressureEmpty() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();
@@ -69,7 +69,7 @@ public class FlowableDefaultIfEmptyTest extends RxJavaTest {
 
     @Test
     public void backpressureNonEmpty() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
         Flowable.just(1, 2, 3).defaultIfEmpty(1).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotTerminated();

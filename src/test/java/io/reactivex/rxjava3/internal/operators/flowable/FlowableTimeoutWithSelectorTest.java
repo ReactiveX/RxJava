@@ -329,7 +329,7 @@ public class FlowableTimeoutWithSelectorTest extends RxJavaTest {
 
         }).when(subscriber).onComplete();
 
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(subscriber);
 
         new Thread(new Runnable() {
 

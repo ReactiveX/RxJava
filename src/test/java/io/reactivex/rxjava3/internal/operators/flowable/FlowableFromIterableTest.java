@@ -119,13 +119,13 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void backpressureViaRequest() {
-        ArrayList<Integer> list = new ArrayList<Integer>(Flowable.bufferSize());
+        ArrayList<Integer> list = new ArrayList<>(Flowable.bufferSize());
         for (int i = 1; i <= Flowable.bufferSize() + 1; i++) {
             list.add(i);
         }
         Flowable<Integer> f = Flowable.fromIterable(list);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
 
         ts.assertNoValues();
         ts.request(1);
@@ -145,7 +145,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     public void noBackpressure() {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
@@ -161,7 +161,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
         Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             f.subscribe(ts);
 
@@ -333,7 +333,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -366,7 +366,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -403,7 +403,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -440,7 +440,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(5);
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -473,7 +473,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -506,7 +506,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(5);
 
         Flowable.fromIterable(it).subscribe(ts);
 
@@ -539,7 +539,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
             }
         };
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(5);
         ts.cancel();
 
         Flowable.fromIterable(it).subscribe(ts);
@@ -552,7 +552,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void fusionWithConcatMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
         new Function<Integer, Flowable  <Integer>>() {
@@ -724,7 +724,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestRaceConditional() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r = new Runnable() {
                 @Override
@@ -744,7 +744,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestRaceConditional2() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r = new Runnable() {
                 @Override
@@ -764,7 +764,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestCancelConditionalRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -791,7 +791,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestCancelConditionalRace2() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -818,7 +818,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -844,7 +844,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
     @Test
     public void requestCancelRace2() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -933,7 +933,7 @@ public class FlowableFromIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextCancels() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.fromIterable(new Iterable<Integer>() {
             @Override

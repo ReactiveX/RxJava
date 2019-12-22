@@ -46,8 +46,8 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void timedAndCount() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
@@ -82,8 +82,8 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void timed() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
@@ -111,7 +111,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -143,7 +143,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
                 stringFlowable.subscribe(new DefaultSubscriber<T>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<T>(list));
+                        lists.add(new ArrayList<>(list));
                         list.clear();
                     }
 
@@ -166,8 +166,8 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
 
-        final List<Integer> list = new ArrayList<Integer>();
-        final List<List<Integer>> lists = new ArrayList<List<Integer>>();
+        final List<Integer> list = new ArrayList<>();
+        final List<List<Integer>> lists = new ArrayList<>();
 
         source.subscribe(observeWindow(list, lists));
 
@@ -184,7 +184,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void takeFlatMapCompletes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger wip = new AtomicInteger();
 
@@ -514,7 +514,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
 
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> tsInner = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> tsInner = new TestSubscriber<>();
 
             TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
             .doOnNext(new Consumer<Flowable<Integer>>() {
@@ -1204,7 +1204,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamExactTime() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES)
         .take(1)
@@ -1254,7 +1254,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamExactTimeAndSize() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, TimeUnit.MINUTES, 100)
         .take(1)
@@ -1304,7 +1304,7 @@ public class FlowableWindowWithTimeTest extends RxJavaTest {
     public void windowAbandonmentCancelsUpstreamExactTimeSkip() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<Flowable<Integer>>();
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
 
         TestSubscriber<Flowable<Integer>> ts = pp.window(10, 15, TimeUnit.MINUTES)
         .take(1)

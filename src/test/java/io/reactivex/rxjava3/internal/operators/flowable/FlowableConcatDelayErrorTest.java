@@ -232,7 +232,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
 
     @Test
     public void concatDelayErrorFlowableError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.concatDelayError(
                 withError(Flowable.just(withError(Flowable.just(1)), withError(Flowable.just(2)))))
@@ -269,7 +269,7 @@ public class FlowableConcatDelayErrorTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void concatDelayErrorIterableError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.concatDelayError(
                 Arrays.asList(withError(Flowable.just(1)), withError(Flowable.just(2))))

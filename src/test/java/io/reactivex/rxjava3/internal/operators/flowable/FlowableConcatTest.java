@@ -65,7 +65,7 @@ public class FlowableConcatTest {
 
         final Flowable<String> odds = Flowable.fromArray(o);
         final Flowable<String> even = Flowable.fromArray(e);
-        final List<Flowable<String>> list = new ArrayList<Flowable<String>>();
+        final List<Flowable<String>> list = new ArrayList<>();
         list.add(odds);
         list.add(even);
         Flowable<String> concat = Flowable.concat(Flowable.fromIterable(list));
@@ -110,8 +110,8 @@ public class FlowableConcatTest {
     public void simpleAsyncConcat() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
-        TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
+        TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
+        TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
 
         Flowable.concat(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2)).subscribe(subscriber);
 
@@ -150,12 +150,12 @@ public class FlowableConcatTest {
     public void nestedAsyncConcat() throws InterruptedException {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
-        final TestObservable<String> o3 = new TestObservable<String>("seven", "eight", "nine");
+        final TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
+        final TestObservable<String> o3 = new TestObservable<>("seven", "eight", "nine");
         final CountDownLatch allowThird = new CountDownLatch(1);
 
-        final AtomicReference<Thread> parent = new AtomicReference<Thread>();
+        final AtomicReference<Thread> parent = new AtomicReference<>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
 
@@ -284,7 +284,7 @@ public class FlowableConcatTest {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
         @SuppressWarnings("unchecked")
-        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(callOnce, okToContinue, odds, even);
+        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
         concatF.subscribe(subscriber);
         try {
@@ -316,14 +316,14 @@ public class FlowableConcatTest {
 
     @Test
     public void concatConcurrentWithInfinity() {
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
         //This observable will send "hello" MAX_VALUE time.
-        final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
+        final TestObservable<String> w2 = new TestObservable<>("hello", Integer.MAX_VALUE);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         @SuppressWarnings("unchecked")
-        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
+        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
         concatF.take(50).subscribe(subscriber);
@@ -351,8 +351,8 @@ public class FlowableConcatTest {
         final CountDownLatch okToContinueW1 = new CountDownLatch(1);
         final CountDownLatch okToContinueW2 = new CountDownLatch(1);
 
-        final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>(null, okToContinueW1, "one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(null, okToContinueW2, "four", "five", "six");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
@@ -402,11 +402,11 @@ public class FlowableConcatTest {
     public void concatUnsubscribe() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, 0L);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber, 0L);
 
         final Flowable<String> concat = Flowable.concat(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
 
@@ -444,14 +444,14 @@ public class FlowableConcatTest {
     public void concatUnsubscribeConcurrent() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, 0L);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber, 0L);
 
         @SuppressWarnings("unchecked")
-        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<Flowable<String>>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
+        TestObservable<Flowable<String>> observableOfObservables = new TestObservable<>(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2));
         Flowable<String> concatF = Flowable.concat(Flowable.unsafeCreate(observableOfObservables));
 
         concatF.subscribe(ts);
@@ -630,7 +630,7 @@ public class FlowableConcatTest {
 
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<Integer>(n);
+        List<Integer> list = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             list.add(i);
         }
@@ -655,7 +655,7 @@ public class FlowableConcatTest {
 
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<Integer>(n);
+        List<Integer> list = new ArrayList<>(n);
         for (int i = 0; i < n / 2; i++) {
             list.add(i);
         }
@@ -674,7 +674,7 @@ public class FlowableConcatTest {
 
     @Test
     public void innerBackpressureWithAlignedBoundaries() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, Flowable.bufferSize() * 2)
                 .concatWith(Flowable.range(0, Flowable.bufferSize() * 2))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -693,7 +693,7 @@ public class FlowableConcatTest {
      */
     @Test
     public void innerBackpressureWithoutAlignedBoundaries() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, (Flowable.bufferSize() * 2) + 10)
                 .concatWith(Flowable.range(0, (Flowable.bufferSize() * 2) + 10))
                 .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
@@ -719,7 +719,7 @@ public class FlowableConcatTest {
 
         });
 
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
         Flowable.concat(f, f).subscribe(ts);
         ts.awaitDone(500, TimeUnit.MILLISECONDS);
         ts.assertTerminated();
@@ -815,7 +815,7 @@ public class FlowableConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
             Flowable.range(0, 1000)
             .concatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override

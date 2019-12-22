@@ -40,7 +40,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     @Test
     public void normal0() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 2)
         .reduce(new BiFunction<Integer, Integer, Integer>() {
@@ -72,7 +72,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5).concatMapIterable(mapper)
         .subscribe(ts);
@@ -84,7 +84,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void normalViaFlatMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5).flatMapIterable(mapper)
         .subscribe(ts);
@@ -96,7 +96,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void normalBackpressured() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 5).concatMapIterable(mapper)
         .subscribe(ts);
@@ -126,7 +126,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void longRunning() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         int n = 1000 * 1000;
 
@@ -140,7 +140,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void asIntermediate() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         int n = 1000 * 1000;
 
@@ -159,7 +159,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void just() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1).concatMapIterable(mapper)
         .subscribe(ts);
@@ -171,7 +171,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void justHidden() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1).hide().concatMapIterable(mapper)
         .subscribe(ts);
@@ -183,7 +183,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>empty().concatMapIterable(mapper)
         .subscribe(ts);
@@ -195,7 +195,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .concatMapIterable(mapper)
@@ -208,7 +208,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorHasNextThrowsImmediately() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final Iterable<Integer> it = new Iterable<Integer>() {
             @Override
@@ -248,7 +248,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorHasNextThrowsImmediatelyJust() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final Iterable<Integer> it = new Iterable<Integer>() {
             @Override
@@ -288,7 +288,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorHasNextThrowsSecondCall() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final Iterable<Integer> it = new Iterable<Integer>() {
             @Override
@@ -332,7 +332,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorNextThrows() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final Iterable<Integer> it = new Iterable<Integer>() {
             @Override
@@ -372,7 +372,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void iteratorNextThrowsAndUnsubscribes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final Iterable<Integer> it = new Iterable<Integer>() {
             @Override
@@ -418,7 +418,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void mixture() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(0, 1000)
         .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -436,7 +436,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void emptyInnerThenSingleBackpressured() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
 
         Flowable.range(1, 2)
         .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -454,7 +454,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void manyEmptyInnerThenSingleBackpressured() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1);
 
         Flowable.range(1, 1000)
         .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -472,7 +472,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void hasNextIsNotCalledAfterChildUnsubscribedOnNext() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         final AtomicInteger counter = new AtomicInteger();
 
@@ -523,7 +523,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void normalPrefetchViaFlatMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5).flatMapIterable(mapper, 2)
         .subscribe(ts);
@@ -827,7 +827,7 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void cancelAfterHasNext() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 3).hide()
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -974,8 +974,8 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void upstreamFusionRejected() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
                 Functions.justFunction(Collections.<Integer>emptyList()), 128);
 
         final AtomicLong requested = new AtomicLong();
@@ -1031,8 +1031,8 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
     public void onErrorLate() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-            FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
                     Functions.justFunction(Collections.<Integer>emptyList()), 128);
 
             f.onSubscribe(new BooleanSubscription());
@@ -1059,8 +1059,8 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void fusedCurrentIteratorEmpty() throws Throwable {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
+        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
                 Functions.justFunction(Arrays.<Integer>asList(1, 2)), 128);
 
         f.onSubscribe(new BooleanSubscription());
@@ -1080,8 +1080,8 @@ public class FlowableFlattenIterableTest extends RxJavaTest {
 
     @Test
     public void fusionRequestedState() throws Exception {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<Integer, Integer>(ts,
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
+        FlattenIterableSubscriber<Integer, Integer> f = new FlattenIterableSubscriber<>(ts,
                 Functions.justFunction(Arrays.<Integer>asList(1, 2)), 128);
 
         f.onSubscribe(new BooleanSubscription());

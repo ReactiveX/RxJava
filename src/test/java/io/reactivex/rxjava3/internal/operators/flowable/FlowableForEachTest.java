@@ -27,7 +27,7 @@ public class FlowableForEachTest extends RxJavaTest {
 
     @Test
     public void forEachWile() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
         .doOnNext(new Consumer<Integer>() {
@@ -48,7 +48,7 @@ public class FlowableForEachTest extends RxJavaTest {
 
     @Test
     public void forEachWileWithError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .doOnNext(new Consumer<Integer>() {

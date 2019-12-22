@@ -111,7 +111,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
 
         grouped.flatMap(new Function<GroupedFlowable<Integer, String>, Flowable<String>>() {
 
@@ -156,13 +156,13 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     private static <K, V> Map<K, Collection<V>> toMap(Flowable<GroupedFlowable<K, V>> flowable) {
 
-        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
+        final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<>();
 
         flowable.doOnNext(new Consumer<GroupedFlowable<K, V>>() {
 
             @Override
             public void accept(final GroupedFlowable<K, V> f) {
-                result.put(f.getKey(), new ConcurrentLinkedQueue<V>());
+                result.put(f.getKey(), new ConcurrentLinkedQueue<>());
                 f.subscribe(new Consumer<V>() {
 
                     @Override
@@ -605,7 +605,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -684,7 +684,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -776,7 +776,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void firstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -853,7 +853,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupsWithNestedSubscribeOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -910,7 +910,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupsWithNestedObserveOn() throws InterruptedException {
-        final ArrayList<String> results = new ArrayList<String>();
+        final ArrayList<String> results = new ArrayList<>();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -1035,7 +1035,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupByBackpressure() throws InterruptedException {
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         Flowable.range(1, 4000)
                 .groupBy(IS_EVEN2)
@@ -1162,7 +1162,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         m.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         System.out.println("ts .get " + ts.values());
@@ -1178,7 +1178,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         Flowable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         m.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, ts.errors().size());
@@ -1190,7 +1190,7 @@ public class FlowableGroupByTest extends RxJavaTest {
         Flowable<Integer> source = Flowable.just(0, 1, 2, 3, 4, 5, 6);
 
         Flowable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         m.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, ts.errors().size());
@@ -1204,7 +1204,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         Flowable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         m.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -1218,7 +1218,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void exceptionIfSubscribeToChildMoreThanOnce() {
         Flowable<Integer> source = Flowable.just(0);
 
-        final AtomicReference<GroupedFlowable<Integer, Integer>> inner = new AtomicReference<GroupedFlowable<Integer, Integer>>();
+        final AtomicReference<GroupedFlowable<Integer, Integer>> inner = new AtomicReference<>();
 
         Flowable<GroupedFlowable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
@@ -1247,7 +1247,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
         Flowable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
 
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         m.subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         assertEquals(1, ts.errors().size());
@@ -1256,7 +1256,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void groupByBackpressure3() throws InterruptedException {
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         Flowable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
 
@@ -1313,7 +1313,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupByBackpressure2() throws InterruptedException {
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         Flowable.range(1, 4000)
             .doOnNext(new Consumer<Integer>() {
@@ -1362,7 +1362,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         Flowable.just("a", "b", "c").groupBy(new Function<String, String>() {
 
             @Override
@@ -1398,7 +1398,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                     }
                 }
         );
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         f.groupBy(new Function<Integer, Integer>() {
 
@@ -1416,11 +1416,11 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void groupByShouldPropagateError() {
         final Throwable e = new RuntimeException("Oops");
-        final TestSubscriberEx<Integer> inner1 = new TestSubscriberEx<Integer>();
-        final TestSubscriberEx<Integer> inner2 = new TestSubscriberEx<Integer>();
+        final TestSubscriberEx<Integer> inner1 = new TestSubscriberEx<>();
+        final TestSubscriberEx<Integer> inner2 = new TestSubscriberEx<>();
 
         final TestSubscriberEx<GroupedFlowable<Integer, Integer>> outer
-                = new TestSubscriberEx<GroupedFlowable<Integer, Integer>>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
+                = new TestSubscriberEx<>(new DefaultSubscriber<GroupedFlowable<Integer, Integer>>() {
 
             @Override
             public void onComplete() {
@@ -1557,7 +1557,7 @@ public class FlowableGroupByTest extends RxJavaTest {
      */
     @Test
     public void backpressureInnerDoesntOverflowOuter() {
-        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
+        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<>(0L);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -1586,7 +1586,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void backpressureInnerDoesntOverflowOuterMissingBackpressure() {
-        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(1);
+        TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<>(1);
 
         Flowable.fromArray(1, 2)
                 .groupBy(new Function<Integer, Integer>() {
@@ -1611,9 +1611,9 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void oneGroupInnerRequestsTwiceBuffer() {
         // FIXME: delayed requesting in groupBy results in group abandonment
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>(1L);
+        TestSubscriber<Object> ts1 = new TestSubscriber<>(1L);
 
-        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
+        final TestSubscriber<Object> ts2 = new TestSubscriber<>(0L);
 
         Flowable.range(1, Flowable.bufferSize() * 2)
         .groupBy(new Function<Integer, Object>() {
@@ -1886,7 +1886,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void mapFactoryExpiryCompletesGroupedFlowable() {
-        final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
+        final List<Integer> completed = new CopyOnWriteArrayList<>();
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
         PublishSubject<Integer> subject = PublishSubject.create();
         TestSubscriberEx<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
@@ -1916,7 +1916,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     @Test
     public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
         //javadoc will be a version of this using lambdas and without assertions
-        final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
+        final List<Integer> completed = new CopyOnWriteArrayList<>();
         //size should be less than 5 to notice the effect
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactoryGuava(3);
         int numValues = 1000;
@@ -1999,7 +1999,7 @@ public class FlowableGroupByTest extends RxJavaTest {
             }
         };
 
-        final List<String> list = new CopyOnWriteArrayList<String>();
+        final List<String> list = new CopyOnWriteArrayList<>();
         Flowable<Integer> stream = source //
                 .doOnCancel(new Action() {
                     @Override
@@ -2091,8 +2091,8 @@ public class FlowableGroupByTest extends RxJavaTest {
     //not thread safe
     private static final class SingleThreadEvictingHashMap<K, V> implements Map<K, V> {
 
-        private final List<K> list = new ArrayList<K>();
-        private final Map<K, V> map = new HashMap<K, V>();
+        private final List<K> list = new ArrayList<>();
+        private final Map<K, V> map = new HashMap<>();
         private final int maxSize;
         private final Consumer<V> evictedListener;
 
@@ -2214,15 +2214,16 @@ public class FlowableGroupByTest extends RxJavaTest {
 
                     @Override
                     public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
-                        return new SingleThreadEvictingHashMap<Integer, Object>(maxSize, new Consumer<Object>() {
-                                    @Override
-                                    public void accept(Object object) {
-                                        try {
-                                            notify.accept(object);
-                                        } catch (Throwable e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }});
+                        return new SingleThreadEvictingHashMap<>(maxSize, new Consumer<Object>() {
+                            @Override
+                            public void accept(Object object) {
+                                try {
+                                    notify.accept(object);
+                                } catch (Throwable e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
                     }};
         return evictingMapFactory;
     }
@@ -2231,7 +2232,7 @@ public class FlowableGroupByTest extends RxJavaTest {
     public void cancelOverFlatmapRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -2274,7 +2275,7 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void abandonedGroupsNoDataloss() {
-        final List<GroupedFlowable<Integer, Integer>> groups = new ArrayList<GroupedFlowable<Integer, Integer>>();
+        final List<GroupedFlowable<Integer, Integer>> groups = new ArrayList<>();
 
         Flowable.range(1, 1000)
         .groupBy(new Function<Integer, Integer>() {
@@ -2303,8 +2304,8 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void newGroupValueSelectorFails() {
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>();
-        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts1 = new TestSubscriber<>();
+        final TestSubscriber<Object> ts2 = new TestSubscriber<>();
 
         Flowable.just(1)
         .groupBy(Functions.<Integer>identity(), new Function<Integer, Object>() {
@@ -2330,8 +2331,8 @@ public class FlowableGroupByTest extends RxJavaTest {
 
     @Test
     public void existingGroupValueSelectorFails() {
-        TestSubscriber<Object> ts1 = new TestSubscriber<Object>();
-        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts1 = new TestSubscriber<>();
+        final TestSubscriber<Object> ts2 = new TestSubscriber<>();
 
         Flowable.just(1, 2)
         .groupBy(Functions.justFunction(1), new Function<Integer, Object>() {
@@ -2399,7 +2400,7 @@ public class FlowableGroupByTest extends RxJavaTest {
                 throw new TestException();
             }
         })
-        .subscribeWith(new TestSubscriberEx<GroupedFlowable<Integer, Integer>>(0L));
+        .subscribeWith(new TestSubscriberEx<>(0L));
 
         assertTrue(pp.offer(1));
 

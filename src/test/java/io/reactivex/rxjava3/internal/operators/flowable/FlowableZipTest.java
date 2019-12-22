@@ -352,7 +352,7 @@ public class FlowableZipTest extends RxJavaTest {
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
 
         Flowable.zip(r1, r2, zipr2).subscribe(ts);
 
@@ -770,7 +770,7 @@ public class FlowableZipTest extends RxJavaTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new Consumer<String>() {
 
             @Override
@@ -797,7 +797,7 @@ public class FlowableZipTest extends RxJavaTest {
                     }
                 }).take(5);
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         os.subscribe(ts);
 
         ts.awaitDone(5, TimeUnit.SECONDS);
@@ -822,7 +822,7 @@ public class FlowableZipTest extends RxJavaTest {
                     }
                 });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         os.subscribe(new DefaultSubscriber<String>() {
 
             @Override
@@ -886,7 +886,7 @@ public class FlowableZipTest extends RxJavaTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         f.subscribe(new Consumer<String>() {
 
             @Override
@@ -915,7 +915,7 @@ public class FlowableZipTest extends RxJavaTest {
 
         });
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> list = new ArrayList<>();
         f.subscribe(new Consumer<String>() {
 
             @Override
@@ -942,7 +942,7 @@ public class FlowableZipTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         f.subscribe(ts);
         ts.awaitDone(200, TimeUnit.MILLISECONDS);
         ts.assertNoValues();
@@ -976,7 +976,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1000,7 +1000,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1024,7 +1024,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1049,7 +1049,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1074,7 +1074,7 @@ public class FlowableZipTest extends RxJavaTest {
         Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
         Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
@@ -1189,7 +1189,7 @@ public class FlowableZipTest extends RxJavaTest {
                         return i1 + i2;
                     }
                 });
-        List<Integer> expected = new ArrayList<Integer>();
+        List<Integer> expected = new ArrayList<>();
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
@@ -1247,7 +1247,7 @@ public class FlowableZipTest extends RxJavaTest {
     @Test
     public void zipRequest1() {
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
 
         Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -1871,7 +1871,7 @@ public class FlowableZipTest extends RxJavaTest {
     public void firstErrorPreventsSecondSubscription() {
         final AtomicInteger counter = new AtomicInteger();
 
-        List<Flowable<?>> flowableList = new ArrayList<Flowable<?>>();
+        List<Flowable<?>> flowableList = new ArrayList<>();
         flowableList.add(Flowable.create(new FlowableOnSubscribe<Object>() {
             @Override
             public void subscribe(FlowableEmitter<Object> e)

@@ -34,14 +34,14 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void whenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
-            List<Flowable<String>> os = new ArrayList<Flowable<String>>();
+            List<Flowable<String>> os = new ArrayList<>();
             os.add(Flowable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Flowable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Flowable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
             Iterator<String> iter = Flowable.merge(os, 1).blockingIterable().iterator();
-            List<String> actual = new ArrayList<String>();
+            List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -57,8 +57,8 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
             int maxConcurrent = 2 + (times % 10);
             AtomicInteger subscriptionCount = new AtomicInteger(0);
 
-            List<Flowable<String>> os = new ArrayList<Flowable<String>>();
-            List<SubscriptionCheckObservable> scos = new ArrayList<SubscriptionCheckObservable>();
+            List<Flowable<String>> os = new ArrayList<>();
+            List<SubscriptionCheckObservable> scos = new ArrayList<>();
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
@@ -66,7 +66,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
             }
 
             Iterator<String> iter = Flowable.merge(os, maxConcurrent).blockingIterable().iterator();
-            List<String> actual = new ArrayList<String>();
+            List<String> actual = new ArrayList<>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
             }
@@ -118,7 +118,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void mergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
-        List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(n);
+        List<Flowable<Integer>> sourceList = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Flowable.just(i));
         }
@@ -134,7 +134,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void mergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
-        List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(n);
+        List<Flowable<Integer>> sourceList = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             sourceList.add(Flowable.just(i));
         }
@@ -150,9 +150,9 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simple() {
         for (int i = 1; i < 100; i++) {
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-            List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
-            List<Integer> result = new ArrayList<Integer>(i);
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            List<Flowable<Integer>> sourceList = new ArrayList<>(i);
+            List<Integer> result = new ArrayList<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Flowable.just(j));
                 result.add(j);
@@ -169,9 +169,9 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simpleOneLess() {
         for (int i = 2; i < 100; i++) {
-            TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
-            List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
-            List<Integer> result = new ArrayList<Integer>(i);
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            List<Flowable<Integer>> sourceList = new ArrayList<>(i);
+            List<Integer> result = new ArrayList<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Flowable.just(j));
                 result.add(j);
@@ -201,9 +201,9 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
     @Test
     public void simpleAsync() {
         for (int i = 1; i < 50; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
-            Set<Integer> expected = new HashSet<Integer>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            List<Flowable<Integer>> sourceList = new ArrayList<>(i);
+            Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Flowable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -213,7 +213,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
             ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
-            Set<Integer> actual = new HashSet<Integer>(ts.values());
+            Set<Integer> actual = new HashSet<>(ts.values());
 
             assertEquals(expected, actual);
         }
@@ -233,9 +233,9 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
             }
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(i);
-            Set<Integer> expected = new HashSet<Integer>(i);
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            List<Flowable<Integer>> sourceList = new ArrayList<>(i);
+            Set<Integer> expected = new HashSet<>(i);
             for (int j = 1; j <= i; j++) {
                 sourceList.add(Flowable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
@@ -245,7 +245,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
             ts.awaitDone(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
-            Set<Integer> actual = new HashSet<Integer>(ts.values());
+            Set<Integer> actual = new HashSet<>(ts.values());
 
             assertEquals(expected, actual);
         }
@@ -253,7 +253,7 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
     @Test
     public void backpressureHonored() throws Exception {
-        List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
+        List<Flowable<Integer>> sourceList = new ArrayList<>(3);
 
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
@@ -284,13 +284,13 @@ public class FlowableMergeMaxConcurrentTest extends RxJavaTest {
 
     @Test
     public void take() throws Exception {
-        List<Flowable<Integer>> sourceList = new ArrayList<Flowable<Integer>>(3);
+        List<Flowable<Integer>> sourceList = new ArrayList<>(3);
 
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Flowable.range(0, 100000).subscribeOn(Schedulers.io()));
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.merge(sourceList, 2).take(5).subscribe(ts);
 

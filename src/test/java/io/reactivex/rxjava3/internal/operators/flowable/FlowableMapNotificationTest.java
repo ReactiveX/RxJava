@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowableMapNotificationTest extends RxJavaTest {
     @Test
     public void just() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         Flowable.just(1)
         .flatMap(
                 new Function<Integer, Flowable<Object>>() {
@@ -61,7 +61,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
     public void backpressure() {
         TestSubscriber<Object> ts = TestSubscriber.create(0L);
 
-        new FlowableMapNotification<Integer, Integer>(Flowable.range(1, 3),
+        new FlowableMapNotification<>(Flowable.range(1, 3),
                 new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer item) {
@@ -105,7 +105,7 @@ public class FlowableMapNotificationTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        new FlowableMapNotification<Integer, Integer>(pp,
+        new FlowableMapNotification<>(pp,
                 new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer item) {

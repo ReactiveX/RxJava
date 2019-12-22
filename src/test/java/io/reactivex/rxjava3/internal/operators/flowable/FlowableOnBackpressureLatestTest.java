@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     @Test
     public void simple() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.range(1, 5).onBackpressureLatest().subscribe(ts);
 
@@ -41,7 +41,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void simpleError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .onBackpressureLatest().subscribe(ts);
@@ -53,7 +53,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
 
     @Test
     public void simpleBackpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 5).onBackpressureLatest().subscribe(ts);
 
@@ -65,7 +65,7 @@ public class FlowableOnBackpressureLatestTest extends RxJavaTest {
     @Test
     public void synchronousDrop() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0L);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0L);
 
         source.onBackpressureLatest().subscribe(ts);
 

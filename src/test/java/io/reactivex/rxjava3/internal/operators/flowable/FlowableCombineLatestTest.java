@@ -437,8 +437,8 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
-            List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
-            List<Object> values = new ArrayList<Object>();
+            List<Flowable<Integer>> sources = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
             for (int j = 0; j < i; j++) {
                 sources.add(Flowable.just(j));
                 values.add(j);
@@ -468,8 +468,8 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         };
         for (int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
-            List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
-            List<Object> values = new ArrayList<Object>();
+            List<Flowable<Integer>> sources = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
             for (int j = 0; j < i; j++) {
                 sources.add(Flowable.just(j).subscribeOn(Schedulers.io()));
                 values.add(j);
@@ -749,7 +749,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         int num = Flowable.bufferSize() * 4;
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
         Flowable.combineLatest(
                 Flowable.just("one", "two"),
                 Flowable.range(2, num),
@@ -784,7 +784,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                     }
                 }).take(SIZE);
 
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        TestSubscriber<Long> ts = new TestSubscriber<>();
 
         Flowable.combineLatest(timer, Flowable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
             @Override
@@ -889,7 +889,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     public void combineMany() {
         int n = Flowable.bufferSize() * 3;
 
-        List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
+        List<Flowable<Integer>> sources = new ArrayList<>();
 
         StringBuilder expected = new StringBuilder(n * 2);
 
@@ -1066,7 +1066,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
         for (int i = 1; i < 100; i++) {
             Flowable<Integer>[] sources = new Flowable[i];
             Arrays.fill(sources, Flowable.just(1));
-            List<Object> expected = new ArrayList<Object>(i);
+            List<Object> expected = new ArrayList<>(i);
             for (int j = 1; j <= i; j++) {
                 expected.add(1);
             }
@@ -1207,7 +1207,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
 
     @Test
     public void cancelWhileSubscribing() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.combineLatest(
                 Flowable.just(1)

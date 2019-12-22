@@ -90,7 +90,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         result.subscribe(ts);
 
@@ -116,7 +116,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         result.subscribe(ts);
 
@@ -142,7 +142,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         result.subscribe(ts);
 
@@ -169,7 +169,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         result.subscribe(ts);
 
@@ -197,7 +197,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         result.subscribe(ts);
 
@@ -225,7 +225,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER_ERROR);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         result.subscribe(ts);
 
@@ -251,7 +251,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         result.subscribe(ts);
 
@@ -267,7 +267,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         result.subscribe(ts);
 
@@ -319,7 +319,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         PublishProcessor<String> pp3 = PublishProcessor.create();
         PublishProcessor<String> main = PublishProcessor.create();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         main.withLatestFrom(new Flowable[] { pp1, pp2, pp3 }, toArray)
         .subscribe(ts);
@@ -366,7 +366,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         PublishProcessor<String> pp3 = PublishProcessor.create();
         PublishProcessor<String> main = PublishProcessor.create();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>();
+        TestSubscriber<String> ts = new TestSubscriber<>();
 
         main.withLatestFrom(Arrays.<Flowable<?>>asList(pp1, pp2, pp3), toArray)
         .subscribe(ts);
@@ -411,8 +411,8 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         for (String val : new String[] { "1" /*, null*/ }) {
             int n = 35;
             for (int i = 0; i < n; i++) {
-                List<Flowable<?>> sources = new ArrayList<Flowable<?>>();
-                List<String> expected = new ArrayList<String>();
+                List<Flowable<?>> sources = new ArrayList<>();
+                List<String> expected = new ArrayList<>();
                 expected.add(val);
 
                 for (int j = 0; j < i; j++) {
@@ -420,7 +420,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                     expected.add(String.valueOf(val));
                 }
 
-                TestSubscriber<String> ts = new TestSubscriber<String>();
+                TestSubscriber<String> ts = new TestSubscriber<>();
 
                 PublishProcessor<String> main = PublishProcessor.create();
 
@@ -443,7 +443,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         PublishProcessor<String> pp1 = PublishProcessor.create();
         PublishProcessor<String> pp2 = PublishProcessor.create();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriber<String> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 10).withLatestFrom(new Flowable<?>[] { pp1, pp2 }, toArray)
         .subscribe(ts);
@@ -465,7 +465,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
         PublishProcessor<String> pp1 = PublishProcessor.create();
         PublishProcessor<String> pp2 = PublishProcessor.create();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriber<String> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 3).withLatestFrom(new Flowable<?>[] { pp1, pp2 }, toArray)
         .subscribe(ts);
@@ -495,7 +495,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withEmpty() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriber<String> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 3).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.empty() }, toArray)
@@ -508,7 +508,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withError() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriber<String> ts = new TestSubscriber<>(0);
 
         Flowable.range(1, 3).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.error(new TestException()) }, toArray)
@@ -521,7 +521,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
     @Test
     public void withMainError() {
-        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        TestSubscriber<String> ts = new TestSubscriber<>(0);
 
         Flowable.error(new TestException()).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.just(1) }, toArray)
@@ -536,7 +536,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     public void with2Others() {
         Flowable<Integer> just = Flowable.just(1);
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -555,7 +555,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     public void with3Others() {
         Flowable<Integer> just = Flowable.just(1);
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -574,7 +574,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     public void with4Others() {
         Flowable<Integer> just = Flowable.just(1);
 
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>();
 
         just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
@@ -609,7 +609,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
     @Test
     public void manyIteratorThrows() {
         Flowable.just(1)
-        .withLatestFrom(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
+        .withLatestFrom(new CrashingMappedIterable<>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
                 return Flowable.just(2);
@@ -733,7 +733,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         result.subscribe(ts);
 
@@ -794,7 +794,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                 }
             });
 
-            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+            final TestSubscriber<Object> ts = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -837,7 +837,7 @@ public class FlowableWithLatestFromTest extends RxJavaTest {
                 }
             });
 
-            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+            final TestSubscriber<Object> ts = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override

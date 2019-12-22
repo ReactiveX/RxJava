@@ -58,7 +58,7 @@ public class FlowableOnBackpressureBufferStrategyTest extends RxJavaTest {
     }
 
     private TestSubscriber<Long> createTestSubscriber() {
-        return new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
+        return new TestSubscriber<>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {

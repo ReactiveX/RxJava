@@ -49,7 +49,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumer() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -65,7 +65,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumer() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
@@ -81,7 +81,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerBufferExceed() {
-        final List<Integer> list = new ArrayList<Integer>();
+        final List<Integer> list = new ArrayList<>();
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
@@ -97,7 +97,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumer() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -113,7 +113,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumer() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
@@ -129,7 +129,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumerBufferExceed() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
                 .subscribeOn(Schedulers.computation())
@@ -145,7 +145,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumerError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         TestException ex = new TestException();
 
@@ -165,7 +165,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumerError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         TestException ex = new TestException();
 
@@ -185,7 +185,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeConsumerConsumerAction() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Consumer<Object> cons = new Consumer<Object>() {
             @Override
@@ -208,7 +208,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumerAction() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Consumer<Object> cons = new Consumer<Object>() {
             @Override
@@ -233,7 +233,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumerActionBufferExceed() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Consumer<Object> cons = new Consumer<Object>() {
             @Override
@@ -258,7 +258,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void boundedBlockingSubscribeConsumerConsumerActionBufferExceedMillionItem() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Consumer<Object> cons = new Consumer<Object>() {
             @Override
@@ -283,7 +283,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeObserver() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
@@ -316,7 +316,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void blockingSubscribeObserverError() {
-        final List<Object> list = new ArrayList<Object>();
+        final List<Object> list = new ArrayList<>();
 
         final TestException ex = new TestException();
 
@@ -430,7 +430,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void interrupt() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Thread.currentThread().interrupt();
 
@@ -451,7 +451,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void onCompleteDelayed() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.empty().delay(100, TimeUnit.MILLISECONDS)
         .blockingSubscribe(ts);
@@ -466,7 +466,7 @@ public class FlowableBlockingTest extends RxJavaTest {
 
     @Test
     public void disposeUpFront() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         ts.cancel();
         Flowable.just(1).blockingSubscribe(ts);
 
@@ -476,7 +476,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void delayed() throws Exception {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<>();
         final Subscriber[] s = { null };
 
         Schedulers.single().scheduleDirect(new Runnable() {
@@ -506,7 +506,7 @@ public class FlowableBlockingTest extends RxJavaTest {
     @Test
     public void blockinsSubscribeCancelAsync() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 

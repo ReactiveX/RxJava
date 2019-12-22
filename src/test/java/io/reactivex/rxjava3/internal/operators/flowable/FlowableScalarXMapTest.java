@@ -59,7 +59,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     static final class OneCallablePublisher implements Publisher<Integer>, Supplier<Integer> {
         @Override
         public void subscribe(Subscriber<? super Integer> s) {
-            s.onSubscribe(new ScalarSubscription<Integer>(s, 1));
+            s.onSubscribe(new ScalarSubscription<>(s, 1));
         }
 
         @Override
@@ -70,7 +70,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void tryScalarXMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer f) throws Exception {
@@ -83,7 +83,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void emptyXMap() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -97,7 +97,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperCrashes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -111,7 +111,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToJust() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -125,7 +125,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToEmpty() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -139,7 +139,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void mapperToCrashingCallable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -177,8 +177,8 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void scalarDisposableStateCheck() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(ts, 1);
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        ScalarSubscription<Integer> sd = new ScalarSubscription<>(ts, 1);
         ts.onSubscribe(sd);
 
         assertFalse(sd.isCancelled());
@@ -211,8 +211,8 @@ public class FlowableScalarXMapTest extends RxJavaTest {
     @Test
     public void scalarDisposableRunDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            final ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(ts, 1);
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
+            final ScalarSubscription<Integer> sd = new ScalarSubscription<>(ts, 1);
             ts.onSubscribe(sd);
 
             Runnable r1 = new Runnable() {
@@ -235,7 +235,7 @@ public class FlowableScalarXMapTest extends RxJavaTest {
 
     @Test
     public void cancelled() {
-        ScalarSubscription<Integer> scalar = new ScalarSubscription<Integer>(new TestSubscriber<Integer>(), 1);
+        ScalarSubscription<Integer> scalar = new ScalarSubscription<>(new TestSubscriber<>(), 1);
 
         assertFalse(scalar.isCancelled());
 

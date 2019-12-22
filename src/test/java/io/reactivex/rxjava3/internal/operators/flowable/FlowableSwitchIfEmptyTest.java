@@ -142,7 +142,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
     @Test
     public void switchRequestAlternativeObservableWithBackpressure() {
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(1L);
 
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
 
@@ -156,7 +156,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void backpressureNoRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -164,7 +164,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void backpressureOnFirstObservable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         Flowable.just(1, 2, 3).switchIfEmpty(Flowable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -173,7 +173,7 @@ public class FlowableSwitchIfEmptyTest extends RxJavaTest {
 
     @Test
     public void requestsNotLost() throws InterruptedException {
-        final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        final TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.unsafeCreate(new Publisher<Long>() {
 
             @Override

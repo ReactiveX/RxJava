@@ -55,7 +55,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
@@ -72,7 +72,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
@@ -114,11 +114,11 @@ public class FlowableToMultimapTest extends RxJavaTest {
                 mapFactory, new Function<Integer, Collection<String>>() {
                     @Override
                     public Collection<String> apply(Integer e) {
-                        return new ArrayList<String>();
+                        return new ArrayList<>();
                     }
                 }).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
@@ -137,9 +137,9 @@ public class FlowableToMultimapTest extends RxJavaTest {
             @Override
             public Collection<String> apply(Integer t1) {
                 if (t1 == 2) {
-                    return new ArrayList<String>();
+                    return new ArrayList<>();
                 } else {
-                    return new HashSet<String>();
+                    return new HashSet<>();
                 }
             }
         };
@@ -153,16 +153,16 @@ public class FlowableToMultimapTest extends RxJavaTest {
         Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
             public Map<Integer, Collection<String>> get() {
-                return new HashMap<Integer, Collection<String>>();
+                return new HashMap<>();
             }
         };
 
         Flowable<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
-        expected.put(3, new HashSet<String>(Arrays.asList("eee")));
+        expected.put(3, new HashSet<>(Arrays.asList("eee")));
 
         mapped.subscribe(objectSubscriber);
 
@@ -187,7 +187,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
@@ -214,7 +214,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
@@ -244,7 +244,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
                     }
                 }, mapFactory).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
@@ -265,7 +265,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
                 if (t1 == 2) {
                     throw new RuntimeException("Forced failure");
                 } else {
-                    return new HashSet<String>();
+                    return new HashSet<>();
                 }
             }
         };
@@ -279,14 +279,14 @@ public class FlowableToMultimapTest extends RxJavaTest {
         Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
             public Map<Integer, Collection<String>> get() {
-                return new HashMap<Integer, Collection<String>>();
+                return new HashMap<>();
             }
         };
 
         Flowable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc,
                 identity, mapSupplier, collectionFactory).toFlowable();
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Collections.singleton("eee"));
 
@@ -303,7 +303,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
@@ -319,7 +319,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
@@ -360,11 +360,11 @@ public class FlowableToMultimapTest extends RxJavaTest {
                 mapFactory, new Function<Integer, Collection<String>>() {
                     @Override
                     public Collection<String> apply(Integer e) {
-                        return new ArrayList<String>();
+                        return new ArrayList<>();
                     }
                 });
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
@@ -382,9 +382,9 @@ public class FlowableToMultimapTest extends RxJavaTest {
             @Override
             public Collection<String> apply(Integer t1) {
                 if (t1 == 2) {
-                    return new ArrayList<String>();
+                    return new ArrayList<>();
                 } else {
-                    return new HashSet<String>();
+                    return new HashSet<>();
                 }
             }
         };
@@ -398,16 +398,16 @@ public class FlowableToMultimapTest extends RxJavaTest {
         Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
             public Map<Integer, Collection<String>> get() {
-                return new HashMap<Integer, Collection<String>>();
+                return new HashMap<>();
             }
         };
 
         Single<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
-        expected.put(3, new HashSet<String>(Arrays.asList("eee")));
+        expected.put(3, new HashSet<>(Arrays.asList("eee")));
 
         mapped.subscribe(singleObserver);
 
@@ -431,7 +431,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
@@ -457,7 +457,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
@@ -486,7 +486,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
                     }
                 }, mapFactory);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
@@ -506,7 +506,7 @@ public class FlowableToMultimapTest extends RxJavaTest {
                 if (t1 == 2) {
                     throw new RuntimeException("Forced failure");
                 } else {
-                    return new HashSet<String>();
+                    return new HashSet<>();
                 }
             }
         };
@@ -520,14 +520,14 @@ public class FlowableToMultimapTest extends RxJavaTest {
         Supplier<Map<Integer, Collection<String>>> mapSupplier = new Supplier<Map<Integer, Collection<String>>>() {
             @Override
             public Map<Integer, Collection<String>> get() {
-                return new HashMap<Integer, Collection<String>>();
+                return new HashMap<>();
             }
         };
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc,
                 identity, mapSupplier, collectionFactory);
 
-        Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
+        Map<Integer, Collection<String>> expected = new HashMap<>();
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Collections.singleton("eee"));
 

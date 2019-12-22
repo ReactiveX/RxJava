@@ -155,7 +155,7 @@ public class FlowableMapTest extends RxJavaTest {
 
     @Test
     public void mapWithError() {
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         Flowable<String> m = w.map(new Function<String, String>() {
@@ -261,7 +261,7 @@ public class FlowableMapTest extends RxJavaTest {
     }
 
     private static Map<String, String> getMap(String prefix) {
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;
@@ -272,7 +272,7 @@ public class FlowableMapTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp.map(new Function<Integer, Integer>() {
             @Override

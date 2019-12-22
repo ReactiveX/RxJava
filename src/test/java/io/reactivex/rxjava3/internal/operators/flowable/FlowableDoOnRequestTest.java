@@ -51,7 +51,7 @@ public class FlowableDoOnRequestTest extends RxJavaTest {
 
     @Test
     public void doRequest() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.range(1, 5)
         //
                 .doOnRequest(new LongConsumer() {

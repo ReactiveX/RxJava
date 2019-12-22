@@ -158,7 +158,7 @@ public class FlowableFilterTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp.filter(new Predicate<Integer>() {
             @Override

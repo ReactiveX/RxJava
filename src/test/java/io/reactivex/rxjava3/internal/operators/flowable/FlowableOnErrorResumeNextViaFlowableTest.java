@@ -148,7 +148,7 @@ public class FlowableOnErrorResumeNextViaFlowableTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, 100000)
                 .onErrorResumeWith(Flowable.just(1))
                 .observeOn(Schedulers.computation())

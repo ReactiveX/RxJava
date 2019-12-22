@@ -114,7 +114,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -263,7 +263,7 @@ public class FlowableScanTest extends RxJavaTest {
 
                     @Override
                     public List<Integer> get() {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
 
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -289,7 +289,7 @@ public class FlowableScanTest extends RxJavaTest {
 
                     @Override
                     public List<Integer> get() {
-                        return new ArrayList<Integer>();
+                        return new ArrayList<>();
                     }
 
                 }, new BiConsumer<List<Integer>, Integer>() {
@@ -315,7 +315,7 @@ public class FlowableScanTest extends RxJavaTest {
             }
 
         }).take(1);
-        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> subscriber = new TestSubscriberEx<>();
         f.subscribe(subscriber);
         subscriber.assertValue(0);
         subscriber.assertTerminated();
@@ -324,7 +324,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanShouldNotRequestZero() {
-        final AtomicReference<Subscription> producer = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> producer = new AtomicReference<>();
         Flowable<Integer> f = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
             public void subscribe(final Subscriber<? super Integer> subscriber) {
@@ -445,7 +445,7 @@ public class FlowableScanTest extends RxJavaTest {
     public void unsubscribeScan() {
 
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+        .scan(new HashMap<>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
             @Override
             public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
                 accum.put("instance", perInstanceEvent.instanceId);
@@ -463,7 +463,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
-        final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+        final List<Throwable> list = new CopyOnWriteArrayList<>();
         Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) throws Exception {
@@ -543,7 +543,7 @@ public class FlowableScanTest extends RxJavaTest {
 
     @Test
     public void scanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
-        final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+        final List<Throwable> list = new CopyOnWriteArrayList<>();
         Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) throws Exception {

@@ -32,7 +32,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
 
     @Test
     public void noBackpressureSupport() {
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         // this will be ignored
         ts.request(100);
         // we take 500 so it unsubscribes
@@ -44,7 +44,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
 
     @Test
     public void withObserveOn() throws InterruptedException {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, Flowable.bufferSize() * 10).onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
     }
@@ -53,7 +53,7 @@ public class FlowableOnBackpressureDropTest extends RxJavaTest {
     public void fixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new DefaultSubscriber<Long>() {
+        TestSubscriber<Long> ts = new TestSubscriber<>(new DefaultSubscriber<Long>() {
 
             @Override
             protected void onStart() {

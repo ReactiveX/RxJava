@@ -61,7 +61,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void completedOkFlowable() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         Flowable.range(1, 10).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoErrors();
         ts.assertNoValues();
@@ -70,7 +70,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void errorReceivedFlowable() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<Object>();
+        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoValues();
@@ -173,7 +173,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void completedOk() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         Flowable.range(1, 10).ignoreElements().subscribe(to);
         to.assertNoErrors();
         to.assertNoValues();
@@ -182,7 +182,7 @@ public class FlowableIgnoreElementsTest extends RxJavaTest {
 
     @Test
     public void errorReceived() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().subscribe(to);
         to.assertNoValues();

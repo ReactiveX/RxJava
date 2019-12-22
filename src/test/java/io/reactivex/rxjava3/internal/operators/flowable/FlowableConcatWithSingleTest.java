@@ -26,7 +26,7 @@ public class FlowableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Single.just(100))
@@ -51,7 +51,7 @@ public class FlowableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void mainError() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.<Integer>error(new TestException())
         .concatWith(Single.just(100))
@@ -62,7 +62,7 @@ public class FlowableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void otherError() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Single.<Integer>error(new TestException()))
@@ -73,7 +73,7 @@ public class FlowableConcatWithSingleTest extends RxJavaTest {
 
     @Test
     public void takeMain() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5)
         .concatWith(Single.just(100))

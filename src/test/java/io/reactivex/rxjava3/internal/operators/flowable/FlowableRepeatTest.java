@@ -164,7 +164,7 @@ public class FlowableRepeatTest {
                 .repeat(3)
                 .distinct();
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         src.subscribe(ts);
 
@@ -176,8 +176,8 @@ public class FlowableRepeatTest {
     /** Issue #2844: wrong target of request. */
     @Test
     public void repeatRetarget() {
-        final List<Integer> concatBase = new ArrayList<Integer>();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final List<Integer> concatBase = new ArrayList<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.just(1, 2)
         .repeat(5)
         .concatMap(new Function<Integer, Flowable<Integer>>() {

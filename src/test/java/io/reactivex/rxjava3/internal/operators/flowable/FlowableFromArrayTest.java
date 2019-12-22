@@ -37,7 +37,7 @@ public class FlowableFromArrayTest extends RxJavaTest {
 
     @Test
     public void simple() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         create(1000).subscribe(ts);
 

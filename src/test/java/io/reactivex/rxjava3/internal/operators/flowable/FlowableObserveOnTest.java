@@ -65,7 +65,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         InOrder inOrder = inOrder(subscriber);
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>(subscriber);
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>(subscriber);
 
         obs.observeOn(Schedulers.computation()).subscribe(ts);
 
@@ -384,7 +384,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(subscriber);
 
         Flowable.just(1, 2, 3)
                 .observeOn(testScheduler)
@@ -519,7 +519,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<>();
         flowable
                 .take(7)
                 .observeOn(Schedulers.newThread())
@@ -547,7 +547,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         });
 
-        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<Integer>(new DefaultSubscriber<Integer>() {
+        TestSubscriberEx<Integer> testSubscriber = new TestSubscriberEx<>(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onComplete() {
@@ -590,7 +590,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void asyncChild() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         Flowable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(ts);
         ts.awaitDone(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -602,7 +602,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             final PublishProcessor<Long> processor = PublishProcessor.create();
 
             final AtomicLong counter = new AtomicLong();
-            TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>(new DefaultSubscriber<Long>() {
+            TestSubscriberEx<Long> ts = new TestSubscriberEx<>(new DefaultSubscriber<Long>() {
 
                 @Override
                 public void onComplete() {
@@ -649,7 +649,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
      */
     @Test
     public void hotOperatorBackpressure() {
-        TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+        TestSubscriberEx<String> ts = new TestSubscriberEx<>();
         Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.computation())
                 .map(new Function<Long, String>() {
@@ -697,7 +697,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
                 });
 
-        TestSubscriberEx<Long> ts = new TestSubscriberEx<Long>();
+        TestSubscriberEx<Long> ts = new TestSubscriberEx<>();
 
         Flowable.combineLatest(timer, Flowable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
 
@@ -757,7 +757,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
     @Test
     public void noMoreRequestsAfterUnsubscribe() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final List<Long> requests = Collections.synchronizedList(new ArrayList<Long>());
+        final List<Long> requests = Collections.synchronizedList(new ArrayList<>());
         Flowable.range(1, 1000000)
                 .doOnRequest(new LongConsumer() {
 
@@ -873,7 +873,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
         TestScheduler test = new TestScheduler();
 
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
 
         Flowable.range(1, 100)
         .doOnRequest(new LongConsumer() {
@@ -918,9 +918,9 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void synchronousRebatching() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 50)
         .doOnRequest(new LongConsumer() {
@@ -1594,7 +1594,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void syncFusedCancelAfterRequest2() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2)
         .observeOn(Schedulers.single())
@@ -1630,7 +1630,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void syncFusedCancelAfterRequestConditional2() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2)
         .observeOn(Schedulers.single())
@@ -1644,7 +1644,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void nonFusedCancelAfterRequestConditional2() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(2L);
 
         Flowable.range(1, 2).hide()
         .observeOn(Schedulers.single())

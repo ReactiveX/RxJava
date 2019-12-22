@@ -67,11 +67,11 @@ public class FlowableDoOnUnsubscribeTest extends RxJavaTest {
                     }
                 });
 
-        List<Disposable> subscriptions = new ArrayList<Disposable>();
-        List<TestSubscriber<Long>> subscribers = new ArrayList<TestSubscriber<Long>>();
+        List<Disposable> subscriptions = new ArrayList<>();
+        List<TestSubscriber<Long>> subscribers = new ArrayList<>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+            TestSubscriber<Long> subscriber = new TestSubscriber<>();
             subscriptions.add(Disposable.fromSubscription(subscriber));
             longs.subscribe(subscriber);
             subscribers.add(subscriber);
@@ -128,11 +128,11 @@ public class FlowableDoOnUnsubscribeTest extends RxJavaTest {
                 .publish()
                 .refCount();
 
-        List<Disposable> subscriptions = new ArrayList<Disposable>();
-        List<TestSubscriber<Long>> subscribers = new ArrayList<TestSubscriber<Long>>();
+        List<Disposable> subscriptions = new ArrayList<>();
+        List<TestSubscriber<Long>> subscribers = new ArrayList<>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+            TestSubscriber<Long> subscriber = new TestSubscriber<>();
             longs.subscribe(subscriber);
             subscriptions.add(Disposable.fromSubscription(subscriber));
             subscribers.add(subscriber);

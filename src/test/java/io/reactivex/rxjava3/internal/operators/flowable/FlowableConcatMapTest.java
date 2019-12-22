@@ -33,8 +33,8 @@ public class FlowableConcatMapTest extends RxJavaTest {
 
     @Test
     public void weakSubscriptionRequest() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        WeakScalarSubscription<Integer> ws = new WeakScalarSubscription<Integer>(1, ts);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0);
+        WeakScalarSubscription<Integer> ws = new WeakScalarSubscription<>(1, ts);
         ts.onSubscribe(ws);
 
         ws.request(0);

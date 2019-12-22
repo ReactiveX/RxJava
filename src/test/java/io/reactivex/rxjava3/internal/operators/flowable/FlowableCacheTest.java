@@ -35,11 +35,11 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowableCacheTest extends RxJavaTest {
     @Test
     public void coldReplayNoBackpressure() {
-        FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
+        FlowableCache<Integer> source = new FlowableCache<>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.subscribe(ts);
 
@@ -58,11 +58,11 @@ public class FlowableCacheTest extends RxJavaTest {
 
     @Test
     public void coldReplayBackpressure() {
-        FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
+        FlowableCache<Integer> source = new FlowableCache<>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
         ts.request(10);
 
         source.subscribe(ts);
@@ -145,9 +145,9 @@ public class FlowableCacheTest extends RxJavaTest {
 
     @Test
     public void take() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        FlowableCache<Integer> cached = new FlowableCache<Integer>(Flowable.range(1, 100), 16);
+        FlowableCache<Integer> cached = new FlowableCache<>(Flowable.range(1, 100), 16);
         cached.take(10).subscribe(ts);
 
         ts.assertNoErrors();
@@ -160,9 +160,9 @@ public class FlowableCacheTest extends RxJavaTest {
     public void async() {
         Flowable<Integer> source = Flowable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts1 = new TestSubscriber<>();
 
-            FlowableCache<Integer> cached = new FlowableCache<Integer>(source, 16);
+            FlowableCache<Integer> cached = new FlowableCache<>(source, 16);
 
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
 
@@ -171,7 +171,7 @@ public class FlowableCacheTest extends RxJavaTest {
             ts1.assertComplete();
             assertEquals(10000, ts1.values().size());
 
-            TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts2 = new TestSubscriber<>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
 
             ts2.awaitDone(2, TimeUnit.SECONDS);
@@ -186,18 +186,18 @@ public class FlowableCacheTest extends RxJavaTest {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        FlowableCache<Long> cached = new FlowableCache<Long>(source, 16);
+        FlowableCache<Long> cached = new FlowableCache<>(source, 16);
 
         Flowable<Long> output = cached.observeOn(Schedulers.computation());
 
-        List<TestSubscriber<Long>> list = new ArrayList<TestSubscriber<Long>>(100);
+        List<TestSubscriber<Long>> list = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {
-            TestSubscriber<Long> ts = new TestSubscriber<Long>();
+            TestSubscriber<Long> ts = new TestSubscriber<>();
             list.add(ts);
             output.skip(i * 10).take(10).subscribe(ts);
         }
 
-        List<Long> expected = new ArrayList<Long>();
+        List<Long> expected = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             expected.add((long)(i - 10));
         }
@@ -231,7 +231,7 @@ public class FlowableCacheTest extends RxJavaTest {
             }
         });
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
 
         ts.awaitDone(3, TimeUnit.SECONDS);
@@ -247,14 +247,14 @@ public class FlowableCacheTest extends RxJavaTest {
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .cache();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         source.subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNotComplete();
         ts.assertError(TestException.class);
 
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<>();
         source.subscribe(ts2);
 
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -294,7 +294,7 @@ public class FlowableCacheTest extends RxJavaTest {
 
             cache.test();
 
-            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -432,8 +432,8 @@ public class FlowableCacheTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Flowable<Integer> cache = Flowable.range(1, 500).cache();
 
-            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<Integer>();
-            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<Integer>();
+            final TestSubscriberEx<Integer> ts1 = new TestSubscriberEx<>();
+            final TestSubscriberEx<Integer> ts2 = new TestSubscriberEx<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -476,7 +476,7 @@ public class FlowableCacheTest extends RxJavaTest {
 
             cache.test();
 
-            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override

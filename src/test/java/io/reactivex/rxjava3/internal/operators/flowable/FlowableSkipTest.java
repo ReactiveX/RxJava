@@ -143,7 +143,7 @@ public class FlowableSkipTest extends RxJavaTest {
     @Test
     public void backpressureMultipleSmallAsyncRequests() throws InterruptedException {
         final AtomicLong requests = new AtomicLong(0);
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
+        TestSubscriber<Long> ts = new TestSubscriber<>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
                 .doOnRequest(new LongConsumer() {
                     @Override
@@ -162,7 +162,7 @@ public class FlowableSkipTest extends RxJavaTest {
 
     @Test
     public void requestOverflowDoesNotOccur() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(Long.MAX_VALUE - 1);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(Long.MAX_VALUE - 1);
         Flowable.range(1, 10).skip(5).subscribe(ts);
         ts.assertTerminated();
         ts.assertComplete();

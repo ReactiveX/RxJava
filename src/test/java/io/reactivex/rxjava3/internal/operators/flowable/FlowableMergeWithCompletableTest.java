@@ -29,7 +29,7 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 5).mergeWith(
                 Completable.fromAction(new Action() {
@@ -71,7 +71,7 @@ public class FlowableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normalBackpressured() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+        final TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
 
         Flowable.range(1, 5).mergeWith(
                 Completable.fromAction(new Action() {

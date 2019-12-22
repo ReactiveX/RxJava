@@ -63,7 +63,7 @@ public class FlowableRetryTest extends RxJavaTest {
             }
 
         });
-        TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
+        TestSubscriber<String> ts = new TestSubscriber<>(consumer);
         producer.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
 
             @Override
@@ -117,7 +117,7 @@ public class FlowableRetryTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         int numRetries = 20;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-        origin.retry().subscribe(new TestSubscriber<String>(subscriber));
+        origin.retry().subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);
         // should show 3 attempts
@@ -136,7 +136,7 @@ public class FlowableRetryTest extends RxJavaTest {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         int numRetries = 2;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
@@ -203,7 +203,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void onCompletedFromNotificationHandler() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(1));
-        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<>(subscriber);
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
@@ -498,7 +498,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void sourceFlowableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<String>();
+        final TestSubscriber<String> ts = new TestSubscriber<>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -529,7 +529,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void sourceFlowableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<String>();
+        final TestSubscriber<String> ts = new TestSubscriber<>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -548,7 +548,7 @@ public class FlowableRetryTest extends RxJavaTest {
     public void sourceFlowableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestSubscriber<String> ts = new TestSubscriber<String>();
+        final TestSubscriber<String> ts = new TestSubscriber<>();
 
         Publisher<String> onSubscribe = new Publisher<String>() {
             @Override
@@ -674,7 +674,7 @@ public class FlowableRetryTest extends RxJavaTest {
         SlowFlowable so = new SlowFlowable(100, 0, "testUnsubscribeAfterError");
         Flowable<Long> f = Flowable.unsafeCreate(so).retry(5);
 
-        AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
+        AsyncSubscriber<Long> async = new AsyncSubscriber<>(subscriber);
 
         f.subscribe(async);
 
@@ -698,7 +698,7 @@ public class FlowableRetryTest extends RxJavaTest {
         SlowFlowable sf = new SlowFlowable(100, 10, "testTimeoutWithRetry");
         Flowable<Long> f = Flowable.unsafeCreate(sf).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
-        AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
+        AsyncSubscriber<Long> async = new AsyncSubscriber<>(subscriber);
 
         f.subscribe(async);
 
@@ -720,7 +720,7 @@ public class FlowableRetryTest extends RxJavaTest {
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> subscriber = TestHelper.mockSubscriber();
                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-                TestSubscriberEx<String> ts = new TestSubscriberEx<String>(subscriber);
+                TestSubscriberEx<String> ts = new TestSubscriberEx<>(subscriber);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitDone(5, TimeUnit.SECONDS);
 
@@ -751,7 +751,7 @@ public class FlowableRetryTest extends RxJavaTest {
                 }
 
                 final AtomicInteger timeouts = new AtomicInteger();
-                final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
+                final Map<Integer, List<String>> data = new ConcurrentHashMap<>();
 
                 int m = 5000;
                 final CountDownLatch cdl = new CountDownLatch(m);
@@ -763,11 +763,11 @@ public class FlowableRetryTest extends RxJavaTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
-                                TestSubscriberEx<String> ts = new TestSubscriberEx<String>();
+                                TestSubscriberEx<String> ts = new TestSubscriberEx<>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).subscribe(ts);
                                 ts.awaitDone(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<String>(ts.values());
+                                List<String> onNextEvents = new ArrayList<>(ts.values());
                                 if (onNextEvents.size() != numRetries + 2) {
                                     for (Throwable t : ts.errors()) {
                                         onNextEvents.add(t.toString());
@@ -865,7 +865,7 @@ public class FlowableRetryTest extends RxJavaTest {
                 return t1.take(1);
             }
         }, NUM_MSG) // Must request as many groups as groupBy produces to avoid MBE
-        .subscribe(new TestSubscriber<String>(subscriber));
+        .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);
         // should show 3 attempts
@@ -910,7 +910,7 @@ public class FlowableRetryTest extends RxJavaTest {
                 return t1.take(1);
             }
         })
-        .subscribe(new TestSubscriber<String>(subscriber));
+        .subscribe(new TestSubscriber<>(subscriber));
 
         InOrder inOrder = inOrder(subscriber);
         // should show 3 attempts

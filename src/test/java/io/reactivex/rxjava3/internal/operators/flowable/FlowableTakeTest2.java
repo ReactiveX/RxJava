@@ -32,7 +32,7 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 // moved tests from FlowableLimitTest to here (limit removed as operator)
 public class FlowableTakeTest2 extends RxJavaTest implements LongConsumer, Action {
 
-    final List<Long> requests = new ArrayList<Long>();
+    final List<Long> requests = new ArrayList<>();
 
     static final Long CANCELLED = -100L;
 
