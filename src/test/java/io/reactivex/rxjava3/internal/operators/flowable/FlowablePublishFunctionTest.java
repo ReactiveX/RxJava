@@ -464,7 +464,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlow() {
         Flowable.range(1, 1000000)
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
@@ -491,7 +490,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlow2() {
         Flowable.range(1, 100000)
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
@@ -519,7 +517,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlowHidden() {
         Flowable.range(1, 1000000).hide()
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(

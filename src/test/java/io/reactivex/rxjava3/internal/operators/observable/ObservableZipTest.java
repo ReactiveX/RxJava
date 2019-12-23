@@ -1299,7 +1299,6 @@ public class ObservableZipTest extends RxJavaTest {
         .assertFailure(TestException.class, "929");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void zipArrayEmpty() {
         assertSame(Observable.empty(), Observable.zipArray(Functions.<Object[]>identity(), false, 16));

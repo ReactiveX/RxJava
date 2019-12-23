@@ -622,7 +622,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayDelayError() {
         Flowable.mergeArrayDelayError(Flowable.just(1), Flowable.just(2))

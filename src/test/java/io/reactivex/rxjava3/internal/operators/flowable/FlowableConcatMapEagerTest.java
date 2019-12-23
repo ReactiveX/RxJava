@@ -1210,7 +1210,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        @SuppressWarnings("unchecked")
         TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(2, 2, pp1, pp2, pp3)
         .test();
 
@@ -1246,7 +1245,6 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
         PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        @SuppressWarnings("unchecked")
         TestSubscriber<Integer> ts = Flowable.concatArrayEagerDelayError(2, 2, pp1, pp2, pp3)
         .test();
 

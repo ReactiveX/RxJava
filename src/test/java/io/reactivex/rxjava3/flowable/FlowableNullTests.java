@@ -483,7 +483,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.mergeArray(128, 128, (Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
         Flowable.mergeArray(128, 128, just1, null).blockingLast();
@@ -514,7 +513,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.mergeArrayDelayError(128, 128, (Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
         Flowable.mergeArrayDelayError(128, 128, just1, null).blockingLast();

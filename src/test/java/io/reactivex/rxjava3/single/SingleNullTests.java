@@ -61,7 +61,6 @@ public class SingleNullTests extends RxJavaTest {
         Single.ambArray((Single<Integer>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayOneIsNull() {
         Single.ambArray(null, just1)
@@ -534,7 +533,6 @@ public class SingleNullTests extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
         Single.zipArray(new Function<Object[], Object>() {
@@ -546,13 +544,11 @@ public class SingleNullTests extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionNull() {
         Single.zipArray(null, just1, just1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionReturnsNull() {
         Single.zipArray(new Function<Object[], Object>() {

@@ -372,7 +372,6 @@ public class ObservableConcatMapTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatReportsDisposedOnComplete() {
         final Disposable[] disposable = { null };
@@ -404,7 +403,6 @@ public class ObservableConcatMapTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void concatReportsDisposedOnError() {
         final Disposable[] disposable = { null };
 

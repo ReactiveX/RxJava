@@ -70,7 +70,6 @@ public class SingleConcatTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayEagerTest() {
         PublishProcessor<String> pp1 = PublishProcessor.create();
@@ -142,7 +141,6 @@ public class SingleConcatTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };

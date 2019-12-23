@@ -45,7 +45,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.ambArray((Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
         Observable.ambArray(Observable.never(), null).blockingLast();

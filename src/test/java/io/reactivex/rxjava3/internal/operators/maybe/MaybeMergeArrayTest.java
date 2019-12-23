@@ -32,7 +32,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class MaybeMergeArrayTest extends RxJavaTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void normal() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.SYNC);
@@ -45,7 +44,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void fusedPollMixed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
@@ -92,7 +90,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void cancel() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
@@ -106,7 +103,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         ts.assertEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void firstErrors() {
         TestSubscriber<Integer> ts = new TestSubscriber<>(0L);
@@ -117,7 +113,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         ts.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorFused() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
@@ -130,7 +125,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -172,7 +166,6 @@ public class MaybeMergeArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeBadSource() {
         Maybe.mergeArray(new Maybe<Integer>() {

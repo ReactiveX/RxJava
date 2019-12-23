@@ -151,7 +151,6 @@ public class SingleZipArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
         Single.zipArray(new Function<Object[], Object>() {
@@ -176,7 +175,6 @@ public class SingleZipArrayTest extends RxJavaTest {
         .assertFailure(NoSuchElementException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void oneArray() {
         Single.zipArray(new Function<Object[], Object>() {
@@ -189,7 +187,6 @@ public class SingleZipArrayTest extends RxJavaTest {
         .assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleSourceZipperReturnsNull() {
         Single.zipArray(Functions.justFunction(null), Single.just(1))
