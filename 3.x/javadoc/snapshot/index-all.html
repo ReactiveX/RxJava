@@ -8230,7 +8230,7 @@
 <div class="block">Returns a Completable which first runs the other Completable
  then this completable if the other completed normally.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.Observable-">startWith(Observable&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns an Observable which first delivers the events
  of the other Observable then runs this CompletableConsumable.</div>
@@ -9224,7 +9224,7 @@
  time after the emission of the previous item, where that period of time is measured by a Publisher that
  is a function of the previous item.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#timeout-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.core.Flowable-">timeout(Function&lt;? super T, ? extends Publisher&lt;V&gt;&gt;, Flowable&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#timeout-io.reactivex.rxjava3.functions.Function-org.reactivestreams.Publisher-">timeout(Function&lt;? super T, ? extends Publisher&lt;V&gt;&gt;, Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Returns a Flowable that mirrors the source Publisher, but that switches to a fallback Publisher if
  an item emitted by the source Publisher doesn't arrive within a window of time after the emission of the
