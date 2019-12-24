@@ -37,22 +37,31 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * @param <T> the value type
  * @since 2.2
  */
-public abstract class ParallelFlowable<T> {
+public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Subscribes an array of Subscribers to this ParallelFlowable and triggers
      * the execution chain for all 'rails'.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The backpressure behavior/expectation is determined by the supplied {@code Subscriber}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param subscribers the subscribers array to run in parallel, the number
      * of items must be equal to the parallelism level of this ParallelFlowable
      * @see #parallelism()
      */
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public abstract void subscribe(@NonNull Subscriber<? super T>[] subscribers);
 
     /**
      * Returns the number of expected parallel Subscribers.
      * @return the number of expected parallel Subscribers
      */
+    @CheckReturnValue
     public abstract int parallelism();
 
     /**
@@ -77,24 +86,46 @@ public abstract class ParallelFlowable<T> {
     /**
      * Take a Publisher and prepare to consume it on multiple 'rails' (number of CPUs)
      * in a round-robin fashion.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the backpressure of the parallel rails and
+     *  requests {@link Flowable#bufferSize} amount from the upstream, followed
+     *  by 75% of that amount requested after every 75% received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <T> the value type
      * @param source the source Publisher
      * @return the ParallelFlowable instance
      */
     @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
     public static <T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source) {
         return from(source, Runtime.getRuntime().availableProcessors(), Flowable.bufferSize());
     }
 
     /**
      * Take a Publisher and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the backpressure of the parallel rails and
+     *  requests {@link Flowable#bufferSize} amount from the upstream, followed
+     *  by 75% of that amount requested after every 75% received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <T> the value type
      * @param source the source Publisher
      * @param parallelism the number of parallel rails
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
-    public static <T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source, int parallelism) {
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source, int parallelism) {
         return from(source, parallelism, Flowable.bufferSize());
     }
 
@@ -102,6 +133,14 @@ public abstract class ParallelFlowable<T> {
      * Take a Publisher and prepare to consume it on parallelism number of 'rails' ,
      * possibly ordered and round-robin fashion and use custom prefetch amount and queue
      * for dealing with the source Publisher's values.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the backpressure of the parallel rails and
+     *  requests the {@code prefetch} amount from the upstream, followed
+     *  by 75% of that amount requested after every 75% received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <T> the value type
      * @param source the source Publisher
      * @param parallelism the number of parallel rails
@@ -111,7 +150,9 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source,
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <@NonNull T> ParallelFlowable<T> from(@NonNull Publisher<? extends T> source,
             int parallelism, int prefetch) {
         Objects.requireNonNull(source, "source");
         ObjectHelper.verifyPositive(parallelism, "parallelism");
@@ -124,12 +165,21 @@ public abstract class ParallelFlowable<T> {
      * Maps the source values on each 'rail' to another value.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Us.
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper");
         return RxJavaPlugins.onAssembly(new ParallelMap<T, R>(this, mapper));
@@ -140,6 +190,13 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Us.
@@ -150,6 +207,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(mapper, "mapper");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
@@ -161,6 +220,13 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the returned value by the handler function.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Us.
@@ -172,6 +238,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(mapper, "mapper");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
@@ -182,13 +250,23 @@ public abstract class ParallelFlowable<T> {
      * Filters the source values on each 'rail'.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param predicate the function returning true to keep a value or false to drop a value
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate");
-        return RxJavaPlugins.onAssembly(new ParallelFilter<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new ParallelFilter<>(this, predicate));
     }
 
     /**
@@ -196,6 +274,13 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param predicate the function returning true to keep a value or false to drop a value
      * @param errorHandler the enumeration that defines how to handle errors thrown
@@ -204,10 +289,13 @@ public abstract class ParallelFlowable<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(predicate, "predicate");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
-        return RxJavaPlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
+        return RxJavaPlugins.onAssembly(new ParallelFilterTry<>(this, predicate, errorHandler));
     }
 
     /**
@@ -215,6 +303,13 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the returned value by the handler function.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param predicate the function returning true to keep a value or false to drop a value
      * @param errorHandler the function called with the current repeat count and
@@ -224,10 +319,13 @@ public abstract class ParallelFlowable<T> {
      * @since 2.2
      */
     @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(predicate, "predicate");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
-        return RxJavaPlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
+        return RxJavaPlugins.onAssembly(new ParallelFilterTry<>(this, predicate, errorHandler));
     }
 
     /**
@@ -245,12 +343,23 @@ public abstract class ParallelFlowable<T> {
      * <p>
      * This operator doesn't require the Scheduler to be trampolining as it
      * does its own built-in trampolining logic.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the backpressure of the parallel rails and
+     *  requests {@link Flowable#bufferSize} amount from the upstream, followed
+     *  by 75% of that amount requested after every 75% received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code runOn} drains the upstream rails on the specified {@link Scheduler}'s
+     *  {@link io.reactivex.rxjava3.core.Scheduler.Worker Worker}s.</dd>
+     * </dl>
      *
      * @param scheduler the scheduler to use
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ParallelFlowable<T> runOn(@NonNull Scheduler scheduler) {
         return runOn(scheduler, Flowable.bufferSize());
     }
@@ -270,6 +379,15 @@ public abstract class ParallelFlowable<T> {
      * <p>
      * This operator doesn't require the Scheduler to be trampolining as it
      * does its own built-in trampolining logic.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors the backpressure of the parallel rails and
+     *  requests the {@code prefetch} amount from the upstream, followed
+     *  by 75% of that amount requested after every 75% received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code runOn} drains the upstream rails on the specified {@link Scheduler}'s
+     *  {@link io.reactivex.rxjava3.core.Scheduler.Worker Worker}s.</dd>
+     * </dl>
      *
      * @param scheduler the scheduler to use
      * that rail's worker has run out of work.
@@ -278,10 +396,12 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ParallelFlowable<T> runOn(@NonNull Scheduler scheduler, int prefetch) {
         Objects.requireNonNull(scheduler, "scheduler");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelRunOn<T>(this, scheduler, prefetch));
+        return RxJavaPlugins.onAssembly(new ParallelRunOn<>(this, scheduler, prefetch));
     }
 
     /**
@@ -289,14 +409,23 @@ public abstract class ParallelFlowable<T> {
      * sequential value.
      * <p>
      * Note that the same reducer function may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream and consumes
+     *  the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param reducer the function to reduce two values into one.
      * @return the new Flowable instance emitting the reduced value or empty if the ParallelFlowable was empty
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> reduce(@NonNull BiFunction<T, T, T> reducer) {
         Objects.requireNonNull(reducer, "reducer");
-        return RxJavaPlugins.onAssembly(new ParallelReduceFull<T>(this, reducer));
+        return RxJavaPlugins.onAssembly(new ParallelReduceFull<>(this, reducer));
     }
 
     /**
@@ -304,6 +433,13 @@ public abstract class ParallelFlowable<T> {
      * a reducer function that is initialized on each rail from an initialSupplier value.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and consumes
+     *  the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <R> the reduced output type
      * @param initialSupplier the supplier for the initial value
      * @param reducer the function to reduce a previous output of reduce (or the initial value supplied)
@@ -312,10 +448,12 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> reduce(@NonNull Supplier<R> initialSupplier, @NonNull BiFunction<R, ? super T, R> reducer) {
         Objects.requireNonNull(initialSupplier, "initialSupplier");
         Objects.requireNonNull(reducer, "reducer");
-        return RxJavaPlugins.onAssembly(new ParallelReduce<T, R>(this, initialSupplier, reducer));
+        return RxJavaPlugins.onAssembly(new ParallelReduce<>(this, initialSupplier, reducer));
     }
 
     /**
@@ -327,7 +465,9 @@ public abstract class ParallelFlowable<T> {
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure.</dd>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  requests {@link Flowable#bufferSize()} amount from each rail, then
+     *  requests from each rail 75% of this amount after 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -338,6 +478,7 @@ public abstract class ParallelFlowable<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
+    @NonNull
     public final Flowable<T> sequential() {
         return sequential(Flowable.bufferSize());
     }
@@ -349,7 +490,9 @@ public abstract class ParallelFlowable<T> {
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure.</dd>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  requests the {@code prefetch} amount from each rail, then
+     *  requests from each rail 75% of this amount after 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -364,7 +507,7 @@ public abstract class ParallelFlowable<T> {
     @NonNull
     public final Flowable<T> sequential(int prefetch) {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelJoin<T>(this, prefetch, false));
+        return RxJavaPlugins.onAssembly(new ParallelJoin<>(this, prefetch, false));
     }
 
     /**
@@ -376,7 +519,9 @@ public abstract class ParallelFlowable<T> {
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure.</dd>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  requests {@link Flowable#bufferSize()} amount from each rail, then
+     *  requests from each rail 75% of this amount after 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -401,7 +546,9 @@ public abstract class ParallelFlowable<T> {
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure.</dd>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  requests the {@code prefetch} amount from each rail, then
+     *  requests from each rail 75% of this amount after 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -418,7 +565,7 @@ public abstract class ParallelFlowable<T> {
     @NonNull
     public final Flowable<T> sequentialDelayError(int prefetch) {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelJoin<T>(this, prefetch, true));
+        return RxJavaPlugins.onAssembly(new ParallelJoin<>(this, prefetch, true));
     }
 
     /**
@@ -426,12 +573,21 @@ public abstract class ParallelFlowable<T> {
      * picks the smallest next value from the rails.
      * <p>
      * This operator requires a finite source ParallelFlowable.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  consumes the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param comparator the comparator to use
      * @return the new Flowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(@NonNull Comparator<? super T> comparator) {
         return sorted(comparator, 16);
     }
@@ -441,6 +597,13 @@ public abstract class ParallelFlowable<T> {
      * picks the smallest next value from the rails.
      * <p>
      * This operator requires a finite source ParallelFlowable.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  consumes the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param comparator the comparator to use
      * @param capacityHint the expected number of total elements
@@ -448,6 +611,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(@NonNull Comparator<? super T> comparator, int capacityHint) {
         Objects.requireNonNull(comparator, "comparator is null");
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
@@ -455,19 +620,28 @@ public abstract class ParallelFlowable<T> {
         ParallelFlowable<List<T>> railReduced = reduce(Functions.<T>createArrayList(ch), ListAddBiConsumer.<T>instance());
         ParallelFlowable<List<T>> railSorted = railReduced.map(new SorterFunction<T>(comparator));
 
-        return RxJavaPlugins.onAssembly(new ParallelSortedJoin<T>(railSorted, comparator));
+        return RxJavaPlugins.onAssembly(new ParallelSortedJoin<>(railSorted, comparator));
     }
 
     /**
      * Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
      * <p>
      * This operator requires a finite source ParallelFlowable.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  consumes the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param comparator the comparator to compare elements
      * @return the new Flowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toSortedList(@NonNull Comparator<? super T> comparator) {
         return toSortedList(comparator, 16);
     }
@@ -475,6 +649,13 @@ public abstract class ParallelFlowable<T> {
      * Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
      * <p>
      * This operator requires a finite source ParallelFlowable.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream and
+     *  consumes the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param comparator the comparator to compare elements
      * @param capacityHint the expected number of total elements
@@ -482,7 +663,9 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final Flowable<List<T>> toSortedList(@NonNull Comparator<? super T> comparator, int capacityHint) {
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<@NonNull List<T>> toSortedList(@NonNull Comparator<? super T> comparator, int capacityHint) {
         Objects.requireNonNull(comparator, "comparator is null");
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
 
@@ -497,15 +680,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Call the specified consumer with the current element passing through any 'rail'.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onNext the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext) {
         Objects.requireNonNull(onNext, "onNext is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 onNext,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -520,6 +712,13 @@ public abstract class ParallelFlowable<T> {
     /**
      * Call the specified consumer with the current element passing through any 'rail' and
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the enumeration that defines how to handle errors thrown
@@ -529,15 +728,24 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull ParallelFailureHandling errorHandler) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
-        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
+        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<>(this, onNext, errorHandler));
     }
 
     /**
      * Call the specified consumer with the current element passing through any 'rail' and
      * handles errors based on the returned value by the handler function.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the function called with the current repeat count and
@@ -548,24 +756,35 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(errorHandler, "errorHandler is null");
-        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
+        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<>(this, onNext, errorHandler));
     }
 
     /**
      * Call the specified consumer with the current element passing through any 'rail'
      * after it has been delivered to downstream within the rail.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onAfterNext the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doAfterNext(@NonNull Consumer<? super T> onAfterNext) {
         Objects.requireNonNull(onAfterNext, "onAfterNext is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 onAfterNext,
                 Functions.emptyConsumer(),
@@ -579,15 +798,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Call the specified consumer with the exception passing through any 'rail'.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onError the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnError(@NonNull Consumer<Throwable> onError) {
         Objects.requireNonNull(onError, "onError is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 onError,
@@ -601,15 +829,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Run the specified Action when a 'rail' completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onComplete the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnComplete(@NonNull Action onComplete) {
         Objects.requireNonNull(onComplete, "onComplete is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -623,15 +860,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Run the specified Action when a 'rail' completes or signals an error.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onAfterTerminate the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doAfterTerminated(@NonNull Action onAfterTerminate) {
         Objects.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -645,15 +891,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Call the specified callback when a 'rail' receives a Subscription from its upstream.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onSubscribe the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnSubscribe(@NonNull Consumer<? super Subscription> onSubscribe) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -667,15 +922,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Call the specified consumer with the request amount if any rail receives a request.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onRequest the callback
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final ParallelFlowable<T> doOnRequest(@NonNull LongConsumer onRequest) {
         Objects.requireNonNull(onRequest, "onRequest is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -689,15 +953,24 @@ public abstract class ParallelFlowable<T> {
 
     /**
      * Run the specified Action when a 'rail' receives a cancellation.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param onCancel the callback
      * @return the new ParallelFlowable instance
      */
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
     @NonNull
     public final ParallelFlowable<T> doOnCancel(@NonNull Action onCancel) {
         Objects.requireNonNull(onCancel, "onCancel is null");
-        return RxJavaPlugins.onAssembly(new ParallelPeek<T>(this,
+        return RxJavaPlugins.onAssembly(new ParallelPeek<>(this,
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -712,6 +985,13 @@ public abstract class ParallelFlowable<T> {
     /**
      * Collect the elements in each rail into a collection supplied via a collectionSupplier
      * and collected into with a collector action, emitting the collection at the end.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  consumes the upstream rails in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <C> the collection type
      * @param collectionSupplier the supplier of the collection in each rail
@@ -720,6 +1000,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <C> ParallelFlowable<C> collect(@NonNull Supplier<? extends C> collectionSupplier, @NonNull BiConsumer<? super C, ? super T> collector) {
         Objects.requireNonNull(collectionSupplier, "collectionSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
@@ -729,6 +1011,13 @@ public abstract class ParallelFlowable<T> {
     /**
      * Wraps multiple Publishers into a ParallelFlowable which runs them
      * in parallel and unordered.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by the upstream and downstream rail behaviors.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <T> the value type
      * @param publishers the array of publishers
@@ -736,17 +1025,27 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> ParallelFlowable<T> fromArray(@NonNull Publisher<T>... publishers) {
+    @SafeVarargs
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <@NonNull T> ParallelFlowable<T> fromArray(@NonNull Publisher<T>... publishers) {
         if (publishers.length == 0) {
             throw new IllegalArgumentException("Zero publishers not supported");
         }
-        return RxJavaPlugins.onAssembly(new ParallelFromArray<T>(publishers));
+        return RxJavaPlugins.onAssembly(new ParallelFromArray<>(publishers));
     }
 
     /**
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * This allows fluent conversion to any other type.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by how the converter function composes over the upstream source.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
      * @param converter the function that receives the current ParallelFlowable instance and returns a value
@@ -756,13 +1055,22 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <R> R to(@NonNull ParallelFlowableConverter<T, R> converter) {
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <@NonNull R> R to(@NonNull ParallelFlowableConverter<T, R> converter) {
         return Objects.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**
      * Allows composing operators, in assembly time, on top of this ParallelFlowable
      * and returns another ParallelFlowable with composed features.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure and the behavior
+     *  is determined by how the converter function composes over the upstream source.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <U> the output value type
      * @param composer the composer function from ParallelFlowable (this) to another ParallelFlowable
@@ -770,6 +1078,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> ParallelFlowable<U> compose(@NonNull ParallelTransformer<T, U> composer) {
         return RxJavaPlugins.onAssembly(Objects.requireNonNull(composer, "composer is null").apply(this));
     }
@@ -778,6 +1088,16 @@ public abstract class ParallelFlowable<T> {
      * Generates and flattens Publishers on each 'rail'.
      * <p>
      * Errors are not delayed and uses unbounded concurrency along with default inner prefetch.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests {@link Flowable#bufferSize()} amount from each rail upfront
+     *  and keeps requesting as many items per rail as many inner sources on
+     *  that rail completed. The inner sources are requested {@link Flowable#bufferSize()}
+     *  amount upfront, then 75% of this amount requested after 75% received.
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -785,14 +1105,27 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> flatMap(@NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        return flatMap(mapper, false, Integer.MAX_VALUE, Flowable.bufferSize());
+        return flatMap(mapper, false, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
     /**
      * Generates and flattens Publishers on each 'rail', optionally delaying errors.
      * <p>
      * It uses unbounded concurrency along with default inner prefetch.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests {@link Flowable#bufferSize()} amount from each rail upfront
+     *  and keeps requesting as many items per rail as many inner sources on
+     *  that rail completed. The inner sources are requested {@link Flowable#bufferSize()}
+     *  amount upfront, then 75% of this amount requested after 75% received.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -801,9 +1134,11 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> flatMap(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError) {
-        return flatMap(mapper, delayError, Integer.MAX_VALUE, Flowable.bufferSize());
+        return flatMap(mapper, delayError, Flowable.bufferSize(), Flowable.bufferSize());
     }
 
     /**
@@ -811,6 +1146,17 @@ public abstract class ParallelFlowable<T> {
      * and having a total number of simultaneous subscriptions to the inner Publishers.
      * <p>
      * It uses a default inner prefetch.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests {@code maxConcurrency} amount from each rail upfront
+     *  and keeps requesting as many items per rail as many inner sources on
+     *  that rail completed. The inner sources are requested {@link Flowable#bufferSize()}
+     *  amount upfront, then 75% of this amount requested after 75% received.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -820,6 +1166,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> flatMap(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError, int maxConcurrency) {
         return flatMap(mapper, delayError, maxConcurrency, Flowable.bufferSize());
@@ -829,6 +1177,17 @@ public abstract class ParallelFlowable<T> {
      * Generates and flattens Publishers on each 'rail', optionally delaying errors,
      * having a total number of simultaneous subscriptions to the inner Publishers
      * and using the given prefetch amount for the inner Publishers.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests {@code maxConcurrency} amount from each rail upfront
+     *  and keeps requesting as many items per rail as many inner sources on
+     *  that rail completed. The inner sources are requested the {@code prefetch}
+     *  amount upfront, then 75% of this amount requested after 75% received.
+     *  </dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -839,18 +1198,29 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> flatMap(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
             boolean delayError, int maxConcurrency, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelFlatMap<T, R>(this, mapper, delayError, maxConcurrency, prefetch));
+        return RxJavaPlugins.onAssembly(new ParallelFlatMap<>(this, mapper, delayError, maxConcurrency, prefetch));
     }
 
     /**
      * Generates and concatenates Publishers on each 'rail', signalling errors immediately
      * and generating 2 publishers upfront.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests 2 from each rail upfront and keeps requesting 1 when the inner source complete.
+     *  Requests for the inner sources are determined by the downstream rails'
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -859,6 +1229,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> concatMap(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return concatMap(mapper, 2);
@@ -867,6 +1239,16 @@ public abstract class ParallelFlowable<T> {
     /**
      * Generates and concatenates Publishers on each 'rail', signalling errors immediately
      * and using the given prefetch amount for generating Publishers upfront.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests the {@code prefetch} amount from each rail upfront and keeps
+     *  requesting 75% of this amount after 75% received and the inner sources completed.
+     *  Requests for the inner sources are determined by the downstream rails'
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -876,17 +1258,28 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> concatMap(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
-                    int prefetch) {
+            int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
+        return RxJavaPlugins.onAssembly(new ParallelConcatMap<>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
      * Generates and concatenates Publishers on each 'rail', optionally delaying errors
      * and generating 2 publishers upfront.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests 2 from each rail upfront and keeps requesting 1 when the inner source complete.
+     *  Requests for the inner sources are determined by the downstream rails'
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -897,6 +1290,8 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> concatMapDelayError(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
                     boolean tillTheEnd) {
@@ -906,6 +1301,16 @@ public abstract class ParallelFlowable<T> {
     /**
      * Generates and concatenates Publishers on each 'rail', optionally delaying errors
      * and using the given prefetch amount for generating Publishers upfront.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from the downstream rails and
+     *  requests the {@code prefetch} amount from each rail upfront and keeps
+     *  requesting 75% of this amount after 75% received and the inner sources completed.
+     *  Requests for the inner sources are determined by the downstream rails'
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <R> the result type
      * @param mapper the function to map each rail's value into a Publisher
@@ -916,12 +1321,14 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> ParallelFlowable<R> concatMapDelayError(
             @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
                     int prefetch, boolean tillTheEnd) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelConcatMap<T, R>(
+        return RxJavaPlugins.onAssembly(new ParallelConcatMap<>(
                 this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 }

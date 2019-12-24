@@ -131,13 +131,13 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     @CheckReturnValue
     @NonNull
     public static <T> MaybeSubject<T> create() {
-        return new MaybeSubject<T>();
+        return new MaybeSubject<>();
     }
 
     @SuppressWarnings("unchecked")
     MaybeSubject() {
         once = new AtomicBoolean();
-        observers = new AtomicReference<MaybeDisposable<T>[]>(EMPTY);
+        observers = new AtomicReference<>(EMPTY);
     }
 
     @Override
@@ -185,7 +185,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        MaybeDisposable<T> md = new MaybeDisposable<T>(observer, this);
+        MaybeDisposable<T> md = new MaybeDisposable<>(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {
             if (md.isDisposed()) {

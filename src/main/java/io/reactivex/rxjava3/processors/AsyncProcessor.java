@@ -137,7 +137,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> AsyncProcessor<T> create() {
-        return new AsyncProcessor<T>();
+        return new AsyncProcessor<>();
     }
 
     /**
@@ -146,7 +146,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     AsyncProcessor() {
-        this.subscribers = new AtomicReference<AsyncSubscription<T>[]>(EMPTY);
+        this.subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
@@ -203,29 +203,33 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         return subscribers.get() == TERMINATED ? error : null;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        AsyncSubscription<T> as = new AsyncSubscription<T>(s, this);
+        AsyncSubscription<T> as = new AsyncSubscription<>(s, this);
         s.onSubscribe(as);
         if (add(as)) {
             if (as.isCancelled()) {
@@ -316,6 +320,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * <p>The method is thread-safe.
      * @return true if this processor has any value
      */
+    @CheckReturnValue
     public boolean hasValue() {
         return subscribers.get() == TERMINATED && value != null;
     }
@@ -326,6 +331,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * @return a single value this processor currently has or null if no such value exists
      */
     @Nullable
+    @CheckReturnValue
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
     }

@@ -180,7 +180,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create() {
-        return new UnicastSubject<T>(bufferSize(), true);
+        return new UnicastSubject<>(bufferSize(), true);
     }
 
     /**
@@ -192,12 +192,13 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        return new UnicastSubject<T>(capacityHint, true);
+        return new UnicastSubject<>(capacityHint, true);
     }
 
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint and a callback for
-     * the case when the single Subscriber cancels its subscription.
+     * the case when the single Subscriber cancels its subscription
+     * or the subject is terminated.
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
@@ -209,13 +210,14 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate) {
-        return new UnicastSubject<T>(capacityHint, onTerminate, true);
+    public static <T> UnicastSubject<T> create(int capacityHint, @NonNull Runnable onTerminate) {
+        return new UnicastSubject<>(capacityHint, onTerminate, true);
     }
 
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint, delay error flag and
-     * a callback for the case when the single Subscriber cancels its subscription.
+     * a callback for the case when the single Observer disposes its {@link Disposable}
+     * or the subject is terminated.
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
@@ -229,8 +231,8 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate, boolean delayError) {
-        return new UnicastSubject<T>(capacityHint, onTerminate, delayError);
+    public static <T> UnicastSubject<T> create(int capacityHint, @NonNull Runnable onTerminate, boolean delayError) {
+        return new UnicastSubject<>(capacityHint, onTerminate, delayError);
     }
 
     /**
@@ -247,7 +249,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(boolean delayError) {
-        return new UnicastSubject<T>(bufferSize(), delayError);
+        return new UnicastSubject<>(bufferSize(), delayError);
     }
 
     /**
@@ -258,10 +260,10 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @since 2.2
      */
     UnicastSubject(int capacityHint, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>();
+        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+        this.onTerminate = new AtomicReference<>();
         this.delayError = delayError;
-        this.downstream = new AtomicReference<Observer<? super T>>();
+        this.downstream = new AtomicReference<>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueDisposable();
     }
@@ -288,10 +290,10 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @since 2.2
      */
     UnicastSubject(int capacityHint, Runnable onTerminate, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>(Objects.requireNonNull(onTerminate, "onTerminate"));
+        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+        this.onTerminate = new AtomicReference<>(Objects.requireNonNull(onTerminate, "onTerminate"));
         this.delayError = delayError;
-        this.downstream = new AtomicReference<Observer<? super T>>();
+        this.downstream = new AtomicReference<>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueDisposable();
     }
@@ -494,12 +496,14 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasObservers() {
         return downstream.get() != null;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         if (done) {
             return error;
@@ -508,11 +512,13 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return done && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return done && error == null;
     }

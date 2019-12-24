@@ -170,7 +170,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create() {
-        return new MulticastProcessor<T>(bufferSize(), false);
+        return new MulticastProcessor<>(bufferSize(), false);
     }
 
     /**
@@ -184,7 +184,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create(boolean refCount) {
-        return new MulticastProcessor<T>(bufferSize(), refCount);
+        return new MulticastProcessor<>(bufferSize(), refCount);
     }
 
     /**
@@ -196,7 +196,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize) {
-        return new MulticastProcessor<T>(bufferSize, false);
+        return new MulticastProcessor<>(bufferSize, false);
     }
 
     /**
@@ -211,7 +211,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize, boolean refCount) {
-        return new MulticastProcessor<T>(bufferSize, refCount);
+        return new MulticastProcessor<>(bufferSize, refCount);
     }
 
     /**
@@ -227,8 +227,8 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         this.bufferSize = bufferSize;
         this.limit = bufferSize - (bufferSize >> 2);
         this.wip = new AtomicInteger();
-        this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
-        this.upstream = new AtomicReference<Subscription>();
+        this.subscribers = new AtomicReference<>(EMPTY);
+        this.upstream = new AtomicReference<>();
         this.refcount = refCount;
         this.once = new AtomicBoolean();
     }
@@ -241,7 +241,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      */
     public void start() {
         if (SubscriptionHelper.setOnce(upstream, EmptySubscription.INSTANCE)) {
-            queue = new SpscArrayQueue<T>(bufferSize);
+            queue = new SpscArrayQueue<>(bufferSize);
         }
     }
 
@@ -253,7 +253,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      */
     public void startUnbounded() {
         if (SubscriptionHelper.setOnce(upstream, EmptySubscription.INSTANCE)) {
-            queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            queue = new SpscLinkedArrayQueue<>(bufferSize);
         }
     }
 
@@ -281,7 +281,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
                 }
             }
 
-            queue = new SpscArrayQueue<T>(bufferSize);
+            queue = new SpscArrayQueue<>(bufferSize);
 
             s.request(bufferSize);
         }
@@ -309,6 +309,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * @param t the item to offer, not null
      * @return true if successful, false if the queue is full
      */
+    @CheckReturnValue
     public boolean offer(T t) {
         if (once.get()) {
             return false;
@@ -344,28 +345,32 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return once.get() && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return once.get() && error == null;
     }
 
     @Override
+    @CheckReturnValue
     public Throwable getThrowable() {
         return once.get() ? error : null;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        MulticastSubscription<T> ms = new MulticastSubscription<T>(s, this);
+        MulticastSubscription<T> ms = new MulticastSubscription<>(s, this);
         s.onSubscribe(ms);
         if (add(ms)) {
             if (ms.get() == Long.MIN_VALUE) {

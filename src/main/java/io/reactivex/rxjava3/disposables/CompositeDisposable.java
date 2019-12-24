@@ -41,7 +41,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     public CompositeDisposable(@NonNull Disposable... disposables) {
         Objects.requireNonNull(disposables, "disposables is null");
-        this.resources = new OpenHashSet<Disposable>(disposables.length + 1);
+        this.resources = new OpenHashSet<>(disposables.length + 1);
         for (Disposable d : disposables) {
             Objects.requireNonNull(d, "A Disposable in the disposables array is null");
             this.resources.add(d);
@@ -55,7 +55,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     public CompositeDisposable(@NonNull Iterable<? extends Disposable> disposables) {
         Objects.requireNonNull(disposables, "disposables is null");
-        this.resources = new OpenHashSet<Disposable>();
+        this.resources = new OpenHashSet<>();
         for (Disposable d : disposables) {
             Objects.requireNonNull(d, "A Disposable item in the disposables sequence is null");
             this.resources.add(d);
@@ -100,7 +100,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                 if (!disposed) {
                     OpenHashSet<Disposable> set = resources;
                     if (set == null) {
-                        set = new OpenHashSet<Disposable>();
+                        set = new OpenHashSet<>();
                         resources = set;
                     }
                     set.add(disposable);
@@ -126,7 +126,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                 if (!disposed) {
                     OpenHashSet<Disposable> set = resources;
                     if (set == null) {
-                        set = new OpenHashSet<Disposable>(disposables.length + 1);
+                        set = new OpenHashSet<>(disposables.length + 1);
                         resources = set;
                     }
                     for (Disposable d : disposables) {
@@ -239,7 +239,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     if (errors == null) {
-                        errors = new ArrayList<Throwable>();
+                        errors = new ArrayList<>();
                     }
                     errors.add(ex);
                 }

@@ -306,7 +306,6 @@ public class ParallelFlowableTest extends RxJavaTest {
         TestHelper.assertValueSet(ts, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void from() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();

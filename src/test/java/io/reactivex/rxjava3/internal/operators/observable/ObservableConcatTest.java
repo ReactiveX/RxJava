@@ -780,7 +780,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayError() {
         Observable.concatArrayDelayError(Observable.just(1), Observable.just(2),
@@ -789,7 +788,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayErrorWithError() {
         Observable.concatArrayDelayError(Observable.just(1), Observable.just(2),
@@ -886,13 +884,11 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {
         assertSame(Observable.empty(), Observable.concatArrayDelayError());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleElementArray() {
         assertSame(Observable.never(), Observable.concatArrayDelayError(Observable.never()));
@@ -923,13 +919,11 @@ public class ObservableConcatTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayEmpty() {
         assertSame(Observable.empty(), Observable.concatArray());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArraySingleElement() {
         assertSame(Observable.never(), Observable.concatArray(Observable.never()));
@@ -960,7 +954,6 @@ public class ObservableConcatTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
@@ -981,7 +974,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
@@ -1071,7 +1063,6 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void concatReportsDisposedOnCompleteDelayError() {
         final Disposable[] disposable = { null };
 
@@ -1128,7 +1119,6 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void concatReportsDisposedOnErrorDelayError() {
         final Disposable[] disposable = { null };
 
@@ -1156,7 +1146,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertTrue(disposable[0].isDisposed());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousArray() {
         final AtomicInteger counter = new AtomicInteger();

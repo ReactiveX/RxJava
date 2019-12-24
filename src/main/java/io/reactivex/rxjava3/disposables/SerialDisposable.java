@@ -30,7 +30,7 @@ public final class SerialDisposable implements Disposable {
      * Constructs an empty SerialDisposable.
      */
     public SerialDisposable() {
-        this.resource = new AtomicReference<Disposable>();
+        this.resource = new AtomicReference<>();
     }
 
     /**
@@ -38,7 +38,7 @@ public final class SerialDisposable implements Disposable {
      * @param initialDisposable the initial Disposable instance to use, null allowed
      */
     public SerialDisposable(@Nullable Disposable initialDisposable) {
-        this.resource = new AtomicReference<Disposable>(initialDisposable);
+        this.resource = new AtomicReference<>(initialDisposable);
     }
 
     /**

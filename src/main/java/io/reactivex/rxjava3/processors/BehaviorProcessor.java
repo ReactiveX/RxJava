@@ -191,7 +191,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> BehaviorProcessor<T> create() {
-        return new BehaviorProcessor<T>();
+        return new BehaviorProcessor<>();
     }
 
     /**
@@ -207,9 +207,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
+    public static <@NonNull T> BehaviorProcessor<T> createDefault(T defaultValue) {
         Objects.requireNonNull(defaultValue, "defaultValue is null");
-        return new BehaviorProcessor<T>(defaultValue);
+        return new BehaviorProcessor<>(defaultValue);
     }
 
     /**
@@ -218,12 +218,12 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     BehaviorProcessor() {
-        this.value = new AtomicReference<Object>();
+        this.value = new AtomicReference<>();
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
-        this.terminalEvent = new AtomicReference<Throwable>();
+        this.subscribers = new AtomicReference<>(EMPTY);
+        this.terminalEvent = new AtomicReference<>();
     }
 
     /**
@@ -239,7 +239,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
+        BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
         s.onSubscribe(bs);
         if (add(bs)) {
             if (bs.cancelled) {
@@ -318,6 +318,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * @return true if the item was emitted to all Subscribers
      * @since 2.2
      */
+    @CheckReturnValue
     public boolean offer(T t) {
         if (t == null) {
             onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
@@ -340,16 +341,19 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
+    @CheckReturnValue
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         Object o = value.get();
         if (NotificationLite.isError(o)) {
@@ -364,6 +368,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * @return a single value the BehaviorProcessor currently has or null if no such value exists
      */
     @Nullable
+    @CheckReturnValue
     public T getValue() {
         Object o = value.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
@@ -373,12 +378,14 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         Object o = value.get();
         return NotificationLite.isComplete(o);
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         Object o = value.get();
         return NotificationLite.isError(o);
@@ -389,6 +396,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>The method is thread-safe.
      * @return true if the BehaviorProcessor has any value
      */
+    @CheckReturnValue
     public boolean hasValue() {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
@@ -554,7 +562,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                     if (emitting) {
                         AppendOnlyLinkedArrayList<Object> q = queue;
                         if (q == null) {
-                            q = new AppendOnlyLinkedArrayList<Object>(4);
+                            q = new AppendOnlyLinkedArrayList<>(4);
                             queue = q;
                         }
                         q.add(value);

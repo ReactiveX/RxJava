@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
-    final Queue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>(11);
+    final Queue<TimedRunnable> queue = new PriorityBlockingQueue<>(11);
     /** The per-scheduler global order counter. */
     long counter;
     // Storing time in nanoseconds internally.

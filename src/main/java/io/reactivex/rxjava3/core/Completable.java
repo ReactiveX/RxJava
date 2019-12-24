@@ -2335,7 +2335,7 @@ public abstract class Completable implements CompletableSource {
      * applied by {@link #subscribe(CompletableObserver)} before this method gets called.
      * @param observer the CompletableObserver instance, never null
      */
-    protected abstract void subscribeActual(CompletableObserver observer);
+    protected abstract void subscribeActual(@NonNull CompletableObserver observer);
 
     /**
      * Subscribes a given CompletableObserver (subclass) to this Completable and returns the given

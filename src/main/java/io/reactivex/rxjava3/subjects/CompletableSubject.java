@@ -107,7 +107,7 @@ public final class CompletableSubject extends Completable implements Completable
 
     CompletableSubject() {
         once = new AtomicBoolean();
-        observers = new AtomicReference<CompletableDisposable[]>(EMPTY);
+        observers = new AtomicReference<>(EMPTY);
     }
 
     @Override

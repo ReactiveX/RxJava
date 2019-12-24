@@ -33,6 +33,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * <p>The method is thread-safe.
      * @return true if the FlowableProcessor has subscribers
      */
+    @CheckReturnValue
     public abstract boolean hasSubscribers();
 
     /**
@@ -42,6 +43,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * @see #getThrowable()
      * @see #hasComplete()
      */
+    @CheckReturnValue
     public abstract boolean hasThrowable();
 
     /**
@@ -50,6 +52,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * @return true if the FlowableProcessor has reached a terminal state through a complete event
      * @see #hasThrowable()
      */
+    @CheckReturnValue
     public abstract boolean hasComplete();
 
     /**
@@ -60,6 +63,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * hasn't terminated yet
      */
     @Nullable
+    @CheckReturnValue
     public abstract Throwable getThrowable();
 
     /**
@@ -74,6 +78,6 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
         if (this instanceof SerializedProcessor) {
             return this;
         }
-        return new SerializedProcessor<T>(this);
+        return new SerializedProcessor<>(this);
     }
 }

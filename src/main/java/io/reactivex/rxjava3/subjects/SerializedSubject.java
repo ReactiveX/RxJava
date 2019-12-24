@@ -60,7 +60,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
                     if (emitting) {
                         AppendOnlyLinkedArrayList<Object> q = queue;
                         if (q == null) {
-                            q = new AppendOnlyLinkedArrayList<Object>(4);
+                            q = new AppendOnlyLinkedArrayList<>(4);
                             queue = q;
                         }
                         q.add(NotificationLite.disposable(d));
@@ -93,7 +93,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(4);
+                    q = new AppendOnlyLinkedArrayList<>(4);
                     queue = q;
                 }
                 q.add(NotificationLite.next(t));
@@ -120,7 +120,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
                 if (emitting) {
                     AppendOnlyLinkedArrayList<Object> q = queue;
                     if (q == null) {
-                        q = new AppendOnlyLinkedArrayList<Object>(4);
+                        q = new AppendOnlyLinkedArrayList<>(4);
                         queue = q;
                     }
                     q.setFirst(NotificationLite.error(t));
@@ -150,7 +150,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
             if (emitting) {
                 AppendOnlyLinkedArrayList<Object> q = queue;
                 if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(4);
+                    q = new AppendOnlyLinkedArrayList<>(4);
                     queue = q;
                 }
                 q.add(NotificationLite.complete());

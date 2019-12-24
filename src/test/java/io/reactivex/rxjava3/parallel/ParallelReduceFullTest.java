@@ -73,7 +73,6 @@ public class ParallelReduceFullTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error2() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

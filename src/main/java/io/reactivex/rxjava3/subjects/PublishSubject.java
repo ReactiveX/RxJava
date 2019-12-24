@@ -115,7 +115,7 @@ public final class PublishSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> PublishSubject<T> create() {
-        return new PublishSubject<T>();
+        return new PublishSubject<>();
     }
 
     /**
@@ -124,12 +124,12 @@ public final class PublishSubject<T> extends Subject<T> {
      */
     @SuppressWarnings("unchecked")
     PublishSubject() {
-        subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);
+        subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> t) {
-        PublishDisposable<T> ps = new PublishDisposable<T>(t, this);
+        PublishDisposable<T> ps = new PublishDisposable<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
             // if cancellation happened while a successful add, the remove() didn't work
@@ -254,12 +254,14 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasObservers() {
         return subscribers.get().length != 0;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
             return error;
@@ -268,11 +270,13 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }

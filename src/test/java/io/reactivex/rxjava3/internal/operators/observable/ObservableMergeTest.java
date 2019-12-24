@@ -1065,7 +1065,6 @@ public class ObservableMergeTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeArray2() {
         Observable.mergeArray(Observable.just(1), Observable.just(2))

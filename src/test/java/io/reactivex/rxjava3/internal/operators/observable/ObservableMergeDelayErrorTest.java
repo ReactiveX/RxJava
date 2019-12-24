@@ -506,7 +506,6 @@ public class ObservableMergeDelayErrorTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayDelayError() {
         Observable.mergeArrayDelayError(Observable.just(1), Observable.just(2))

@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.rxjava3.core.ConverterTest.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 
 public class TransformerTest extends RxJavaTest {
@@ -126,9 +127,6 @@ public class TransformerTest extends RxJavaTest {
 
         Flowable.just(a).compose(TransformerTest.<String>testFlowableTransformerCreator());
     }
-
-    interface A<T, R> { }
-    interface B<T> { }
 
     private static <T> ObservableTransformer<A<T, ?>, B<T>> testObservableTransformerCreator() {
         return new ObservableTransformer<A<T, ?>, B<T>>() {
