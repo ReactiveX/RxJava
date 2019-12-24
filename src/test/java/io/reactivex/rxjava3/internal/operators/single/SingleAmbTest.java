@@ -112,7 +112,6 @@ public class SingleAmbTest extends RxJavaTest {
         to.assertResult(2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayEmpty() {
         Single.ambArray()
@@ -120,13 +119,11 @@ public class SingleAmbTest extends RxJavaTest {
         .assertFailure(NoSuchElementException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambSingleSource() {
         assertSame(Single.never(), Single.ambArray(Single.never()));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Single.ambArray(Single.error(new TestException()), Single.just(1))
@@ -144,7 +141,6 @@ public class SingleAmbTest extends RxJavaTest {
                 final Subject<Integer> ps = ReplaySubject.create();
                 ps.onNext(1);
 
-                @SuppressWarnings("unchecked")
                 final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
 
                 Runnable r1 = new Runnable() {
@@ -172,7 +168,6 @@ public class SingleAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void multipleErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -212,7 +207,6 @@ public class SingleAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void successErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -276,14 +270,12 @@ public class SingleAmbTest extends RxJavaTest {
         Single.amb(Arrays.asList(Single.just(1), error)).test().assertValue(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayOrder() {
         Single<Integer> error = Single.error(new RuntimeException());
         Single.ambArray(Single.just(1), error).test().assertValue(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerSuccessDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -311,7 +303,6 @@ public class SingleAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerErrorDispose() throws Exception {
         final TestException ex = new TestException();

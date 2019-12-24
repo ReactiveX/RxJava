@@ -1518,7 +1518,6 @@ public class FlowableMergeTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeArray2() {
         Flowable.mergeArray(Flowable.just(1), Flowable.just(2))

@@ -27,7 +27,7 @@ public final class Notification<T> {
     final Object value;
 
     /** Not meant to be implemented externally. */
-    private Notification(Object value) {
+    private Notification(@Nullable Object value) {
         this.value = value;
     }
 

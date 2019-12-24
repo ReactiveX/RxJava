@@ -151,7 +151,6 @@ public class MaybeZipArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
         Maybe.zipArray(new Function<Object[], Object>() {
@@ -163,7 +162,6 @@ public class MaybeZipArrayTest extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleSourceZipperReturnsNull() {
         Maybe.zipArray(Functions.justFunction(null), Maybe.just(1))

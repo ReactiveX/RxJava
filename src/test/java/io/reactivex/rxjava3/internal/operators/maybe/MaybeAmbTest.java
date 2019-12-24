@@ -116,7 +116,6 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void disposeNoFurtherSignals() {
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() {
             @Override
             protected void subscribeActual(
@@ -134,7 +133,6 @@ public class MaybeAmbTest extends RxJavaTest {
         to.assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerSuccessDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -160,7 +158,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerErrorDispose() throws Exception {
         final TestException ex = new TestException();
@@ -187,7 +184,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerCompleteDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -223,7 +219,6 @@ public class MaybeAmbTest extends RxJavaTest {
                 final Subject<Integer> ps = ReplaySubject.create();
                 ps.onNext(1);
 
-                @SuppressWarnings("unchecked")
                 final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
                         Maybe.<Integer>never(), Maybe.<Integer>never(), null);
 

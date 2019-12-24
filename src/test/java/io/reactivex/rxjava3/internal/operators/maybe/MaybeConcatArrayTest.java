@@ -29,7 +29,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeConcatArrayTest extends RxJavaTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void cancel() {
         Maybe.concatArray(Maybe.just(1), Maybe.just(2))
@@ -38,7 +37,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void cancelDelayError() {
         Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
@@ -47,7 +45,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2))
@@ -64,7 +61,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         ts.assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void backpressureDelayError() {
         TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
@@ -81,7 +77,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         ts.assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -106,7 +101,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void requestCancelRaceDelayError() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -131,7 +125,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -158,7 +151,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
@@ -178,7 +170,6 @@ public class MaybeConcatArrayTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
