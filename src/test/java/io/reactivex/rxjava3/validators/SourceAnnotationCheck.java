@@ -174,7 +174,7 @@ public class SourceAnnotationCheck {
 
     static void processFile(Class<?> clazz) throws Exception {
         String baseClassName = clazz.getSimpleName();
-        File f = TestHelper.findSource(baseClassName, clazz.getPackageName());
+        File f = TestHelper.findSource(baseClassName, clazz.getPackage().getName());
         if (f == null) {
             return;
         }
