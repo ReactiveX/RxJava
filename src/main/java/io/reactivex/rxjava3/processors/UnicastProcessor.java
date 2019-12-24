@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -179,7 +179,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create() {
-        return new UnicastProcessor<>(bufferSize());
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -191,7 +191,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint) {
-        return new UnicastProcessor<>(capacityHint);
+        return create(capacityHint, Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -205,7 +205,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
-        return new UnicastProcessor<>(bufferSize(), null, delayError);
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, delayError);
     }
 
     /**
@@ -224,7 +224,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, @NonNull Runnable onTerminate) {
-        return new UnicastProcessor<>(capacityHint, onTerminate);
+        return create(capacityHint, onTerminate, true);
     }
 
     /**
@@ -246,26 +246,6 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, @NonNull Runnable onTerminate, boolean delayError) {
         return new UnicastProcessor<>(capacityHint, onTerminate, delayError);
-    }
-
-    /**
-     * Creates an UnicastProcessor with the given capacity hint.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @since 2.0
-     */
-    UnicastProcessor(int capacityHint) {
-        this(capacityHint, null, true);
-    }
-
-    /**
-     * Creates an UnicastProcessor with the given capacity hint and callback
-     * for when the Processor is terminated normally or its single Subscriber cancels.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null not allowed
-     * @since 2.0
-     */
-    UnicastProcessor(int capacityHint, Runnable onTerminate) {
-        this(capacityHint, onTerminate, true);
     }
 
     /**

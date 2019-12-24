@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
@@ -180,7 +180,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create() {
-        return new UnicastSubject<>(bufferSize(), true);
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -192,7 +192,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        return new UnicastSubject<>(capacityHint, true);
+        return create(capacityHint, Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -211,7 +211,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, @NonNull Runnable onTerminate) {
-        return new UnicastSubject<>(capacityHint, onTerminate, true);
+        return create(capacityHint, onTerminate, true);
     }
 
     /**
@@ -249,35 +249,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(boolean delayError) {
-        return new UnicastSubject<>(bufferSize(), delayError);
-    }
-
-    /**
-     * Creates an UnicastSubject with the given capacity hint and delay error flag.
-     * <p>History: 2.0.8 - experimental
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param delayError deliver pending onNext events before onError
-     * @since 2.2
-     */
-    UnicastSubject(int capacityHint, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<>();
-        this.delayError = delayError;
-        this.downstream = new AtomicReference<>();
-        this.once = new AtomicBoolean();
-        this.wip = new UnicastQueueDisposable();
-    }
-
-    /**
-     * Creates an UnicastSubject with the given capacity hint and callback
-     * for when the Subject is terminated normally or its single Subscriber cancels.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
-     * @since 2.0
-     *
-     * */
-    UnicastSubject(int capacityHint, Runnable onTerminate) {
-        this(capacityHint, onTerminate, true);
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, delayError);
     }
 
     /**
