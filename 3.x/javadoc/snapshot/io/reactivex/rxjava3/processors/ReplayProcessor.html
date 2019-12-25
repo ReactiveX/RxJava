@@ -283,16 +283,16 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava3.processors">ReplayProcessor</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html#createWithTime-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">createWithTime</a></span>(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Creates a time-bounded ReplayProcessor.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava3.processors">ReplayProcessor</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html#createWithTimeAndSize-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-int-">createWithTimeAndSize</a></span>(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;maxSize)</code>
 <div class="block">Creates a time- and size-bounded ReplayProcessor.</div>
 </td>
@@ -506,8 +506,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava3.processors">ReplayProcessor</a>&lt;T&gt;&nbsp;createWithTime(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Creates a time-bounded ReplayProcessor.
  <p>
  In this setting, the <code>ReplayProcessor</code> internally tags each observed item with a timestamp value
@@ -549,8 +549,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="class in io.reactivex.rxjava3.processors">ReplayProcessor</a>&lt;T&gt;&nbsp;createWithTimeAndSize(long&nbsp;maxAge,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;maxSize)</pre>
 <div class="block">Creates a time- and size-bounded ReplayProcessor.
  <p>
@@ -658,7 +658,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>hasSubscribers</h4>
-<pre>public&nbsp;boolean&nbsp;hasSubscribers()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasSubscribers()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasSubscribers--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has subscribers.
  <p>The method is thread-safe.</div>
@@ -677,6 +678,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <li class="blockList">
 <h4>getThrowable</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;getThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#getThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns the error that caused the FlowableProcessor to terminate or null if the FlowableProcessor
@@ -721,7 +723,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>getValue</h4>
-<pre>public&nbsp;<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>&nbsp;getValue()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>&nbsp;getValue()</pre>
 <div class="block">Returns the latest value this processor has or null if no such value exists.
  <p>The method is thread-safe.</div>
 <dl>
@@ -736,7 +739,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>getValues</h4>
-<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]&nbsp;getValues()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>[]&nbsp;getValues()</pre>
 <div class="block">Returns an Object array containing snapshot all values of this processor.
  <p>The method is thread-safe.</div>
 <dl>
@@ -753,7 +757,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>getValues</h4>
-<pre>public&nbsp;<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>[]&nbsp;getValues(<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>[]&nbsp;array)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>[]&nbsp;getValues(<a href="../../../../io/reactivex/rxjava3/processors/ReplayProcessor.html" title="type parameter in ReplayProcessor">T</a>[]&nbsp;array)</pre>
 <div class="block">Returns a typed array containing a snapshot of all values of this processor.
  <p>The method follows the conventions of Collection.toArray by setting the array element
  after the last value to null (if the capacity permits).
@@ -772,7 +777,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>hasComplete</h4>
-<pre>public&nbsp;boolean&nbsp;hasComplete()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasComplete()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasComplete--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through a complete event.
  <p>The method is thread-safe.</div>
@@ -792,7 +798,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>hasThrowable</h4>
-<pre>public&nbsp;boolean&nbsp;hasThrowable()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through an error event.
  <p>The method is thread-safe.</div>
@@ -813,7 +820,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockListLast">
 <li class="blockList">
 <h4>hasValue</h4>
-<pre>public&nbsp;boolean&nbsp;hasValue()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasValue()</pre>
 <div class="block">Returns true if this processor has any value.
  <p>The method is thread-safe.</div>
 <dl>

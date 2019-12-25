@@ -286,18 +286,20 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html#create-int-java.lang.Runnable-">create</a></span>(int&nbsp;capacityHint,
-      <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onCancelled)</code>
+      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onTerminate)</code>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint and a callback for
- the case when the single Subscriber cancels its subscription.</div>
+ the case when the single Subscriber cancels its subscription or the
+ processor is terminated.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html#create-int-java.lang.Runnable-boolean-">create</a></span>(int&nbsp;capacityHint,
-      <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onCancelled,
+      <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onTerminate,
       boolean&nbsp;delayError)</code>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint, delay error flag and a callback for
- the case when the single Subscriber cancels its subscription.</div>
+ the case when the single Subscriber cancels its subscription or
+ the processor is terminated.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
@@ -465,9 +467,11 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a>&lt;T&gt;&nbsp;create(int&nbsp;capacityHint,
-                                                                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onCancelled)</pre>
+                                                                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onTerminate)</pre>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint and a callback for
- the case when the single Subscriber cancels its subscription.
+ the case when the single Subscriber cancels its subscription or the
+ processor is terminated.
 
  <p>The callback, if not null, is called exactly once and
  non-overlapped with any active replay.</div>
@@ -476,7 +480,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>capacityHint</code> - the hint to size the internal unbounded buffer</dd>
-<dd><code>onCancelled</code> - the non null callback</dd>
+<dd><code>onTerminate</code> - the non null callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an UnicastProcessor instance</dd>
 </dl>
@@ -491,10 +495,12 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a>&lt;T&gt;&nbsp;create(int&nbsp;capacityHint,
-                                                                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onCancelled,
+                                                                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                                                                                  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang">Runnable</a>&nbsp;onTerminate,
                                                                                   boolean&nbsp;delayError)</pre>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint, delay error flag and a callback for
- the case when the single Subscriber cancels its subscription.
+ the case when the single Subscriber cancels its subscription or
+ the processor is terminated.
 
  <p>The callback, if not null, is called exactly once and
  non-overlapped with any active replay.
@@ -504,7 +510,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>capacityHint</code> - the hint to size the internal unbounded buffer</dd>
-<dd><code>onCancelled</code> - the non null callback</dd>
+<dd><code>onTerminate</code> - the non null callback</dd>
 <dd><code>delayError</code> - deliver pending onNext events before onError</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an UnicastProcessor instance</dd>
@@ -586,7 +592,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>hasSubscribers</h4>
-<pre>public&nbsp;boolean&nbsp;hasSubscribers()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasSubscribers()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasSubscribers--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has subscribers.
  <p>The method is thread-safe.</div>
@@ -605,6 +612,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <li class="blockList">
 <h4>getThrowable</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;getThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#getThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns the error that caused the FlowableProcessor to terminate or null if the FlowableProcessor
@@ -625,7 +633,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>hasComplete</h4>
-<pre>public&nbsp;boolean&nbsp;hasComplete()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasComplete()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasComplete--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through a complete event.
  <p>The method is thread-safe.</div>
@@ -645,7 +654,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockListLast">
 <li class="blockList">
 <h4>hasThrowable</h4>
-<pre>public&nbsp;boolean&nbsp;hasThrowable()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through an error event.
  <p>The method is thread-safe.</div>

@@ -2256,12 +2256,14 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/processors/UnicastProcessor.html#create-int-java.lang.Runnable-">create(int, Runnable)</a></span> - Static method in class io.reactivex.rxjava3.processors.<a href="io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a></dt>
 <dd>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint and a callback for
- the case when the single Subscriber cancels its subscription.</div>
+ the case when the single Subscriber cancels its subscription or the
+ processor is terminated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/processors/UnicastProcessor.html#create-int-java.lang.Runnable-boolean-">create(int, Runnable, boolean)</a></span> - Static method in class io.reactivex.rxjava3.processors.<a href="io/reactivex/rxjava3/processors/UnicastProcessor.html" title="class in io.reactivex.rxjava3.processors">UnicastProcessor</a></dt>
 <dd>
 <div class="block">Creates an UnicastProcessor with the given internal buffer capacity hint, delay error flag and a callback for
- the case when the single Subscriber cancels its subscription.</div>
+ the case when the single Subscriber cancels its subscription or
+ the processor is terminated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subjects/AsyncSubject.html#create--">create()</a></span> - Static method in class io.reactivex.rxjava3.subjects.<a href="io/reactivex/rxjava3/subjects/AsyncSubject.html" title="class in io.reactivex.rxjava3.subjects">AsyncSubject</a></dt>
 <dd>
@@ -2306,12 +2308,14 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subjects/UnicastSubject.html#create-int-java.lang.Runnable-">create(int, Runnable)</a></span> - Static method in class io.reactivex.rxjava3.subjects.<a href="io/reactivex/rxjava3/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava3.subjects">UnicastSubject</a></dt>
 <dd>
 <div class="block">Creates an UnicastSubject with the given internal buffer capacity hint and a callback for
- the case when the single Subscriber cancels its subscription.</div>
+ the case when the single Subscriber cancels its subscription
+ or the subject is terminated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subjects/UnicastSubject.html#create-int-java.lang.Runnable-boolean-">create(int, Runnable, boolean)</a></span> - Static method in class io.reactivex.rxjava3.subjects.<a href="io/reactivex/rxjava3/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava3.subjects">UnicastSubject</a></dt>
 <dd>
 <div class="block">Creates an UnicastSubject with the given internal buffer capacity hint, delay error flag and
- a callback for the case when the single Subscriber cancels its subscription.</div>
+ a callback for the case when the single Observer disposes its <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>
+ or the subject is terminated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/subjects/UnicastSubject.html#create-boolean-">create(boolean)</a></span> - Static method in class io.reactivex.rxjava3.subjects.<a href="io/reactivex/rxjava3/subjects/UnicastSubject.html" title="class in io.reactivex.rxjava3.subjects">UnicastSubject</a></dt>
 <dd>

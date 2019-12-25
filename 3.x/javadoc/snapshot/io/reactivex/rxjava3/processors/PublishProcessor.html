@@ -430,7 +430,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>offer</h4>
-<pre>public&nbsp;boolean&nbsp;offer(<a href="../../../../io/reactivex/rxjava3/processors/PublishProcessor.html" title="type parameter in PublishProcessor">T</a>&nbsp;t)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;offer(<a href="../../../../io/reactivex/rxjava3/processors/PublishProcessor.html" title="type parameter in PublishProcessor">T</a>&nbsp;t)</pre>
 <div class="block">Tries to emit the item to all currently subscribed Subscribers if all of them
  has requested some value, returns false otherwise.
  <p>
@@ -456,7 +457,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>hasSubscribers</h4>
-<pre>public&nbsp;boolean&nbsp;hasSubscribers()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasSubscribers()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasSubscribers--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has subscribers.
  <p>The method is thread-safe.</div>
@@ -475,6 +477,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <li class="blockList">
 <h4>getThrowable</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html" title="annotation in io.reactivex.rxjava3.annotations">@Nullable</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;getThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#getThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns the error that caused the FlowableProcessor to terminate or null if the FlowableProcessor
@@ -495,7 +498,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>hasThrowable</h4>
-<pre>public&nbsp;boolean&nbsp;hasThrowable()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasThrowable()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasThrowable--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through an error event.
  <p>The method is thread-safe.</div>
@@ -516,7 +520,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockListLast">
 <li class="blockList">
 <h4>hasComplete</h4>
-<pre>public&nbsp;boolean&nbsp;hasComplete()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+public&nbsp;boolean&nbsp;hasComplete()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.html#hasComplete--">FlowableProcessor</a></code></span></div>
 <div class="block">Returns true if the FlowableProcessor has reached a terminal state through a complete event.
  <p>The method is thread-safe.</div>

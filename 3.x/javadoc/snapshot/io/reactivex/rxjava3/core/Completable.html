@@ -791,7 +791,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/CompletableSource.html
 </tr>
 <tr id="i80" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Completable.html#subscribeActual-io.reactivex.rxjava3.core.CompletableObserver-">subscribeActual</a></span>(<a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Completable.html#subscribeActual-io.reactivex.rxjava3.core.CompletableObserver-">subscribeActual</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</code>
 <div class="block">Implement this method to handle the incoming <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>s and
  perform the business logic in your operator.</div>
 </td>
@@ -3733,7 +3733,7 @@ public final&nbsp;void&nbsp;subscribe(<a href="../../../../io/reactivex/rxjava3/
 <ul class="blockList">
 <li class="blockList">
 <h4>subscribeActual</h4>
-<pre>protected abstract&nbsp;void&nbsp;subscribeActual(<a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</pre>
+<pre>protected abstract&nbsp;void&nbsp;subscribeActual(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core">CompletableObserver</a>&nbsp;observer)</pre>
 <div class="block">Implement this method to handle the incoming <a href="../../../../io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>s and
  perform the business logic in your operator.
  <p>There is no need to call any of the plugin hooks on the current <code>Completable</code> instance or

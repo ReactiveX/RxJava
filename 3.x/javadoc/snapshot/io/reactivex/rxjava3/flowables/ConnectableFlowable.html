@@ -207,7 +207,7 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect--">connect</a></span>()</code>
 <div class="block">Instructs the <code>ConnectableFlowable</code> to begin emitting the items from its underlying
  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> to its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.</div>
@@ -228,47 +228,47 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 </td>
 </tr>
 <tr id="i6" class="altColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-int-">refCount</a></span>(int&nbsp;subscriberCount)</code>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect if all subscribers have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-int-long-java.util.concurrent.TimeUnit-">refCount</a></span>(int&nbsp;subscriberCount,
         long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect after the specified
  timeout if all subscribers have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-int-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">refCount</a></span>(int&nbsp;subscriberCount,
         long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect after the specified
  timeout if all subscribers have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-long-java.util.concurrent.TimeUnit-">refCount</a></span>(long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches 1 and disconnect after the specified
  timeout if all subscribers have unsubscribed.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
-<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">refCount</a></span>(long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches 1 and disconnect after the specified
  timeout if all subscribers have unsubscribed.</div>
@@ -332,9 +332,14 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <ul class="blockList">
 <li class="blockList">
 <h4>connect</h4>
-<pre>public abstract&nbsp;void&nbsp;connect(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
+public abstract&nbsp;void&nbsp;connect(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</pre>
 <div class="block">Instructs the <code>ConnectableFlowable</code> to begin emitting the items from its underlying
- <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> to its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.</div>
+ <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> to its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.
+ <dl>
+  <dt><b>Scheduler:</b></dt>
+  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+ </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>connection</code> - the action that receives the connection subscription before the subscription to source happens
@@ -350,10 +355,15 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <ul class="blockList">
 <li class="blockList">
 <h4>reset</h4>
-<pre>public abstract&nbsp;void&nbsp;reset()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
+public abstract&nbsp;void&nbsp;reset()</pre>
 <div class="block">Resets this ConnectableFlowable into its fresh state if it has terminated.
  <p>
- Calling this method on a fresh or active <code>ConnectableFlowable</code> has no effect.</div>
+ Calling this method on a fresh or active <code>ConnectableFlowable</code> has no effect.
+ <dl>
+  <dt><b>Scheduler:</b></dt>
+  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+ </dl></div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
@@ -366,11 +376,17 @@ extends <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="cla
 <ul class="blockList">
 <li class="blockList">
 <h4>connect</h4>
-<pre>public final&nbsp;<a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;connect()</pre>
+<pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;connect()</pre>
 <div class="block">Instructs the <code>ConnectableFlowable</code> to begin emitting the items from its underlying
  <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> to its <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.
  <p>
- To disconnect from a synchronous source, use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(io.reactivex.rxjava3.functions.Consumer)</code></a> method.</div>
+ To disconnect from a synchronous source, use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(io.reactivex.rxjava3.functions.Consumer)</code></a> method.
+ <dl>
+  <dt><b>Scheduler:</b></dt>
+  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+ </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the subscription representing the connection</dd>
@@ -419,7 +435,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount)</pre>
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount)</pre>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect if all subscribers have unsubscribed.
  <dl>
@@ -449,8 +466,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="io.reactivex:computation")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(long&nbsp;timeout,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches 1 and disconnect after the specified
  timeout if all subscribers have unsubscribed.
@@ -484,9 +502,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(long&nbsp;timeout,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches 1 and disconnect after the specified
  timeout if all subscribers have unsubscribed.
@@ -519,9 +538,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="io.reactivex:computation")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
         long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect after the specified
  timeout if all subscribers have unsubscribed.
@@ -556,10 +576,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
+ <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;refCount(int&nbsp;subscriberCount,
         long&nbsp;timeout,
-        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
-        <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Connects to the upstream <code>ConnectableFlowable</code> if the number of subscribed
  subscriber reaches the specified count and disconnect after the specified
  timeout if all subscribers have unsubscribed.
@@ -591,6 +612,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/core/Flowable.html" 
 <li class="blockList">
 <h4>autoConnect</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect()</pre>
 <div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
  when the first Subscriber subscribes.
@@ -605,7 +629,14 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
- to gain access to the <code>Disposable</code> representing the only connection.</div>
+ to gain access to the <code>Disposable</code> representing the only connection.
+ <dl>
+  <dt><b>Backpressure:</b></dt>
+  <dd>The operator itself doesn't interfere with backpressure which is determined by
+  the upstream <code>ConnectableFlowable</code>'s behavior.</dd>
+  <dt><b>Scheduler:</b></dt>
+  <dd><code>autoConnect</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+ </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a Flowable that automatically connects to this ConnectableFlowable
@@ -623,6 +654,9 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <li class="blockList">
 <h4>autoConnect</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers)</pre>
 <div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
  when the specified number of Subscribers subscribe to it.
@@ -637,7 +671,14 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  <p>
  This overload does not allow disconnecting the connection established via
  <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-"><code>connect(Consumer)</code></a>. Use the <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#autoConnect-int-io.reactivex.rxjava3.functions.Consumer-"><code>autoConnect(int, Consumer)</code></a> overload
- to gain access to the <code>Disposable</code> representing the only connection.</div>
+ to gain access to the <code>Disposable</code> representing the only connection.
+ <dl>
+  <dt><b>Backpressure:</b></dt>
+  <dd>The operator itself doesn't interfere with backpressure which is determined by
+  the upstream <code>ConnectableFlowable</code>'s behavior.</dd>
+  <dt><b>Scheduler:</b></dt>
+  <dd><code>autoConnect</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+ </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
@@ -656,6 +697,9 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <li class="blockList">
 <h4>autoConnect</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
+ <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
+ <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="type parameter in ConnectableFlowable">T</a>&gt;&nbsp;autoConnect(int&nbsp;numberOfSubscribers,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&gt;&nbsp;connection)</pre>
 <div class="block">Returns a Flowable that automatically connects (at most once) to this ConnectableFlowable
@@ -668,7 +712,14 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
  during the lifetime of the returned Flowable. If this ConnectableFlowable
  terminates, the connection is never renewed, no matter how Subscribers come
  and go. Use <a href="../../../../io/reactivex/rxjava3/flowables/ConnectableFlowable.html#refCount--"><code>refCount()</code></a> to renew a connection or dispose an active
- connection when all <code>Subscriber</code>s have cancelled their <code>Subscription</code>s.</div>
+ connection when all <code>Subscriber</code>s have cancelled their <code>Subscription</code>s.
+ <dl>
+  <dt><b>Backpressure:</b></dt>
+  <dd>The operator itself doesn't interfere with backpressure which is determined by
+  the upstream <code>ConnectableFlowable</code>'s behavior.</dd>
+  <dt><b>Scheduler:</b></dt>
+  <dd><code>autoConnect</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
+ </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>numberOfSubscribers</code> - the number of subscribers to await before calling connect
