@@ -59,7 +59,7 @@ public class FlowableConversionTest extends RxJavaTest {
             return x(new RobotConversionFunc<>(operator));
         }
 
-        public <R, O> O x(Function<Publisher<T>, O> operator) {
+        public <O> O x(Function<Publisher<T>, O> operator) {
             try {
                 return operator.apply(onSubscribe);
             } catch (Throwable ex) {

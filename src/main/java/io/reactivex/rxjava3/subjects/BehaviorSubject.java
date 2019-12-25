@@ -176,7 +176,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> BehaviorSubject<T> create() {
-        return new BehaviorSubject<T>();
+        return new BehaviorSubject<>();
     }
 
     /**
@@ -192,8 +192,8 @@ public final class BehaviorSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
-        return new BehaviorSubject<T>(defaultValue);
+    public static <@NonNull T> BehaviorSubject<T> createDefault(T defaultValue) {
+        return new BehaviorSubject<>(defaultValue);
     }
 
     /**
@@ -205,9 +205,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.subscribers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
-        this.value = new AtomicReference<Object>();
-        this.terminalEvent = new AtomicReference<Throwable>();
+        this.subscribers = new AtomicReference<>(EMPTY);
+        this.value = new AtomicReference<>();
+        this.terminalEvent = new AtomicReference<>();
     }
 
     /**
@@ -223,7 +223,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        BehaviorDisposable<T> bs = new BehaviorDisposable<T>(observer, this);
+        BehaviorDisposable<T> bs = new BehaviorDisposable<>(observer, this);
         observer.onSubscribe(bs);
         if (add(bs)) {
             if (bs.cancelled) {
@@ -287,16 +287,19 @@ public final class BehaviorSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasObservers() {
         return subscribers.get().length != 0;
     }
 
+    @CheckReturnValue
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         Object o = value.get();
         if (NotificationLite.isError(o)) {
@@ -311,6 +314,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     @Nullable
+    @CheckReturnValue
     public T getValue() {
         Object o = value.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
@@ -320,12 +324,14 @@ public final class BehaviorSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         Object o = value.get();
         return NotificationLite.isComplete(o);
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         Object o = value.get();
         return NotificationLite.isError(o);
@@ -336,6 +342,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @return true if the subject has any value
      */
+    @CheckReturnValue
     public boolean hasValue() {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
@@ -493,7 +500,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     if (emitting) {
                         AppendOnlyLinkedArrayList<Object> q = queue;
                         if (q == null) {
-                            q = new AppendOnlyLinkedArrayList<Object>(4);
+                            q = new AppendOnlyLinkedArrayList<>(4);
                             queue = q;
                         }
                         q.add(value);

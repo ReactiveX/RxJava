@@ -129,7 +129,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> AsyncSubject<T> create() {
-        return new AsyncSubject<T>();
+        return new AsyncSubject<>();
     }
 
     /**
@@ -138,7 +138,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      */
     @SuppressWarnings("unchecked")
     AsyncSubject() {
-        this.subscribers = new AtomicReference<AsyncDisposable<T>[]>(EMPTY);
+        this.subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
@@ -192,28 +192,32 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasObservers() {
         return subscribers.get().length != 0;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }
 
     @Override
+    @CheckReturnValue
     public Throwable getThrowable() {
         return subscribers.get() == TERMINATED ? error : null;
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        AsyncDisposable<T> as = new AsyncDisposable<T>(observer, this);
+        AsyncDisposable<T> as = new AsyncDisposable<>(observer, this);
         observer.onSubscribe(as);
         if (add(as)) {
             if (as.isDisposed()) {
@@ -304,6 +308,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @return true if the subject has any value
      */
+    @CheckReturnValue
     public boolean hasValue() {
         return subscribers.get() == TERMINATED && value != null;
     }
@@ -314,6 +319,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     @Nullable
+    @CheckReturnValue
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
     }

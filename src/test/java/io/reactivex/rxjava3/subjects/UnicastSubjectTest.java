@@ -368,7 +368,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             public void run() {
                 calls[0]++;
             }
-        });
+        }, true);
 
         TestHelper.checkDisposed(us);
 

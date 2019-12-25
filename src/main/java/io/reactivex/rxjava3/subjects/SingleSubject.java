@@ -115,13 +115,13 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @CheckReturnValue
     @NonNull
     public static <T> SingleSubject<T> create() {
-        return new SingleSubject<T>();
+        return new SingleSubject<>();
     }
 
     @SuppressWarnings("unchecked")
     SingleSubject() {
         once = new AtomicBoolean();
-        observers = new AtomicReference<SingleDisposable<T>[]>(EMPTY);
+        observers = new AtomicReference<>(EMPTY);
     }
 
     @Override
@@ -159,7 +159,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @Override
     protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
-        SingleDisposable<T> md = new SingleDisposable<T>(observer, this);
+        SingleDisposable<T> md = new SingleDisposable<>(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {
             if (md.isDisposed()) {

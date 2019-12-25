@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
+import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.QueueSubscription;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -179,7 +179,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create() {
-        return new UnicastProcessor<T>(bufferSize());
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -191,7 +191,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint) {
-        return new UnicastProcessor<T>(capacityHint);
+        return create(capacityHint, Functions.EMPTY_RUNNABLE, true);
     }
 
     /**
@@ -205,67 +205,47 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
-        return new UnicastProcessor<T>(bufferSize(), null, delayError);
+        return create(bufferSize(), Functions.EMPTY_RUNNABLE, delayError);
     }
 
     /**
      * Creates an UnicastProcessor with the given internal buffer capacity hint and a callback for
-     * the case when the single Subscriber cancels its subscription.
+     * the case when the single Subscriber cancels its subscription or the
+     * processor is terminated.
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
      *
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onCancelled the non null callback
+     * @param onTerminate the non null callback
      * @return an UnicastProcessor instance
      */
     @CheckReturnValue
     @NonNull
-    public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
-        Objects.requireNonNull(onCancelled, "onTerminate");
-        return new UnicastProcessor<T>(capacityHint, onCancelled);
+    public static <T> UnicastProcessor<T> create(int capacityHint, @NonNull Runnable onTerminate) {
+        return create(capacityHint, onTerminate, true);
     }
 
     /**
      * Creates an UnicastProcessor with the given internal buffer capacity hint, delay error flag and a callback for
-     * the case when the single Subscriber cancels its subscription.
+     * the case when the single Subscriber cancels its subscription or
+     * the processor is terminated.
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
      * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onCancelled the non null callback
+     * @param onTerminate the non null callback
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
      * @since 2.2
      */
     @CheckReturnValue
     @NonNull
-    public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
-        Objects.requireNonNull(onCancelled, "onTerminate");
-        return new UnicastProcessor<T>(capacityHint, onCancelled, delayError);
-    }
-
-    /**
-     * Creates an UnicastProcessor with the given capacity hint.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @since 2.0
-     */
-    UnicastProcessor(int capacityHint) {
-        this(capacityHint, null, true);
-    }
-
-    /**
-     * Creates an UnicastProcessor with the given capacity hint and callback
-     * for when the Processor is terminated normally or its single Subscriber cancels.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null not allowed
-     * @since 2.0
-     */
-    UnicastProcessor(int capacityHint, Runnable onTerminate) {
-        this(capacityHint, onTerminate, true);
+    public static <T> UnicastProcessor<T> create(int capacityHint, @NonNull Runnable onTerminate, boolean delayError) {
+        return new UnicastProcessor<>(capacityHint, onTerminate, delayError);
     }
 
     /**
@@ -278,10 +258,10 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @since 2.2
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>(onTerminate);
+        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+        this.onTerminate = new AtomicReference<>(Objects.requireNonNull(onTerminate, "onTerminate"));
         this.delayError = delayError;
-        this.downstream = new AtomicReference<Subscriber<? super T>>();
+        this.downstream = new AtomicReference<>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueSubscription();
         this.requested = new AtomicLong();
@@ -559,12 +539,14 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return downstream.get() != null;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         if (done) {
             return error;
@@ -573,11 +555,13 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return done && error == null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return done && error != null;
     }

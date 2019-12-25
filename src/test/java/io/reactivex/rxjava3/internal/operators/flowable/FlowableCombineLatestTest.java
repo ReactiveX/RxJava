@@ -1046,7 +1046,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
                     } else {
-                        assertEquals("f is null", ex.getCause().getMessage());
+                        assertEquals("combiner is null", ex.getCause().getMessage());
                     }
                 }
             }

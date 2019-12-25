@@ -202,7 +202,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.concatArray((Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatArrayOneIsNull() {
         Observable.concatArray(just1, null).blockingLast();
@@ -521,7 +520,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.mergeArray(128, 128, (Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
         Observable.mergeArray(128, 128, just1, null).blockingLast();
@@ -552,7 +550,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.mergeArrayDelayError(128, 128, (Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
         Observable.mergeArrayDelayError(128, 128, just1, null).blockingLast();

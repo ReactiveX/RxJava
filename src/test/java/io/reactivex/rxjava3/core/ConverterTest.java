@@ -175,7 +175,17 @@ public final class ConverterTest extends RxJavaTest {
         .assertValue(1);
     }
 
+    /**
+     * Two argument type.
+     * @param <T> the input type
+     * @param <R> the output type
+     */
     interface A<T, R> { }
+
+    /**
+     * One argument type.
+     * @param <T> the type
+     */
     interface B<T> { }
 
     private static <T> ObservableConverter<A<T, ?>, B<T>> testObservableConverterCreator() {

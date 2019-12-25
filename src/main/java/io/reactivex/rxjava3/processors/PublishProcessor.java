@@ -128,7 +128,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> PublishProcessor<T> create() {
-        return new PublishProcessor<T>();
+        return new PublishProcessor<>();
     }
 
     /**
@@ -137,12 +137,12 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     PublishProcessor() {
-        subscribers = new AtomicReference<PublishSubscription<T>[]>(EMPTY);
+        subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> t) {
-        PublishSubscription<T> ps = new PublishSubscription<T>(t, this);
+        PublishSubscription<T> ps = new PublishSubscription<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
             // if cancellation happened while a successful add, the remove() didn't work
@@ -283,6 +283,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * @return true if the item was emitted to all Subscribers
      * @since 2.2
      */
+    @CheckReturnValue
     public boolean offer(T t) {
         if (t == null) {
             onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
@@ -303,12 +304,14 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
             return error;
@@ -317,11 +320,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }

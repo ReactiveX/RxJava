@@ -32,6 +32,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * <p>The method is thread-safe.
      * @return true if the subject has any Observers
      */
+    @CheckReturnValue
     public abstract boolean hasObservers();
 
     /**
@@ -41,6 +42,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * @see #getThrowable()
      * @see #hasComplete()
      */
+    @CheckReturnValue
     public abstract boolean hasThrowable();
 
     /**
@@ -49,6 +51,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * @return true if the subject has reached a terminal state through a complete event
      * @see #hasThrowable()
      */
+    @CheckReturnValue
     public abstract boolean hasComplete();
 
     /**
@@ -59,6 +62,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * hasn't terminated yet
      */
     @Nullable
+    @CheckReturnValue
     public abstract Throwable getThrowable();
 
     /**
@@ -68,10 +72,11 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * @return the wrapped and serialized subject
      */
     @NonNull
+    @CheckReturnValue
     public final Subject<T> toSerialized() {
         if (this instanceof SerializedSubject) {
             return this;
         }
-        return new SerializedSubject<T>(this);
+        return new SerializedSubject<>(this);
     }
 }

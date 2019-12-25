@@ -22,6 +22,11 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+import io.reactivex.rxjava3.observables.ConnectableObservable;
+import io.reactivex.rxjava3.parallel.ParallelFlowable;
+import io.reactivex.rxjava3.processors.*;
+import io.reactivex.rxjava3.subjects.*;
 
 /**
  * Verifies several properties.
@@ -38,16 +43,14 @@ public class BaseTypeAnnotations {
         StringBuilder b = new StringBuilder();
 
         for (Method m : clazz.getMethods()) {
-            if (m.getName().equals("bufferSize")) {
-                continue;
-            }
             if (m.getDeclaringClass() == clazz) {
                 boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterTypes().length == 0;
+                boolean isConnectMethod = "connect".equals(m.getName()) && m.getParameterTypes().length == 0;
                 boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
 
-                if (isSubscribeMethod) {
+                if (isSubscribeMethod || isConnectMethod) {
                     if (isAnnotationPresent) {
-                        b.append("subscribe() method has @CheckReturnValue: ").append(m).append("\r\n");
+                        b.append(m.getName()).append(" method has @CheckReturnValue: ").append(m).append("\r\n");
                     }
                     continue;
                 }
@@ -83,7 +86,8 @@ public class BaseTypeAnnotations {
         StringBuilder b = new StringBuilder();
 
         for (Method m : clazz.getMethods()) {
-            if (m.getName().equals("bufferSize")) {
+            if (m.getName().equals("bufferSize")
+                    || m.getName().equals("parallelism")) {
                 continue;
             }
             if (m.getDeclaringClass() == clazz) {
@@ -130,18 +134,24 @@ public class BaseTypeAnnotations {
         StringBuilder b = new StringBuilder();
 
         for (Method m : clazz.getMethods()) {
-            if (m.getName().equals("bufferSize")) {
+            if (m.getName().equals("bufferSize")
+                    || m.getName().equals("parallelism")) {
                 continue;
             }
             if (m.getDeclaringClass() == clazz) {
-                if (clazz == Flowable.class) {
+                if (clazz == Flowable.class || clazz == ParallelFlowable.class) {
                     if (!m.isAnnotationPresent(BackpressureSupport.class)) {
-                        b.append("No @BackpressureSupport annotation (being Flowable): ").append(m).append("\r\n");
+                        b.append("No @BackpressureSupport annotation (being ")
+                        .append(clazz.getSimpleName())
+                        .append("): ").append(m).append("\r\n");
                     }
                 } else {
-                    if (m.getReturnType() == Flowable.class) {
+                    if (m.getReturnType() == Flowable.class
+                            || m.getReturnType() == ParallelFlowable.class) {
                         if (!m.isAnnotationPresent(BackpressureSupport.class)) {
-                            b.append("No @BackpressureSupport annotation (having Flowable return): ").append(m).append("\r\n");
+                            b.append("No @BackpressureSupport annotation (having ")
+                            .append(m.getReturnType().getSimpleName())
+                            .append(" return): ").append(m).append("\r\n");
                         }
                     } else {
                         boolean found = false;
@@ -201,6 +211,86 @@ public class BaseTypeAnnotations {
     }
 
     @Test
+    public void checkReturnValueConnectableObservable() {
+        checkCheckReturnValueSupport(ConnectableObservable.class);
+    }
+
+    @Test
+    public void checkReturnValueConnectableFlowable() {
+        checkCheckReturnValueSupport(ConnectableFlowable.class);
+    }
+
+    @Test
+    public void checkReturnValueParallelFlowable() {
+        checkCheckReturnValueSupport(ParallelFlowable.class);
+    }
+
+    @Test
+    public void checkReturnValueAsyncSubject() {
+        checkCheckReturnValueSupport(AsyncSubject.class);
+    }
+
+    @Test
+    public void checkReturnValueBehaviorSubject() {
+        checkCheckReturnValueSupport(BehaviorSubject.class);
+    }
+
+    @Test
+    public void checkReturnValuePublishSubject() {
+        checkCheckReturnValueSupport(PublishSubject.class);
+    }
+
+    @Test
+    public void checkReturnValueReplaySubject() {
+        checkCheckReturnValueSupport(ReplaySubject.class);
+    }
+
+    @Test
+    public void checkReturnValueUnicastSubject() {
+        checkCheckReturnValueSupport(UnicastSubject.class);
+    }
+
+    @Test
+    public void checkReturnValueAsyncProcessor() {
+        checkCheckReturnValueSupport(AsyncProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValueBehaviorProcessor() {
+        checkCheckReturnValueSupport(BehaviorProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValuePublishProcessor() {
+        checkCheckReturnValueSupport(PublishProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValueReplayProcessor() {
+        checkCheckReturnValueSupport(ReplayProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValueUnicastProcessor() {
+        checkCheckReturnValueSupport(UnicastProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValueMulticastProcessor() {
+        checkCheckReturnValueSupport(MulticastProcessor.class);
+    }
+
+    @Test
+    public void checkReturnValueSubject() {
+        checkCheckReturnValueSupport(Subject.class);
+    }
+
+    @Test
+    public void checkReturnValueFlowableProcessor() {
+        checkCheckReturnValueSupport(FlowableProcessor.class);
+    }
+
+    @Test
     public void schedulerSupportFlowable() {
         checkSchedulerSupport(Flowable.class);
     }
@@ -226,6 +316,21 @@ public class BaseTypeAnnotations {
     }
 
     @Test
+    public void schedulerSupportConnectableObservable() {
+        checkSchedulerSupport(ConnectableObservable.class);
+    }
+
+    @Test
+    public void schedulerSupportConnectableFlowable() {
+        checkSchedulerSupport(ConnectableFlowable.class);
+    }
+
+    @Test
+    public void schedulerSupportParallelFlowable() {
+        checkSchedulerSupport(ParallelFlowable.class);
+    }
+
+    @Test
     public void backpressureSupportFlowable() {
         checkBackpressureSupport(Flowable.class);
     }
@@ -248,5 +353,20 @@ public class BaseTypeAnnotations {
     @Test
     public void backpressureSupportMaybe() {
         checkBackpressureSupport(Maybe.class);
+    }
+
+    @Test
+    public void backpressureSupportConnectableFlowable() {
+        checkBackpressureSupport(ConnectableFlowable.class);
+    }
+
+    @Test
+    public void backpressureSupportConnectableObservable() {
+        checkBackpressureSupport(ConnectableObservable.class);
+    }
+
+    @Test
+    public void backpressureSupportParallelFlowable() {
+        checkBackpressureSupport(ParallelFlowable.class);
     }
 }

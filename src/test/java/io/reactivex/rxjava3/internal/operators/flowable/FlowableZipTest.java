@@ -1297,7 +1297,7 @@ public class FlowableZipTest extends RxJavaTest {
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
                     } else {
-                        assertEquals("f is null", ex.getCause().getMessage());
+                        assertEquals("zipper is null", ex.getCause().getMessage());
                     }
                 }
             }

@@ -927,7 +927,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> merge(Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> merge(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
         return merge(Flowable.fromIterable(sources));
     }
 
@@ -1615,6 +1615,7 @@ public abstract class Single<T> implements SingleSource<T> {
      ) {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2);
     }
 
@@ -1655,6 +1656,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source1, "source1 is null");
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3);
     }
 
@@ -1699,6 +1701,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source2, "source2 is null");
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4);
     }
 
@@ -1748,6 +1751,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source3, "source3 is null");
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5);
     }
 
@@ -1801,6 +1805,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source4, "source4 is null");
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6);
     }
 
@@ -1859,6 +1864,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source5, "source5 is null");
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7);
     }
 
@@ -1921,6 +1927,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source6, "source6 is null");
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(source8, "source8 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
@@ -1988,6 +1995,7 @@ public abstract class Single<T> implements SingleSource<T> {
         Objects.requireNonNull(source7, "source7 is null");
         Objects.requireNonNull(source8, "source8 is null");
         Objects.requireNonNull(source9, "source9 is null");
+        Objects.requireNonNull(zipper, "zipper is null");
         return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 

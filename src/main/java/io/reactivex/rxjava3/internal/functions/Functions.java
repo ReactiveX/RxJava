@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException;
 import io.reactivex.rxjava3.functions.*;
@@ -33,47 +34,47 @@ public final class Functions {
         throw new IllegalStateException("No instances!");
     }
 
-    public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
-        Objects.requireNonNull(f, "f is null");
+    @NonNull
+    public static <T1, T2, R> Function<Object[], R> toFunction(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
         return new Array2Func<T1, T2, R>(f);
     }
 
-    public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
-        Objects.requireNonNull(f, "f is null");
+    @NonNull
+    public static <T1, T2, T3, R> Function<Object[], R> toFunction(@NonNull Function3<T1, T2, T3, R> f) {
         return new Array3Func<T1, T2, T3, R>(f);
     }
 
-    public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
-        Objects.requireNonNull(f, "f is null");
+    @NonNull
+    public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(@NonNull Function4<T1, T2, T3, T4, R> f) {
         return new Array4Func<T1, T2, T3, T4, R>(f);
     }
 
-    public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
-        Objects.requireNonNull(f, "f is null");
+    @NonNull
+    public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(@NonNull Function5<T1, T2, T3, T4, T5, R> f) {
         return new Array5Func<T1, T2, T3, T4, T5, R>(f);
     }
 
+    @NonNull
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
-            final Function6<T1, T2, T3, T4, T5, T6, R> f) {
-        Objects.requireNonNull(f, "f is null");
+            @NonNull Function6<T1, T2, T3, T4, T5, T6, R> f) {
         return new Array6Func<T1, T2, T3, T4, T5, T6, R>(f);
     }
 
+    @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
-            final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-        Objects.requireNonNull(f, "f is null");
+            @NonNull Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         return new Array7Func<T1, T2, T3, T4, T5, T6, T7, R>(f);
     }
 
+    @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
-            final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
-        Objects.requireNonNull(f, "f is null");
+            @NonNull Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         return new Array8Func<T1, T2, T3, T4, T5, T6, T7, T8, R>(f);
     }
 
+    @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
-            final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
-        Objects.requireNonNull(f, "f is null");
+            @NonNull Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
         return new Array9Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(f);
     }
 
@@ -86,6 +87,7 @@ public final class Functions {
      * @return the identity function
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Function<T, T> identity() {
         return (Function<T, T>)IDENTITY;
     }
@@ -125,16 +127,19 @@ public final class Functions {
     static final Comparator<Object> NATURAL_COMPARATOR = new NaturalObjectComparator();
 
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Predicate<T> alwaysTrue() {
         return (Predicate<T>)ALWAYS_TRUE;
     }
 
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Predicate<T> alwaysFalse() {
         return (Predicate<T>)ALWAYS_FALSE;
     }
 
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Supplier<T> nullSupplier() {
         return (Supplier<T>)NULL_SUPPLIER;
     }
@@ -145,6 +150,7 @@ public final class Functions {
      * @return a natural order comparator which casts the parameters to Comparable
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Comparator<T> naturalOrder() {
         return (Comparator<T>)NATURAL_COMPARATOR;
     }
@@ -167,7 +173,8 @@ public final class Functions {
      * @param future the future to call get() on, not null
      * @return the new Action instance
      */
-    public static Action futureAction(Future<?> future) {
+    @NonNull
+    public static Action futureAction(@NonNull Future<?> future) {
         return new FutureAction(future);
     }
 
@@ -200,7 +207,8 @@ public final class Functions {
      * @param value the value to return
      * @return the new Callable instance
      */
-    public static <T> Callable<T> justCallable(T value) {
+    @NonNull
+    public static <T> Callable<T> justCallable(@NonNull T value) {
         return new JustValue<Object, T>(value);
     }
 
@@ -210,7 +218,8 @@ public final class Functions {
      * @param value the value to return
      * @return the new Callable instance
      */
-    public static <T> Supplier<T> justSupplier(T value) {
+    @NonNull
+    public static <T> Supplier<T> justSupplier(@NonNull T value) {
         return new JustValue<Object, T>(value);
     }
 
@@ -221,7 +230,8 @@ public final class Functions {
      * @param value the value to return
      * @return the new Function instance
      */
-    public static <T, U> Function<T, U> justFunction(U value) {
+    @NonNull
+    public static <T, U> Function<T, U> justFunction(@NonNull U value) {
         return new JustValue<T, U>(value);
     }
 
@@ -245,7 +255,8 @@ public final class Functions {
      * @param target the target class
      * @return the new Function instance
      */
-    public static <T, U> Function<T, U> castFunction(Class<U> target) {
+    @NonNull
+    public static <T, U> Function<T, U> castFunction(@NonNull Class<U> target) {
         return new CastToClass<T, U>(target);
     }
 

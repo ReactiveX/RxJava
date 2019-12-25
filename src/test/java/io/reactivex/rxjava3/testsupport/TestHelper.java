@@ -3257,10 +3257,23 @@ public enum TestHelper {
      * @throws Exception on error
      */
     public static File findSource(String baseClassName) throws Exception {
+        return findSource(baseClassName, "io.reactivex.rxjava3.core");
+    }
+
+    /**
+     * Given a base reactive type name, try to find its source in the current runtime
+     * path and return a file to it or null if not found.
+     * @param baseClassName the class name such as {@code Maybe}
+     * @param parentPackage the parent package such as {@code io.reactivex.rxjava3.core}
+     * @return the File pointing to the source
+     * @throws Exception on error
+     */
+    public static File findSource(String baseClassName, String parentPackage) throws Exception {
         URL u = TestHelper.class.getResource(TestHelper.class.getSimpleName() + ".class");
 
         String path = new File(u.toURI()).toString().replace('\\', '/');
 
+        parentPackage = parentPackage.replace(".", "/");
 //        System.out.println(path);
 
         int i = path.toLowerCase().indexOf("/rxjava");
@@ -3272,16 +3285,18 @@ public enum TestHelper {
         // find end of any potential postfix to /RxJava
         int j = path.indexOf("/", i + 6);
 
-        String p = path.substring(0, j + 1) + "src/main/java/io/reactivex/rxjava3/core/" + baseClassName + ".java";
+        String basePackage = path.substring(0, j + 1) + "src/main/java";
+
+        String p = basePackage + "/" + parentPackage + "/" + baseClassName + ".java";
 
         File f = new File(p);
 
-        if (!f.canRead()) {
-            System.out.println("Can't read " + p);
-            return null;
+        if (f.canRead()) {
+            return f;
         }
 
-        return f;
+        System.out.println("Can't read " + p);
+        return null;
     }
 
     /**

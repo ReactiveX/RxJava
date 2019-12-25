@@ -893,7 +893,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
         .test();
 
@@ -929,7 +928,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
         .test();
 

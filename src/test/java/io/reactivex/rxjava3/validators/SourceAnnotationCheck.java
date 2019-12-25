@@ -21,7 +21,13 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
+import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
+import io.reactivex.rxjava3.processors.*;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 /**
@@ -46,8 +52,7 @@ public class SourceAnnotationCheck {
         processFile(Maybe.class);
     }
 
-    // TODO later
-    // @Test
+    @Test
     public void checkObservable() throws Exception {
         processFile(Observable.class);
     }
@@ -57,15 +62,119 @@ public class SourceAnnotationCheck {
         processFile(Flowable.class);
     }
 
-    // TODO later
-    // @Test
+    @Test
     public void checkParallelFlowable() throws Exception {
         processFile(ParallelFlowable.class);
     }
 
+    @Test
+    public void checkConnectableObservable() throws Exception {
+        processFile(ConnectableObservable.class);
+    }
+
+    @Test
+    public void checkConnectableFlowable() throws Exception {
+        processFile(ConnectableFlowable.class);
+    }
+
+    @Test
+    public void checkSubject() throws Exception {
+        processFile(Subject.class);
+    }
+
+    @Test
+    public void checkFlowableProcessor() throws Exception {
+        processFile(FlowableProcessor.class);
+    }
+
+    @Test
+    public void checkDisposable() throws Exception {
+        processFile(Disposable.class);
+    }
+
+    @Test
+    public void checkScheduler() throws Exception {
+        processFile(Scheduler.class);
+    }
+
+    @Test
+    public void checkSchedulers() throws Exception {
+        processFile(Schedulers.class);
+    }
+
+    @Test
+    public void checkAsyncSubject() throws Exception {
+        processFile(AsyncSubject.class);
+    }
+
+    @Test
+    public void checkBehaviorSubject() throws Exception {
+        processFile(BehaviorSubject.class);
+    }
+
+    @Test
+    public void checkPublishSubject() throws Exception {
+        processFile(PublishSubject.class);
+    }
+
+    @Test
+    public void checkReplaySubject() throws Exception {
+        processFile(ReplaySubject.class);
+    }
+
+    @Test
+    public void checkUnicastSubject() throws Exception {
+        processFile(UnicastSubject.class);
+    }
+
+    @Test
+    public void checkSingleSubject() throws Exception {
+        processFile(SingleSubject.class);
+    }
+
+    @Test
+    public void checkMaybeSubject() throws Exception {
+        processFile(MaybeSubject.class);
+    }
+
+    @Test
+    public void checkCompletableSubject() throws Exception {
+        processFile(CompletableSubject.class);
+    }
+
+    @Test
+    public void checkAsyncProcessor() throws Exception {
+        processFile(AsyncProcessor.class);
+    }
+
+    @Test
+    public void checkBehaviorProcessor() throws Exception {
+        processFile(BehaviorProcessor.class);
+    }
+
+    @Test
+    public void checkPublishProcessor() throws Exception {
+        processFile(PublishProcessor.class);
+    }
+
+    @Test
+    public void checkReplayProcessor() throws Exception {
+        processFile(ReplayProcessor.class);
+    }
+
+    @Test
+    public void checkUnicastProcessor() throws Exception {
+        processFile(UnicastProcessor.class);
+    }
+
+    @Test
+    public void checkMulticastProcessor() throws Exception {
+        processFile(MulticastProcessor.class);
+    }
+
     static void processFile(Class<?> clazz) throws Exception {
         String baseClassName = clazz.getSimpleName();
-        File f = TestHelper.findSource(baseClassName);
+        File f = TestHelper.findSource(baseClassName, clazz.getPackage().getName());
         if (f == null) {
             return;
         }
@@ -79,7 +188,14 @@ public class SourceAnnotationCheck {
         for (int j = 0; j < lines.size(); j++) {
             String line = lines.get(j).trim();
 
-            if (line.startsWith("public static") || line.startsWith("public final")) {
+            if (line.contains("class")) {
+                continue;
+            }
+            if (line.startsWith("public static")
+                    || line.startsWith("public final")
+                    || line.startsWith("protected final")
+                    || line.startsWith("protected abstract")
+                    || line.startsWith("public abstract")) {
                 int methodArgStart = line.indexOf("(");
 
                 int isBoolean = line.indexOf(" boolean ");
@@ -168,10 +284,12 @@ public class SourceAnnotationCheck {
                 String strippedArgumentsStr = strippedArguments.toString();
                 String[] args = strippedArgumentsStr.split("\\s*,\\s*");
 
-                for (String typeName : CLASS_NAMES) {
-                    String typeNameSpaced = typeName + " ";
-                    for (int k = 0; k < args.length; k++) {
-                        String typeDef = args[k];
+                for (int k = 0; k < args.length; k++) {
+                    String typeDef = args[k];
+
+                    for (String typeName : CLASS_NAMES) {
+                        String typeNameSpaced = typeName + " ";
+
                         if (typeDef.contains(typeNameSpaced)
                                 && !typeDef.contains("@NonNull")
                                 && !typeDef.contains("@Nullable")) {
@@ -181,8 +299,9 @@ public class SourceAnnotationCheck {
                                 errorCount++;
                                 errors.append("L")
                                 .append(j)
-                                .append(" - argument ").append(k + 1).append(" - ").append(typeDef)
-                                .append(" : Missing argument type nullability annotation |\r\n    ")
+                                .append(" - argument ").append(k + 1)
+                                .append(" : Missing argument type nullability annotation\r\n    ")
+                                .append(typeDef).append("\r\n    ")
                                 .append(strippedArgumentsStr)
                                 .append("\r\n")
                                 .append(" at ")
@@ -196,13 +315,55 @@ public class SourceAnnotationCheck {
                             }
                         }
                     }
+
+                    if (typeDef.contains("final ")) {
+                        errorCount++;
+                        errors.append("L")
+                        .append(j)
+                        .append(" - argument ").append(k + 1)
+                        .append(" : unnecessary final on argument\r\n    ")
+                        .append(typeDef).append("\r\n    ")
+                        .append(strippedArgumentsStr)
+                        .append("\r\n")
+                        .append(" at ")
+                        .append(fullClassName)
+                        .append(".method(")
+                        .append(f.getName())
+                        .append(":")
+                        .append(j + 1)
+                        .append(")\r\n")
+                        ;
+                    }
+                    if (typeDef.contains("@NonNull int")
+                            || typeDef.contains("@NonNull long")
+                            || typeDef.contains("@Nullable int")
+                            || typeDef.contains("@Nullable long")
+                        ) {
+                        errorCount++;
+                        errors.append("L")
+                        .append(j)
+                        .append(" - argument ").append(k + 1)
+                        .append(" : unnecessary nullability annotation\r\n    ")
+                        .append(typeDef).append("\r\n    ")
+                        .append(strippedArgumentsStr)
+                        .append("\r\n")
+                        .append(" at ")
+                        .append(fullClassName)
+                        .append(".method(")
+                        .append(f.getName())
+                        .append(":")
+                        .append(j + 1)
+                        .append(")\r\n")
+                        ;
+                    }
+
                 }
 
                 if (strippedArgumentsStr.contains("...") && !hasSafeVarargsAnnotation) {
                     errorCount++;
                     errors.append("L")
                     .append(j)
-                    .append(" : Missing @SafeVarargs annotation |\r\n    ")
+                    .append(" : Missing @SafeVarargs annotation\r\n    ")
                     .append(strippedArgumentsStr)
                     .append("\r\n")
                     .append(" at ")
@@ -218,7 +379,7 @@ public class SourceAnnotationCheck {
         }
 
         if (errorCount != 0) {
-            errors.insert(0, errorCount + " missing annotations\r\n");
+            errors.insert(0, errorCount + " problems\r\n");
             errors.setLength(errors.length() - 2);
             throw new AssertionError(errors.toString());
         }
@@ -248,6 +409,8 @@ public class SourceAnnotationCheck {
             "Action", "Runnable", "Consumer", "BiConsumer", "Supplier", "Callable", "Void",
             "Throwable", "Optional", "CompletionStage", "BooleanSupplier", "LongConsumer",
             "Predicate", "BiPredicate", "Object",
+
+            "Iterable", "Stream", "Iterator",
 
             "BackpressureOverflowStrategy", "BackpressureStrategy",
             "Subject", "Processor", "FlowableProcessor",

@@ -74,7 +74,7 @@ public class ObservableRetryTest extends RxJavaTest {
                     .map(new Function<Throwable, Tuple>() {
                         @Override
                         public Tuple apply(Throwable n) {
-                            return new Tuple(new Long(1), n);
+                            return new Tuple(1L, n);
                         }})
                     .scan(new BiFunction<Tuple, Tuple, Tuple>() {
                         @Override
