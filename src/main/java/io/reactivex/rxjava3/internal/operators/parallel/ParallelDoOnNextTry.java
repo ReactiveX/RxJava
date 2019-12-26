@@ -59,9 +59,9 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super T> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelDoOnNextConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, onNext, errorHandler);
+                parents[i] = new ParallelDoOnNextConditionalSubscriber<>((ConditionalSubscriber<? super T>)a, onNext, errorHandler);
             } else {
-                parents[i] = new ParallelDoOnNextSubscriber<T>(a, onNext, errorHandler);
+                parents[i] = new ParallelDoOnNextSubscriber<>(a, onNext, errorHandler);
             }
         }
 
@@ -134,7 +134,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();
@@ -245,7 +245,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();

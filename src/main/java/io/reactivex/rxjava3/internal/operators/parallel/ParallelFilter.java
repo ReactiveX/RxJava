@@ -51,9 +51,9 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super T> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelFilterConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, predicate);
+                parents[i] = new ParallelFilterConditionalSubscriber<>((ConditionalSubscriber<? super T>)a, predicate);
             } else {
-                parents[i] = new ParallelFilterSubscriber<T>(a, predicate);
+                parents[i] = new ParallelFilterSubscriber<>(a, predicate);
             }
         }
 

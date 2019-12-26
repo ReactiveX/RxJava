@@ -55,7 +55,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             return;
         }
 
-        source.subscribe(new ParallelDispatcher<T>(subscribers, prefetch));
+        source.subscribe(new ParallelDispatcher<>(subscribers, prefetch));
     }
 
     static final class ParallelDispatcher<T>
@@ -137,7 +137,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 setupSubscribers();
 

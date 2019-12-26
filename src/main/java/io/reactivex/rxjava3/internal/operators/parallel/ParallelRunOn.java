@@ -75,12 +75,12 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
 
         Subscriber<? super T> a = subscribers[i];
 
-        SpscArrayQueue<T> q = new SpscArrayQueue<T>(prefetch);
+        SpscArrayQueue<T> q = new SpscArrayQueue<>(prefetch);
 
         if (a instanceof ConditionalSubscriber) {
-            parents[i] = new RunOnConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, prefetch, q, worker);
+            parents[i] = new RunOnConditionalSubscriber<>((ConditionalSubscriber<? super T>)a, prefetch, q, worker);
         } else {
-            parents[i] = new RunOnSubscriber<T>(a, prefetch, q, worker);
+            parents[i] = new RunOnSubscriber<>(a, prefetch, q, worker);
         }
     }
 

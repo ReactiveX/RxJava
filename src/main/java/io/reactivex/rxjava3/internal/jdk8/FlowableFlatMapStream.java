@@ -71,8 +71,21 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                 EmptySubscription.complete(s);
             }
         } else {
-            source.subscribe(new FlatMapStreamSubscriber<>(s, mapper, prefetch));
+            source.subscribe(subscribe(s, mapper, prefetch));
         }
+    }
+
+    /**
+     * Create a {@link Subscriber} with the given parameters.
+     * @param <T> the upstream value type
+     * @param <R> the {@link Stream} and output value type
+     * @param downstream the downstream {@code Subscriber} to wrap
+     * @param mapper the mapper function
+     * @param prefetch the number of items to prefetch
+     * @return the new {@code Subscriber}
+     */
+    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> downstream, Function<? super T, ? extends Stream<? extends R>> mapper, int prefetch) {
+        return new FlatMapStreamSubscriber<>(downstream, mapper, prefetch);
     }
 
     static final class FlatMapStreamSubscriber<T, R> extends AtomicInteger

@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.parallel;
+package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.*;
 
@@ -21,10 +21,11 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.*;
 
-public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
+public class ParallelMapTryOptionalTest extends RxJavaTest implements Consumer<Object> {
 
     volatile int calls;
 
@@ -38,7 +39,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {
             Flowable.just(1)
             .parallel(1)
-            .map(Functions.identity(), e)
+            .mapOptional(Optional::of, e)
             .sequential()
             .test()
             .assertResult(1);
@@ -50,7 +51,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {
             Flowable.<Integer>error(new TestException())
             .parallel(1)
-            .map(Functions.identity(), e)
+            .mapOptional(Optional::of, e)
             .sequential()
             .test()
             .assertFailure(TestException.class);
@@ -62,7 +63,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {
             Flowable.just(1)
             .parallel(1)
-            .map(Functions.identity(), e)
+            .mapOptional(Optional::of, e)
             .filter(Functions.alwaysTrue())
             .sequential()
             .test()
@@ -75,7 +76,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {
             Flowable.<Integer>error(new TestException())
             .parallel(1)
-            .map(Functions.identity(), e)
+            .mapOptional(Optional::of, e)
             .filter(Functions.alwaysTrue())
             .sequential()
             .test()
@@ -87,12 +88,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.ERROR)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.ERROR)
         .sequential()
         .test()
         .assertFailure(ArithmeticException.class);
@@ -102,12 +98,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.STOP)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.STOP)
         .sequential()
         .test()
         .assertResult();
@@ -117,14 +108,14 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+        .mapOptional(new Function<Integer, Optional<? extends Integer>>() {
             int count;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Optional<? extends Integer> apply(Integer v) throws Exception {
                 if (count++ == 1) {
-                    return -1;
+                    return Optional.of(-1);
                 }
-                return 1 / v;
+                return Optional.of(1 / v);
             }
         }, ParallelFailureHandling.RETRY)
         .sequential()
@@ -136,12 +127,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
             public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
                 return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
@@ -156,12 +142,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.SKIP)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.SKIP)
         .sequential()
         .test()
         .assertResult(1);
@@ -171,12 +152,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
             public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
                 throw new TestException();
@@ -190,19 +166,11 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     }
 
     @Test
-    public void mapWrongParallelism() {
-        TestHelper.checkInvalidParallelSubscribers(
-            Flowable.just(1).parallel(1)
-            .map(Functions.identity(), ParallelFailureHandling.ERROR)
-        );
-    }
-
-    @Test
     public void mapInvalidSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.identity(), ParallelFailureHandling.ERROR)
+            .mapOptional(Optional::of, ParallelFailureHandling.ERROR)
             .sequential()
             .test();
 
@@ -216,12 +184,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.ERROR)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.ERROR)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -232,12 +195,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.STOP)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.STOP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -248,14 +206,14 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+        .mapOptional(new Function<Integer, Optional<? extends Integer>>() {
             int count;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Optional<? extends Integer> apply(Integer v) throws Exception {
                 if (count++ == 1) {
-                    return -1;
+                    return Optional.of(-1);
                 }
-                return 1 / v;
+                return Optional.of(1 / v);
             }
         }, ParallelFailureHandling.RETRY)
         .filter(Functions.alwaysTrue())
@@ -268,12 +226,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
             public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
                 return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
@@ -289,12 +242,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, ParallelFailureHandling.SKIP)
+        .mapOptional(v -> Optional.of(1 / v), ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -305,12 +253,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer v) throws Exception {
-                return 1 / v;
-            }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        .mapOptional(v -> Optional.of(1 / v), new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
             public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
                 throw new TestException();
@@ -328,7 +271,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     public void mapWrongParallelismConditional() {
         TestHelper.checkInvalidParallelSubscribers(
             Flowable.just(1).parallel(1)
-            .map(Functions.identity(), ParallelFailureHandling.ERROR)
+            .mapOptional(Optional::of, ParallelFailureHandling.ERROR)
             .filter(Functions.alwaysTrue())
         );
     }
@@ -338,7 +281,7 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.identity(), ParallelFailureHandling.ERROR)
+            .mapOptional(Optional::of, ParallelFailureHandling.ERROR)
             .filter(Functions.alwaysTrue())
             .sequential()
             .test();
@@ -355,21 +298,80 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     }
 
     @Test
+    public void allNone() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> Optional.empty(), ParallelFailureHandling.SKIP)
+        .sequential()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void allNoneConditional() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> Optional.empty(), ParallelFailureHandling.SKIP)
+        .filter(v -> true)
+        .sequential()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void mixed() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty(), ParallelFailureHandling.SKIP)
+        .sequential()
+        .test()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void mixedConditional() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty(), ParallelFailureHandling.SKIP)
+        .filter(v -> true)
+        .sequential()
+        .test()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void mixedConditional2() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty(), ParallelFailureHandling.SKIP)
+        .filter(v -> v % 4 == 0)
+        .sequential()
+        .test()
+        .assertValueCount(250)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
     public void invalidSubscriberCount() {
         TestHelper.checkInvalidParallelSubscribers(
                 Flowable.range(1, 10).parallel()
-                .map(v -> v, ParallelFailureHandling.SKIP)
+                .mapOptional(Optional::of, ParallelFailureHandling.SKIP)
             );
     }
 
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeParallel(
-                p -> p.map(v -> v, ParallelFailureHandling.ERROR)
+                p -> p.mapOptional(Optional::of, ParallelFailureHandling.ERROR)
             );
 
         TestHelper.checkDoubleOnSubscribeParallel(
-                p -> p.map(v -> v, ParallelFailureHandling.ERROR)
+                p -> p.mapOptional(Optional::of, ParallelFailureHandling.ERROR)
                 .filter(v -> true)
             );
     }

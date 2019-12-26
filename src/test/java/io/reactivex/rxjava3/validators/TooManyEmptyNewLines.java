@@ -112,7 +112,14 @@ public class TooManyEmptyNewLines {
                                         fail
                                         .append(fname)
                                         .append("#L").append(i + 1)
-                                        .append("\n");
+                                        .append("\n")
+                                        .append(" at ")
+                                        .append(fname.replace(".java", ""))
+                                        .append(".method(")
+                                        .append(fname)
+                                        .append(":").append(i + 1)
+                                        .append(")\n")
+                                        ;
                                         total++;
                                         i += c;
                                     }
@@ -124,9 +131,7 @@ public class TooManyEmptyNewLines {
             }
         }
         if (total != 0) {
-            fail.append("Found ")
-            .append(total)
-            .append(" instances");
+            fail.insert(0, "Found " + total + " instances\n");
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }

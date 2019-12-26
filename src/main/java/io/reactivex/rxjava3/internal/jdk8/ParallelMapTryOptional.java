@@ -11,7 +11,9 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.parallel;
+package io.reactivex.rxjava3.internal.jdk8;
+
+import java.util.*;
 
 import org.reactivestreams.*;
 
@@ -22,25 +24,24 @@ import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
-import java.util.Objects;
-
 /**
  * Maps each 'rail' of the source ParallelFlowable with a mapper function
  * and handle any failure based on a handler function.
- * <p>History: 2.0.8 - experimental
  * @param <T> the input value type
  * @param <R> the output value type
- * @since 2.2
+ * @since 3.0.0
  */
-public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
+public final class ParallelMapTryOptional<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<T> source;
 
-    final Function<? super T, ? extends R> mapper;
+    final Function<? super T, Optional<? extends R>> mapper;
 
     final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-    public ParallelMapTry(ParallelFlowable<T> source, Function<? super T, ? extends R> mapper,
+    public ParallelMapTryOptional(
+            ParallelFlowable<T> source,
+            Function<? super T, Optional<? extends R>> mapper,
             BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         this.source = source;
         this.mapper = mapper;
@@ -60,9 +61,9 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super R> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelMapTryConditionalSubscriber<T, R>((ConditionalSubscriber<? super R>)a, mapper, errorHandler);
+                parents[i] = new ParallelMapTryConditionalSubscriber<>((ConditionalSubscriber<? super R>)a, mapper, errorHandler);
             } else {
-                parents[i] = new ParallelMapTrySubscriber<T, R>(a, mapper, errorHandler);
+                parents[i] = new ParallelMapTrySubscriber<>(a, mapper, errorHandler);
             }
         }
 
@@ -78,7 +79,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         final Subscriber<? super R> downstream;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function<? super T, Optional<? extends R>> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
@@ -86,7 +87,8 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         boolean done;
 
-        ParallelMapTrySubscriber(Subscriber<? super R> actual, Function<? super T, ? extends R> mapper,
+        ParallelMapTrySubscriber(Subscriber<? super R> actual,
+                Function<? super T, Optional<? extends R>> mapper,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.downstream = actual;
             this.mapper = mapper;
@@ -127,10 +129,10 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
             long retries = 0;
 
             for (;;) {
-                R v;
+                Optional<? extends R> v;
 
                 try {
-                    v = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                    v = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Optional");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 
@@ -161,8 +163,11 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                     }
                 }
 
-                downstream.onNext(v);
-                return true;
+                if (v.isPresent()) {
+                    downstream.onNext(v.get());
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -190,7 +195,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         final ConditionalSubscriber<? super R> downstream;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function<? super T, Optional<? extends R>> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
@@ -199,7 +204,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
         boolean done;
 
         ParallelMapTryConditionalSubscriber(ConditionalSubscriber<? super R> actual,
-                Function<? super T, ? extends R> mapper,
+                Function<? super T, Optional<? extends R>> mapper,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.downstream = actual;
             this.mapper = mapper;
@@ -240,10 +245,10 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
             long retries = 0;
 
             for (;;) {
-                R v;
+                Optional<? extends R> v;
 
                 try {
-                    v = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                    v = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Optional");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 
@@ -274,7 +279,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                     }
                 }
 
-                return downstream.tryOnNext(v);
+                return v.isPresent() && downstream.tryOnNext(v.get());
             }
         }
 
