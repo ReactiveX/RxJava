@@ -18944,9 +18944,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the element type of the optional value
      * @param optional the optional value to convert into a {@code Flowable}
      * @return the new Flowable instance
+     * @since 3.0.0
      * @see #just(Object)
      * @see #empty()
-     * @since 3.0.0
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -19409,6 +19409,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
      * @return the new Flowable instance
+     * @since 3.0.0
      * @see #concatMap(Function)
      * @see #concatMapIterable(Function)
      * @see #concatMapStream(Function, int)
@@ -19461,6 +19462,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted to the downstream
      * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
      * @return the new Flowable instance
+     * @since 3.0.0
      * @see #concatMap(Function, int)
      * @see #concatMapIterable(Function, int)
      * @see #flatMapStream(Function, int)
@@ -19515,6 +19517,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
      * @return the new Flowable instance
+     * @since 3.0.0
      * @see #flatMap(Function)
      * @see #flatMapIterable(Function)
      * @see #flatMapStream(Function, int)
@@ -19567,6 +19570,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted to the downstream
      * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
      * @return the new Flowable instance
+     * @since 3.0.0
      * @see #flatMap(Function, int)
      * @see #flatMapIterable(Function, int)
      * @see #concatMapStream(Function, int)

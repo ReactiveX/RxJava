@@ -13,8 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -80,6 +79,19 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         source.subscribe(new FlattenIterableSubscriber<T, R>(s, mapper, prefetch));
     }
 
+    /**
+     * Create a {@link Subscriber} with the given parameters.
+     * @param <T> the upstream value type
+     * @param <R> the {@link Iterable} and output value type
+     * @param downstream the downstream {@code Subscriber} to wrap
+     * @param mapper the mapper function
+     * @param prefetch the number of items to prefetch
+     * @return the new {@code Subscriber}
+     */
+    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> downstream, Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
+        return new FlattenIterableSubscriber<>(downstream, mapper, prefetch);
+    }
+
     static final class FlattenIterableSubscriber<T, R>
     extends BasicIntQueueSubscription<R>
     implements FlowableSubscriber<T> {
@@ -118,7 +130,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             this.mapper = mapper;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.error = new AtomicReference<Throwable>();
+            this.error = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 
@@ -153,7 +165,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
 

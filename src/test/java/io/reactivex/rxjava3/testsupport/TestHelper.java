@@ -1425,6 +1425,71 @@ public enum TestHelper {
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
      * @param <T> the input value type
+     * @param transform the transform to drive an operator
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> void checkDoubleOnSubscribeParallel(Function<ParallelFlowable<T>, ? extends ParallelFlowable<?>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null, null, null };
+            final CountDownLatch cdl = new CountDownLatch(2);
+
+            ParallelFlowable<T> source = new ParallelFlowable<T>() {
+                @Override
+                public void subscribe(Subscriber<? super T>[] subscribers) {
+                    for (int i = 0; i < subscribers.length; i++) {
+                        try {
+                            BooleanSubscription bs1 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs1);
+
+                            BooleanSubscription bs2 = new BooleanSubscription();
+
+                            subscribers[i].onSubscribe(bs2);
+
+                            b[i * 2 + 0] = bs1.isCancelled();
+                            b[i * 2 + 1] = bs2.isCancelled();
+                        } finally {
+                            cdl.countDown();
+                        }
+                    }
+                }
+
+                @Override
+                public int parallelism() {
+                    return 2;
+                }
+            };
+
+            ParallelFlowable<?> out = transform.apply(source);
+
+            out.subscribe(new Subscriber[] { NoOpConsumer.INSTANCE, NoOpConsumer.INSTANCE });
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("Rail 1 First disposed?", false, b[0]);
+            assertEquals("Rail 1 Second not disposed?", true, b[1]);
+
+            assertEquals("Rail 2 First disposed?", false, b[2]);
+            assertEquals("Rail 2 Second not disposed?", true, b[3]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+            assertError(errors, 1, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */

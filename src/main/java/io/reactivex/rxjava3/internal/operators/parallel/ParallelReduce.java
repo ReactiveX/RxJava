@@ -66,7 +66,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
                 return;
             }
 
-            parents[i] = new ParallelReduceSubscriber<T, R>(subscribers[i], initialValue, reducer);
+            parents[i] = new ParallelReduceSubscriber<>(subscribers[i], initialValue, reducer);
         }
 
         source.subscribe(parents);

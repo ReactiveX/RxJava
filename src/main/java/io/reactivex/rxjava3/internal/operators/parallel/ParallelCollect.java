@@ -67,7 +67,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
                 return;
             }
 
-            parents[i] = new ParallelCollectSubscriber<T, C>(subscribers[i], initialValue, collector);
+            parents[i] = new ParallelCollectSubscriber<>(subscribers[i], initialValue, collector);
         }
 
         source.subscribe(parents);

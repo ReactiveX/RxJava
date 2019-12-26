@@ -57,9 +57,9 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super T> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelFilterConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, predicate, errorHandler);
+                parents[i] = new ParallelFilterConditionalSubscriber<>((ConditionalSubscriber<? super T>)a, predicate, errorHandler);
             } else {
-                parents[i] = new ParallelFilterSubscriber<T>(a, predicate, errorHandler);
+                parents[i] = new ParallelFilterSubscriber<>(a, predicate, errorHandler);
             }
         }
 
@@ -137,7 +137,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
                         ParallelFailureHandling h;
 
                         try {
-                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancel();
@@ -226,7 +226,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
                         ParallelFailureHandling h;
 
                         try {
-                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancel();

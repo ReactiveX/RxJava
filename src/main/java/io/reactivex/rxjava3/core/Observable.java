@@ -15937,9 +15937,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the element type of the optional value
      * @param optional the optional value to convert into an {@code Observable}
      * @return the new Observable instance
+     * @since 3.0.0
      * @see #just(Object)
      * @see #empty()
-     * @since 3.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -16355,6 +16355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
      * @return the new Observable instance
+     * @since 3.0.0
      * @see #concatMap(Function)
      * @see #concatMapIterable(Function)
      * @see #flatMapStream(Function)
@@ -16401,6 +16402,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
      * @return the new Observable instance
+     * @since 3.0.0
      * @see #flatMap(Function)
      * @see #flatMapIterable(Function)
      */

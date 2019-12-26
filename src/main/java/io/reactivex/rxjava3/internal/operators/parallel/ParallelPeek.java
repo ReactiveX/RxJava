@@ -75,7 +75,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
         Subscriber<? super T>[] parents = new Subscriber[n];
 
         for (int i = 0; i < n; i++) {
-            parents[i] = new ParallelPeekSubscriber<T>(subscribers[i], this);
+            parents[i] = new ParallelPeekSubscriber<>(subscribers[i], this);
         }
 
         source.subscribe(parents);

@@ -4870,9 +4870,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the element type of the optional value
      * @param optional the optional value to convert into a {@code Maybe}
      * @return the new Maybe instance
+     * @since 3.0.0
      * @see #just(Object)
      * @see #empty()
-     * @since 3.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

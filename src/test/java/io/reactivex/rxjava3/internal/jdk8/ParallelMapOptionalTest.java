@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.parallel;
+package io.reactivex.rxjava3.internal.jdk8;
 
 import static org.junit.Assert.*;
 
@@ -24,23 +24,18 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
+import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
-public class ParallelMapTest extends RxJavaTest {
-
-    @Test
-    public void subscriberCount() {
-        ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
-        .map(Functions.identity()));
-    }
+public class ParallelMapOptionalTest extends RxJavaTest {
 
     @Test
     public void doubleFilter() {
         Flowable.range(1, 10)
         .parallel()
-        .map(Functions.<Integer>identity())
+        .mapOptional(Optional::of)
         .filter(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -63,7 +58,7 @@ public class ParallelMapTest extends RxJavaTest {
         Flowable.range(1, 10)
         .parallel()
         .runOn(Schedulers.computation())
-        .map(Functions.<Integer>identity())
+        .mapOptional(Optional::of)
         .filter(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -87,7 +82,7 @@ public class ParallelMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.<Object>identity())
+            .mapOptional(Optional::of)
             .sequential()
             .test()
             .assertFailure(TestException.class);
@@ -106,7 +101,7 @@ public class ParallelMapTest extends RxJavaTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .map(Functions.<Object>identity())
+            .mapOptional(Optional::of)
             .filter(Functions.alwaysTrue())
             .sequential()
             .test()
@@ -125,7 +120,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void error() {
         Flowable.error(new TestException())
         .parallel()
-        .map(Functions.<Object>identity())
+        .mapOptional(Optional::of)
         .sequential()
         .test()
         .assertFailure(TestException.class);
@@ -135,12 +130,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void mapCrash() {
         Flowable.just(1)
         .parallel()
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        })
+        .mapOptional(v -> { throw new TestException(); })
         .sequential()
         .test()
         .assertFailure(TestException.class);
@@ -150,12 +140,7 @@ public class ParallelMapTest extends RxJavaTest {
     public void mapCrashConditional() {
         Flowable.just(1)
         .parallel()
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        })
+        .mapOptional(v -> { throw new TestException(); })
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -167,12 +152,7 @@ public class ParallelMapTest extends RxJavaTest {
         Flowable.just(1)
         .parallel()
         .runOn(Schedulers.computation())
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        })
+        .mapOptional(v -> { throw new TestException(); })
         .filter(Functions.alwaysTrue())
         .sequential()
         .test()
@@ -181,21 +161,67 @@ public class ParallelMapTest extends RxJavaTest {
     }
 
     @Test
+    public void allNone() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> Optional.empty())
+        .sequential()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void allNoneConditional() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> Optional.empty())
+        .filter(v -> true)
+        .sequential()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void mixed() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty())
+        .sequential()
+        .test()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void mixedConditional() {
+        Flowable.range(1, 1000)
+        .parallel()
+        .mapOptional(v -> v % 2 == 0 ? Optional.of(v) : Optional.empty())
+        .filter(v -> true)
+        .sequential()
+        .test()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
     public void invalidSubscriberCount() {
         TestHelper.checkInvalidParallelSubscribers(
                 Flowable.range(1, 10).parallel()
-                .map(v -> v)
+                .mapOptional(Optional::of)
             );
     }
 
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeParallel(
-                p -> p.map(v -> v)
+                p -> p.mapOptional(Optional::of)
             );
 
         TestHelper.checkDoubleOnSubscribeParallel(
-                p -> p.map(v -> v)
+                p -> p.mapOptional(Optional::of)
                 .filter(v -> true)
             );
     }

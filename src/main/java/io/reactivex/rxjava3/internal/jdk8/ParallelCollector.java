@@ -11,75 +11,85 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.parallel;
+package io.reactivex.rxjava3.internal.jdk8;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
-import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
- * Reduces all 'rails' into a single value which then gets reduced into a single
- * Publisher sequence.
+ * Reduces all 'rails' into a single via a Java 8 {@link Collector} callback set.
  *
  * @param <T> the value type
+ * @param <A> the accumulator type
+ * @param <R> the result type
+ * @since 3.0.0
  */
-public final class ParallelReduceFull<T> extends Flowable<T> {
+public final class ParallelCollector<T, A, R> extends Flowable<R> {
 
     final ParallelFlowable<? extends T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final Collector<T, A, R> collector;
 
-    public ParallelReduceFull(ParallelFlowable<? extends T> source, BiFunction<T, T, T> reducer) {
+    public ParallelCollector(ParallelFlowable<? extends T> source, Collector<T, A, R> collector) {
         this.source = source;
-        this.reducer = reducer;
+        this.collector = collector;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        ParallelReduceFullMainSubscriber<T> parent = new ParallelReduceFullMainSubscriber<>(s, source.parallelism(), reducer);
+    protected void subscribeActual(Subscriber<? super R> s) {
+        ParallelCollectorSubscriber<T, A, R> parent;
+        try {
+            parent = new ParallelCollectorSubscriber<>(s, source.parallelism(), collector);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            EmptySubscription.error(ex, s);
+            return;
+        }
         s.onSubscribe(parent);
 
         source.subscribe(parent.subscribers);
     }
 
-    static final class ParallelReduceFullMainSubscriber<T> extends DeferredScalarSubscription<T> {
+    static final class ParallelCollectorSubscriber<T, A, R> extends DeferredScalarSubscription<R> {
 
         private static final long serialVersionUID = -5370107872170712765L;
 
-        final ParallelReduceFullInnerSubscriber<T>[] subscribers;
+        final ParallelCollectorInnerSubscriber<T, A, R>[] subscribers;
 
-        final BiFunction<T, T, T> reducer;
-
-        final AtomicReference<SlotPair<T>> current = new AtomicReference<>();
+        final AtomicReference<SlotPair<A>> current = new AtomicReference<>();
 
         final AtomicInteger remaining = new AtomicInteger();
 
         final AtomicThrowable error = new AtomicThrowable();
 
-        ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, BiFunction<T, T, T> reducer) {
+        final Function<A, R> finisher;
+
+        ParallelCollectorSubscriber(Subscriber<? super R> subscriber, int n, Collector<T, A, R> collector) {
             super(subscriber);
+            this.finisher = collector.finisher();
             @SuppressWarnings("unchecked")
-            ParallelReduceFullInnerSubscriber<T>[] a = new ParallelReduceFullInnerSubscriber[n];
+            ParallelCollectorInnerSubscriber<T, A, R>[] a = new ParallelCollectorInnerSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new ParallelReduceFullInnerSubscriber<>(this, reducer);
+                a[i] = new ParallelCollectorInnerSubscriber<>(this, collector.supplier().get(), collector.accumulator(), collector.combiner());
             }
             this.subscribers = a;
-            this.reducer = reducer;
             remaining.lazySet(n);
         }
 
-        SlotPair<T> addValue(T value) {
+        SlotPair<A> addValue(A value) {
             for (;;) {
-                SlotPair<T> curr = current.get();
+                SlotPair<A> curr = current.get();
 
                 if (curr == null) {
                     curr = new SlotPair<>();
@@ -109,7 +119,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         @Override
         public void cancel() {
-            for (ParallelReduceFullInnerSubscriber<T> inner : subscribers) {
+            for (ParallelCollectorInnerSubscriber<T, A, R> inner : subscribers) {
                 inner.cancel();
             }
         }
@@ -125,57 +135,64 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
             }
         }
 
-        void innerComplete(T value) {
-            if (value != null) {
-                for (;;) {
-                    SlotPair<T> sp = addValue(value);
+        void innerComplete(A value, BinaryOperator<A> combiner) {
+            for (;;) {
+                SlotPair<A> sp = addValue(value);
 
-                    if (sp != null) {
+                if (sp != null) {
 
-                        try {
-                            value = Objects.requireNonNull(reducer.apply(sp.first, sp.second), "The reducer returned a null value");
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            innerError(ex);
-                            return;
-                        }
-
-                    } else {
-                        break;
+                    try {
+                        value = combiner.apply(sp.first, sp.second);
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        innerError(ex);
+                        return;
                     }
+
+                } else {
+                    break;
                 }
             }
 
             if (remaining.decrementAndGet() == 0) {
-                SlotPair<T> sp = current.get();
+                SlotPair<A> sp = current.get();
                 current.lazySet(null);
 
-                if (sp != null) {
-                    complete(sp.first);
-                } else {
-                    downstream.onComplete();
+                R result;
+                try {
+                    result = Objects.requireNonNull(finisher.apply(sp.first), "The finisher returned a null value");
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    innerError(ex);
+                    return;
                 }
+
+                complete(result);
             }
         }
     }
 
-    static final class ParallelReduceFullInnerSubscriber<T>
+    static final class ParallelCollectorInnerSubscriber<T, A, R>
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7954444275102466525L;
 
-        final ParallelReduceFullMainSubscriber<T> parent;
+        final ParallelCollectorSubscriber<T, A, R> parent;
 
-        final BiFunction<T, T, T> reducer;
+        final BiConsumer<A, T> accumulator;
 
-        T value;
+        final BinaryOperator<A> combiner;
+
+        A container;
 
         boolean done;
 
-        ParallelReduceFullInnerSubscriber(ParallelReduceFullMainSubscriber<T> parent, BiFunction<T, T, T> reducer) {
+        ParallelCollectorInnerSubscriber(ParallelCollectorSubscriber<T, A, R> parent, A container, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner) {
             this.parent = parent;
-            this.reducer = reducer;
+            this.accumulator = accumulator;
+            this.combiner = combiner;
+            this.container = container;
         }
 
         @Override
@@ -186,22 +203,13 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
         @Override
         public void onNext(T t) {
             if (!done) {
-                T v = value;
-
-                if (v == null) {
-                    value = t;
-                } else {
-
-                    try {
-                        v = Objects.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        get().cancel();
-                        onError(ex);
-                        return;
-                    }
-
-                    value = v;
+                try {
+                    accumulator.accept(container, t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    get().cancel();
+                    onError(ex);
+                    return;
                 }
             }
         }
@@ -212,6 +220,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                 RxJavaPlugins.onError(t);
                 return;
             }
+            container = null;
             done = true;
             parent.innerError(t);
         }
@@ -219,8 +228,10 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
         @Override
         public void onComplete() {
             if (!done) {
+                A v = container;
+                container = null;
                 done = true;
-                parent.innerComplete(value);
+                parent.innerComplete(v, combiner);
             }
         }
 
