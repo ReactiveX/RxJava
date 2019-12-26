@@ -258,7 +258,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (SubscriptionHelper.setOnce(upstream, s)) {
             if (s instanceof QueueSubscription) {
                 @SuppressWarnings("unchecked")
@@ -288,7 +288,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (once.get()) {
             return;
         }
@@ -306,26 +306,29 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     /**
      * Tries to offer an item into the internal queue and returns false
      * if the queue is full.
-     * @param t the item to offer, not null
+     * @param t the item to offer, not {@code null}
      * @return true if successful, false if the queue is full
+     * @throws NullPointerException if {@code t} is {@code null}
+     * @throws IllegalStateException if the processor is in fusion mode
      */
     @CheckReturnValue
-    public boolean offer(T t) {
+    public boolean offer(@NonNull T t) {
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
         if (once.get()) {
             return false;
         }
-        ExceptionHelper.nullCheck(t, "offer called with a null value.");
         if (fusionMode == QueueSubscription.NONE) {
             if (queue.offer(t)) {
                 drain();
                 return true;
             }
+            return false;
         }
-        return false;
+        throw new IllegalStateException("offer() should not be called in fusion mode!");
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (once.compareAndSet(false, true)) {
             error = t;
@@ -369,7 +372,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         MulticastSubscription<T> ms = new MulticastSubscription<>(s, this);
         s.onSubscribe(ms);
         if (add(ms)) {

@@ -234,11 +234,11 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      */
     BehaviorProcessor(T defaultValue) {
         this();
-        this.value.lazySet(Objects.requireNonNull(defaultValue, "defaultValue is null"));
+        this.value.lazySet(defaultValue);
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
         BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
         s.onSubscribe(bs);
         if (add(bs)) {
@@ -258,7 +258,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (terminalEvent.get() != null) {
             s.cancel();
             return;
@@ -267,7 +267,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (terminalEvent.get() != null) {
@@ -281,7 +281,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
@@ -316,14 +316,13 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
+     * @throws NullPointerException if {@code t} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
-    public boolean offer(T t) {
-        if (t == null) {
-            onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
-            return true;
-        }
+    public boolean offer(@NonNull T t) {
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
+
         BehaviorSubscription<T>[] array = subscribers.get();
 
         for (BehaviorSubscription<T> s : array) {
