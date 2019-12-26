@@ -5663,8 +5663,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
+     *  <dd>The operator requests {@link Flowable#bufferSize()} upfront, then 75% of this
+     *  amount when 75% is received.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
@@ -5676,14 +5676,57 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onNext
      *            the {@link Consumer} to invoke for each item emitted by the {@code Flowable}
      * @throws RuntimeException
-     *             if an error occurs
+     *             if an error occurs; {@link Error}s and {@link RuntimeException}s are rethrown
+     *             as they are, checked {@link Exception}s are wrapped into {@code RuntimeException}s
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
+     * @see #subscribe(Consumer)
+     * @see #blockingForEach(Consumer, int)
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingForEach(@NonNull Consumer<? super T> onNext) {
+        blockingForEach(onNext, bufferSize());
+    }
+
+    /**
+     * Consumes the upstream {@code Flowable} in a blocking fashion and invokes the given
+     * {@code Consumer} with each upstream item on the <em>current thread</em> until the
+     * upstream terminates.
+     * <p>
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <p>
+     * <em>Note:</em> the method will only return if the upstream terminates or the current
+     * thread is interrupted.
+     * <p>
+     * This method executes the {@code Consumer} on the current thread while
+     * {@link #subscribe(Consumer)} executes the consumer on the original caller thread of the
+     * sequence.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requests the given {@code prefetch} amount upfront, then 75% of this
+     *  amount when 75% is received.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
+     * </dl>
+     *
+     * @param onNext
+     *            the {@link Consumer} to invoke for each item emitted by the {@code Flowable}
+     * @param bufferSize
+     *            the number of items to prefetch upfront, then 75% of it after 75% received
+     * @throws RuntimeException
+     *             if an error occurs; {@link Error}s and {@link RuntimeException}s are rethrown
+     *             as they are, checked {@link Exception}s are wrapped into {@code RuntimeException}s
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
      * @see #subscribe(Consumer)
      */
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final void blockingForEach(@NonNull Consumer<? super T> onNext) {
-        Iterator<T> it = blockingIterable().iterator();
+    public final void blockingForEach(@NonNull Consumer<? super T> onNext, int bufferSize) {
+        Iterator<T> it = blockingIterable(bufferSize).iterator();
         while (it.hasNext()) {
             try {
                 onNext.accept(it.next());
