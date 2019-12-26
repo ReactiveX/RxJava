@@ -213,17 +213,20 @@ public class DisposableTest extends RxJavaTest {
 
             assertTrue(errors.isEmpty());
 
+            try {
+                d.dispose();
+                fail("Should have thrown!");
+            } catch (TestException expected) {
+                // expected
+            }
+
+            assertTrue(d.isDisposed());
+
             d.dispose();
 
             assertTrue(d.isDisposed());
-            assertEquals(1, errors.size());
 
-            d.dispose();
-
-            assertTrue(d.isDisposed());
-            assertEquals(1, errors.size());
-
-            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+            assertTrue(errors.isEmpty());
         });
     }
 

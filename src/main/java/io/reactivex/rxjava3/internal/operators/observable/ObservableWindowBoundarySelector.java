@@ -237,6 +237,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                                 try {
                                     endSource = Objects.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null ObservableSource");
                                 } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
                                     upstream.dispose();
                                     startObserver.dispose();
                                     resources.dispose();

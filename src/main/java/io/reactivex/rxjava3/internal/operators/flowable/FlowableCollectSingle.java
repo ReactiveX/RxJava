@@ -44,6 +44,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
         try {
             u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, observer);
             return;
         }

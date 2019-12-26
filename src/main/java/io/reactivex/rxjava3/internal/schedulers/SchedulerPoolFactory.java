@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 
 /**
@@ -108,6 +109,7 @@ public final class SchedulerPoolFactory {
                 }
                 return Integer.parseInt(value);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 return defaultNotFound;
             }
         }
@@ -123,6 +125,7 @@ public final class SchedulerPoolFactory {
                 }
                 return "true".equals(value);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 return defaultNotFound;
             }
         }

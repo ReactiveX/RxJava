@@ -205,6 +205,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         try {
             connection.accept(ps);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             if (doConnect) {
                 ps.shouldConnect.compareAndSet(true, false);
             }

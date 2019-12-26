@@ -14,7 +14,7 @@
 package io.reactivex.rxjava3.disposables;
 
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 /**
  * A disposable container that manages an {@link AutoCloseable} instance.
@@ -33,7 +33,7 @@ final class AutoCloseableDisposable extends ReferenceDisposable<AutoCloseable> {
         try {
             value.close();
         } catch (Throwable ex) {
-            RxJavaPlugins.onError(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

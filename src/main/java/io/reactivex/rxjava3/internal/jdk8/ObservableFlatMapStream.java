@@ -55,6 +55,7 @@ public final class ObservableFlatMapStream<T, R> extends Observable<R> {
                     stream = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Stream");
                 }
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
                 return;
             }

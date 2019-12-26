@@ -209,6 +209,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         try {
             connection.accept(ps);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             if (doConnect) {
                 ps.shouldConnect.compareAndSet(true, false);
             }
