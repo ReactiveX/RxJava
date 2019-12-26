@@ -186,6 +186,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 try {
                     b = ExceptionHelper.nullCheck(bufferSupplier.get(), "The bufferSupplier returned a null Collection.");
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     buffers.clear();
                     upstream.dispose();
                     downstream.onError(e);

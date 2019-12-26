@@ -159,6 +159,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onError.accept(ex);
                 } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
                     throw new CompositeException(ex, exc);
                 }
                 throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -173,6 +174,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                         try {
                             onError.accept(ex);
                         } catch (Throwable exc) {
+                            Exceptions.throwIfFatal(exc);
                             throw new CompositeException(ex, exc);
                         }
                         throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -314,6 +316,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onError.accept(ex);
                 } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
                     throw new CompositeException(ex, exc);
                 }
                 throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -328,6 +331,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                         try {
                             onError.accept(ex);
                         } catch (Throwable exc) {
+                            Exceptions.throwIfFatal(exc);
                             throw new CompositeException(ex, exc);
                         }
                         throw ExceptionHelper.<Exception>throwIfThrowable(ex);

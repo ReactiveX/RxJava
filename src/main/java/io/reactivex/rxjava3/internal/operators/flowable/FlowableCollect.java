@@ -39,6 +39,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
         try {
             u = Objects.requireNonNull(initialSupplier.get(), "The initial value supplied is null");
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }

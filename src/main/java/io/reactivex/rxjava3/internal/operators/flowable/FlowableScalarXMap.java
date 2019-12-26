@@ -136,6 +136,7 @@ public final class FlowableScalarXMap {
             try {
                 other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, s);
                 return;
             }

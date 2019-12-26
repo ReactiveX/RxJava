@@ -245,6 +245,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                                     try {
                                         endSource = Objects.requireNonNull(closingIndicator.apply(startItem), "The closingIndicator returned a null Publisher");
                                     } catch (Throwable ex) {
+                                        Exceptions.throwIfFatal(ex);
                                         upstream.cancel();
                                         startSubscriber.cancel();
                                         resources.dispose();

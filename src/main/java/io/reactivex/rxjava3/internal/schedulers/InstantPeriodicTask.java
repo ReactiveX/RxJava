@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -56,6 +57,7 @@ final class InstantPeriodicTask implements Callable<Void>, Disposable {
             setRest(executor.submit(this));
             runner = null;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             runner = null;
             RxJavaPlugins.onError(ex);
         }

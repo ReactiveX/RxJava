@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
@@ -61,6 +61,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                     stream = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Stream");
                 }
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, s);
                 return;
             }
@@ -243,6 +244,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                         try {
                             t = queue.poll();
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             trySignalError(downstream, ex);
                             continue;
                         }
@@ -271,6 +273,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                                     iterator = null;
                                 }
                             } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
                                 trySignalError(downstream, ex);
                             }
                             continue;
@@ -282,6 +285,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                         try {
                             item = Objects.requireNonNull(iterator.next(), "The Stream.Iterator returned a null value");
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             trySignalError(downstream, ex);
                             continue;
                         }
@@ -297,6 +301,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
                                         clearCurrentRethrowCloseError();
                                     }
                                 } catch (Throwable ex) {
+                                    Exceptions.throwIfFatal(ex);
                                     trySignalError(downstream, ex);
                                 }
                             }
@@ -328,6 +333,7 @@ public final class FlowableFlatMapStream<T, R> extends Flowable<R> {
             try {
                 clearCurrentRethrowCloseError();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
         }

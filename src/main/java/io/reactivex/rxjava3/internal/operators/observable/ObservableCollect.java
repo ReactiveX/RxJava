@@ -14,6 +14,7 @@ package io.reactivex.rxjava3.internal.operators.observable;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -37,6 +38,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         try {
             u = Objects.requireNonNull(initialSupplier.get(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }
@@ -86,6 +88,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
             try {
                 collector.accept(u, t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 upstream.dispose();
                 onError(e);
             }

@@ -52,6 +52,7 @@ public final class MaybeFromFuture<T> extends Maybe<T> {
                     v = future.get(timeout, unit);
                 }
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 if (ex instanceof ExecutionException) {
                     ex = ex.getCause();
                 }

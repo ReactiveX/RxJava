@@ -140,6 +140,7 @@ public final class ObservableScalarXMap {
             try {
                 other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 EmptyDisposable.error(e, observer);
                 return;
             }

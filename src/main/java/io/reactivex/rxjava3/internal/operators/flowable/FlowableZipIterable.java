@@ -101,7 +101,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             try {
                 u = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
             } catch (Throwable e) {
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -109,7 +109,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             try {
                 v = Objects.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -120,7 +120,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
-                error(e);
+                fail(e);
                 return;
             }
 
@@ -131,7 +131,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
             }
         }
 
-        void error(Throwable e) {
+        void fail(Throwable e) {
             Exceptions.throwIfFatal(e);
             done = true;
             upstream.cancel();
