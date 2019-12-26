@@ -466,7 +466,12 @@ public class MulticastProcessorTest extends RxJavaTest {
             up.onNext(i);
         }
 
-        assertFalse(mp.offer(10));
+        try {
+            mp.offer(10);
+            fail("Should have thrown IllegalStateException");
+        } catch (IllegalStateException expected) {
+            // expected
+        }
 
         up.onComplete();
 

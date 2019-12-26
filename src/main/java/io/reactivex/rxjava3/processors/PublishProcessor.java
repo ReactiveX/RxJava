@@ -141,7 +141,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> t) {
+    protected void subscribeActual(@NonNull Subscriber<? super T> t) {
         PublishSubscription<T> ps = new PublishSubscription<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
@@ -226,7 +226,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (subscribers.get() == TERMINATED) {
             s.cancel();
             return;
@@ -236,7 +236,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         for (PublishSubscription<T> s : subscribers.get()) {
             s.onNext(t);
@@ -245,7 +245,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
@@ -281,14 +281,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
+     * @throws NullPointerException if {@code t} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
-    public boolean offer(T t) {
-        if (t == null) {
-            onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
-            return true;
-        }
+    public boolean offer(@NonNull T t) {
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
+
         PublishSubscription<T>[] array = subscribers.get();
 
         for (PublishSubscription<T> s : array) {

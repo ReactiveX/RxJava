@@ -597,12 +597,14 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
         ts = pp.test(0);
 
-        assertTrue(pp.offer(null));
+        try {
+            pp.offer(null);
+            fail("Should have thrown NPE!");
+        } catch (NullPointerException expected) {
+            // expected
+        }
 
-        ts.assertFailure(NullPointerException.class);
-
-        assertTrue(pp.hasThrowable());
-        assertTrue(pp.getThrowable().toString(), pp.getThrowable() instanceof NullPointerException);
+        ts.assertEmpty();
     }
 
     @Test
