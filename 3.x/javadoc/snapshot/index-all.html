@@ -729,6 +729,16 @@
 <div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process this <code>Flowable</code> in a blocking manner via
  the Java <code>Stream</code> API.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#blockingStream--">blockingStream()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process this <code>Observable</code> in a blocking manner via
+ the Java <code>Stream</code> API.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#blockingStream-int-">blockingStream(int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Creates a sequential <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> to consume or process this <code>Observable</code> in a blocking manner via
+ the Java <code>Stream</code> API.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingSubscribe--">blockingSubscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Runs the source Flowable to a terminal event, ignoring any values and rethrowing any exception.</div>
@@ -1062,6 +1072,11 @@
 <dd>
 <div class="block">Collects items emitted by the finite source ObservableSource into a single mutable data structure and returns
  a Single that emits this structure.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#collect-java.util.stream.Collector-">collect(Collector&lt;T, A, R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Collects the finite upstream's values into a container via a Stream <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream"><code>Collector</code></a> callback set and emits
+ it as the success result.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#collect-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiConsumer-">collect(Supplier&lt;? extends C&gt;, BiConsumer&lt;? super C, ? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -2038,6 +2053,10 @@
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMapStream-io.reactivex.rxjava3.functions.Function-int-">concatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMapStream-io.reactivex.rxjava3.functions.Function-">concatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
@@ -3374,7 +3393,17 @@
 <div class="block">Signals the first upstream item or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> if the upstream is empty via
  a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#firstOrErrorStage--">firstOrErrorStage()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Signals the first upstream item or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> if the upstream is empty via
+ a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#firstStage-T-">firstStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Signals the first upstream item (or the default item if the upstream is empty) via
+ a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#firstStage-T-">firstStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Signals the first upstream item (or the default item if the upstream is empty) via
  a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
@@ -3710,6 +3739,10 @@
 <dd>
 <div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#flatMapStream-io.reactivex.rxjava3.functions.Function-">flatMapStream(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Maps each upstream item into a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> and emits the <code>Stream</code>'s items to the downstream in a sequential fashion.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Maps the success value of the upstream <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
@@ -3917,6 +3950,10 @@
 <dd>
 <div class="block">Signals the completion value or error of the given (hot) <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>-based asynchronous calculation.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#fromCompletionStage-java.util.concurrent.CompletionStage-">fromCompletionStage(CompletionStage&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Signals the completion value or error of the given (hot) <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>-based asynchronous calculation.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromCompletionStage-java.util.concurrent.CompletionStage-">fromCompletionStage(CompletionStage&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
 <div class="block">Signals the completion value or error of the given (hot) <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>-based asynchronous calculation.</div>
@@ -4024,6 +4061,11 @@
 <div class="block">Converts the existing value of the provided optional into a <a href="io/reactivex/rxjava3/core/Maybe.html#just-T-"><code>Maybe.just(Object)</code></a>
  or an empty optional into an <a href="io/reactivex/rxjava3/core/Maybe.html#empty--"><code>Maybe.empty()</code></a> <code>Maybe</code> instance.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#fromOptional-java.util.Optional-">fromOptional(Optional&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Converts the existing value of the provided optional into a <a href="io/reactivex/rxjava3/core/Observable.html#just-T-"><code>Observable.just(Object)</code></a>
+ or an empty optional into an <a href="io/reactivex/rxjava3/core/Observable.html#empty--"><code>Observable.empty()</code></a> <code>Observable</code> instance.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromPublisher-org.reactivestreams.Publisher-">fromPublisher(Publisher&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Returns a Completable instance that subscribes to the given publisher, ignores all values and
@@ -4069,6 +4111,10 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromStream-java.util.stream.Stream-">fromStream(Stream&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> into a finite <code>Flowable</code> and emits its items in the sequence.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#fromStream-java.util.stream.Stream-">fromStream(Stream&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a> into a finite <code>Observable</code> and emits its items in the sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/Disposable.html#fromSubscription-org.reactivestreams.Subscription-">fromSubscription(Subscription)</a></span> - Static method in interface io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></dt>
 <dd>
@@ -5154,7 +5200,17 @@
 <div class="block">Signals the last upstream item or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> if the upstream is empty via
  a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#lastOrErrorStage--">lastOrErrorStage()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Signals the last upstream item or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> if the upstream is empty via
+ a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#lastStage-T-">lastStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Signals the last upstream item (or the default item if the upstream is empty) via
+ a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#lastStage-T-">lastStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Signals the last upstream item (or the default item if the upstream is empty) via
  a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
@@ -5268,6 +5324,10 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#mapOptional-io.reactivex.rxjava3.functions.Function-">mapOptional(Function&lt;? super T, Optional&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
 <div class="block">Maps the upstream success value into an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a> and emits the contained item if not empty.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#mapOptional-io.reactivex.rxjava3.functions.Function-">mapOptional(Function&lt;? super T, Optional&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Maps each upstream value into an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a> and emits the contained item if not empty.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mapOptional-io.reactivex.rxjava3.functions.Function-">mapOptional(Function&lt;? super T, Optional&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -8039,12 +8099,24 @@
  or signals <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang"><code>IllegalArgumentException</code></a> if the upstream has more than one item
  via a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#singleOrErrorStage--">singleOrErrorStage()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Signals the only expected upstream item, a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NoSuchElementException.html?is-external=true" title="class or interface in java.util"><code>NoSuchElementException</code></a> if the upstream is empty
+ or signals <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang"><code>IllegalArgumentException</code></a> if the upstream has more than one item
+ via a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
 <dt><a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><span class="typeNameLink">SingleSource</span></a>&lt;<a href="io/reactivex/rxjava3/core/SingleSource.html" title="type parameter in SingleSource">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a></dt>
 <dd>
 <div class="block">Represents a basic <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> source base interface,
  consumable via an <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#singleStage-T-">singleStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dd>
+<div class="block">Signals the only expected upstream item (or the default item if the upstream is empty)
+ or signals <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang"><code>IllegalArgumentException</code></a> if the upstream has more than one item
+ via a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html?is-external=true" title="class or interface in java.util.concurrent"><code>CompletionStage</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#singleStage-T-">singleStage(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Signals the only expected upstream item (or the default item if the upstream is empty)
  or signals <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang"><code>IllegalArgumentException</code></a> if the upstream has more than one item
