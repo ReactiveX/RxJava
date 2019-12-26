@@ -69,7 +69,7 @@ public final class FlowableFromStream<T> extends Flowable<T> {
         }
 
         if (s instanceof ConditionalSubscriber) {
-            s.onSubscribe(new StreamConditionalSubscription<T>((ConditionalSubscriber<? super T>)s, iterator, stream));
+            s.onSubscribe(new StreamConditionalSubscription<>((ConditionalSubscriber<? super T>)s, iterator, stream));
         } else {
             s.onSubscribe(new StreamSubscription<>(s, iterator, stream));
         }
@@ -147,15 +147,23 @@ public final class FlowableFromStream<T> extends Flowable<T> {
                 once = true;
             } else {
                 if (!iterator.hasNext()) {
+                    clear();
                     return null;
                 }
             }
-            return Objects.requireNonNull(iterator.next(), "Iterator.next() returned a null value");
+            return Objects.requireNonNull(iterator.next(), "The Stream's Iterator.next() returned a null value");
         }
 
         @Override
         public boolean isEmpty() {
-            return iterator == null || !iterator.hasNext();
+            Iterator<T> it = iterator;
+            if (it != null) {
+                if (!once || it.hasNext()) {
+                    return false;
+                }
+                clear();
+            }
+            return true;
         }
 
         @Override

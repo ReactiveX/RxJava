@@ -775,12 +775,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelyAsyncInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        up.onNext(1);
-        up.onComplete();
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        us.onNext(1);
+        us.onComplete();
 
         Observable.concat(
-                up.observeOn(s),
+                us.observeOn(s),
                 Observable.just(2)
         )
         .test()

@@ -882,14 +882,14 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void innerErrorAfterPoll() {
-        final UnicastProcessor<Integer> us = UnicastProcessor.create();
-        us.onNext(1);
+        final UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                us.onError(new TestException());
+                up.onError(new TestException());
             }
         };
 
@@ -897,7 +897,7 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
         .concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
-                return us;
+                return up;
             }
         }, 1, 128)
         .subscribe(ts);
@@ -973,12 +973,12 @@ public class FlowableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void fuseAndTake() {
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us.onNext(1);
-        us.onComplete();
+        up.onNext(1);
+        up.onComplete();
 
-        us.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        up.concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
                 return Flowable.just(1);
