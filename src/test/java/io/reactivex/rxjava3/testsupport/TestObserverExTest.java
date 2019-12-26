@@ -1094,16 +1094,16 @@ public class TestObserverExTest extends RxJavaTest {
         TestObserverEx<Object> to = new TestObserverEx<>();
         to.setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .map(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) throws Exception { throw new TestException(); }
         })
         .subscribe(to);
 
-        up.onNext(1);
+        us.onNext(1);
 
         to.assertSubscribed()
         .assertFuseable()
@@ -1132,13 +1132,13 @@ public class TestObserverExTest extends RxJavaTest {
         TestObserverEx<Object> to = new TestObserverEx<>();
         to.setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .subscribe(to);
 
-        up.onNext(1);
-        up.onComplete();
+        us.onNext(1);
+        us.onComplete();
 
         to.assertSubscribed()
         .assertFuseable()

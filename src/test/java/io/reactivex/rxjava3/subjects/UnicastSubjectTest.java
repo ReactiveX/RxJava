@@ -228,14 +228,14 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void completeCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final int[] calls = { 0 };
-            final UnicastSubject<Object> up = UnicastSubject.create(100, new Runnable() {
+            final UnicastSubject<Object> us = UnicastSubject.create(100, new Runnable() {
                 @Override
                 public void run() {
                     calls[0]++;
                 }
             });
 
-            final TestObserver<Object> to = up.test();
+            final TestObserver<Object> to = us.test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -247,7 +247,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    up.onComplete();
+                    us.onComplete();
                 }
             };
 

@@ -596,9 +596,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -613,7 +613,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         })
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -630,9 +630,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -648,7 +648,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -665,9 +665,9 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up.hide()
+        us.hide()
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -683,7 +683,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)

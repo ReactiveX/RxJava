@@ -1193,11 +1193,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void inputAsyncFused() {
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = us.observeOn(Schedulers.single()).test();
+        TestSubscriber<Integer> ts = up.observeOn(Schedulers.single()).test();
 
-        TestHelper.emit(us, 1, 2, 3, 4, 5);
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1206,11 +1206,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void inputAsyncFusedError() {
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = us.observeOn(Schedulers.single()).test();
+        TestSubscriber<Integer> ts = up.observeOn(Schedulers.single()).test();
 
-        us.onError(new TestException());
+        up.onError(new TestException());
 
         ts
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1219,11 +1219,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void inputAsyncFusedErrorDelayed() {
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = us.observeOn(Schedulers.single(), true).test();
+        TestSubscriber<Integer> ts = up.observeOn(Schedulers.single(), true).test();
 
-        us.onError(new TestException());
+        up.onError(new TestException());
 
         ts
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1260,12 +1260,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void inputOutputAsyncFusedError() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us.observeOn(Schedulers.single())
+        up.observeOn(Schedulers.single())
         .subscribe(ts);
 
-        us.onError(new TestException());
+        up.onError(new TestException());
 
         ts
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1280,12 +1280,12 @@ public class FlowableObserveOnTest extends RxJavaTest {
     public void inputOutputAsyncFusedErrorDelayed() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us.observeOn(Schedulers.single(), true)
+        up.observeOn(Schedulers.single(), true)
         .subscribe(ts);
 
-        us.onError(new TestException());
+        up.onError(new TestException());
 
         ts
         .awaitDone(5, TimeUnit.SECONDS)
@@ -1298,11 +1298,11 @@ public class FlowableObserveOnTest extends RxJavaTest {
 
     @Test
     public void outputFusedCancelReentrant() throws Exception {
-        final UnicastProcessor<Integer> us = UnicastProcessor.create();
+        final UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        us.observeOn(Schedulers.single())
+        up.observeOn(Schedulers.single())
         .subscribe(new FlowableSubscriber<Integer>() {
             Subscription upstream;
             int count;
@@ -1315,7 +1315,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             @Override
             public void onNext(Integer value) {
                 if (++count == 1) {
-                    us.onNext(2);
+                    up.onNext(2);
                     upstream.cancel();
                     cdl.countDown();
                 }
@@ -1332,7 +1332,7 @@ public class FlowableObserveOnTest extends RxJavaTest {
             }
         });
 
-        us.onNext(1);
+        up.onNext(1);
 
         cdl.await();
     }

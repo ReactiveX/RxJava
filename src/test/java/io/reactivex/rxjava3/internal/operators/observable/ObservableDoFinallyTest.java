@@ -129,10 +129,10 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void asyncFused() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        up
+        us
         .doFinally(this)
         .subscribe(to);
 
@@ -146,10 +146,10 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void asyncFusedBoundary() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        up
+        us
         .doFinally(this)
         .subscribe(to);
 
@@ -267,10 +267,10 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void asyncFusedConditional() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        up
+        us
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(to);
@@ -285,10 +285,10 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
     public void asyncFusedBoundaryConditional() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        up
+        us
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(to);

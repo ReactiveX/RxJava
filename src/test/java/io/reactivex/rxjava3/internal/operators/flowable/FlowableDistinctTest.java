@@ -128,13 +128,13 @@ public class FlowableDistinctTest extends RxJavaTest {
     public void fusedAsync() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us
+        up
         .distinct()
         .subscribe(ts);
 
-        TestHelper.emit(us, 1, 1, 2, 1, 3, 2, 4, 5, 4);
+        TestHelper.emit(up, 1, 1, 2, 1, 3, 2, 4, 5, 4);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);

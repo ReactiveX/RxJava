@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.reactivestreams.Publisher;
 
@@ -24,6 +25,7 @@ import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.ScalarSupplier;
+import io.reactivex.rxjava3.internal.jdk8.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.flowable.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
@@ -1931,6 +1933,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            resulting ObservableSource
      * @return an Observable that emits each item in the source {@link Iterable} sequence
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
+     * @see #fromStream(Stream)
      */
     @CheckReturnValue
     @NonNull
@@ -5211,16 +5214,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param bufferSize the number of items to prefetch from the current Observable
+     * @param capacityHint the expected number of items to be buffered
      * @return an {@link Iterable} version of this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Iterable<T> blockingIterable(int bufferSize) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return new BlockingObservableIterable<>(this, bufferSize);
+    public final Iterable<T> blockingIterable(int capacityHint) {
+        ObjectHelper.verifyPositive(capacityHint, "bufferSize");
+        return new BlockingObservableIterable<>(this, capacityHint);
     }
 
     /**
@@ -15909,5 +15912,503 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         subscribe(to);
         return to;
+    }
+
+    // -------------------------------------------------------------------------
+    // JDK 8 Support
+    // -------------------------------------------------------------------------
+
+    /**
+     * Converts the existing value of the provided optional into a {@link #just(Object)}
+     * or an empty optional into an {@link #empty()} {@code Observable} instance.
+     * <p>
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromOptional.o.png" alt="">
+     * <p>
+     * Note that the operator takes an already instantiated optional reference and does not
+     * by any means create this original optional. If the optional is to be created per
+     * consumer upon subscription, use {@link #defer(Supplier)} around {@code fromOptional}:
+     * <pre><code>
+     * Observable.defer(() -&gt; Observable.fromOptional(createOptional()));
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromOptional} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the optional value
+     * @param optional the optional value to convert into an {@code Observable}
+     * @return the new Observable instance
+     * @see #just(Object)
+     * @see #empty()
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<@NonNull T> fromOptional(@NonNull Optional<T> optional) {
+        Objects.requireNonNull(optional, "optional is null");
+        return optional.map(Observable::just).orElseGet(Observable::empty);
+    }
+
+    /**
+     * Signals the completion value or error of the given (hot) {@link CompletionStage}-based asynchronous calculation.
+     * <p>
+     * <img width="640" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCompletionStage.o.png" alt="">
+     * <p>
+     * Note that the operator takes an already instantiated, running or terminated {@code CompletionStage}.
+     * If the optional is to be created per consumer upon subscription, use {@link #defer(Supplier)}
+     * around {@code fromCompletionStage}:
+     * <pre><code>
+     * Observable.defer(() -&gt; Observable.fromCompletionStage(createCompletionStage()));
+     * </code></pre>
+     * <p>
+     * If the {@code CompletionStage} completes with {@code null}, a {@link NullPointerException} is signaled.
+     * <p>
+     * Canceling the flow can't cancel the execution of the {@code CompletionStage} because {@code CompletionStage}
+     * itself doesn't support cancellation. Instead, the operator detaches from the {@code CompletionStage}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletionStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the CompletionStage
+     * @param stage the CompletionStage to convert to Observable and signal its terminal value or error
+     * @return the new Observable instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<@NonNull T> fromCompletionStage(@NonNull CompletionStage<T> stage) {
+        Objects.requireNonNull(stage, "stage is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromCompletionStage<>(stage));
+    }
+
+    /**
+     * Converts a {@link Stream} into a finite {@code Observable} and emits its items in the sequence.
+     * <p>
+     * <img width="640" height="407" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromStream.o.png" alt="">
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #fromIterable(Iterable)}:
+     * <pre><code>
+     * Stream&lt;T&gt; stream = ...
+     * Observable.fromIterable(stream::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * IntStream intStream = IntStream.rangeClosed(1, 10);
+     * Observable.fromStream(intStream.boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the source {@code Stream}
+     * @param stream the {@code Stream} of values to emit
+     * @return the new Observable instance
+     * @since 3.0.0
+     * @see #fromIterable(Iterable)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public static <T> Observable<@NonNull T> fromStream(@NonNull Stream<T> stream) {
+        Objects.requireNonNull(stream, "stream is null");
+        return RxJavaPlugins.onAssembly(new ObservableFromStream<>(stream));
+    }
+
+    /**
+     * Maps each upstream value into an {@link Optional} and emits the contained item if not empty.
+     * <p>
+     * <img width="640" height="306" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mapOptional.o.png" alt="">
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mapOptional} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the non-null output type
+     * @param mapper the function that receives the upstream item and should return a <em>non-empty</em> {@code Optional}
+     * to emit as the output or an <em>empty</em> {@code Optional} to skip to the next upstream value
+     * @return the new Observable instance
+     * @since 3.0.0
+     * @see #map(Function)
+     * @see #filter(Predicate)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Observable<R> mapOptional(@NonNull Function<? super T, @NonNull Optional<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new ObservableMapOptional<>(this, mapper));
+    }
+
+    /**
+     * Collects the finite upstream's values into a container via a Stream {@link Collector} callback set and emits
+     * it as the success result.
+     * <p>
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collector.o.png" alt="">
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the non-null result type
+     * @param <A> the intermediate container type used for the accumulation
+     * @param collector the interface defining the container supplier, accumulator and finisher functions;
+     * see {@link Collectors} for some standard implementations
+     * @return the new Single instance
+     * @since 3.0.0
+     * @see Collectors
+     * @see #collect(Supplier, BiConsumer)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<T, A, R> collector) {
+        Objects.requireNonNull(collector, "collector is null");
+        return RxJavaPlugins.onAssembly(new ObservableCollectWithCollectorSingle<>(this, collector));
+    }
+
+    /**
+     * Signals the first upstream item (or the default item if the upstream is empty) via
+     * a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <p>
+     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
+     * <pre><code>
+     * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).firstStage(Optional.empty());
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param defaultItem the item to signal if the upstream is empty
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #firstOrErrorStage()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> firstStage(@Nullable T defaultItem) {
+        return subscribeWith(new ObservableFirstStageObserver<>(true, defaultItem));
+    }
+
+    /**
+     * Signals the only expected upstream item (or the default item if the upstream is empty)
+     * or signals {@link IllegalArgumentException} if the upstream has more than one item
+     * via a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <p>
+     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
+     * <pre><code>
+     * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).singleStage(Optional.empty());
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code singleStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param defaultItem the item to signal if the upstream is empty
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #singleOrErrorStage()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> singleStage(@Nullable T defaultItem) {
+        return subscribeWith(new ObservableSingleStageObserver<>(true, defaultItem));
+    }
+
+    /**
+     * Signals the last upstream item (or the default item if the upstream is empty) via
+     * a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <p>
+     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
+     * <pre><code>
+     * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).lastStage(Optional.empty());
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code lastStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param defaultItem the item to signal if the upstream is empty
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #lastOrErrorStage()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> lastStage(@Nullable T defaultItem) {
+        return subscribeWith(new ObservableLastStageObserver<>(true, defaultItem));
+    }
+
+    /**
+     * Signals the first upstream item or a {@link NoSuchElementException} if the upstream is empty via
+     * a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="341" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrErrorStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstOrErrorStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #firstStage(Object)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> firstOrErrorStage() {
+        return subscribeWith(new ObservableFirstStageObserver<>(false, null));
+    }
+
+    /**
+     * Signals the only expected upstream item, a {@link NoSuchElementException} if the upstream is empty
+     * or signals {@link IllegalArgumentException} if the upstream has more than one item
+     * via a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="227" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrErrorStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code singleOrErrorStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #singleStage(Object)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> singleOrErrorStage() {
+        return subscribeWith(new ObservableSingleStageObserver<>(false, null));
+    }
+
+    /**
+     * Signals the last upstream item or a {@link NoSuchElementException} if the upstream is empty via
+     * a {@link CompletionStage}.
+     * <p>
+     * <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrErrorStage.o.png" alt="">
+     * <p>
+     * The upstream can be canceled by converting the resulting {@code CompletionStage} into
+     * {@link CompletableFuture} via {@link CompletionStage#toCompletableFuture()} and
+     * calling {@link CompletableFuture#cancel(boolean)} on it.
+     * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
+     * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code lastOrErrorStage} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new CompletionStage instance
+     * @since 3.0.0
+     * @see #lastStage(Object)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final CompletionStage<T> lastOrErrorStage() {
+        return subscribeWith(new ObservableLastStageObserver<>(false, null));
+    }
+
+    /**
+     * Creates a sequential {@link Stream} to consume or process this {@code Observable} in a blocking manner via
+     * the Java {@code Stream} API.
+     * <p>
+     * <img width="640" height="399" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingStream.o.png" alt="">
+     * <p>
+     * Cancellation of the upstream is done via {@link Stream#close()}, therefore, it is strongly recommended the
+     * consumption is performed within a try-with-resources construct:
+     * <pre><code>
+     * Observable&lt;Integer&gt; source = Observable.range(1, 10)
+     *        .subscribeOn(Schedulers.computation());
+     *
+     * try (Stream&lt;Integer&gt; stream = source.blockingStream()) {
+     *     stream.limit(3).forEach(System.out::println);
+     * }
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the new Stream instance
+     * @since 3.0.0
+     * @see #blockingStream(int)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Stream<T> blockingStream() {
+        return blockingStream(bufferSize());
+    }
+
+    /**
+     * Creates a sequential {@link Stream} to consume or process this {@code Observable} in a blocking manner via
+     * the Java {@code Stream} API.
+     * <p>
+     * <img width="640" height="399" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingStream.oi.png" alt="">
+     * <p>
+     * Cancellation of the upstream is done via {@link Stream#close()}, therefore, it is strongly recommended the
+     * consumption is performed within a try-with-resources construct:
+     * <pre><code>
+     * Observable&lt;Integer&gt; source = Observable.range(1, 10)
+     *        .subscribeOn(Schedulers.computation());
+     *
+     * try (Stream&lt;Integer&gt; stream = source.blockingStream(4)) {
+     *     stream.limit(3).forEach(System.out::println);
+     * }
+     * </code></pre>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param capacityHint the expected number of items to be buffered
+     * @return the new Stream instance
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Stream<T> blockingStream(int capacityHint) {
+        Iterator<T> iterator = blockingIterable(capacityHint).iterator();
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false)
+                .onClose(() -> ((Disposable)iterator).dispose());
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMapStream.o.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #concatMapIterable(Function)}:
+     * <pre><code>
+     * source.concatMapIterable(v -&gt; createStream(v)::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.concatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @return the new Observable instance
+     * @see #concatMap(Function)
+     * @see #concatMapIterable(Function)
+     * @see #flatMapStream(Function)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Observable<R> concatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
+        return flatMapStream(mapper);
+    }
+
+    /**
+     * Maps each upstream item into a {@link Stream} and emits the {@code Stream}'s items to the downstream in a sequential fashion.
+     * <p>
+     * <img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.o.png" alt="">
+     * <p>
+     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
+     * {@code concatMapStream} are identical operators and are provided as aliases.
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function)}:
+     * <pre><code>
+     * source.flatMapIterable(v -&gt; createStream(v)::iterator);
+     * </code></pre>
+     * <p>
+     * Note that {@code Stream}s can be consumed only once; any subsequent attempt to consume a {@code Stream}
+     * will result in an {@link IllegalStateException}.
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.flatMapStream(v -&gt; IntStream.rangeClosed(v + 1, v + 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the {@code Stream}s and the result
+     * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
+     * will be emitted to the downstream
+     * @return the new Observable instance
+     * @see #flatMap(Function)
+     * @see #flatMapIterable(Function)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <@NonNull R> Observable<R> flatMapStream(@NonNull Function<? super T, @NonNull ? extends Stream<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapStream<>(this, mapper));
     }
 }

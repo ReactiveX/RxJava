@@ -509,6 +509,10 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "singleStage", Object.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "lastStage", Object.class));
 
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "firstStage", Object.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "singleStage", Object.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "lastStage", Object.class));
+
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "toCompletionStage", Object.class));
         addOverride(new ParamOverride(Completable.class, 0, ParamMode.ANY, "toCompletionStage", Object.class));
 

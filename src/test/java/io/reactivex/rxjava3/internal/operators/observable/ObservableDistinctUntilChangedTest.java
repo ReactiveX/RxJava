@@ -169,9 +169,9 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
     public void fusedAsync() {
         TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
             @Override
             public boolean test(Integer a, Integer b) throws Exception {
@@ -180,7 +180,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         })
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 2, 3, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
