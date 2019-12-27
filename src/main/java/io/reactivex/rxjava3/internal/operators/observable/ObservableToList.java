@@ -49,7 +49,7 @@ extends AbstractObservableWithUpstream<T, U> {
             EmptyDisposable.error(e, t);
             return;
         }
-        source.subscribe(new ToListObserver<T, U>(t, coll));
+        source.subscribe(new ToListObserver<>(t, coll));
     }
 
     static final class ToListObserver<T, U extends Collection<? super T>> implements Observer<T>, Disposable {

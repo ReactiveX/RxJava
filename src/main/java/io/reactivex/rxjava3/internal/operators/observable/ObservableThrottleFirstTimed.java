@@ -38,8 +38,8 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceTimedObserver<T>(
-                new SerializedObserver<T>(t),
+        source.subscribe(new DebounceTimedObserver<>(
+                new SerializedObserver<>(t),
                 timeout, unit, scheduler.createWorker()));
     }
 

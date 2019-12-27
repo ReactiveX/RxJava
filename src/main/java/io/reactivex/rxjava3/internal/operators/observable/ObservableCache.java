@@ -95,15 +95,15 @@ implements Observer<T> {
         super(source);
         this.capacityHint = capacityHint;
         this.once = new AtomicBoolean();
-        Node<T> n = new Node<T>(capacityHint);
+        Node<T> n = new Node<>(capacityHint);
         this.head = n;
         this.tail = n;
-        this.observers = new AtomicReference<CacheDisposable<T>[]>(EMPTY);
+        this.observers = new AtomicReference<>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> t) {
-        CacheDisposable<T> consumer = new CacheDisposable<T>(t, this);
+        CacheDisposable<T> consumer = new CacheDisposable<>(t, this);
         t.onSubscribe(consumer);
         add(consumer);
 
@@ -292,7 +292,7 @@ implements Observer<T> {
         int tailOffset = this.tailOffset;
         // if the current tail node is full, create a fresh node
         if (tailOffset == capacityHint) {
-            Node<T> n = new Node<T>(tailOffset);
+            Node<T> n = new Node<>(tailOffset);
             n.values[0] = t;
             this.tailOffset = 1;
             tail.next = n;

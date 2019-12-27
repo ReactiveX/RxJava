@@ -41,7 +41,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
     @Override
     protected void subscribeActual(Subscriber<? super T> subscriber) {
-        MergeWithSubscriber<T> parent = new MergeWithSubscriber<T>(subscriber);
+        MergeWithSubscriber<T> parent = new MergeWithSubscriber<>(subscriber);
         subscriber.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
@@ -68,7 +68,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         MergeWithSubscriber(Subscriber<? super T> downstream) {
             this.downstream = downstream;
-            this.mainSubscription = new AtomicReference<Subscription>();
+            this.mainSubscription = new AtomicReference<>();
             this.otherObserver = new OtherObserver(this);
             this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();

@@ -23,7 +23,7 @@ public final class ConnectConsumer implements Consumer<Disposable> {
     public Disposable disposable;
 
     @Override
-    public void accept(Disposable t) throws Exception {
+    public void accept(Disposable t) {
         this.disposable = t;
     }
 }

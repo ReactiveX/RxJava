@@ -32,7 +32,7 @@ public final class ScheduledDirectTask extends AbstractDirectTask implements Cal
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         runner = Thread.currentThread();
         try {
             runnable.run();

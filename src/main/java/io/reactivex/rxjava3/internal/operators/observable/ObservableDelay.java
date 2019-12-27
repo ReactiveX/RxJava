@@ -42,12 +42,12 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         if (delayError) {
             observer = (Observer<T>)t;
         } else {
-            observer = new SerializedObserver<T>(t);
+            observer = new SerializedObserver<>(t);
         }
 
         Scheduler.Worker w = scheduler.createWorker();
 
-        source.subscribe(new DelayObserver<T>(observer, delay, unit, w, delayError));
+        source.subscribe(new DelayObserver<>(observer, delay, unit, w, delayError));
     }
 
     static final class DelayObserver<T> implements Observer<T>, Disposable {

@@ -40,7 +40,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new SkipLastTimedObserver<T>(t, time, unit, scheduler, bufferSize, delayError));
+        source.subscribe(new SkipLastTimedObserver<>(t, time, unit, scheduler, bufferSize, delayError));
     }
 
     static final class SkipLastTimedObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
@@ -65,7 +65,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.delayError = delayError;
         }
 

@@ -37,7 +37,7 @@ public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DoAfterObserver<T>(observer, onAfterSuccess));
+        source.subscribe(new DoAfterObserver<>(observer, onAfterSuccess));
     }
 
     static final class DoAfterObserver<T> implements MaybeObserver<T>, Disposable {

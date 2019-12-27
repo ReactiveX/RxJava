@@ -43,7 +43,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        TakeUntilMainObserver<T> parent = new TakeUntilMainObserver<T>(observer);
+        TakeUntilMainObserver<T> parent = new TakeUntilMainObserver<>(observer);
         observer.onSubscribe(parent);
 
         other.subscribe(parent.other);

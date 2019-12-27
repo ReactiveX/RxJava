@@ -96,9 +96,9 @@ You use the Observable [`just( )`](http://reactivex.io/documentation/operators
 Observable<String> o = Observable.from("a", "b", "c");
 
 def list = [5, 6, 7, 8]
-Observable<Integer> o = Observable.from(list);
+Observable<Integer> o2 = Observable.from(list);
 
-Observable<String> o = Observable.just("one object");
+Observable<String> o3 = Observable.just("one object");
 ```
 
 These converted Observables will synchronously invoke the [`onNext( )`](Observable#onnext-oncompleted-and-onerror) method of any subscriber that subscribes to them, for each item to be emitted by the Observable, and will then invoke the subscriber’s [`onCompleted( )`](Observable#onnext-oncompleted-and-onerror) method.

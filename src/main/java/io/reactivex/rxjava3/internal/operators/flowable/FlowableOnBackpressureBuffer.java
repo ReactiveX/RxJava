@@ -43,7 +43,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new BackpressureBufferSubscriber<T>(s, bufferSize, unbounded, delayError, onOverflow));
+        source.subscribe(new BackpressureBufferSubscriber<>(s, bufferSize, unbounded, delayError, onOverflow));
     }
 
     static final class BackpressureBufferSubscriber<T> extends BasicIntQueueSubscription<T> implements FlowableSubscriber<T> {
@@ -75,9 +75,9 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
             SimplePlainQueue<T> q;
 
             if (unbounded) {
-                q = new SpscLinkedArrayQueue<T>(bufferSize);
+                q = new SpscLinkedArrayQueue<>(bufferSize);
             } else {
-                q = new SpscArrayQueue<T>(bufferSize);
+                q = new SpscArrayQueue<>(bufferSize);
             }
 
             this.queue = q;
@@ -255,7 +255,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             return queue.poll();
         }
 

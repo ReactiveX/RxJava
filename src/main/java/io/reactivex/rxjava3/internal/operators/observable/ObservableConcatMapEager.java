@@ -50,7 +50,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new ConcatMapEagerMainObserver<T, R>(observer, mapper, maxConcurrency, prefetch, errorMode));
+        source.subscribe(new ConcatMapEagerMainObserver<>(observer, mapper, maxConcurrency, prefetch, errorMode));
     }
 
     static final class ConcatMapEagerMainObserver<T, R>
@@ -96,7 +96,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
             this.prefetch = prefetch;
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
-            this.observers = new ArrayDeque<InnerQueuedObserver<R>>();
+            this.observers = new ArrayDeque<>();
         }
 
         @SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                     }
                 }
 
-                queue = new SpscLinkedArrayQueue<T>(prefetch);
+                queue = new SpscLinkedArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
             }
@@ -282,7 +282,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         return;
                     }
 
-                    InnerQueuedObserver<R> inner = new InnerQueuedObserver<R>(this, prefetch);
+                    InnerQueuedObserver<R> inner = new InnerQueuedObserver<>(this, prefetch);
 
                     observers.offer(inner);
 

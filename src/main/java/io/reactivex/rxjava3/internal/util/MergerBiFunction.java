@@ -30,12 +30,12 @@ public final class MergerBiFunction<T> implements BiFunction<List<T>, List<T>, L
     }
 
     @Override
-    public List<T> apply(List<T> a, List<T> b) throws Exception {
+    public List<T> apply(List<T> a, List<T> b) {
         int n = a.size() + b.size();
         if (n == 0) {
-            return new ArrayList<T>();
+            return new ArrayList<>();
         }
-        List<T> both = new ArrayList<T>(n);
+        List<T> both = new ArrayList<>(n);
 
         Iterator<T> at = a.iterator();
         Iterator<T> bt = b.iterator();

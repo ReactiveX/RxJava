@@ -50,13 +50,13 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
     protected void subscribeActual(Subscriber<? super R> s) {
         switch (errorMode) {
         case BOUNDARY:
-            source.subscribe(new ConcatMapDelayed<T, R>(s, mapper, prefetch, false, scheduler.createWorker()));
+            source.subscribe(new ConcatMapDelayed<>(s, mapper, prefetch, false, scheduler.createWorker()));
             break;
         case END:
-            source.subscribe(new ConcatMapDelayed<T, R>(s, mapper, prefetch, true, scheduler.createWorker()));
+            source.subscribe(new ConcatMapDelayed<>(s, mapper, prefetch, true, scheduler.createWorker()));
             break;
         default:
-            source.subscribe(new ConcatMapImmediate<T, R>(s, mapper, prefetch, scheduler.createWorker()));
+            source.subscribe(new ConcatMapImmediate<>(s, mapper, prefetch, scheduler.createWorker()));
         }
     }
 
@@ -98,7 +98,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
             this.mapper = mapper;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.inner = new ConcatMapInner<R>(this);
+            this.inner = new ConcatMapInner<>(this);
             this.errors = new AtomicThrowable();
             this.worker = worker;
         }
@@ -132,7 +132,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 subscribeActual();
 
@@ -341,7 +341,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
                             }
 
                         } else {
@@ -524,7 +524,7 @@ public final class FlowableConcatMapScheduler<T, R> extends AbstractFlowableWith
                                 continue;
                             } else {
                                 active = true;
-                                inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
                             }
                         } else {
                             active = true;

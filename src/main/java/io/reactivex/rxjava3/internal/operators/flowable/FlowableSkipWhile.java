@@ -29,7 +29,7 @@ public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SkipWhileSubscriber<T>(s, predicate));
+        source.subscribe(new SkipWhileSubscriber<>(s, predicate));
     }
 
     static final class SkipWhileSubscriber<T> implements FlowableSubscriber<T>, Subscription {

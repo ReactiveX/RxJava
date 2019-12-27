@@ -42,9 +42,9 @@ public final class FlowableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(Publisher<? extends T> o, Subscriber<? super T> subscriber) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
+        final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
-        BlockingSubscriber<T> bs = new BlockingSubscriber<T>(queue);
+        BlockingSubscriber<T> bs = new BlockingSubscriber<>(queue);
 
         o.subscribe(bs);
 
@@ -82,7 +82,7 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o) {
         BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(Functions.emptyConsumer(),
+        LambdaSubscriber<T> ls = new LambdaSubscriber<>(Functions.emptyConsumer(),
         callback, callback, Functions.REQUEST_MAX);
 
         o.subscribe(ls);

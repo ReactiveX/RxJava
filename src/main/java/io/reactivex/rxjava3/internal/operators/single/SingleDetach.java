@@ -33,7 +33,7 @@ public final class SingleDetach<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new DetachSingleObserver<T>(observer));
+        source.subscribe(new DetachSingleObserver<>(observer));
     }
 
     static final class DetachSingleObserver<T> implements SingleObserver<T>, Disposable {

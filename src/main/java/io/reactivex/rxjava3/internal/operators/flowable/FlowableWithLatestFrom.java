@@ -36,8 +36,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        final SerializedSubscriber<R> serial = new SerializedSubscriber<R>(s);
-        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
+        final SerializedSubscriber<R> serial = new SerializedSubscriber<>(s);
+        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<>(serial, combiner);
 
         serial.onSubscribe(wlf);
 
@@ -55,11 +55,11 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
-        final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> upstream = new AtomicReference<>();
 
         final AtomicLong requested = new AtomicLong();
 
-        final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> other = new AtomicReference<>();
 
         WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.downstream = actual;

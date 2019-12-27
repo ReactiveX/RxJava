@@ -54,7 +54,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new SwitchMapSingleSubscriber<T, R>(s, mapper, delayErrors));
+        source.subscribe(new SwitchMapSingleSubscriber<>(s, mapper, delayErrors));
     }
 
     static final class SwitchMapSingleSubscriber<T, R> extends AtomicInteger
@@ -75,7 +75,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
         final AtomicReference<SwitchMapSingleObserver<R>> inner;
 
         static final SwitchMapSingleObserver<Object> INNER_DISPOSED =
-                new SwitchMapSingleObserver<Object>(null);
+                new SwitchMapSingleObserver<>(null);
 
         Subscription upstream;
 
@@ -93,7 +93,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
-            this.inner = new AtomicReference<SwitchMapSingleObserver<R>>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override
@@ -125,7 +125,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                 return;
             }
 
-            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<R>(this);
+            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<>(this);
 
             for (;;) {
                 current = inner.get();

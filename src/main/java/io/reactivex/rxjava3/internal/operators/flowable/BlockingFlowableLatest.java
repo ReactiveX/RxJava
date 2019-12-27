@@ -39,7 +39,7 @@ public final class BlockingFlowableLatest<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        LatestSubscriberIterator<T> lio = new LatestSubscriberIterator<T>();
+        LatestSubscriberIterator<T> lio = new LatestSubscriberIterator<>();
         Flowable.<T>fromPublisher(source).materialize().subscribe(lio);
         return lio;
     }
@@ -48,7 +48,7 @@ public final class BlockingFlowableLatest<T> implements Iterable<T> {
     static final class LatestSubscriberIterator<T> extends DisposableSubscriber<Notification<T>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
-        final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();
+        final AtomicReference<Notification<T>> value = new AtomicReference<>();
 
         // iterator's notification
         Notification<T> iteratorNotification;

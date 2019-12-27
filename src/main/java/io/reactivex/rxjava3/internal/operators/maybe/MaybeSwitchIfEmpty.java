@@ -35,7 +35,7 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new SwitchIfEmptyMaybeObserver<T>(observer, other));
+        source.subscribe(new SwitchIfEmptyMaybeObserver<>(observer, other));
     }
 
     static final class SwitchIfEmptyMaybeObserver<T>

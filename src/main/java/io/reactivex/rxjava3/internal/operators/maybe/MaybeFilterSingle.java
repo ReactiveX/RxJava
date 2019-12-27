@@ -37,7 +37,7 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new FilterMaybeObserver<T>(observer, predicate));
+        source.subscribe(new FilterMaybeObserver<>(observer, predicate));
     }
 
     static final class FilterMaybeObserver<T> implements SingleObserver<T>, Disposable {

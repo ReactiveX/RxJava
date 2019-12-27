@@ -114,7 +114,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
 
     @Nullable
     @Override
-    public final T poll() throws Exception {
+    public final T poll() {
         if (get() == FUSED_READY) {
             T v = value;
             value = null;

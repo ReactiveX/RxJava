@@ -31,7 +31,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
     @Override
     public void subscribeActual(Observer<? super T> child) {
-        TakeUntilMainObserver<T, U> parent = new TakeUntilMainObserver<T, U>(child);
+        TakeUntilMainObserver<T, U> parent = new TakeUntilMainObserver<>(child);
         child.onSubscribe(parent);
 
         other.subscribe(parent.otherObserver);
@@ -53,7 +53,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
         TakeUntilMainObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
             this.otherObserver = new OtherObserver();
             this.error = new AtomicThrowable();
         }

@@ -132,12 +132,12 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new SingletonArrayFunc()));
+            a[0].subscribe(new MapSubscriber<>(s, new SingletonArrayFunc()));
             return;
         }
 
         CombineLatestCoordinator<T, R> coordinator =
-                new CombineLatestCoordinator<T, R>(s, combiner, n, bufferSize, delayErrors);
+                new CombineLatestCoordinator<>(s, combiner, n, bufferSize, delayErrors);
 
         s.onSubscribe(coordinator);
 
@@ -183,13 +183,13 @@ extends Flowable<R> {
             @SuppressWarnings("unchecked")
             CombineLatestInnerSubscriber<T>[] a = new CombineLatestInnerSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new CombineLatestInnerSubscriber<T>(this, i, bufferSize);
+                a[i] = new CombineLatestInnerSubscriber<>(this, i, bufferSize);
             }
             this.subscribers = a;
             this.latest = new Object[n];
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.requested = new AtomicLong();
-            this.error = new  AtomicReference<Throwable>();
+            this.error = new  AtomicReference<>();
             this.delayErrors = delayErrors;
         }
 

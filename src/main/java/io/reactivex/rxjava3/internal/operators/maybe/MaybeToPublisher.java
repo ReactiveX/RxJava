@@ -30,7 +30,7 @@ public enum MaybeToPublisher implements Function<MaybeSource<Object>, Publisher<
     }
 
     @Override
-    public Publisher<Object> apply(MaybeSource<Object> t) throws Exception {
-        return new MaybeToFlowable<Object>(t);
+    public Publisher<Object> apply(MaybeSource<Object> t) {
+        return new MaybeToFlowable<>(t);
     }
 }

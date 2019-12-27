@@ -28,7 +28,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
 
     @Override
     public void subscribeActual(MaybeObserver<? super T> t) {
-        source.subscribe(new SingleElementObserver<T>(t));
+        source.subscribe(new SingleElementObserver<>(t));
     }
 
     static final class SingleElementObserver<T> implements Observer<T>, Disposable {

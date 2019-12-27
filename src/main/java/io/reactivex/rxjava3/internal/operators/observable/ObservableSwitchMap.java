@@ -48,7 +48,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             return;
         }
 
-        source.subscribe(new SwitchMapObserver<T, R>(t, mapper, bufferSize, delayErrors));
+        source.subscribe(new SwitchMapObserver<>(t, mapper, bufferSize, delayErrors));
     }
 
     static final class SwitchMapObserver<T, R> extends AtomicInteger implements Observer<T>, Disposable {
@@ -68,11 +68,11 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         Disposable upstream;
 
-        final AtomicReference<SwitchMapInnerObserver<T, R>> active = new AtomicReference<SwitchMapInnerObserver<T, R>>();
+        final AtomicReference<SwitchMapInnerObserver<T, R>> active = new AtomicReference<>();
 
         static final SwitchMapInnerObserver<Object, Object> CANCELLED;
         static {
-            CANCELLED = new SwitchMapInnerObserver<Object, Object>(null, -1L, 1);
+            CANCELLED = new SwitchMapInnerObserver<>(null, -1L, 1);
             CANCELLED.cancel();
         }
 
@@ -116,7 +116,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 return;
             }
 
-            SwitchMapInnerObserver<T, R> nextInner = new SwitchMapInnerObserver<T, R>(this, c, bufferSize);
+            SwitchMapInnerObserver<T, R> nextInner = new SwitchMapInnerObserver<>(this, c, bufferSize);
 
             for (;;) {
                 inner = active.get();
@@ -364,7 +364,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     }
                 }
 
-                queue = new SpscLinkedArrayQueue<R>(bufferSize);
+                queue = new SpscLinkedArrayQueue<>(bufferSize);
             }
         }
 

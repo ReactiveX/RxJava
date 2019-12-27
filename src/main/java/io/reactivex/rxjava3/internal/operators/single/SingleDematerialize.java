@@ -42,7 +42,7 @@ public final class SingleDematerialize<T, R> extends Maybe<R> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new DematerializeObserver<T, R>(observer, selector));
+        source.subscribe(new DematerializeObserver<>(observer, selector));
     }
 
     static final class DematerializeObserver<T, R> implements SingleObserver<T>, Disposable {

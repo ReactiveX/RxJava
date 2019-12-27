@@ -31,7 +31,7 @@ public final class ObservableHide<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     protected void subscribeActual(Observer<? super T> o) {
-        source.subscribe(new HideDisposable<T>(o));
+        source.subscribe(new HideDisposable<>(o));
     }
 
     static final class HideDisposable<T> implements Observer<T>, Disposable {

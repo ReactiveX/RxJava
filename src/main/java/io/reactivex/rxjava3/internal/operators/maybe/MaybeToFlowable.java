@@ -42,7 +42,7 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new MaybeToFlowableSubscriber<T>(s));
+        source.subscribe(new MaybeToFlowableSubscriber<>(s));
     }
 
     static final class MaybeToFlowableSubscriber<T> extends DeferredScalarSubscription<T>

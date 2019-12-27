@@ -40,7 +40,7 @@ public class OperatorFlatMapPerf {
     }
 
     @Benchmark
-    public void flatMapIntPassthruSync(Input input) throws InterruptedException {
+    public void flatMapIntPassthruSync(Input input) {
         input.flowable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
@@ -66,7 +66,7 @@ public class OperatorFlatMapPerf {
     }
 
     @Benchmark
-    public void flatMapTwoNestedSync(final Input input) throws InterruptedException {
+    public void flatMapTwoNestedSync(final Input input) {
         Flowable.range(1, 2).flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {

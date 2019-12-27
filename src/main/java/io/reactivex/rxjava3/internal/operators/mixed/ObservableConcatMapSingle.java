@@ -56,7 +56,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
-            source.subscribe(new ConcatMapSingleMainObserver<T, R>(observer, mapper, prefetch, errorMode));
+            source.subscribe(new ConcatMapSingleMainObserver<>(observer, mapper, prefetch, errorMode));
         }
     }
 
@@ -102,8 +102,8 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapSingleObserver<>(this);
+            this.queue = new SpscLinkedArrayQueue<>(prefetch);
         }
 
         @Override

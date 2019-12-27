@@ -29,7 +29,7 @@ public final class CompletableFromPublisher<T> extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver downstream) {
-        flowable.subscribe(new FromPublisherSubscriber<T>(downstream));
+        flowable.subscribe(new FromPublisherSubscriber<>(downstream));
     }
 
     static final class FromPublisherSubscriber<T> implements FlowableSubscriber<T>, Disposable {

@@ -31,12 +31,12 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
 
     @Override
     protected void subscribeActual(final CompletableObserver t) {
-        source.subscribe(new IgnoreElementsSubscriber<T>(t));
+        source.subscribe(new IgnoreElementsSubscriber<>(t));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(source));
+        return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<>(source));
     }
 
     static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, Disposable {

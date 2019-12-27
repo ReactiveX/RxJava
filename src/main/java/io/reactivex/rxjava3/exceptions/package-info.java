@@ -17,7 +17,7 @@
 /**
  * Exception handling utilities ({@link io.reactivex.rxjava3.exceptions.Exceptions Exceptions}),
  * composite exception container ({@link io.reactivex.rxjava3.exceptions.CompositeException CompositeException}) and
- * various lifecycle-reladed ({@link io.reactivex.rxjava3.exceptions.MissingBackpressureException UndeliverableException})
+ * various lifecycle-related ({@link io.reactivex.rxjava3.exceptions.MissingBackpressureException UndeliverableException})
  * and behavior-violation exception types ({@link io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException},
  * {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException MissingBackpressureException}).
  */

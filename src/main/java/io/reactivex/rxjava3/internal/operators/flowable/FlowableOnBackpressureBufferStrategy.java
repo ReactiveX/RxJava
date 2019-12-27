@@ -48,7 +48,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new OnBackpressureBufferStrategySubscriber<T>(s, onOverflow, strategy, bufferSize));
+        source.subscribe(new OnBackpressureBufferStrategySubscriber<>(s, onOverflow, strategy, bufferSize));
     }
 
     static final class OnBackpressureBufferStrategySubscriber<T>
@@ -83,7 +83,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             this.strategy = strategy;
             this.bufferSize = bufferSize;
             this.requested = new AtomicLong();
-            this.deque = new ArrayDeque<T>();
+            this.deque = new ArrayDeque<>();
         }
 
         @Override

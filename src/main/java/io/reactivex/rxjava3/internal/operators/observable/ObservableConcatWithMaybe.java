@@ -37,7 +37,7 @@ public final class ObservableConcatWithMaybe<T> extends AbstractObservableWithUp
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new ConcatWithObserver<T>(observer, other));
+        source.subscribe(new ConcatWithObserver<>(observer, other));
     }
 
     static final class ConcatWithObserver<T>

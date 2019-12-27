@@ -59,7 +59,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         FlatMapBiMainObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends U>> mapper,
                 BiFunction<? super T, ? super U, ? extends R> resultSelector) {
-            this.inner = new InnerObserver<T, U, R>(actual, resultSelector);
+            this.inner = new InnerObserver<>(actual, resultSelector);
             this.mapper = mapper;
         }
 

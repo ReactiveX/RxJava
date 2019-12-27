@@ -30,7 +30,7 @@ public final class ObservableJust<T> extends Observable<T> implements ScalarSupp
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        ScalarDisposable<T> sd = new ScalarDisposable<T>(observer, value);
+        ScalarDisposable<T> sd = new ScalarDisposable<>(observer, value);
         observer.onSubscribe(sd);
         sd.run();
     }

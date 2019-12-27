@@ -44,7 +44,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlatMapIterableObserver<T, R>(observer, mapper));
+        source.subscribe(new FlatMapIterableObserver<>(observer, mapper));
     }
 
     static final class FlatMapIterableObserver<T, R>
@@ -183,7 +183,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         @Nullable
         @Override
-        public R poll() throws Exception {
+        public R poll() {
             Iterator<? extends R> iterator = it;
 
             if (iterator != null) {

@@ -31,10 +31,10 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new FilterConditionalSubscriber<T>(
-                    (ConditionalSubscriber<? super T>)s, predicate));
+            source.subscribe(new FilterConditionalSubscriber<>(
+                    (ConditionalSubscriber<? super T>) s, predicate));
         } else {
-            source.subscribe(new FilterSubscriber<T>(s, predicate));
+            source.subscribe(new FilterSubscriber<>(s, predicate));
         }
     }
 

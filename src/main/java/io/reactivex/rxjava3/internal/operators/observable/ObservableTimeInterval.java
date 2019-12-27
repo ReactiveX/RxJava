@@ -32,7 +32,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
 
     @Override
     public void subscribeActual(Observer<? super Timed<T>> t) {
-        source.subscribe(new TimeIntervalObserver<T>(t, unit, scheduler));
+        source.subscribe(new TimeIntervalObserver<>(t, unit, scheduler));
     }
 
     static final class TimeIntervalObserver<T> implements Observer<T>, Disposable {
@@ -75,7 +75,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            downstream.onNext(new Timed<T>(t, delta, unit));
+            downstream.onNext(new Timed<>(t, delta, unit));
         }
 
         @Override

@@ -68,7 +68,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
             return;
         }
 
-        UsingSubscriber<T, D> us = new UsingSubscriber<T, D>(s, resource, disposer, eager);
+        UsingSubscriber<T, D> us = new UsingSubscriber<>(s, resource, disposer, eager);
 
         source.subscribe(us);
     }

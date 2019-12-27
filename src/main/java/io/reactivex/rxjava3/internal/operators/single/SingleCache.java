@@ -39,12 +39,12 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
     public SingleCache(SingleSource<? extends T> source) {
         this.source = source;
         this.wip = new AtomicInteger();
-        this.observers = new AtomicReference<CacheDisposable<T>[]>(EMPTY);
+        this.observers = new AtomicReference<>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
-        CacheDisposable<T> d = new CacheDisposable<T>(observer, this);
+        CacheDisposable<T> d = new CacheDisposable<>(observer, this);
         observer.onSubscribe(d);
 
         if (add(d)) {

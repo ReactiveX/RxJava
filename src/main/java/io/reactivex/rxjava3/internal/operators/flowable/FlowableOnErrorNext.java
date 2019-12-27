@@ -34,7 +34,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<T>(s, nextSupplier);
+        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<>(s, nextSupplier);
         s.onSubscribe(parent);
         source.subscribe(parent);
     }

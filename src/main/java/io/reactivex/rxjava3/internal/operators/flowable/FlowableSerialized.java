@@ -24,6 +24,6 @@ public final class FlowableSerialized<T> extends AbstractFlowableWithUpstream<T,
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SerializedSubscriber<T>(s));
+        source.subscribe(new SerializedSubscriber<>(s));
     }
 }

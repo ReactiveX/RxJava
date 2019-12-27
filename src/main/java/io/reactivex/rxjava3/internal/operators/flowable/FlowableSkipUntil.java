@@ -31,7 +31,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
     @Override
     protected void subscribeActual(Subscriber<? super T> child) {
-        SkipUntilMainSubscriber<T> parent = new SkipUntilMainSubscriber<T>(child);
+        SkipUntilMainSubscriber<T> parent = new SkipUntilMainSubscriber<>(child);
         child.onSubscribe(parent);
 
         other.subscribe(parent.other);
@@ -57,7 +57,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
         SkipUntilMainSubscriber(Subscriber<? super T> downstream) {
             this.downstream = downstream;
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
             this.other = new OtherSubscriber();
             this.error = new AtomicThrowable();

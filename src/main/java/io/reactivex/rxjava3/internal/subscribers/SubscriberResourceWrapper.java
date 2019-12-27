@@ -28,7 +28,7 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
 
     final Subscriber<? super T> downstream;
 
-    final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
+    final AtomicReference<Subscription> upstream = new AtomicReference<>();
 
     public SubscriberResourceWrapper(Subscriber<? super T> downstream) {
         this.downstream = downstream;

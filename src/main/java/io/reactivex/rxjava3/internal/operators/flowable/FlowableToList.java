@@ -41,7 +41,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
             EmptySubscription.error(e, s);
             return;
         }
-        source.subscribe(new ToListSubscriber<T, U>(s, coll));
+        source.subscribe(new ToListSubscriber<>(s, coll));
     }
 
     static final class ToListSubscriber<T, U extends Collection<? super T>>

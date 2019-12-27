@@ -33,10 +33,10 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
-            s.onSubscribe(new ArrayConditionalSubscription<T>(
+            s.onSubscribe(new ArrayConditionalSubscription<>(
                     (ConditionalSubscriber<? super T>)s, array));
         } else {
-            s.onSubscribe(new ArraySubscription<T>(s, array));
+            s.onSubscribe(new ArraySubscription<>(s, array));
         }
     }
 

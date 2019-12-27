@@ -212,9 +212,9 @@ public final class QueueDrainHelper {
      */
     public static <T> SimpleQueue<T> createQueue(int capacityHint) {
         if (capacityHint < 0) {
-            return new SpscLinkedArrayQueue<T>(-capacityHint);
+            return new SpscLinkedArrayQueue<>(-capacityHint);
         }
-        return new SpscArrayQueue<T>(capacityHint);
+        return new SpscArrayQueue<>(capacityHint);
     }
 
     /**

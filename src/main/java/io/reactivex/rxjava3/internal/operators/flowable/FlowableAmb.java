@@ -69,7 +69,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
             return;
         }
 
-        AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
+        AmbCoordinator<T> ac = new AmbCoordinator<>(s, count);
         ac.subscribe(sources);
     }
 
@@ -89,7 +89,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new AmbInnerSubscriber<T>(this, i + 1, downstream);
+                as[i] = new AmbInnerSubscriber<>(this, i + 1, downstream);
             }
             winner.lazySet(0); // release the contents of 'as'
             downstream.onSubscribe(this);

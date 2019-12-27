@@ -38,7 +38,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new DebounceSubscriber<T, U>(new SerializedSubscriber<T>(s), debounceSelector));
+        source.subscribe(new DebounceSubscriber<>(new SerializedSubscriber<>(s), debounceSelector));
     }
 
     static final class DebounceSubscriber<T, U> extends AtomicLong
@@ -50,7 +50,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         Subscription upstream;
 
-        final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> debouncer = new AtomicReference<>();
 
         volatile long index;
 
@@ -96,7 +96,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
                 return;
             }
 
-            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<T, U>(this, idx, t);
+            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this, idx, t);
 
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);

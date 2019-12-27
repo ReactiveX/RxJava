@@ -48,7 +48,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             return;
         }
 
-        source.subscribe(new ScanSeedSubscriber<T, R>(s, accumulator, r, bufferSize()));
+        source.subscribe(new ScanSeedSubscriber<>(s, accumulator, r, bufferSize()));
     }
 
     static final class ScanSeedSubscriber<T, R>
@@ -85,7 +85,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             this.value = value;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.queue = new SpscArrayQueue<R>(prefetch);
+            this.queue = new SpscArrayQueue<>(prefetch);
             this.queue.offer(value);
             this.requested = new AtomicLong();
         }

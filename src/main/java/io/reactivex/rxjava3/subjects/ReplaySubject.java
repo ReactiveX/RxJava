@@ -160,7 +160,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> create() {
-        return new ReplaySubject<>(new UnboundedReplayBuffer<T>(16));
+        return new ReplaySubject<>(new UnboundedReplayBuffer<>(16));
     }
 
     /**
@@ -181,7 +181,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> create(int capacityHint) {
-        return new ReplaySubject<>(new UnboundedReplayBuffer<T>(capacityHint));
+        return new ReplaySubject<>(new UnboundedReplayBuffer<>(capacityHint));
     }
 
     /**
@@ -207,7 +207,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithSize(int maxSize) {
-        return new ReplaySubject<>(new SizeBoundReplayBuffer<T>(maxSize));
+        return new ReplaySubject<>(new SizeBoundReplayBuffer<>(maxSize));
     }
 
     /**
@@ -224,7 +224,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     /* test */ static <T> ReplaySubject<T> createUnbounded() {
-        return new ReplaySubject<>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
+        return new ReplaySubject<>(new SizeBoundReplayBuffer<>(Integer.MAX_VALUE));
     }
 
     /**
@@ -262,7 +262,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithTime(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return new ReplaySubject<>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
+        return new ReplaySubject<>(new SizeAndTimeBoundReplayBuffer<>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
 
     /**
@@ -302,7 +302,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, int maxSize) {
-        return new ReplaySubject<>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
+        return new ReplaySubject<>(new SizeAndTimeBoundReplayBuffer<>(maxSize, maxAge, unit, scheduler));
     }
 
     /**

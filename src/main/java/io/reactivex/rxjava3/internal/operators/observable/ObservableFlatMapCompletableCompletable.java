@@ -46,12 +46,12 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new FlatMapCompletableMainObserver<T>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
     }
 
     @Override
     public Observable<T> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletable<T>(source, mapper, delayErrors));
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletable<>(source, mapper, delayErrors));
     }
 
     static final class FlatMapCompletableMainObserver<T> extends AtomicInteger implements Disposable, Observer<T> {

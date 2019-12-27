@@ -50,7 +50,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
     @Override
     protected void subscribeActual(CompletableObserver observer) {
         if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
-            source.subscribe(new SwitchMapCompletableObserver<T>(observer, mapper, delayErrors));
+            source.subscribe(new SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
         }
     }
 
@@ -78,7 +78,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapInnerObserver>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override

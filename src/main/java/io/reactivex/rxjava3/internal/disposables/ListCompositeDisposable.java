@@ -32,7 +32,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
 
     public ListCompositeDisposable(Disposable... resources) {
         Objects.requireNonNull(resources, "resources is null");
-        this.resources = new LinkedList<Disposable>();
+        this.resources = new LinkedList<>();
         for (Disposable d : resources) {
             Objects.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
@@ -41,7 +41,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
 
     public ListCompositeDisposable(Iterable<? extends Disposable> resources) {
         Objects.requireNonNull(resources, "resources is null");
-        this.resources = new LinkedList<Disposable>();
+        this.resources = new LinkedList<>();
         for (Disposable d : resources) {
             Objects.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
@@ -79,7 +79,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
                 if (!disposed) {
                     List<Disposable> set = resources;
                     if (set == null) {
-                        set = new LinkedList<Disposable>();
+                        set = new LinkedList<>();
                         resources = set;
                     }
                     set.add(d);
@@ -98,7 +98,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
                 if (!disposed) {
                     List<Disposable> set = resources;
                     if (set == null) {
-                        set = new LinkedList<Disposable>();
+                        set = new LinkedList<>();
                         resources = set;
                     }
                     for (Disposable d : ds) {
@@ -171,7 +171,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (errors == null) {
-                    errors = new ArrayList<Throwable>();
+                    errors = new ArrayList<>();
                 }
                 errors.add(ex);
             }

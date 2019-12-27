@@ -52,7 +52,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
      * @since 2.2
      */
     public static <T> MaybeObserver<T> create(Observer<? super T> downstream) {
-        return new MaybeToObservableObserver<T>(downstream);
+        return new MaybeToObservableObserver<>(downstream);
     }
 
     static final class MaybeToObservableObserver<T> extends DeferredScalarDisposable<T>

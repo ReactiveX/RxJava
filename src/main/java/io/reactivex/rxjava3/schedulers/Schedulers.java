@@ -112,8 +112,8 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
-     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.computation-threads} (int): sets the number of threads in the {@code computation()} Scheduler, default is the number of available CPUs</li>
+     * <li>{@code rx3.computation-priority} (int): sets the thread priority of the {@code computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -157,8 +157,8 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@link #io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
-     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.io-keep-alive-time} (long): sets the keep-alive time of the {@code io()} Scheduler workers, default is {@link IoScheduler#KEEP_ALIVE_TIME_DEFAULT}</li>
+     * <li>{@code rx3.io-priority} (int): sets the thread priority of the {@code io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -216,7 +216,7 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.newthread-priority} (int): sets the thread priority of the {@code newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -265,7 +265,7 @@ public final class Schedulers {
      * before the {@link Schedulers} class is referenced in your code.
      * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
-     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
+     * <li>{@code rx3.single-priority} (int): sets the thread priority of the {@code single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
@@ -522,28 +522,28 @@ public final class Schedulers {
 
     static final class IOTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler get() throws Exception {
+        public Scheduler get() {
             return IoHolder.DEFAULT;
         }
     }
 
     static final class NewThreadTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler get() throws Exception {
+        public Scheduler get() {
             return NewThreadHolder.DEFAULT;
         }
     }
 
     static final class SingleTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler get() throws Exception {
+        public Scheduler get() {
             return SingleHolder.DEFAULT;
         }
     }
 
     static final class ComputationTask implements Supplier<Scheduler> {
         @Override
-        public Scheduler get() throws Exception {
+        public Scheduler get() {
             return ComputationHolder.DEFAULT;
         }
     }

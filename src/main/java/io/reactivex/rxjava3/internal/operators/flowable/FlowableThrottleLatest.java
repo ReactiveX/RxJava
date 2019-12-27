@@ -56,7 +56,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ThrottleLatestSubscriber<T>(s, timeout, unit, scheduler.createWorker(), emitLast));
+        source.subscribe(new ThrottleLatestSubscriber<>(s, timeout, unit, scheduler.createWorker(), emitLast));
     }
 
     static final class ThrottleLatestSubscriber<T>
@@ -100,7 +100,7 @@ public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstrea
             this.unit = unit;
             this.worker = worker;
             this.emitLast = emitLast;
-            this.latest = new AtomicReference<T>();
+            this.latest = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 

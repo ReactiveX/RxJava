@@ -30,6 +30,6 @@ public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpst
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new DisposableLambdaObserver<T>(observer, onSubscribe, onDispose));
+        source.subscribe(new DisposableLambdaObserver<>(observer, onSubscribe, onDispose));
     }
 }

@@ -46,7 +46,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
-        source.subscribe(new WindowBoundaryMainObserver<T, B, V>(
+        source.subscribe(new WindowBoundaryMainObserver<>(
                 t, open, closingIndicator, bufferSize));
     }
 
@@ -85,16 +85,16 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         WindowBoundaryMainObserver(Observer<? super Observable<T>> downstream,
                 ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> closingIndicator, int bufferSize) {
             this.downstream = downstream;
-            this.queue = new MpscLinkedQueue<Object>();
+            this.queue = new MpscLinkedQueue<>();
             this.open = open;
             this.closingIndicator = closingIndicator;
             this.bufferSize = bufferSize;
             this.resources = new CompositeDisposable();
-            this.windows = new ArrayList<UnicastSubject<T>>();
+            this.windows = new ArrayList<>();
             this.windowCount = new AtomicLong(1L);
             this.downstreamDisposed = new AtomicBoolean();
             this.error = new AtomicThrowable();
-            this.startObserver = new WindowStartObserver<B>(this);
+            this.startObserver = new WindowStartObserver<>(this);
             this.requested = new AtomicLong();
         }
 
@@ -167,7 +167,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
 
         void open(B startValue) {
-            queue.offer(new WindowStartItem<B>(startValue));
+            queue.offer(new WindowStartItem<>(startValue));
             drain();
         }
 
@@ -249,7 +249,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
                                 windowCount.getAndIncrement();
                                 UnicastSubject<T> newWindow = UnicastSubject.create(bufferSize, this);
-                                WindowEndObserverIntercept<T, V> endObserver = new WindowEndObserverIntercept<T, V>(this, newWindow);
+                                WindowEndObserverIntercept<T, V> endObserver = new WindowEndObserverIntercept<>(this, newWindow);
 
                                 downstream.onNext(endObserver);
 
@@ -371,7 +371,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             WindowEndObserverIntercept(WindowBoundaryMainObserver<T, ?, V> parent, UnicastSubject<T> window) {
                 this.parent = parent;
                 this.window = window;
-                this.upstream = new AtomicReference<Disposable>();
+                this.upstream = new AtomicReference<>();
                 this.once = new AtomicBoolean();
             }
 

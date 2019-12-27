@@ -31,7 +31,7 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
 
     @Override
     protected void subscribeActual(MaybeObserver<? super Boolean> observer) {
-        source.subscribe(new IsEmptyMaybeObserver<T>(observer));
+        source.subscribe(new IsEmptyMaybeObserver<>(observer));
     }
 
     static final class IsEmptyMaybeObserver<T>

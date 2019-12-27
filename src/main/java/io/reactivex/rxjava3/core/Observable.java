@@ -265,7 +265,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(null, sources, combiner, s, false));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, false));
     }
 
     /**
@@ -364,7 +364,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(sources, null, combiner, s, false));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, false));
     }
 
     /**
@@ -917,7 +917,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(sources, null, combiner, s, true));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(sources, null, combiner, s, true));
     }
 
     /**
@@ -1013,7 +1013,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(null, sources, combiner, s, true));
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<>(null, sources, combiner, s, true));
     }
 
     /**
@@ -1669,7 +1669,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(@NonNull Supplier<? extends Throwable> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableError<T>(errorSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableError<>(errorSupplier));
     }
 
     /**
@@ -1763,7 +1763,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(@NonNull Callable<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromCallable<T>(supplier));
+        return RxJavaPlugins.onAssembly(new ObservableFromCallable<>(supplier));
     }
 
     /**
@@ -1797,7 +1797,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(@NonNull Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromFuture<T>(future, 0L, null));
+        return RxJavaPlugins.onAssembly(new ObservableFromFuture<>(future, 0L, null));
     }
 
     /**
@@ -1836,7 +1836,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> fromFuture(@NonNull Future<? extends T> future, long timeout, @NonNull TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromFuture<T>(future, timeout, unit));
+        return RxJavaPlugins.onAssembly(new ObservableFromFuture<>(future, timeout, unit));
     }
 
     /**
@@ -1940,7 +1940,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromIterable(@NonNull Iterable<? extends T> source) {
         Objects.requireNonNull(source, "source is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromIterable<T>(source));
+        return RxJavaPlugins.onAssembly(new ObservableFromIterable<>(source));
     }
 
     /**
@@ -1977,7 +1977,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromPublisher(@NonNull Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(publisher));
+        return RxJavaPlugins.onAssembly(new ObservableFromPublisher<>(publisher));
     }
 
     /**
@@ -2014,7 +2014,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromSupplier(@NonNull Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableFromSupplier<T>(supplier));
+        return RxJavaPlugins.onAssembly(new ObservableFromSupplier<>(supplier));
     }
 
     /**
@@ -2043,8 +2043,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> generate(@NonNull Consumer<Emitter<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(Functions.<Object>nullSupplier(),
-                ObservableInternalHelper.simpleGenerator(generator), Functions.<Object>emptyConsumer());
+        return generate(Functions.nullSupplier(),
+                ObservableInternalHelper.simpleGenerator(generator), Functions.emptyConsumer());
     }
 
     /**
@@ -4188,7 +4188,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> zip(@NonNull Iterable<? extends ObservableSource<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false));
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, bufferSize(), false));
     }
 
     /**
@@ -4250,7 +4250,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(null, sources, zipper, bufferSize, delayError));
     }
 
     /**
@@ -5004,7 +5004,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         Objects.requireNonNull(zipper, "zipper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableZip<>(sources, null, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -5477,7 +5477,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Future<T> toFuture() {
-        return subscribeWith(new FutureObserver<T>());
+        return subscribeWith(new FutureObserver<>());
     }
 
     /**
@@ -5648,7 +5648,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Observable<@NonNull List<T>> buffer(int count, int skip) {
-        return buffer(count, skip, ArrayListSupplier.<T>asSupplier());
+        return buffer(count, skip, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -5746,7 +5746,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
     public final Observable<@NonNull List<T>> buffer(long timespan, long timeskip, @NonNull TimeUnit unit) {
-        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>asSupplier());
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -5780,7 +5780,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<@NonNull List<T>> buffer(long timespan, long timeskip, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>asSupplier());
+        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -5921,7 +5921,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<@NonNull List<T>> buffer(long timespan, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, int count) {
-        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.<T>asSupplier(), false);
+        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.asSupplier(), false);
     }
 
     /**
@@ -6003,7 +6003,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Observable<@NonNull List<T>> buffer(long timespan, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.<T>asSupplier(), false);
+        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.asSupplier(), false);
     }
 
     /**
@@ -6036,7 +6036,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <TOpening, TClosing> Observable<@NonNull List<T>> buffer(
             @NonNull ObservableSource<? extends TOpening> openingIndicator,
             @NonNull Function<? super TOpening, ? extends ObservableSource<? extends TClosing>> closingIndicator) {
-        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asSupplier());
+        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6108,7 +6108,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary) {
-        return buffer(boundary, ArrayListSupplier.<T>asSupplier());
+        return buffer(boundary, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6142,7 +6142,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary, int initialCapacity) {
         ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
-        return buffer(boundary, Functions.<T>createArrayList(initialCapacity));
+        return buffer(boundary, Functions.createArrayList(initialCapacity));
     }
 
     /**
@@ -6355,7 +6355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <U> Single<U> collect(@NonNull Supplier<? extends U> initialValueSupplier, @NonNull BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
-        return RxJavaPlugins.onAssembly(new ObservableCollectSingle<T, U>(this, initialValueSupplier, collector));
+        return RxJavaPlugins.onAssembly(new ObservableCollectSingle<>(this, initialValueSupplier, collector));
     }
 
     /**
@@ -8088,7 +8088,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> distinctUntilChanged(@NonNull BiPredicate<? super T, ? super T> comparer) {
         Objects.requireNonNull(comparer, "comparer is null");
-        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<>(this, Functions.<T>identity(), comparer));
+        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<>(this, Functions.identity(), comparer));
     }
 
     /**
@@ -9351,7 +9351,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9392,7 +9392,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9436,7 +9436,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9481,7 +9481,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9529,7 +9529,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9564,7 +9564,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(valueSelector, "valueSelector is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
 
-        return RxJavaPlugins.onAssembly(new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new ObservableGroupBy<>(this, keySelector, valueSelector, bufferSize, delayError));
     }
 
     /**
@@ -9611,7 +9611,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(leftEnd, "leftEnd is null");
         Objects.requireNonNull(rightEnd, "rightEnd is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return RxJavaPlugins.onAssembly(new ObservableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+        return RxJavaPlugins.onAssembly(new ObservableGroupJoin<>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
 
@@ -9939,7 +9939,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final <R> Observable<R> lift(@NonNull ObservableOperator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter, "lifter is null");
-        return RxJavaPlugins.onAssembly(new ObservableLift<R, T>(this, lifter));
+        return RxJavaPlugins.onAssembly(new ObservableLift<>(this, lifter));
     }
 
     /**
@@ -9964,7 +9964,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final <R> Observable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new ObservableMap<T, R>(this, mapper));
+        return RxJavaPlugins.onAssembly(new ObservableMap<>(this, mapper));
     }
 
     /**
@@ -11584,7 +11584,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (observer instanceof SafeObserver) {
             subscribe(observer);
         } else {
-            subscribe(new SafeObserver<T>(observer));
+            subscribe(new SafeObserver<>(observer));
         }
     }
 
@@ -12352,7 +12352,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Observable<T> sorted() {
-        return toList().toObservable().map(Functions.listSorter(Functions.<T>naturalComparator())).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toObservable().map(Functions.listSorter(Functions.naturalComparator())).flatMapIterable(Functions.identity());
     }
 
     /**
@@ -12377,7 +12377,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final Observable<T> sorted(@NonNull Comparator<? super T> sortFunction) {
         Objects.requireNonNull(sortFunction, "sortFunction is null");
-        return toList().toObservable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toObservable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.identity());
     }
 
     /**
@@ -14309,7 +14309,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return map(Functions.<T>timestampWith(unit, scheduler));
+        return map(Functions.timestampWith(unit, scheduler));
     }
 
     /**
@@ -14396,7 +14396,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final Single<@NonNull List<T>> toList(int capacityHint) {
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        return RxJavaPlugins.onAssembly(new ObservableToListSingle<T, List<T>>(this, capacityHint));
+        return RxJavaPlugins.onAssembly(new ObservableToListSingle<>(this, capacityHint));
     }
 
     /**
@@ -14463,7 +14463,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @NonNull
     public final <K> Single<@NonNull Map<K, T>> toMap(@NonNull Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
-        return collect(HashMapSupplier.<K, T>asSupplier(), Functions.toMapKeySelector(keySelector));
+        return collect(HashMapSupplier.asSupplier(), Functions.toMapKeySelector(keySelector));
     }
 
     /**
@@ -14501,7 +14501,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(HashMapSupplier.<K, V>asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
+        return collect(HashMapSupplier.asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
     /**
@@ -14568,8 +14568,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <K> Single<@NonNull Map<K, Collection<T>>> toMultimap(@NonNull Function<? super T, ? extends K> keySelector) {
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        Function<? super T, ? extends T> valueSelector = (Function)Functions.identity();
+        Function<? super T, ? extends T> valueSelector = Functions.identity();
         Supplier<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asSupplier();
         Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
@@ -14684,7 +14683,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             @NonNull Function<? super T, ? extends V> valueSelector,
             @NonNull Supplier<Map<K, Collection<V>>> mapSupplier
     ) {
-        return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.<V, K>asFunction());
+        return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.asFunction());
     }
 
     /**
@@ -14864,7 +14863,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Single<@NonNull List<T>> toSortedList(int capacityHint) {
-        return toSortedList(Functions.<T>naturalOrder(), capacityHint);
+        return toSortedList(Functions.naturalOrder(), capacityHint);
     }
 
     /**
@@ -14992,7 +14991,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -15026,7 +15025,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15062,7 +15061,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15104,7 +15103,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -15138,7 +15137,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -15176,7 +15175,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -15215,7 +15214,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15252,7 +15251,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15292,7 +15291,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15334,7 +15333,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -15381,7 +15380,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15413,7 +15412,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15450,7 +15449,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15487,7 +15486,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -15766,7 +15765,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <U, R> Observable<R> zipWith(@NonNull Iterable<U> other, @NonNull BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return RxJavaPlugins.onAssembly(new ObservableZipIterable<T, U, R>(this, other, zipper));
+        return RxJavaPlugins.onAssembly(new ObservableZipIterable<>(this, other, zipper));
     }
 
     /**
@@ -16127,7 +16126,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).firstStage(Optional.empty());
@@ -16161,7 +16160,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).singleStage(Optional.empty());
@@ -16194,7 +16193,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).lastStage(Optional.empty());
@@ -16356,7 +16355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Stream<T> blockingStream(int capacityHint) {
         Iterator<T> iterator = blockingIterable(capacityHint).iterator();
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false)
-                .onClose(() -> ((Disposable)iterator).dispose());
+                .onClose(((Disposable) iterator)::dispose);
     }
 
     /**

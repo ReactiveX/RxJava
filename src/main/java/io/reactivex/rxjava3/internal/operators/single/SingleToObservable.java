@@ -44,7 +44,7 @@ public final class SingleToObservable<T> extends Observable<T> {
      * @since 2.2
      */
     public static <T> SingleObserver<T> create(Observer<? super T> downstream) {
-        return new SingleToObservableObserver<T>(downstream);
+        return new SingleToObservableObserver<>(downstream);
     }
 
     static final class SingleToObservableObserver<T>

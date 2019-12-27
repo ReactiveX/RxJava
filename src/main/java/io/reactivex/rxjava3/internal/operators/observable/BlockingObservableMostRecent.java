@@ -40,7 +40,7 @@ public final class BlockingObservableMostRecent<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
+        MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<>(initialValue);
 
         source.subscribe(mostRecentObserver);
 

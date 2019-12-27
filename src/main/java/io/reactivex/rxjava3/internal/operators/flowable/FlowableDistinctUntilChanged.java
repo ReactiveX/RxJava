@@ -37,9 +37,9 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
-            source.subscribe(new DistinctUntilChangedConditionalSubscriber<T, K>(cs, keySelector, comparer));
+            source.subscribe(new DistinctUntilChangedConditionalSubscriber<>(cs, keySelector, comparer));
         } else {
-            source.subscribe(new DistinctUntilChangedSubscriber<T, K>(s, keySelector, comparer));
+            source.subscribe(new DistinctUntilChangedSubscriber<>(s, keySelector, comparer));
         }
     }
 

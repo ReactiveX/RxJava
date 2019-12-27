@@ -56,7 +56,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
     protected void subscribeActual(Subscriber<? super R> s) {
 
         JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+                new JoinSubscription<>(s, leftEnd, rightEnd, resultSelector);
 
         s.onSubscribe(parent);
 
@@ -116,10 +116,10 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             this.downstream = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
-            this.lefts = new LinkedHashMap<Integer, TLeft>();
-            this.rights = new LinkedHashMap<Integer, TRight>();
-            this.error = new AtomicReference<Throwable>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
+            this.lefts = new LinkedHashMap<>();
+            this.rights = new LinkedHashMap<>();
+            this.error = new AtomicReference<>();
             this.leftEnd = leftEnd;
             this.rightEnd = rightEnd;
             this.resultSelector = resultSelector;

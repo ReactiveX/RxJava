@@ -50,10 +50,10 @@ final Scheduler scheduler;
         Worker worker = scheduler.createWorker();
 
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new ObserveOnConditionalSubscriber<T>(
+            source.subscribe(new ObserveOnConditionalSubscriber<>(
                     (ConditionalSubscriber<? super T>) s, worker, delayError, prefetch));
         } else {
-            source.subscribe(new ObserveOnSubscriber<T>(s, worker, delayError, prefetch));
+            source.subscribe(new ObserveOnSubscriber<>(s, worker, delayError, prefetch));
         }
     }
 
@@ -289,7 +289,7 @@ final Scheduler scheduler;
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
 
@@ -533,7 +533,7 @@ final Scheduler scheduler;
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
 

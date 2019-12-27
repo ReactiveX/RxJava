@@ -40,11 +40,11 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         int n = sources.length;
 
         if (n == 1) {
-            sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new SingletonArrayFunc()));
+            sources[0].subscribe(new MaybeMap.MapMaybeObserver<>(observer, new SingletonArrayFunc()));
             return;
         }
 
-        ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
+        ZipCoordinator<T, R> parent = new ZipCoordinator<>(observer, n, zipper);
 
         observer.onSubscribe(parent);
 
@@ -82,7 +82,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             this.zipper = zipper;
             ZipMaybeObserver<T>[] o = new ZipMaybeObserver[n];
             for (int i = 0; i < n; i++) {
-                o[i] = new ZipMaybeObserver<T>(this, i);
+                o[i] = new ZipMaybeObserver<>(this, i);
             }
             this.observers = o;
             this.values = new Object[n];

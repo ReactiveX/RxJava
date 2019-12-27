@@ -38,7 +38,7 @@ public final class FlowableFromSupplier<T> extends Flowable<T> implements Suppli
 
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);
+        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<>(s);
         s.onSubscribe(deferred);
 
         T t;

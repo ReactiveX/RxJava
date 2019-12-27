@@ -71,7 +71,7 @@ public final class CompletableToObservable<T> extends Observable<T> {
         }
 
         @Override
-        public Void poll() throws Exception {
+        public Void poll() {
             return null; // always empty
         }
 

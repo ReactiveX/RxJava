@@ -52,7 +52,7 @@ public final class MaybeConcatIterable<T> extends Flowable<T> {
             return;
         }
 
-        ConcatMaybeObserver<T> parent = new ConcatMaybeObserver<T>(s, it);
+        ConcatMaybeObserver<T> parent = new ConcatMaybeObserver<>(s, it);
         s.onSubscribe(parent);
         parent.drain();
     }
@@ -80,7 +80,7 @@ public final class MaybeConcatIterable<T> extends Flowable<T> {
             this.sources = sources;
             this.requested = new AtomicLong();
             this.disposables = new SequentialDisposable();
-            this.current = new AtomicReference<Object>(NotificationLite.COMPLETE); // as if a previous completed
+            this.current = new AtomicReference<>(NotificationLite.COMPLETE); // as if a previous completed
         }
 
         @Override

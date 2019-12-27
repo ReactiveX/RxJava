@@ -38,12 +38,12 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new ElementAtSubscriber<T>(observer, index, defaultValue));
+        source.subscribe(new ElementAtSubscriber<>(observer, index, defaultValue));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, defaultValue, true));
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<>(source, index, defaultValue, true));
     }
 
     static final class ElementAtSubscriber<T> implements FlowableSubscriber<T>, Disposable {

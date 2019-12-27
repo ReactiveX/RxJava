@@ -53,7 +53,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new MaybePeekObserver<T>(observer, this));
+        source.subscribe(new MaybePeekObserver<>(observer, this));
     }
 
     static final class MaybePeekObserver<T> implements MaybeObserver<T>, Disposable {

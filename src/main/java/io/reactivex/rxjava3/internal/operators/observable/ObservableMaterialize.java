@@ -25,7 +25,7 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super Notification<T>> t) {
-        source.subscribe(new MaterializeObserver<T>(t));
+        source.subscribe(new MaterializeObserver<>(t));
     }
 
     static final class MaterializeObserver<T> implements Observer<T>, Disposable {

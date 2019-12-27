@@ -33,7 +33,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
 
     @Override
     public void subscribeActual(SingleObserver<? super T> t) {
-        source.subscribe(new SingleElementObserver<T>(t, defaultValue));
+        source.subscribe(new SingleElementObserver<>(t, defaultValue));
     }
 
     static final class SingleElementObserver<T> implements Observer<T>, Disposable {

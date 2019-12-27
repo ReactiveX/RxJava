@@ -39,7 +39,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new FlatMapMaybeObserver<T, R>(observer, mapper));
+        source.subscribe(new FlatMapMaybeObserver<>(observer, mapper));
     }
 
     static final class FlatMapMaybeObserver<T, R>

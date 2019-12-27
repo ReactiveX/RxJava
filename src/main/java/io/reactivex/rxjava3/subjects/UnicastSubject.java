@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 /**
  * A Subject that queues up events until a single {@link Observer} subscribes to it, replays
  * those events to it until the {@code Observer} catches up and then switches to relaying events live to
- * this single {@code Observer} until this {@code UnicastSubject} terminates or the {@code Observer} unsubscribes.
+ * this single {@code Observer} until this {@code UnicastSubject} terminates or the {@code Observer} disposes.
  * <p>
  * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.png" alt="">
  * <p>
@@ -48,10 +48,10 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *     optionally delays an error it receives and replays it after the regular items have been emitted.</li>
  * <li>{@link #create(int, Runnable)} - creates an empty, unbounded {@code UnicastSubject}
  *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
- *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} unsubscribes.</li>
+ *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} disposes.</li>
  * <li>{@link #create(int, Runnable, boolean)} - creates an empty, unbounded {@code UnicastSubject}
  *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
- *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} unsubscribes
+ *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} disposes
  *     and optionally delays an error it receives and replays it after the regular items have been emitted.</li>
  * </ul>
  * <p>
@@ -510,7 +510,7 @@ public final class UnicastSubject<T> extends Subject<T> {
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             return queue.poll();
         }
 

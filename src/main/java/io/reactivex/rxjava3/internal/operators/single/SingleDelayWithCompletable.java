@@ -33,7 +33,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        other.subscribe(new OtherObserver<T>(observer, source));
+        other.subscribe(new OtherObserver<>(observer, source));
     }
 
     static final class OtherObserver<T>
@@ -66,7 +66,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
 
         @Override
         public void onComplete() {
-            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
+            source.subscribe(new ResumeSingleObserver<>(this, downstream));
         }
 
         @Override

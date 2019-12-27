@@ -50,7 +50,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
     @Override
     protected void subscribeActual(Subscriber<? super T> subscriber) {
-        source.subscribe(new FlatMapCompletableMainSubscriber<T>(subscriber, mapper, delayErrors, maxConcurrency));
+        source.subscribe(new FlatMapCompletableMainSubscriber<>(subscriber, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapCompletableMainSubscriber<T> extends BasicIntQueueSubscription<T>
@@ -171,7 +171,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             return null; // always empty
         }
 

@@ -45,7 +45,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             return;
         }
 
-        GeneratorDisposable<T, S> gd = new GeneratorDisposable<T, S>(observer, generator, disposeState, state);
+        GeneratorDisposable<T, S> gd = new GeneratorDisposable<>(observer, generator, disposeState, state);
         observer.onSubscribe(gd);
         gd.run();
     }

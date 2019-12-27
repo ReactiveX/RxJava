@@ -76,7 +76,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
             return;
         }
-        source.subscribe(new FlattenIterableSubscriber<T, R>(s, mapper, prefetch));
+        source.subscribe(new FlattenIterableSubscriber<>(s, mapper, prefetch));
     }
 
     /**

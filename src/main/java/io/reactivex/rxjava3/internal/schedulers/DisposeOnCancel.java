@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.internal.schedulers;
 
 import java.util.concurrent.*;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
@@ -46,13 +47,12 @@ final class DisposeOnCancel implements Future<Object> {
     }
 
     @Override
-    public Object get() throws InterruptedException, ExecutionException {
+    public Object get() {
         return null;
     }
 
     @Override
-    public Object get(long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public Object get(long timeout, @NonNull TimeUnit unit) {
         return null;
     }
 }

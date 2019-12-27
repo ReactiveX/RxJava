@@ -48,7 +48,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
     public SpscLinkedArrayQueue(final int bufferSize) {
         int p2capacity = Pow2.roundToPowerOfTwo(Math.max(8, bufferSize));
         int mask = p2capacity - 1;
-        AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<Object>(p2capacity + 1);
+        AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<>(p2capacity + 1);
         producerBuffer = buffer;
         producerMask = mask;
         adjustLookAheadStep(p2capacity);
@@ -100,7 +100,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
     private void resize(final AtomicReferenceArray<Object> oldBuffer, final long currIndex, final int offset, final T e,
             final long mask) {
         final int capacity = oldBuffer.length();
-        final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
+        final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<>(capacity);
         producerBuffer = newBuffer;
         producerLookAhead = currIndex + mask - 1;
         soElement(newBuffer, offset, e); // StoreStore
@@ -247,7 +247,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
         buffer.lazySet(offset, e);
     }
 
-    private static <E> Object lvElement(AtomicReferenceArray<Object> buffer, int offset) {
+    private static Object lvElement(AtomicReferenceArray<Object> buffer, int offset) {
         return buffer.get(offset);
     }
 
@@ -273,7 +273,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
             soProducerIndex(p + 2);
         } else {
             final int capacity = buffer.length();
-            final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
+            final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<>(capacity);
             producerBuffer = newBuffer;
 
             pi = calcWrappedOffset(p, m);

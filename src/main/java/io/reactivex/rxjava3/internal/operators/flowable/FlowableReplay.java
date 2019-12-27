@@ -56,7 +56,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     public static <U, R> Flowable<R> multicastSelector(
             final Supplier<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
-        return new MulticastFlowable<R, U>(connectableFactory, selector);
+        return new MulticastFlowable<>(connectableFactory, selector);
     }
 
     /**
@@ -83,7 +83,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new ReplayBufferSupplier<T>(bufferSize, eagerTruncate));
+        return create(source, new ReplayBufferSupplier<>(bufferSize, eagerTruncate));
     }
 
     /**
@@ -114,7 +114,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize, boolean eagerTruncate) {
-        return create(source, new ScheduledReplayBufferSupplier<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate));
+        return create(source, new ScheduledReplayBufferSupplier<>(bufferSize, maxAge, unit, scheduler, eagerTruncate));
     }
 
     /**
@@ -126,9 +126,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     static <T> ConnectableFlowable<T> create(Flowable<T> source,
             final Supplier<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
-        final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
-        Publisher<T> onSubscribe = new ReplayPublisher<T>(curr, bufferFactory);
-        return RxJavaPlugins.onAssembly(new FlowableReplay<T>(onSubscribe, source, curr, bufferFactory));
+        final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<>();
+        Publisher<T> onSubscribe = new ReplayPublisher<>(curr, bufferFactory);
+        return RxJavaPlugins.onAssembly(new FlowableReplay<>(onSubscribe, source, curr, bufferFactory));
     }
 
     private FlowableReplay(Publisher<T> onSubscribe, Flowable<T> source,
@@ -179,7 +179,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 // create a new subscriber-to-source
-                ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
+                ReplaySubscriber<T> u = new ReplaySubscriber<>(buf);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived
@@ -255,7 +255,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
             this.management = new AtomicInteger();
-            this.subscribers = new AtomicReference<InnerSubscription<T>[]>(EMPTY);
+            this.subscribers = new AtomicReference<>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
         }
 
@@ -1004,7 +1004,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         Object enterTransform(Object value, boolean terminal) {
-            return new Timed<Object>(value, terminal ? Long.MAX_VALUE : scheduler.now(unit), unit);
+            return new Timed<>(value, terminal ? Long.MAX_VALUE : scheduler.now(unit), unit);
         }
 
         @Override
@@ -1128,7 +1128,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 return;
             }
 
-            final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(child);
+            final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<>(child);
 
             observable.subscribe(srw);
 
@@ -1187,7 +1187,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public ReplayBuffer<T> get() {
-            return new SizeBoundReplayBuffer<T>(bufferSize, eagerTruncate);
+            return new SizeBoundReplayBuffer<>(bufferSize, eagerTruncate);
         }
     }
 
@@ -1209,7 +1209,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public ReplayBuffer<T> get() {
-            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler, eagerTruncate);
+            return new SizeAndTimeBoundReplayBuffer<>(bufferSize, maxAge, unit, scheduler, eagerTruncate);
         }
     }
 
@@ -1241,7 +1241,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         return;
                     }
                     // create a new subscriber to source
-                    ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
+                    ReplaySubscriber<T> u = new ReplaySubscriber<>(buf);
                     // let's try setting it as the current subscriber-to-source
                     if (!curr.compareAndSet(null, u)) {
                         // didn't work, maybe someone else did it or the current subscriber
@@ -1253,7 +1253,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 // create the backpressure-managing producer for this child
-                InnerSubscription<T> inner = new InnerSubscription<T>(r, child);
+                InnerSubscription<T> inner = new InnerSubscription<>(r, child);
                 // the producer has been registered with the current subscriber-to-source so
                 // at least it will receive the next terminal event
                 // setting the producer will trigger the first request to be considered by
@@ -1282,7 +1282,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     static final class DefaultUnboundedFactory implements Supplier<Object> {
         @Override
         public Object get() {
-            return new UnboundedReplayBuffer<Object>(16);
+            return new UnboundedReplayBuffer<>(16);
         }
     }
 }

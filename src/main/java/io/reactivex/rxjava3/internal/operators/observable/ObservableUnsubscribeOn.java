@@ -29,7 +29,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new UnsubscribeObserver<T>(t, scheduler));
+        source.subscribe(new UnsubscribeObserver<>(t, scheduler));
     }
 
     static final class UnsubscribeObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {

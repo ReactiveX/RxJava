@@ -37,11 +37,11 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        SerializedSubscriber<T> serial = new SerializedSubscriber<T>(s);
+        SerializedSubscriber<T> serial = new SerializedSubscriber<>(s);
         if (emitLast) {
-            source.subscribe(new SampleMainEmitLast<T>(serial, other));
+            source.subscribe(new SampleMainEmitLast<>(serial, other));
         } else {
-            source.subscribe(new SampleMainNoLast<T>(serial, other));
+            source.subscribe(new SampleMainNoLast<>(serial, other));
         }
     }
 
@@ -54,7 +54,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         final AtomicLong requested = new AtomicLong();
 
-        final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> other = new AtomicReference<>();
 
         Subscription upstream;
 
@@ -69,7 +69,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
                 this.upstream = s;
                 downstream.onSubscribe(this);
                 if (other.get() == null) {
-                    sampler.subscribe(new SamplerSubscriber<T>(this));
+                    sampler.subscribe(new SamplerSubscriber<>(this));
                     s.request(Long.MAX_VALUE);
                 }
             }

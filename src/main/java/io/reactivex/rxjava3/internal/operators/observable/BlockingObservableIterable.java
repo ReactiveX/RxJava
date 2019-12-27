@@ -35,7 +35,7 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        BlockingObservableIterator<T> it = new BlockingObservableIterator<T>(bufferSize);
+        BlockingObservableIterator<T> it = new BlockingObservableIterator<>(bufferSize);
         source.subscribe(it);
         return it;
     }
@@ -56,7 +56,7 @@ public final class BlockingObservableIterable<T> implements Iterable<T> {
         volatile Throwable error;
 
         BlockingObservableIterator(int batchSize) {
-            this.queue = new SpscLinkedArrayQueue<T>(batchSize);
+            this.queue = new SpscLinkedArrayQueue<>(batchSize);
             this.lock = new ReentrantLock();
             this.condition = lock.newCondition();
         }

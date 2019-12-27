@@ -40,7 +40,7 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new LastObserver<T>(observer, defaultItem));
+        source.subscribe(new LastObserver<>(observer, defaultItem));
     }
 
     static final class LastObserver<T> implements Observer<T>, Disposable {

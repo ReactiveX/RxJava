@@ -56,7 +56,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> downstream) {
-        source.subscribe(new SingleFlatMapPublisherObserver<T, R>(downstream, mapper));
+        source.subscribe(new SingleFlatMapPublisherObserver<>(downstream, mapper));
     }
 
     static final class SingleFlatMapPublisherObserver<S, T> extends AtomicLong
@@ -73,7 +73,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
                 Function<? super S, ? extends Publisher<? extends T>> mapper) {
             this.downstream = actual;
             this.mapper = mapper;
-            this.parent = new AtomicReference<Subscription>();
+            this.parent = new AtomicReference<>();
         }
 
         @Override

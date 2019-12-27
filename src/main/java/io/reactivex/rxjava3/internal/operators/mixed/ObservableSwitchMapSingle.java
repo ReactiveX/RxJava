@@ -52,7 +52,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
-            source.subscribe(new SwitchMapSingleMainObserver<T, R>(observer, mapper, delayErrors));
+            source.subscribe(new SwitchMapSingleMainObserver<>(observer, mapper, delayErrors));
         }
     }
 
@@ -72,7 +72,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
         final AtomicReference<SwitchMapSingleObserver<R>> inner;
 
         static final SwitchMapSingleObserver<Object> INNER_DISPOSED =
-                new SwitchMapSingleObserver<Object>(null);
+                new SwitchMapSingleObserver<>(null);
 
         Disposable upstream;
 
@@ -87,7 +87,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapSingleObserver<R>>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override
@@ -118,7 +118,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
                 return;
             }
 
-            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<R>(this);
+            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<>(this);
 
             for (;;) {
                 current = inner.get();

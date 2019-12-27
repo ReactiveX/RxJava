@@ -18,6 +18,7 @@ import static io.reactivex.rxjava3.internal.util.ExceptionHelper.timeoutMessage;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
@@ -40,7 +41,7 @@ implements SingleObserver<T>, Future<T>, Disposable {
 
     public FutureSingleObserver() {
         super(1);
-        this.upstream = new AtomicReference<Disposable>();
+        this.upstream = new AtomicReference<>();
     }
 
     @Override
@@ -89,7 +90,7 @@ implements SingleObserver<T>, Future<T>, Disposable {
     }
 
     @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public T get(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         if (getCount() != 0) {
             BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {

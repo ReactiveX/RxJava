@@ -26,7 +26,7 @@ public final class FlowableFromObservable<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        upstream.subscribe(new SubscriberObserver<T>(s));
+        upstream.subscribe(new SubscriberObserver<>(s));
     }
 
     static final class SubscriberObserver<T> implements Observer<T>, Subscription {

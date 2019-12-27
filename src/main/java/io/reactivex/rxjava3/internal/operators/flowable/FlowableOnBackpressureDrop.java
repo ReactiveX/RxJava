@@ -45,7 +45,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        this.source.subscribe(new BackpressureDropSubscriber<T>(s, onDrop));
+        this.source.subscribe(new BackpressureDropSubscriber<>(s, onDrop));
     }
 
     static final class BackpressureDropSubscriber<T>

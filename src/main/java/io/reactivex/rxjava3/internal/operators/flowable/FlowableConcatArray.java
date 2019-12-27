@@ -34,7 +34,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        ConcatArraySubscriber<T> parent = new ConcatArraySubscriber<T>(sources, delayError, s);
+        ConcatArraySubscriber<T> parent = new ConcatArraySubscriber<>(sources, delayError, s);
         s.onSubscribe(parent);
 
         parent.onComplete();
@@ -82,7 +82,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
             if (delayError) {
                 List<Throwable> list = errors;
                 if (list == null) {
-                    list = new ArrayList<Throwable>(sources.length - index + 1);
+                    list = new ArrayList<>(sources.length - index + 1);
                     errors = list;
                 }
                 list.add(t);
@@ -121,7 +121,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
                         if (delayError) {
                             List<Throwable> list = errors;
                             if (list == null) {
-                                list = new ArrayList<Throwable>(n - i + 1);
+                                list = new ArrayList<>(n - i + 1);
                                 errors = list;
                             }
                             list.add(ex);

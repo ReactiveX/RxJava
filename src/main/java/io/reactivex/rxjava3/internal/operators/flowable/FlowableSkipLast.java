@@ -30,7 +30,7 @@ public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SkipLastSubscriber<T>(s, skip));
+        source.subscribe(new SkipLastSubscriber<>(s, skip));
     }
 
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {

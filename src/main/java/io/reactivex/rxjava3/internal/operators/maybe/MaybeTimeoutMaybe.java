@@ -42,7 +42,7 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        TimeoutMainMaybeObserver<T, U> parent = new TimeoutMainMaybeObserver<T, U>(observer, fallback);
+        TimeoutMainMaybeObserver<T, U> parent = new TimeoutMainMaybeObserver<>(observer, fallback);
         observer.onSubscribe(parent);
 
         other.subscribe(parent.other);
@@ -66,9 +66,9 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
 
         TimeoutMainMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> fallback) {
             this.downstream = actual;
-            this.other = new TimeoutOtherMaybeObserver<T, U>(this);
+            this.other = new TimeoutOtherMaybeObserver<>(this);
             this.fallback = fallback;
-            this.otherObserver = fallback != null ? new TimeoutFallbackMaybeObserver<T>(actual) : null;
+            this.otherObserver = fallback != null ? new TimeoutFallbackMaybeObserver<>(actual) : null;
         }
 
         @Override

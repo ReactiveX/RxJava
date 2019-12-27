@@ -41,7 +41,7 @@ public final class SingleDoFinally<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new DoFinallyObserver<T>(observer, onFinally));
+        source.subscribe(new DoFinallyObserver<>(observer, onFinally));
     }
 
     static final class DoFinallyObserver<T> extends AtomicInteger implements SingleObserver<T>, Disposable {

@@ -35,7 +35,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new ObserveOnMaybeObserver<T>(observer, scheduler));
+        source.subscribe(new ObserveOnMaybeObserver<>(observer, scheduler));
     }
 
     static final class ObserveOnMaybeObserver<T>

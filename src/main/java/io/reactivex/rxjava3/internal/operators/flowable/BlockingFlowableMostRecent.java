@@ -40,7 +40,7 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        MostRecentSubscriber<T> mostRecentSubscriber = new MostRecentSubscriber<T>(initialValue);
+        MostRecentSubscriber<T> mostRecentSubscriber = new MostRecentSubscriber<>(initialValue);
 
         source.subscribe(mostRecentSubscriber);
 

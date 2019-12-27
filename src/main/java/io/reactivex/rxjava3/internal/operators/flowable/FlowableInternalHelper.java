@@ -47,7 +47,7 @@ public final class FlowableInternalHelper {
     }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
-        return new SimpleGenerator<T, S>(consumer);
+        return new SimpleGenerator<>(consumer);
     }
 
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
@@ -65,7 +65,7 @@ public final class FlowableInternalHelper {
     }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
-        return new SimpleBiGenerator<T, S>(consumer);
+        return new SimpleBiGenerator<>(consumer);
     }
 
     static final class ItemDelayFunction<T, U> implements Function<T, Publisher<T>> {
@@ -78,12 +78,12 @@ public final class FlowableInternalHelper {
         @Override
         public Publisher<T> apply(final T v) throws Throwable {
             Publisher<U> p = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
-            return new FlowableTakePublisher<U>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            return new FlowableTakePublisher<>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
     public static <T, U> Function<T, Publisher<T>> itemDelay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
-        return new ItemDelayFunction<T, U>(itemDelay);
+        return new ItemDelayFunction<>(itemDelay);
     }
 
     static final class SubscriberOnNext<T> implements Consumer<T> {
@@ -94,7 +94,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void accept(T v) throws Exception {
+        public void accept(T v) {
             subscriber.onNext(v);
         }
     }
@@ -107,7 +107,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
+        public void accept(Throwable v) {
             subscriber.onError(v);
         }
     }
@@ -120,21 +120,21 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void run() throws Exception {
+        public void run() {
             subscriber.onComplete();
         }
     }
 
     public static <T> Consumer<T> subscriberOnNext(Subscriber<T> subscriber) {
-        return new SubscriberOnNext<T>(subscriber);
+        return new SubscriberOnNext<>(subscriber);
     }
 
     public static <T> Consumer<Throwable> subscriberOnError(Subscriber<T> subscriber) {
-        return new SubscriberOnError<T>(subscriber);
+        return new SubscriberOnError<>(subscriber);
     }
 
     public static <T> Action subscriberOnComplete(Subscriber<T> subscriber) {
-        return new SubscriberOnComplete<T>(subscriber);
+        return new SubscriberOnComplete<>(subscriber);
     }
 
     static final class FlatMapWithCombinerInner<U, R, T> implements Function<U, R> {
@@ -166,14 +166,14 @@ public final class FlowableInternalHelper {
         public Publisher<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             Publisher<U> u = (Publisher<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
-            return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
+            return new FlowableMapPublisher<>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
 
     public static <T, U, R> Function<T, Publisher<R>> flatMapWithCombiner(
             final Function<? super T, ? extends Publisher<? extends U>> mapper,
                     final BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return new FlatMapWithCombinerOuter<T, R, U>(combiner, mapper);
+        return new FlatMapWithCombinerOuter<>(combiner, mapper);
     }
 
     static final class FlatMapIntoIterable<T, U> implements Function<T, Publisher<U>> {
@@ -185,34 +185,34 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<U> apply(T t) throws Throwable {
-            return new FlowableFromIterable<U>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
+            return new FlowableFromIterable<>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 
     public static <T, U> Function<T, Publisher<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new FlatMapIntoIterable<T, U>(mapper);
+        return new FlatMapIntoIterable<>(mapper);
     }
 
     public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent) {
-        return new ReplaySupplier<T>(parent);
+        return new ReplaySupplier<>(parent);
     }
 
     public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, boolean eagerTruncate) {
-        return new BufferedReplaySupplier<T>(parent, bufferSize, eagerTruncate);
+        return new BufferedReplaySupplier<>(parent, bufferSize, eagerTruncate);
     }
 
     public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
-        return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
+        return new BufferedTimedReplay<>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
     public static <T> Supplier<ConnectableFlowable<T>> replaySupplier(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
-        return new TimedReplay<T>(parent, time, unit, scheduler, eagerTruncate);
+        return new TimedReplay<>(parent, time, unit, scheduler, eagerTruncate);
     }
 
     public enum RequestMax implements Consumer<Subscription> {
         INSTANCE;
         @Override
-        public void accept(Subscription t) throws Exception {
+        public void accept(Subscription t) {
             t.request(Long.MAX_VALUE);
         }
     }

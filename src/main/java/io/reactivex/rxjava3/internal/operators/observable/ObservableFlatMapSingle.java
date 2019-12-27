@@ -44,7 +44,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlatMapSingleObserver<T, R>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapSingleObserver<>(observer, mapper, delayErrors));
     }
 
     static final class FlatMapSingleObserver<T, R>
@@ -79,7 +79,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
             this.set = new CompositeDisposable();
             this.errors = new AtomicThrowable();
             this.active = new AtomicInteger(1);
-            this.queue = new AtomicReference<SpscLinkedArrayQueue<R>>();
+            this.queue = new AtomicReference<>();
         }
 
         @Override
@@ -177,7 +177,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
                 if (current != null) {
                     return current;
                 }
-                current = new SpscLinkedArrayQueue<R>(Observable.bufferSize());
+                current = new SpscLinkedArrayQueue<>(Observable.bufferSize());
                 if (queue.compareAndSet(null, current)) {
                     return current;
                 }

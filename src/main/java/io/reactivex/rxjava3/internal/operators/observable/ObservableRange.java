@@ -71,7 +71,7 @@ public final class ObservableRange extends Observable<Integer> {
 
         @Nullable
         @Override
-        public Integer poll() throws Exception {
+        public Integer poll() {
             long i = index;
             if (i != end) {
                 index = i + 1;

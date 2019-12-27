@@ -34,7 +34,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceObserver<T, U>(new SerializedObserver<T>(t), debounceSelector));
+        source.subscribe(new DebounceObserver<>(new SerializedObserver<>(t), debounceSelector));
     }
 
     static final class DebounceObserver<T, U>
@@ -44,7 +44,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
         Disposable upstream;
 
-        final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> debouncer = new AtomicReference<>();
 
         volatile long index;
 
@@ -89,7 +89,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 return;
             }
 
-            DebounceInnerObserver<T, U> dis = new DebounceInnerObserver<T, U>(this, idx, t);
+            DebounceInnerObserver<T, U> dis = new DebounceInnerObserver<>(this, idx, t);
 
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);

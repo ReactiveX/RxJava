@@ -52,7 +52,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, observer)) {
-            source.subscribe(new SwitchMapMaybeMainObserver<T, R>(observer, mapper, delayErrors));
+            source.subscribe(new SwitchMapMaybeMainObserver<>(observer, mapper, delayErrors));
         }
     }
 
@@ -72,7 +72,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
         final AtomicReference<SwitchMapMaybeObserver<R>> inner;
 
         static final SwitchMapMaybeObserver<Object> INNER_DISPOSED =
-                new SwitchMapMaybeObserver<Object>(null);
+                new SwitchMapMaybeObserver<>(null);
 
         Disposable upstream;
 
@@ -87,7 +87,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapMaybeObserver<R>>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override
@@ -118,7 +118,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
                 return;
             }
 
-            SwitchMapMaybeObserver<R> observer = new SwitchMapMaybeObserver<R>(this);
+            SwitchMapMaybeObserver<R> observer = new SwitchMapMaybeObserver<>(this);
 
             for (;;) {
                 current = inner.get();

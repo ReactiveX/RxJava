@@ -71,7 +71,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
 
         long count;
 
-        final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> resource = new AtomicReference<>();
 
         IntervalRangeSubscriber(Subscriber<? super Long> actual, long start, long end) {
             this.downstream = actual;

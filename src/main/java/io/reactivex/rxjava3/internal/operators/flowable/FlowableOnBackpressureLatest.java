@@ -29,7 +29,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new BackpressureLatestSubscriber<T>(s));
+        source.subscribe(new BackpressureLatestSubscriber<>(s));
     }
 
     static final class BackpressureLatestSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
@@ -47,7 +47,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
         final AtomicLong requested = new AtomicLong();
 
-        final AtomicReference<T> current = new AtomicReference<T>();
+        final AtomicReference<T> current = new AtomicReference<>();
 
         BackpressureLatestSubscriber(Subscriber<? super T> downstream) {
             this.downstream = downstream;

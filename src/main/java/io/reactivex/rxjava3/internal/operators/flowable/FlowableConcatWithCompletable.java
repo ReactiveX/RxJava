@@ -40,7 +40,7 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ConcatWithSubscriber<T>(s, other));
+        source.subscribe(new ConcatWithSubscriber<>(s, other));
     }
 
     static final class ConcatWithSubscriber<T>

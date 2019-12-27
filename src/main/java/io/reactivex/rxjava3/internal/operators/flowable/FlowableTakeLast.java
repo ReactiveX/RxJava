@@ -32,7 +32,7 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeLastSubscriber<T>(s, count));
+        source.subscribe(new TakeLastSubscriber<>(s, count));
     }
 
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {

@@ -28,7 +28,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
 
     @Override
     protected void subscribeActual(final Subscriber<? super T> t) {
-        source.subscribe(new IgnoreElementsSubscriber<T>(t));
+        source.subscribe(new IgnoreElementsSubscriber<>(t));
     }
 
     static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {

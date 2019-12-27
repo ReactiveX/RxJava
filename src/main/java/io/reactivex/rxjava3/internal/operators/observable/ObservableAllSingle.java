@@ -31,12 +31,12 @@ public final class ObservableAllSingle<T> extends Single<Boolean> implements Fus
 
     @Override
     protected void subscribeActual(SingleObserver<? super Boolean> t) {
-        source.subscribe(new AllObserver<T>(t, predicate));
+        source.subscribe(new AllObserver<>(t, predicate));
     }
 
     @Override
     public Observable<Boolean> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableAll<T>(source, predicate));
+        return RxJavaPlugins.onAssembly(new ObservableAll<>(source, predicate));
     }
 
     static final class AllObserver<T> implements Observer<T>, Disposable {

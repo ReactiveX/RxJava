@@ -35,7 +35,7 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
 
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);
+        DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<>(s);
         s.onSubscribe(deferred);
 
         T v;

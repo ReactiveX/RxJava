@@ -77,7 +77,7 @@ public final class IoScheduler extends Scheduler {
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit, ThreadFactory threadFactory) {
             this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
-            this.expiringWorkerQueue = new ConcurrentLinkedQueue<ThreadWorker>();
+            this.expiringWorkerQueue = new ConcurrentLinkedQueue<>();
             this.allWorkers = new CompositeDisposable();
             this.threadFactory = threadFactory;
 
@@ -164,7 +164,7 @@ public final class IoScheduler extends Scheduler {
      */
     public IoScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
-        this.pool = new AtomicReference<CachedWorkerPool>(NONE);
+        this.pool = new AtomicReference<>(NONE);
         start();
     }
 

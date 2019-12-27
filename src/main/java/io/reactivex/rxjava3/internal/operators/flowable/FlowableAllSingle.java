@@ -35,12 +35,12 @@ public final class FlowableAllSingle<T> extends Single<Boolean> implements FuseT
 
     @Override
     protected void subscribeActual(SingleObserver<? super Boolean> observer) {
-        source.subscribe(new AllSubscriber<T>(observer, predicate));
+        source.subscribe(new AllSubscriber<>(observer, predicate));
     }
 
     @Override
     public Flowable<Boolean> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableAll<T>(source, predicate));
+        return RxJavaPlugins.onAssembly(new FlowableAll<>(source, predicate));
     }
 
     static final class AllSubscriber<T> implements FlowableSubscriber<T>, Disposable {

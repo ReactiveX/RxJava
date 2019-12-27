@@ -31,12 +31,12 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new SingleElementSubscriber<T>(observer));
+        source.subscribe(new SingleElementSubscriber<>(observer));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, null, false));
+        return RxJavaPlugins.onAssembly(new FlowableSingle<>(source, null, false));
     }
 
     static final class SingleElementSubscriber<T>

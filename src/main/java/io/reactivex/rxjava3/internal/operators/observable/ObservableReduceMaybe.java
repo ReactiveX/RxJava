@@ -41,7 +41,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new ReduceObserver<T>(observer, reducer));
+        source.subscribe(new ReduceObserver<>(observer, reducer));
     }
 
     static final class ReduceObserver<T> implements Observer<T>, Disposable {

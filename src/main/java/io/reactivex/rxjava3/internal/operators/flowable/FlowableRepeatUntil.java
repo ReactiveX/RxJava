@@ -34,7 +34,7 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
         SubscriptionArbiter sa = new SubscriptionArbiter(false);
         s.onSubscribe(sa);
 
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, until, sa, source);
         rs.subscribeNext();
     }
 

@@ -35,7 +35,7 @@ public final class MaybeUnsubscribeOn<T> extends AbstractMaybeWithUpstream<T, T>
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new UnsubscribeOnMaybeObserver<T>(observer, scheduler));
+        source.subscribe(new UnsubscribeOnMaybeObserver<>(observer, scheduler));
     }
 
     static final class UnsubscribeOnMaybeObserver<T> extends AtomicReference<Disposable>

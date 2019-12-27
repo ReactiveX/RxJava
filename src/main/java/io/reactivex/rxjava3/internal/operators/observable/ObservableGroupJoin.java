@@ -58,7 +58,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     protected void subscribeActual(Observer<? super R> observer) {
 
         GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(observer, leftEnd, rightEnd, resultSelector);
+                new GroupJoinDisposable<>(observer, leftEnd, rightEnd, resultSelector);
 
         observer.onSubscribe(parent);
 
@@ -130,10 +130,10 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
             this.downstream = actual;
             this.disposables = new CompositeDisposable();
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
-            this.lefts = new LinkedHashMap<Integer, UnicastSubject<TRight>>();
-            this.rights = new LinkedHashMap<Integer, TRight>();
-            this.error = new AtomicReference<Throwable>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
+            this.lefts = new LinkedHashMap<>();
+            this.rights = new LinkedHashMap<>();
+            this.error = new AtomicReference<>();
             this.leftEnd = leftEnd;
             this.rightEnd = rightEnd;
             this.resultSelector = resultSelector;

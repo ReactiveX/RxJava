@@ -49,7 +49,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             return;
         }
 
-        source.subscribe(new DistinctObserver<T, K>(observer, keySelector, collection));
+        source.subscribe(new DistinctObserver<>(observer, keySelector, collection));
     }
 
     static final class DistinctObserver<T, K> extends BasicFuseableObserver<T, T> {

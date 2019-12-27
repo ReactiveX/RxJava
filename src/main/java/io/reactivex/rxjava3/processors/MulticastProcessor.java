@@ -558,7 +558,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
                         }
 
                         if (as != bs) {
-                            continue outer;
+                            continue;
                         }
 
                         if (done && q.isEmpty()) {

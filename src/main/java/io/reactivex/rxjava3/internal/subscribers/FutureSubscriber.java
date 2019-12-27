@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.FlowableSubscriber;
@@ -42,7 +43,7 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
 
     public FutureSubscriber() {
         super(1);
-        this.upstream = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<>();
     }
 
     @Override
@@ -91,7 +92,7 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
     }
 
     @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public T get(long timeout, @NonNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         if (getCount() != 0) {
             BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {

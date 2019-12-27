@@ -46,7 +46,7 @@ implements HasUpstreamObservableSource<T> {
 
     public ObservablePublish(ObservableSource<T> source) {
         this.source = source;
-        this.current = new AtomicReference<PublishConnection<T>>();
+        this.current = new AtomicReference<>();
     }
 
     @Override
@@ -58,7 +58,7 @@ implements HasUpstreamObservableSource<T> {
             conn = current.get();
 
             if (conn == null || conn.isDisposed()) {
-                PublishConnection<T> fresh = new PublishConnection<T>(current);
+                PublishConnection<T> fresh = new PublishConnection<>(current);
                 if (!current.compareAndSet(conn, fresh)) {
                     continue;
                 }
@@ -89,7 +89,7 @@ implements HasUpstreamObservableSource<T> {
             conn = current.get();
             // we don't create a fresh connection if the current is terminated
             if (conn == null) {
-                PublishConnection<T> fresh = new PublishConnection<T>(current);
+                PublishConnection<T> fresh = new PublishConnection<>(current);
                 if (!current.compareAndSet(conn, fresh)) {
                     continue;
                 }
@@ -98,7 +98,7 @@ implements HasUpstreamObservableSource<T> {
             break;
         }
 
-        InnerDisposable<T> inner = new InnerDisposable<T>(observer, conn);
+        InnerDisposable<T> inner = new InnerDisposable<>(observer, conn);
         observer.onSubscribe(inner);
         if (conn.add(inner)) {
             if (inner.isDisposed()) {
@@ -152,7 +152,7 @@ implements HasUpstreamObservableSource<T> {
         PublishConnection(AtomicReference<PublishConnection<T>> current) {
             this.connect = new AtomicBoolean();
             this.current = current;
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
             lazySet(EMPTY);
         }
 

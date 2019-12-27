@@ -39,7 +39,7 @@ public final class CompletableCache extends Completable implements CompletableOb
 
     public CompletableCache(CompletableSource source) {
         this.source = source;
-        this.observers = new AtomicReference<InnerCompletableCache[]>(EMPTY);
+        this.observers = new AtomicReference<>(EMPTY);
         this.once = new AtomicBoolean();
     }
 

@@ -32,7 +32,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeSubscriber<T>(s, n));
+        source.subscribe(new TakeSubscriber<>(s, n));
     }
 
     static final class TakeSubscriber<T>
@@ -105,12 +105,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                     if (r == 0L) {
                         break;
                     }
-                    long toRequest;
-                    if (r <= n) {
-                        toRequest = r;
-                    } else {
-                        toRequest = n;
-                    }
+                    long toRequest = Math.min(r, n);
                     long u = r - toRequest;
                     if (compareAndSet(r, u)) {
                         upstream.request(toRequest);

@@ -99,15 +99,15 @@ implements FlowableSubscriber<T> {
         super(source);
         this.capacityHint = capacityHint;
         this.once = new AtomicBoolean();
-        Node<T> n = new Node<T>(capacityHint);
+        Node<T> n = new Node<>(capacityHint);
         this.head = n;
         this.tail = n;
-        this.subscribers = new AtomicReference<CacheSubscription<T>[]>(EMPTY);
+        this.subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> t) {
-        CacheSubscription<T> consumer = new CacheSubscription<T>(t, this);
+        CacheSubscription<T> consumer = new CacheSubscription<>(t, this);
         t.onSubscribe(consumer);
         add(consumer);
 
@@ -303,7 +303,7 @@ implements FlowableSubscriber<T> {
         int tailOffset = this.tailOffset;
         // if the current tail node is full, create a fresh node
         if (tailOffset == capacityHint) {
-            Node<T> n = new Node<T>(tailOffset);
+            Node<T> n = new Node<>(tailOffset);
             n.values[0] = t;
             this.tailOffset = 1;
             tail.next = n;

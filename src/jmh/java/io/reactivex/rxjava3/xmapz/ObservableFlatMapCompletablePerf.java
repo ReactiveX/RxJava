@@ -47,24 +47,21 @@ public class ObservableFlatMapCompletablePerf {
 
         observablePlain = source.flatMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Observable.empty();
             }
         });
 
         observableConvert = source.flatMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Completable.complete().toObservable();
             }
         });
 
         observableDedicated = source.flatMapCompletable(new Function<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v)
-                    throws Exception {
+            public Completable apply(Integer v) {
                 return Completable.complete();
             }
         });

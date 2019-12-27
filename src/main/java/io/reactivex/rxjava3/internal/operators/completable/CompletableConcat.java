@@ -106,9 +106,9 @@ public final class CompletableConcat extends Completable {
                 }
 
                 if (prefetch == Integer.MAX_VALUE) {
-                    queue = new SpscLinkedArrayQueue<CompletableSource>(Flowable.bufferSize());
+                    queue = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
                 } else {
-                    queue = new SpscArrayQueue<CompletableSource>(prefetch);
+                    queue = new SpscArrayQueue<>(prefetch);
                 }
 
                 downstream.onSubscribe(this);

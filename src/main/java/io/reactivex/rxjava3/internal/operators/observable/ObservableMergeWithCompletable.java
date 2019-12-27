@@ -38,7 +38,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(observer);
+        MergeWithObserver<T> parent = new MergeWithObserver<>(observer);
         observer.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
@@ -63,7 +63,7 @@ public final class ObservableMergeWithCompletable<T> extends AbstractObservableW
 
         MergeWithObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
-            this.mainDisposable = new AtomicReference<Disposable>();
+            this.mainDisposable = new AtomicReference<>();
             this.otherObserver = new OtherObserver(this);
             this.errors = new AtomicThrowable();
         }

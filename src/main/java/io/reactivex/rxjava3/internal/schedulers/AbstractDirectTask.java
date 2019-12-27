@@ -37,9 +37,9 @@ implements Disposable, SchedulerRunnableIntrospection {
 
     protected Thread runner;
 
-    protected static final FutureTask<Void> FINISHED = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null);
+    protected static final FutureTask<Void> FINISHED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
-    protected static final FutureTask<Void> DISPOSED = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null);
+    protected static final FutureTask<Void> DISPOSED = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
 
     AbstractDirectTask(Runnable runnable) {
         this.runnable = runnable;

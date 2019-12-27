@@ -50,7 +50,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new FlatMapSingleSubscriber<T, R>(s, mapper, delayErrors, maxConcurrency));
+        source.subscribe(new FlatMapSingleSubscriber<>(s, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapSingleSubscriber<T, R>
@@ -91,7 +91,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
             this.set = new CompositeDisposable();
             this.errors = new AtomicThrowable();
             this.active = new AtomicInteger(1);
-            this.queue = new AtomicReference<SpscLinkedArrayQueue<R>>();
+            this.queue = new AtomicReference<>();
         }
 
         @Override
@@ -210,7 +210,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
                 if (current != null) {
                     return current;
                 }
-                current = new SpscLinkedArrayQueue<R>(Flowable.bufferSize());
+                current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
                 if (queue.compareAndSet(null, current)) {
                     return current;
                 }

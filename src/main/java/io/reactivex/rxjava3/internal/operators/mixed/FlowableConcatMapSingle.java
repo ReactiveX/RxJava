@@ -58,7 +58,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapSingleSubscriber<T, R>(s, mapper, prefetch, errorMode));
+        source.subscribe(new ConcatMapSingleSubscriber<>(s, mapper, prefetch, errorMode));
     }
 
     static final class ConcatMapSingleSubscriber<T, R>
@@ -113,8 +113,8 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             this.errorMode = errorMode;
             this.requested = new AtomicLong();
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapSingleObserver<>(this);
+            this.queue = new SpscArrayQueue<>(prefetch);
         }
 
         @Override

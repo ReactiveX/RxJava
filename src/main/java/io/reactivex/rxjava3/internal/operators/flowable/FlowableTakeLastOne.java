@@ -25,7 +25,7 @@ public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeLastOneSubscriber<T>(s));
+        source.subscribe(new TakeLastOneSubscriber<>(s));
     }
 
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscription<T>

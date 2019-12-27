@@ -140,7 +140,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         public ExecutorWorker(Executor executor, boolean interruptibleWorker, boolean fair) {
             this.executor = executor;
-            this.queue = new MpscLinkedQueue<Runnable>();
+            this.queue = new MpscLinkedQueue<>();
             this.interruptibleWorker = interruptibleWorker;
             this.fair = fair;
         }

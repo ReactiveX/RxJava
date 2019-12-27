@@ -34,7 +34,7 @@ public final class FlowableDematerialize<T, R> extends AbstractFlowableWithUpstr
 
     @Override
     protected void subscribeActual(Subscriber<? super R> subscriber) {
-        source.subscribe(new DematerializeSubscriber<T, R>(subscriber, selector));
+        source.subscribe(new DematerializeSubscriber<>(subscriber, selector));
     }
 
     static final class DematerializeSubscriber<T, R> implements FlowableSubscriber<T>, Subscription {

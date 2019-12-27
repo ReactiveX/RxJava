@@ -40,7 +40,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(observer);
+        MergeWithObserver<T> parent = new MergeWithObserver<>(observer);
         observer.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
@@ -75,8 +75,8 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
         MergeWithObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
-            this.mainDisposable = new AtomicReference<Disposable>();
-            this.otherObserver = new OtherObserver<T>(this);
+            this.mainDisposable = new AtomicReference<>();
+            this.otherObserver = new OtherObserver<>(this);
             this.errors = new AtomicThrowable();
         }
 
@@ -157,7 +157,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
         SimplePlainQueue<T> getOrCreateQueue() {
             SimplePlainQueue<T> q = queue;
             if (q == null) {
-                q = new SpscLinkedArrayQueue<T>(bufferSize());
+                q = new SpscLinkedArrayQueue<>(bufferSize());
                 queue = q;
             }
             return q;

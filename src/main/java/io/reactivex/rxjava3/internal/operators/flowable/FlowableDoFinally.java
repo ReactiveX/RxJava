@@ -41,9 +41,9 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new DoFinallyConditionalSubscriber<T>((ConditionalSubscriber<? super T>)s, onFinally));
+            source.subscribe(new DoFinallyConditionalSubscriber<>((ConditionalSubscriber<? super T>) s, onFinally));
         } else {
-            source.subscribe(new DoFinallySubscriber<T>(s, onFinally));
+            source.subscribe(new DoFinallySubscriber<>(s, onFinally));
         }
     }
 

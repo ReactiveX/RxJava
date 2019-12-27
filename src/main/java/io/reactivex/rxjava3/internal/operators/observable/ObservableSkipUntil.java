@@ -28,13 +28,13 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
     @Override
     public void subscribeActual(Observer<? super T> child) {
 
-        final SerializedObserver<T> serial = new SerializedObserver<T>(child);
+        final SerializedObserver<T> serial = new SerializedObserver<>(child);
 
         final ArrayCompositeDisposable frc = new ArrayCompositeDisposable(2);
 
         serial.onSubscribe(frc);
 
-        final SkipUntilObserver<T> sus = new SkipUntilObserver<T>(serial, frc);
+        final SkipUntilObserver<T> sus = new SkipUntilObserver<>(serial, frc);
 
         other.subscribe(new SkipUntil(frc, sus, serial));
 

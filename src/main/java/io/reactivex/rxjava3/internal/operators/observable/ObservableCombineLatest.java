@@ -66,7 +66,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             return;
         }
 
-        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(observer, combiner, count, bufferSize, delayError);
+        LatestCoordinator<T, R> lc = new LatestCoordinator<>(observer, combiner, count, bufferSize, delayError);
         lc.subscribe(sources);
     }
 
@@ -99,10 +99,10 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             this.latest = new Object[count];
             CombinerObserver<T, R>[] as = new CombinerObserver[count];
             for (int i = 0; i < count; i++) {
-                as[i] = new CombinerObserver<T, R>(this, i);
+                as[i] = new CombinerObserver<>(this, i);
             }
             this.observers = as;
-            this.queue = new SpscLinkedArrayQueue<Object[]>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
         }
 
         public void subscribe(ObservableSource<? extends T>[] sources) {

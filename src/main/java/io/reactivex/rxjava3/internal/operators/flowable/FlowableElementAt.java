@@ -35,7 +35,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue, errorOnFewer));
+        source.subscribe(new ElementAtSubscriber<>(s, index, defaultValue, errorOnFewer));
     }
 
     static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements FlowableSubscriber<T> {

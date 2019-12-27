@@ -31,7 +31,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         SequentialDisposable sd = new SequentialDisposable();
         observer.onSubscribe(sd);
 
-        RepeatObserver<T> rs = new RepeatObserver<T>(observer, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
+        RepeatObserver<T> rs = new RepeatObserver<>(observer, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
         rs.subscribeNext();
     }
 

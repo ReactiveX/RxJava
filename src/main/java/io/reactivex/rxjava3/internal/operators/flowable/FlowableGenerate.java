@@ -48,7 +48,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
             return;
         }
 
-        s.onSubscribe(new GeneratorSubscription<T, S>(s, generator, disposeState, state));
+        s.onSubscribe(new GeneratorSubscription<>(s, generator, disposeState, state));
     }
 
     static final class GeneratorSubscription<T, S>

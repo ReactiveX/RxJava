@@ -48,7 +48,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> observer) {
-        source.subscribe(new FlatMapMaybeObserver<T, R>(observer, onSuccessMapper, onErrorMapper, onCompleteSupplier));
+        source.subscribe(new FlatMapMaybeObserver<>(observer, onSuccessMapper, onErrorMapper, onCompleteSupplier));
     }
 
     static final class FlatMapMaybeObserver<T, R>

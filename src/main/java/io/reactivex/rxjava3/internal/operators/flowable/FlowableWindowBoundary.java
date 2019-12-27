@@ -38,7 +38,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
     @Override
     protected void subscribeActual(Subscriber<? super Flowable<T>> subscriber) {
-        WindowBoundaryMainSubscriber<T, B> parent = new WindowBoundaryMainSubscriber<T, B>(subscriber, capacityHint);
+        WindowBoundaryMainSubscriber<T, B> parent = new WindowBoundaryMainSubscriber<>(subscriber, capacityHint);
 
         subscriber.onSubscribe(parent);
 
@@ -84,10 +84,10 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
         WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> downstream, int capacityHint) {
             this.downstream = downstream;
             this.capacityHint = capacityHint;
-            this.boundarySubscriber = new WindowBoundaryInnerSubscriber<T, B>(this);
-            this.upstream = new AtomicReference<Subscription>();
+            this.boundarySubscriber = new WindowBoundaryInnerSubscriber<>(this);
+            this.upstream = new AtomicReference<>();
             this.windows = new AtomicInteger(1);
-            this.queue = new MpscLinkedQueue<Object>();
+            this.queue = new MpscLinkedQueue<>();
             this.errors = new AtomicThrowable();
             this.stopWindows = new AtomicBoolean();
             this.requested = new AtomicLong();
@@ -240,7 +240,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
                         if (emitted != requested.get()) {
                             emitted++;
-                            FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(w);
+                            FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<>(w);
                             downstream.onNext(intercept);
                             if (intercept.tryAbandon()) {
                                 w.onComplete();

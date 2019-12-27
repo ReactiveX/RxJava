@@ -44,7 +44,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
             return;
         }
 
-        source.subscribe(new CollectSubscriber<T, U>(s, u, collector));
+        source.subscribe(new CollectSubscriber<>(s, u, collector));
     }
 
     static final class CollectSubscriber<T, U> extends DeferredScalarSubscription<U> implements FlowableSubscriber<T> {

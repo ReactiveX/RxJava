@@ -38,7 +38,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         SubscriptionArbiter sa = new SubscriptionArbiter(false);
         s.onSubscribe(sa);
 
-        RetrySubscriber<T> rs = new RetrySubscriber<T>(s, count, predicate, sa, source);
+        RetrySubscriber<T> rs = new RetrySubscriber<>(s, count, predicate, sa, source);
         rs.subscribeNext();
     }
 

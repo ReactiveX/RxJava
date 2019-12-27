@@ -30,7 +30,7 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
 
     @Override
     protected void subscribeActual(Subscriber<? super T> child) {
-        TakeUntilMainSubscriber<T> parent = new TakeUntilMainSubscriber<T>(child);
+        TakeUntilMainSubscriber<T> parent = new TakeUntilMainSubscriber<>(child);
         child.onSubscribe(parent);
 
         other.subscribe(parent.other);
@@ -55,7 +55,7 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
         TakeUntilMainSubscriber(Subscriber<? super T> downstream) {
             this.downstream = downstream;
             this.requested = new AtomicLong();
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.other = new OtherSubscriber();
             this.error = new AtomicThrowable();
         }

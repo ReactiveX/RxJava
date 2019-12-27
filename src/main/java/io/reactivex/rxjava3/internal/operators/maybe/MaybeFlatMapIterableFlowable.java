@@ -48,7 +48,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new FlatMapIterableObserver<T, R>(s, mapper));
+        source.subscribe(new FlatMapIterableObserver<>(s, mapper));
     }
 
     static final class FlatMapIterableObserver<T, R>
@@ -279,7 +279,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
         @Nullable
         @Override
-        public R poll() throws Exception {
+        public R poll() {
             Iterator<? extends R> iterator = it;
 
             if (iterator != null) {

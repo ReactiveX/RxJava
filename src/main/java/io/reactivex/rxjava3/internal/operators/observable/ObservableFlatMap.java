@@ -50,7 +50,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             return;
         }
 
-        source.subscribe(new MergeObserver<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize));
+        source.subscribe(new MergeObserver<>(t, mapper, delayErrors, maxConcurrency, bufferSize));
     }
 
     static final class MergeObserver<T, U> extends AtomicInteger implements Disposable, Observer<T> {
@@ -95,9 +95,9 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             this.maxConcurrency = maxConcurrency;
             this.bufferSize = bufferSize;
             if (maxConcurrency != Integer.MAX_VALUE) {
-                sources = new ArrayDeque<ObservableSource<? extends U>>(maxConcurrency);
+                sources = new ArrayDeque<>(maxConcurrency);
             }
-            this.observers = new AtomicReference<InnerObserver<?, ?>[]>(EMPTY);
+            this.observers = new AtomicReference<>(EMPTY);
         }
 
         @Override
@@ -158,7 +158,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                         break;
                     }
                 } else {
-                    InnerObserver<T, U> inner = new InnerObserver<T, U>(this, uniqueId++);
+                    InnerObserver<T, U> inner = new InnerObserver<>(this, uniqueId++);
                     if (addInner(inner)) {
                         p.subscribe(inner);
                     }
@@ -239,9 +239,9 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 SimplePlainQueue<U> q = queue;
                 if (q == null) {
                     if (maxConcurrency == Integer.MAX_VALUE) {
-                        q = new SpscLinkedArrayQueue<U>(bufferSize);
+                        q = new SpscLinkedArrayQueue<>(bufferSize);
                     } else {
-                        q = new SpscArrayQueue<U>(maxConcurrency);
+                        q = new SpscArrayQueue<>(maxConcurrency);
                     }
                     queue = q;
                 }
@@ -267,7 +267,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             } else {
                 SimpleQueue<U> q = inner.queue;
                 if (q == null) {
-                    q = new SpscLinkedArrayQueue<U>(bufferSize);
+                    q = new SpscLinkedArrayQueue<>(bufferSize);
                     inner.queue = q;
                 }
                 q.offer(value);

@@ -27,7 +27,7 @@ public final class FlowableSkip<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SkipSubscriber<T>(s, n));
+        source.subscribe(new SkipSubscriber<>(s, n));
     }
 
     static final class SkipSubscriber<T> implements FlowableSubscriber<T>, Subscription {

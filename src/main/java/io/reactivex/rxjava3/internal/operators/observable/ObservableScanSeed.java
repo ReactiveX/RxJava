@@ -43,7 +43,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             return;
         }
 
-        source.subscribe(new ScanSeedObserver<T, R>(t, accumulator, r));
+        source.subscribe(new ScanSeedObserver<>(t, accumulator, r));
     }
 
     static final class ScanSeedObserver<T, R> implements Observer<T>, Disposable {

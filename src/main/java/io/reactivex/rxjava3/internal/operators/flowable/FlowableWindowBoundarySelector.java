@@ -46,7 +46,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
     @Override
     protected void subscribeActual(Subscriber<? super Flowable<T>> s) {
-        source.subscribe(new WindowBoundaryMainSubscriber<T, B, V>(
+        source.subscribe(new WindowBoundaryMainSubscriber<>(
                 s, open, closingIndicator, bufferSize));
     }
 
@@ -85,16 +85,16 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual,
                 Publisher<B> open, Function<? super B, ? extends Publisher<V>> closingIndicator, int bufferSize) {
             this.downstream = actual;
-            this.queue = new MpscLinkedQueue<Object>();
+            this.queue = new MpscLinkedQueue<>();
             this.open = open;
             this.closingIndicator = closingIndicator;
             this.bufferSize = bufferSize;
             this.resources = new CompositeDisposable();
-            this.windows = new ArrayList<UnicastProcessor<T>>();
+            this.windows = new ArrayList<>();
             this.windowCount = new AtomicLong(1L);
             this.downstreamCancelled = new AtomicBoolean();
             this.error = new AtomicThrowable();
-            this.startSubscriber = new WindowStartSubscriber<B>(this);
+            this.startSubscriber = new WindowStartSubscriber<>(this);
             this.requested = new AtomicLong();
         }
 
@@ -171,7 +171,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         }
 
         void open(B startValue) {
-            queue.offer(new WindowStartItem<B>(startValue));
+            queue.offer(new WindowStartItem<>(startValue));
             drain();
         }
 
@@ -257,7 +257,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
                                     windowCount.getAndIncrement();
                                     UnicastProcessor<T> newWindow = UnicastProcessor.create(bufferSize, this);
-                                    WindowEndSubscriberIntercept<T, V> endSubscriber = new WindowEndSubscriberIntercept<T, V>(this, newWindow);
+                                    WindowEndSubscriberIntercept<T, V> endSubscriber = new WindowEndSubscriberIntercept<>(this, newWindow);
 
                                     downstream.onNext(endSubscriber);
 
@@ -388,7 +388,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
             WindowEndSubscriberIntercept(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastProcessor<T> window) {
                 this.parent = parent;
                 this.window = window;
-                this.upstream = new AtomicReference<Subscription>();
+                this.upstream = new AtomicReference<>();
                 this.once = new AtomicBoolean();
             }
 

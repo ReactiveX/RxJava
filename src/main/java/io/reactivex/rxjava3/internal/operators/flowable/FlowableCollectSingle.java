@@ -49,12 +49,12 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
             return;
         }
 
-        source.subscribe(new CollectSubscriber<T, U>(observer, u, collector));
+        source.subscribe(new CollectSubscriber<>(observer, u, collector));
     }
 
     @Override
     public Flowable<U> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(source, initialSupplier, collector));
+        return RxJavaPlugins.onAssembly(new FlowableCollect<>(source, initialSupplier, collector));
     }
 
     static final class CollectSubscriber<T, U> implements FlowableSubscriber<T>, Disposable {

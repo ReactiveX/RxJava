@@ -44,14 +44,14 @@ public class FlattenJustPerf {
 
         flowable = Flowable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> apply(Integer v) {
                 return singletonList;
             }
         });
 
         observable = Observable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> apply(Integer v) {
                 return singletonList;
             }
         });

@@ -41,14 +41,14 @@ public class FlatMapJustPerf {
 
         flowable = Flowable.fromArray(array).flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> apply(Integer v) {
                 return Flowable.just(v);
             }
         });
 
         observable = Observable.fromArray(array).flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> apply(Integer v) {
                 return Observable.just(v);
             }
         });

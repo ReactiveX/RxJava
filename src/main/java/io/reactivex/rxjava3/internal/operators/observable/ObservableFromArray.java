@@ -27,7 +27,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        FromArrayDisposable<T> d = new FromArrayDisposable<T>(observer, array);
+        FromArrayDisposable<T> d = new FromArrayDisposable<>(observer, array);
 
         observer.onSubscribe(d);
 

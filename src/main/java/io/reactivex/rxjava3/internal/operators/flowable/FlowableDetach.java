@@ -27,7 +27,7 @@ public final class FlowableDetach<T> extends AbstractFlowableWithUpstream<T, T> 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new DetachSubscriber<T>(s));
+        source.subscribe(new DetachSubscriber<>(s));
     }
 
     static final class DetachSubscriber<T> implements FlowableSubscriber<T>, Subscription {

@@ -58,7 +58,7 @@ public final class MaybeFromRunnable<T> extends Maybe<T> implements Supplier<T> 
     }
 
     @Override
-    public T get() throws Throwable {
+    public T get() {
         runnable.run();
         return null;
     }

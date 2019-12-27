@@ -34,11 +34,11 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        SerializedObserver<T> serial = new SerializedObserver<T>(t);
+        SerializedObserver<T> serial = new SerializedObserver<>(t);
         if (emitLast) {
-            source.subscribe(new SampleMainEmitLast<T>(serial, other));
+            source.subscribe(new SampleMainEmitLast<>(serial, other));
         } else {
-            source.subscribe(new SampleMainNoLast<T>(serial, other));
+            source.subscribe(new SampleMainNoLast<>(serial, other));
         }
     }
 
@@ -50,7 +50,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         final Observer<? super T> downstream;
         final ObservableSource<?> sampler;
 
-        final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> other = new AtomicReference<>();
 
         Disposable upstream;
 
@@ -65,7 +65,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
                 this.upstream = d;
                 downstream.onSubscribe(this);
                 if (other.get() == null) {
-                    sampler.subscribe(new SamplerObserver<T>(this));
+                    sampler.subscribe(new SamplerObserver<>(this));
                 }
             }
         }

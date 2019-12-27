@@ -47,24 +47,21 @@ public class ObservableSwitchMapMaybeEmptyPerf {
 
         observablePlain = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Observable.empty();
             }
         });
 
         observableConvert = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Maybe.<Integer>empty().toObservable();
             }
         });
 
         observableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
             @Override
-            public Maybe<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Maybe<? extends Integer> apply(Integer v) {
                 return Maybe.empty();
             }
         });

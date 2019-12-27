@@ -68,7 +68,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             return;
         }
 
-        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(observer, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<>(observer, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
 
@@ -98,7 +98,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             ZipObserver<T, R>[] s = observers;
             int len = s.length;
             for (int i = 0; i < len; i++) {
-                s[i] = new ZipObserver<T, R>(this, bufferSize);
+                s[i] = new ZipObserver<>(this, bufferSize);
             }
             // this makes sure the contents of the observers array is visible
             this.lazySet(0);
@@ -263,11 +263,11 @@ public final class ObservableZip<T, R> extends Observable<R> {
         volatile boolean done;
         Throwable error;
 
-        final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
         ZipObserver(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
         }
 
         @Override

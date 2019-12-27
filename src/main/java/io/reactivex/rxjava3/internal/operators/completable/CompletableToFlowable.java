@@ -28,7 +28,7 @@ public final class CompletableToFlowable<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        SubscriberCompletableObserver<T> os = new SubscriberCompletableObserver<T>(s);
+        SubscriberCompletableObserver<T> os = new SubscriberCompletableObserver<>(s);
         source.subscribe(os);
     }
 }

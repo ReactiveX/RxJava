@@ -39,7 +39,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferExactBoundaryObserver<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundaryObserver<>(new SerializedObserver<>(t), bufferSupplier, boundary));
     }
 
     static final class BufferExactBoundaryObserver<T, U extends Collection<? super T>, B>
@@ -56,7 +56,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         BufferExactBoundaryObserver(Observer<? super U> actual, Supplier<U> bufferSupplier,
                                              ObservableSource<B> boundary) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -80,7 +80,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
                 buffer = b;
 
-                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
+                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<>(this);
                 other = bs;
 
                 downstream.onSubscribe(this);

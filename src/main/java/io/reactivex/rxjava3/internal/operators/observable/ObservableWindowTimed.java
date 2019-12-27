@@ -53,18 +53,18 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
     protected void subscribeActual(Observer<? super Observable<T>> downstream) {
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
-                source.subscribe(new WindowExactUnboundedObserver<T>(
+                source.subscribe(new WindowExactUnboundedObserver<>(
                         downstream,
                         timespan, unit, scheduler, bufferSize));
                 return;
             }
-            source.subscribe(new WindowExactBoundedObserver<T>(
+            source.subscribe(new WindowExactBoundedObserver<>(
                         downstream,
                         timespan, unit, scheduler,
                         bufferSize, maxSize, restartTimerOnMaxSize));
             return;
         }
-        source.subscribe(new WindowSkipObserver<T>(downstream,
+        source.subscribe(new WindowSkipObserver<>(downstream,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
 
@@ -96,7 +96,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         AbstractWindowObserver(Observer<? super Observable<T>> downstream, long timespan, TimeUnit unit, int bufferSize) {
             this.downstream = downstream;
-            this.queue = new MpscLinkedQueue<Object>();
+            this.queue = new MpscLinkedQueue<>();
             this.timespan = timespan;
             this.unit = unit;
             this.bufferSize = bufferSize;
@@ -194,7 +194,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 emitted = 1;
 
-                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                 downstream.onNext(intercept);
 
                 timer.replace(scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit));
@@ -267,7 +267,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                                 window = UnicastSubject.create(bufferSize, windowRunnable);
                                 this.window = window;
 
-                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                                 downstream.onNext(intercept);
 
                                 if (intercept.tryAbandon()) {
@@ -344,7 +344,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 windowCount.getAndIncrement();
                 window = UnicastSubject.create(bufferSize, this);
 
-                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                 downstream.onNext(intercept);
 
                 Runnable boundaryTask = new WindowBoundaryRunnable(this, 1L);
@@ -466,7 +466,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 window = UnicastSubject.create(bufferSize, this);
                 this.window = window;
 
-                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                 downstream.onNext(intercept);
 
                 if (restartTimerOnMaxSize) {
@@ -515,7 +515,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             super(actual, timespan, unit, bufferSize);
             this.timeskip = timeskip;
             this.worker = worker;
-            this.windows = new LinkedList<UnicastSubject<T>>();
+            this.windows = new LinkedList<>();
         }
 
         @Override
@@ -527,7 +527,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 UnicastSubject<T> window = UnicastSubject.create(bufferSize, this);
                 windows.add(window);
 
-                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                 downstream.onNext(intercept);
 
                 worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);
@@ -591,7 +591,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                                 UnicastSubject<T> window = UnicastSubject.create(bufferSize, this);
                                 windows.add(window);
 
-                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(window);
+                                ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(window);
                                 downstream.onNext(intercept);
 
                                 worker.schedule(new WindowBoundaryRunnable(this, false), timespan, unit);

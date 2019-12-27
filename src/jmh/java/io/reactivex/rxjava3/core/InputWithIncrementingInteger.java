@@ -43,7 +43,7 @@ public abstract class InputWithIncrementingInteger {
         }
     }
 
-    final class IncrementingIterable implements Iterable<Integer> {
+    static final class IncrementingIterable implements Iterable<Integer> {
 
         final class IncrementingIterator implements Iterator<Integer> {
             int i;
@@ -77,7 +77,7 @@ public abstract class InputWithIncrementingInteger {
         }
     }
 
-    final class IncrementingPublisher implements Publisher<Integer> {
+    static final class IncrementingPublisher implements Publisher<Integer> {
 
         final int size;
 

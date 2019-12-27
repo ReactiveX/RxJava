@@ -43,12 +43,12 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (other == null) {
-            TimeoutSubscriber<T> parent = new TimeoutSubscriber<T>(s, timeout, unit, scheduler.createWorker());
+            TimeoutSubscriber<T> parent = new TimeoutSubscriber<>(s, timeout, unit, scheduler.createWorker());
             s.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         } else {
-            TimeoutFallbackSubscriber<T> parent = new TimeoutFallbackSubscriber<T>(s, timeout, unit, scheduler.createWorker(), other);
+            TimeoutFallbackSubscriber<T> parent = new TimeoutFallbackSubscriber<>(s, timeout, unit, scheduler.createWorker(), other);
             s.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
@@ -80,7 +80,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             this.unit = unit;
             this.worker = worker;
             this.task = new SequentialDisposable();
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 
@@ -203,7 +203,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             this.worker = worker;
             this.fallback = fallback;
             this.task = new SequentialDisposable();
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.index = new AtomicLong();
         }
 

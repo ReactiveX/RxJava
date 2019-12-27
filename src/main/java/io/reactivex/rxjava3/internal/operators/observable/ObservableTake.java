@@ -27,7 +27,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new TakeObserver<T>(observer, limit));
+        source.subscribe(new TakeObserver<>(observer, limit));
     }
 
     static final class TakeObserver<T> implements Observer<T>, Disposable {

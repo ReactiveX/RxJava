@@ -52,7 +52,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
             return;
         }
 
-        RepeatWhenObserver<T> parent = new RepeatWhenObserver<T>(observer, signaller, source);
+        RepeatWhenObserver<T> parent = new RepeatWhenObserver<>(observer, signaller, source);
         observer.onSubscribe(parent);
 
         other.subscribe(parent.inner);
@@ -87,7 +87,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
             this.wip = new AtomicInteger();
             this.error = new AtomicThrowable();
             this.inner = new InnerRepeatObserver();
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override

@@ -81,7 +81,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
             }
         }
 
-        source.subscribe(new RefCountObserver<T>(observer, this, conn));
+        source.subscribe(new RefCountObserver<>(observer, this, conn));
 
         if (connect) {
             source.connect(conn);
@@ -166,7 +166,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         }
 
         @Override
-        public void accept(Disposable t) throws Exception {
+        public void accept(Disposable t) {
             DisposableHelper.replace(this, t);
             synchronized (parent) {
                 if (disconnectedEarly) {

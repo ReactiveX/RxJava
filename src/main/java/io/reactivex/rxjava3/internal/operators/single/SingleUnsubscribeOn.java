@@ -37,7 +37,7 @@ public final class SingleUnsubscribeOn<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new UnsubscribeOnSingleObserver<T>(observer, scheduler));
+        source.subscribe(new UnsubscribeOnSingleObserver<>(observer, scheduler));
     }
 
     static final class UnsubscribeOnSingleObserver<T> extends AtomicReference<Disposable>

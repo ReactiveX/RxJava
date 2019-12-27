@@ -24,7 +24,7 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
 
     @Override
     public void subscribeActual(final Observer<? super T> t) {
-        source.subscribe(new IgnoreObservable<T>(t));
+        source.subscribe(new IgnoreObservable<>(t));
     }
 
     static final class IgnoreObservable<T> implements Observer<T>, Disposable {
