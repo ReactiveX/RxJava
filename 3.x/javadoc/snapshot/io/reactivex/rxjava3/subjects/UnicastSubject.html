@@ -129,7 +129,7 @@ var activeTableTab = "activeTableTab";
 extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="class in io.reactivex.rxjava3.subjects">Subject</a>&lt;T&gt;</pre>
 <div class="block">A Subject that queues up events until a single <a href="../../../../io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> subscribes to it, replays
  those events to it until the <code>Observer</code> catches up and then switches to relaying events live to
- this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> unsubscribes.
+ this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> disposes.
  <p>
  <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.png" alt="">
  <p>
@@ -147,10 +147,10 @@ extends <a href="../../../../io/reactivex/rxjava3/subjects/Subject.html" title="
      optionally delays an error it receives and replays it after the regular items have been emitted.</li>
  <li><a href="../../../../io/reactivex/rxjava3/subjects/UnicastSubject.html#create-int-java.lang.Runnable-"><code>create(int, Runnable)</code></a> - creates an empty, unbounded <code>UnicastSubject</code>
      with a hint about how many <b>total</b> items one expects to retain and a callback that will be
-     called exactly once when the <code>UnicastSubject</code> gets terminated or the single <code>Observer</code> unsubscribes.</li>
+     called exactly once when the <code>UnicastSubject</code> gets terminated or the single <code>Observer</code> disposes.</li>
  <li><a href="../../../../io/reactivex/rxjava3/subjects/UnicastSubject.html#create-int-java.lang.Runnable-boolean-"><code>create(int, Runnable, boolean)</code></a> - creates an empty, unbounded <code>UnicastSubject</code>
      with a hint about how many <b>total</b> items one expects to retain and a callback that will be
-     called exactly once when the <code>UnicastSubject</code> gets terminated or the single <code>Observer</code> unsubscribes
+     called exactly once when the <code>UnicastSubject</code> gets terminated or the single <code>Observer</code> disposes
      and optionally delays an error it receives and replays it after the regular items have been emitted.</li>
  </ul>
  <p>

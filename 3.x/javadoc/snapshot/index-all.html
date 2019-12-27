@@ -4180,7 +4180,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromSupplier-io.reactivex.rxjava3.functions.Supplier-">fromSupplier(Supplier&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that invokes passed supplierfunction and emits its result
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that invokes passed supplier and emits its result
  for each new SingleObserver that subscribes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions"><span class="typeNameLink">Function</span></a>&lt;<a href="io/reactivex/rxjava3/functions/Function.html" title="type parameter in Function">T</a>,<a href="io/reactivex/rxjava3/functions/Function.html" title="type parameter in Function">R</a>&gt; - Interface in <a href="io/reactivex/rxjava3/functions/package-summary.html">io.reactivex.rxjava3.functions</a></dt>
@@ -4898,7 +4898,7 @@
 <dd>
 <div class="block">Exception handling utilities (<a href="io/reactivex/rxjava3/exceptions/Exceptions.html" title="class in io.reactivex.rxjava3.exceptions"><code>Exceptions</code></a>),
  composite exception container (<a href="io/reactivex/rxjava3/exceptions/CompositeException.html" title="class in io.reactivex.rxjava3.exceptions"><code>CompositeException</code></a>) and
- various lifecycle-reladed (<a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>UndeliverableException</code></a>)
+ various lifecycle-related (<a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>UndeliverableException</code></a>)
  and behavior-violation exception types (<a href="io/reactivex/rxjava3/exceptions/OnErrorNotImplementedException.html" title="class in io.reactivex.rxjava3.exceptions"><code>OnErrorNotImplementedException</code></a>,
  <a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>).</div>
 </dd>
@@ -9942,7 +9942,7 @@
 <dd>
 <div class="block">A Subject that queues up events until a single <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a> subscribes to it, replays
  those events to it until the <code>Observer</code> catches up and then switches to relaying events live to
- this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> unsubscribes.</div>
+ this single <code>Observer</code> until this <code>UnicastSubject</code> terminates or the <code>Observer</code> disposes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/schedulers/Timed.html#unit--">unit()</a></span> - Method in class io.reactivex.rxjava3.schedulers.<a href="io/reactivex/rxjava3/schedulers/Timed.html" title="class in io.reactivex.rxjava3.schedulers">Timed</a></dt>
 <dd>

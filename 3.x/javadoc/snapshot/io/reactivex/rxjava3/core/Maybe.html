@@ -7058,7 +7058,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the non-null output type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function that receives the upstream success iteem and should return a <em>non-empty</em> <code>Optional</code>
+<dd><code>mapper</code> - the function that receives the upstream success item and should return a <em>non-empty</em> <code>Optional</code>
  to emit as the success output or an <em>empty</em> <code>Optional</code> to complete the <code>Maybe</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Maybe instance</dd>
@@ -7091,8 +7091,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
  completed manually by <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true#complete-T-" title="class or interface in java.util.concurrent"><code>CompletableFuture.complete(Object)</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true#completeExceptionally-java.lang.Throwable-" title="class or interface in java.util.concurrent"><code>CompletableFuture.completeExceptionally(Throwable)</code></a>.
  <p>
- <code>CompletionStage</code>s don't have a notion of emptyness and allow <code>null</code>s, therefore, one can either use
- <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#toCompletionStage-T-"><code>toCompletionStage(Object)</code></a> with <code>null</code> or turn the upstrea into a sequence of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a>s and
+ <code>CompletionStage</code>s don't have a notion of emptiness and allow <code>null</code>s, therefore, one can either use
+ <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#toCompletionStage-T-"><code>toCompletionStage(Object)</code></a> with <code>null</code> or turn the upstream into a sequence of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a>s and
  default to <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true#empty--" title="class or interface in java.util"><code>Optional.empty()</code></a>:
  <pre><code>
  CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());
@@ -7134,7 +7134,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  The upstream will be also cancelled if the resulting <code>CompletionStage</code> is converted to and
  completed manually by <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true#complete-T-" title="class or interface in java.util.concurrent"><code>CompletableFuture.complete(Object)</code></a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true#completeExceptionally-java.lang.Throwable-" title="class or interface in java.util.concurrent"><code>CompletableFuture.completeExceptionally(Throwable)</code></a>.
  <p>
- <code>CompletionStage</code>s don't have a notion of emptyness and allow <code>null</code>s, therefore, one can either use
+ <code>CompletionStage</code>s don't have a notion of emptiness and allow <code>null</code>s, therefore, one can either use
  a <code>defaultItem</code> of <code>null</code> or turn the flow into a sequence of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a>s and default to <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true#empty--" title="class or interface in java.util"><code>Optional.empty()</code></a>:
  <pre><code>
  CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());
