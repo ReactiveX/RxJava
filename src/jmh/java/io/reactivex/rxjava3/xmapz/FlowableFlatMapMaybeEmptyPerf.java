@@ -48,24 +48,21 @@ public class FlowableFlatMapMaybeEmptyPerf {
 
         flowablePlain = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Flowable.empty();
             }
         });
 
         flowableConvert = source.flatMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Maybe.<Integer>empty().toFlowable();
             }
         });
 
         flowableDedicated = source.flatMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
             @Override
-            public Maybe<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Maybe<? extends Integer> apply(Integer v) {
                 return Maybe.empty();
             }
         });

@@ -29,7 +29,7 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new SkipLastObserver<T>(observer, skip));
+        source.subscribe(new SkipLastObserver<>(observer, skip));
     }
 
     static final class SkipLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {

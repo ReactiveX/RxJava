@@ -63,7 +63,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
 
     public SubscriptionArbiter(boolean cancelOnReplace) {
         this.cancelOnReplace = cancelOnReplace;
-        missedSubscription = new AtomicReference<Subscription>();
+        missedSubscription = new AtomicReference<>();
         missedRequested = new AtomicLong();
         missedProduced = new AtomicLong();
     }

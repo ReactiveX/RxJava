@@ -112,7 +112,7 @@ public final class ObservableFlatMapStream<T, R> extends Observable<R> {
                             done = true;
                             break;
                         }
-                        R value = Objects.requireNonNull(it.next(), "The Stream's Iterator.next retuned a null value");
+                        R value = Objects.requireNonNull(it.next(), "The Stream's Iterator.next returned a null value");
                         if (disposed) {
                             done = true;
                             break;

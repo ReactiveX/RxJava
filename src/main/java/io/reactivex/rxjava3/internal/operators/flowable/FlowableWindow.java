@@ -42,12 +42,12 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     @Override
     public void subscribeActual(Subscriber<? super Flowable<T>> s) {
         if (skip == size) {
-            source.subscribe(new WindowExactSubscriber<T>(s, size, bufferSize));
+            source.subscribe(new WindowExactSubscriber<>(s, size, bufferSize));
         } else
         if (skip > size) {
-            source.subscribe(new WindowSkipSubscriber<T>(s, size, skip, bufferSize));
+            source.subscribe(new WindowSkipSubscriber<>(s, size, skip, bufferSize));
         } else {
-            source.subscribe(new WindowOverlapSubscriber<T>(s, size, skip, bufferSize));
+            source.subscribe(new WindowOverlapSubscriber<>(s, size, skip, bufferSize));
         }
     }
 
@@ -96,10 +96,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             if (i == 0) {
                 getAndIncrement();
 
-                w = UnicastProcessor.<T>create(bufferSize, this);
+                w = UnicastProcessor.create(bufferSize, this);
                 window = w;
 
-                intercept = new FlowableWindowSubscribeIntercept<T>(w);
+                intercept = new FlowableWindowSubscribeIntercept<>(w);
                 downstream.onNext(intercept);
             }
 
@@ -216,10 +216,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             if (i == 0) {
                 getAndIncrement();
 
-                w = UnicastProcessor.<T>create(bufferSize, this);
+                w = UnicastProcessor.create(bufferSize, this);
                 window = w;
 
-                intercept = new FlowableWindowSubscribeIntercept<T>(w);
+                intercept = new FlowableWindowSubscribeIntercept<>(w);
                 downstream.onNext(intercept);
             }
 
@@ -339,8 +339,8 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             this.downstream = actual;
             this.size = size;
             this.skip = skip;
-            this.queue = new SpscLinkedArrayQueue<UnicastProcessor<T>>(bufferSize);
-            this.windows = new ArrayDeque<UnicastProcessor<T>>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
+            this.windows = new ArrayDeque<>();
             this.once = new AtomicBoolean();
             this.firstRequest = new AtomicBoolean();
             this.requested = new AtomicLong();
@@ -369,7 +369,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 if (!cancelled) {
                     getAndIncrement();
 
-                    newWindow = UnicastProcessor.<T>create(bufferSize, this);
+                    newWindow = UnicastProcessor.create(bufferSize, this);
 
                     windows.offer(newWindow);
                 }
@@ -477,7 +477,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                             break;
                         }
 
-                        FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<T>(t);
+                        FlowableWindowSubscribeIntercept<T> intercept = new FlowableWindowSubscribeIntercept<>(t);
                         a.onNext(intercept);
 
                         if (intercept.tryAbandon()) {
@@ -488,7 +488,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
                     if (e == r) {
                         if (cancelled) {
-                            continue outer;
+                            continue;
                         }
 
                         if (checkTerminated(done, q.isEmpty(), a, q)) {

@@ -59,7 +59,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     protected void subscribeActual(Subscriber<? super R> s) {
 
         GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+                new GroupJoinSubscription<>(s, leftEnd, rightEnd, resultSelector);
 
         s.onSubscribe(parent);
 
@@ -132,10 +132,10 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             this.downstream = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
-            this.lefts = new LinkedHashMap<Integer, UnicastProcessor<TRight>>();
-            this.rights = new LinkedHashMap<Integer, TRight>();
-            this.error = new AtomicReference<Throwable>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
+            this.lefts = new LinkedHashMap<>();
+            this.rights = new LinkedHashMap<>();
+            this.error = new AtomicReference<>();
             this.leftEnd = leftEnd;
             this.rightEnd = rightEnd;
             this.resultSelector = resultSelector;
@@ -239,7 +239,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
 
-                        UnicastProcessor<TRight> up = UnicastProcessor.<TRight>create();
+                        UnicastProcessor<TRight> up = UnicastProcessor.create();
                         int idx = leftIndex++;
                         lefts.put(idx, up);
 

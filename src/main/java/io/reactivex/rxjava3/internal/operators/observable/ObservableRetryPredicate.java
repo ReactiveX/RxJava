@@ -37,7 +37,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         SequentialDisposable sa = new SequentialDisposable();
         observer.onSubscribe(sa);
 
-        RepeatObserver<T> rs = new RepeatObserver<T>(observer, count, predicate, sa, source);
+        RepeatObserver<T> rs = new RepeatObserver<>(observer, count, predicate, sa, source);
         rs.subscribeNext();
     }
 

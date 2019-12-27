@@ -36,7 +36,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
 
     @Override
     public void subscribeActual(Observer<? super Observable<T>> observer) {
-        WindowBoundaryMainObserver<T, B> parent = new WindowBoundaryMainObserver<T, B>(observer, capacityHint);
+        WindowBoundaryMainObserver<T, B> parent = new WindowBoundaryMainObserver<>(observer, capacityHint);
 
         observer.onSubscribe(parent);
         other.subscribe(parent.boundaryObserver);
@@ -75,10 +75,10 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
         WindowBoundaryMainObserver(Observer<? super Observable<T>> downstream, int capacityHint) {
             this.downstream = downstream;
             this.capacityHint = capacityHint;
-            this.boundaryObserver = new WindowBoundaryInnerObserver<T, B>(this);
-            this.upstream = new AtomicReference<Disposable>();
+            this.boundaryObserver = new WindowBoundaryInnerObserver<>(this);
+            this.upstream = new AtomicReference<>();
             this.windows = new AtomicInteger(1);
-            this.queue = new MpscLinkedQueue<Object>();
+            this.queue = new MpscLinkedQueue<>();
             this.errors = new AtomicThrowable();
             this.stopWindows = new AtomicBoolean();
         }
@@ -230,7 +230,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                         window = w;
                         windows.getAndIncrement();
 
-                        ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<T>(w);
+                        ObservableWindowSubscribeIntercept<T> intercept = new ObservableWindowSubscribeIntercept<>(w);
                         downstream.onNext(intercept);
                         if (intercept.tryAbandon()) {
                             w.onComplete();

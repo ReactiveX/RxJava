@@ -42,7 +42,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DelayMaybeObserver<T>(observer, delay, unit, scheduler));
+        source.subscribe(new DelayMaybeObserver<>(observer, delay, unit, scheduler));
     }
 
     static final class DelayMaybeObserver<T>

@@ -26,7 +26,7 @@ public final class SorterFunction<T> implements Function<List<T>, List<T>> {
     }
 
     @Override
-    public List<T> apply(List<T> t) throws Exception {
+    public List<T> apply(List<T> t) {
         Collections.sort(t, comparator);
         return t;
     }

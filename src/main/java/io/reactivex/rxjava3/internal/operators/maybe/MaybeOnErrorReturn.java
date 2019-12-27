@@ -37,7 +37,7 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorReturnMaybeObserver<T>(observer, valueSupplier));
+        source.subscribe(new OnErrorReturnMaybeObserver<>(observer, valueSupplier));
     }
 
     static final class OnErrorReturnMaybeObserver<T> implements MaybeObserver<T>, Disposable {

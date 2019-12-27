@@ -42,11 +42,11 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     @Override
     public void subscribeActual(Subscriber<? super C> s) {
         if (size == skip) {
-            source.subscribe(new PublisherBufferExactSubscriber<T, C>(s, size, bufferSupplier));
+            source.subscribe(new PublisherBufferExactSubscriber<>(s, size, bufferSupplier));
         } else if (skip > size) {
-            source.subscribe(new PublisherBufferSkipSubscriber<T, C>(s, size, skip, bufferSupplier));
+            source.subscribe(new PublisherBufferSkipSubscriber<>(s, size, skip, bufferSupplier));
         } else {
-            source.subscribe(new PublisherBufferOverlappingSubscriber<T, C>(s, size, skip, bufferSupplier));
+            source.subscribe(new PublisherBufferOverlappingSubscriber<>(s, size, skip, bufferSupplier));
         }
     }
 
@@ -318,7 +318,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             this.skip = skip;
             this.bufferSupplier = bufferSupplier;
             this.once = new AtomicBoolean();
-            this.buffers = new ArrayDeque<C>();
+            this.buffers = new ArrayDeque<>();
         }
 
         @Override

@@ -31,7 +31,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ScanObserver<T>(t, accumulator));
+        source.subscribe(new ScanObserver<>(t, accumulator));
     }
 
     static final class ScanObserver<T> implements Observer<T>, Disposable {

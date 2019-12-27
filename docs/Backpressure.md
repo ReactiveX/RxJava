@@ -34,25 +34,25 @@ The following diagrams show how you could use each of these operators on the bur
 The `sample` operator periodically "dips" into the sequence and emits only the most recently emitted item during each dip:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.sample.png" width="640" height="260" />​
-````groovy
+```java
 Observable<Integer> burstySampled = bursty.sample(500, TimeUnit.MILLISECONDS);
-````
+```
 
 ### throttleFirst
 The `throttleFirst` operator is similar, but emits not the most recently emitted item, but the first item that was emitted after the previous "dip":
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.throttleFirst.png" width="640" height="260" />​
-````groovy
+```java
 Observable<Integer> burstyThrottled = bursty.throttleFirst(500, TimeUnit.MILLISECONDS);
-````
+```
 
 ### debounce (or throttleWithTimeout)
 The `debounce` operator emits only those items from the source Observable that are not followed by another item within a specified duration:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.debounce.png" width="640" height="240" />​
-````groovy
+```java
 Observable<Integer> burstyDebounced = bursty.debounce(10, TimeUnit.MILLISECONDS);
-````
+```
 
 ## Buffers and windows
 
@@ -65,14 +65,14 @@ The following diagrams show how you could use each of these operators on the bur
 You could, for example, close and emit a buffer of items from the bursty Observable periodically, at a regular interval of time:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.buffer2.png" width="640" height="270" />​
-````groovy
+```java
 Observable<List<Integer>> burstyBuffered = bursty.buffer(500, TimeUnit.MILLISECONDS);
-````
+```
 
 Or you could get fancy, and collect items in buffers during the bursty periods and emit them at the end of each burst, by using the `debounce` operator to emit a buffer closing indicator to the `buffer` operator:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.buffer1.png" width="640" height="500" />​
-````groovy
+```java
 // we have to multicast the original bursty Observable so we can use it
 // both as our source and as the source for our buffer closing selector:
 Observable<Integer> burstyMulticast = bursty.publish().refCount();
@@ -87,16 +87,16 @@ Observable<List<Integer>> burstyBuffered = burstyMulticast.buffer(burstyDebounce
 `window` is similar to `buffer`. One variant of `window` allows you to periodically emit Observable windows of items at a regular interval of time:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.window1.png" width="640" height="325" />​
-````groovy
+```java
 Observable<Observable<Integer>> burstyWindowed = bursty.window(500, TimeUnit.MILLISECONDS);
 ````
 
 You could also choose to emit a new window each time you have collected a particular number of items from the source Observable:
 
 <img src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/bp.window2.png" width="640" height="325" />​
-````groovy
+```java
 Observable<Observable<Integer>> burstyWindowed = bursty.window(5);
-````
+```
 
 # Callstack blocking as a flow-control alternative to backpressure
 
@@ -110,8 +110,8 @@ When you subscribe to an `Observable` with a `Subscriber`, you can request react
 
 Then, after handling this item (or these items) in `onNext()`, you can call `request()` again to instruct the `Observable` to emit another item (or items).  Here is an example of a `Subscriber` that requests one item at a time from `someObservable`:
 
-````java
-someObservable.subscribe(new Subscriber<t>() {
+```java
+someObservable.subscribe(new Subscriber<T>() {
     @Override
     public void onStart() {
       request(1);
@@ -134,7 +134,7 @@ someObservable.subscribe(new Subscriber<t>() {
       request(1);
     }
 });
-````
+```
 
 You can pass a magic number to `request`, `request(Long.MAX_VALUE)`, to disable reactive pull backpressure and to ask the Observable to emit items at its own pace. `request(0)` is a legal call, but has no effect. Passing values less than zero to `request` will cause an exception to be thrown.
 

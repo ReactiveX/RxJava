@@ -36,7 +36,7 @@ public final class FlowableCountSingle<T> extends Single<Long> implements FuseTo
 
     @Override
     public Flowable<Long> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableCount<T>(source));
+        return RxJavaPlugins.onAssembly(new FlowableCount<>(source));
     }
 
     static final class CountSubscriber implements FlowableSubscriber<Object>, Disposable {

@@ -62,11 +62,11 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
         }
 
         if (n == 1) {
-            a[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new SingletonArrayFunc()));
+            a[0].subscribe(new MaybeMap.MapMaybeObserver<>(observer, new SingletonArrayFunc()));
             return;
         }
 
-        ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
+        ZipCoordinator<T, R> parent = new ZipCoordinator<>(observer, n, zipper);
 
         observer.onSubscribe(parent);
 

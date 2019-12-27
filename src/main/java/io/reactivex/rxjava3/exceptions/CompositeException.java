@@ -63,7 +63,6 @@ public final class CompositeException extends RuntimeException {
      */
     public CompositeException(@NonNull Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<>();
-        List<Throwable> localExceptions = new ArrayList<>();
         if (errors != null) {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
@@ -81,7 +80,7 @@ public final class CompositeException extends RuntimeException {
         if (deDupedExceptions.isEmpty()) {
             throw new IllegalArgumentException("errors is empty");
         }
-        localExceptions.addAll(deDupedExceptions);
+        List<Throwable> localExceptions = new ArrayList<>(deDupedExceptions);
         this.exceptions = Collections.unmodifiableList(localExceptions);
         this.message = exceptions.size() + " exceptions occurred. ";
     }

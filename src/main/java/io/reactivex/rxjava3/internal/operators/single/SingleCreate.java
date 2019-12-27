@@ -33,7 +33,7 @@ public final class SingleCreate<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        Emitter<T> parent = new Emitter<T>(observer);
+        Emitter<T> parent = new Emitter<>(observer);
         observer.onSubscribe(parent);
 
         try {

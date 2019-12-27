@@ -71,7 +71,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             return;
         }
 
-        ZipCoordinator<T, R> coordinator = new ZipCoordinator<T, R>(s, zipper, count, bufferSize, delayError);
+        ZipCoordinator<T, R> coordinator = new ZipCoordinator<>(s, zipper, count, bufferSize, delayError);
 
         s.onSubscribe(coordinator);
 
@@ -108,7 +108,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             @SuppressWarnings("unchecked")
             ZipSubscriber<T, R>[] a = new ZipSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new ZipSubscriber<T, R>(this, prefetch);
+                a[i] = new ZipSubscriber<>(this, prefetch);
             }
             this.current = new Object[n];
             this.subscribers = a;
@@ -354,7 +354,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 s.request(prefetch);
             }

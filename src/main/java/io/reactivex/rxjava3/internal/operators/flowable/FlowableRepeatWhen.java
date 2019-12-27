@@ -37,9 +37,9 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
 
-        SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
+        SerializedSubscriber<T> z = new SerializedSubscriber<>(s);
 
-        FlowableProcessor<Object> processor = UnicastProcessor.<Object>create(8).toSerialized();
+        FlowableProcessor<Object> processor = UnicastProcessor.create(8).toSerialized();
 
         Publisher<?> when;
 
@@ -51,9 +51,9 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
             return;
         }
 
-        WhenReceiver<T, Object> receiver = new WhenReceiver<T, Object>(source);
+        WhenReceiver<T, Object> receiver = new WhenReceiver<>(source);
 
-        RepeatWhenSubscriber<T> subscriber = new RepeatWhenSubscriber<T>(z, processor, receiver);
+        RepeatWhenSubscriber<T> subscriber = new RepeatWhenSubscriber<>(z, processor, receiver);
 
         receiver.subscriber = subscriber;
 
@@ -80,7 +80,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenReceiver(Publisher<T> source) {
             this.source = source;
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 

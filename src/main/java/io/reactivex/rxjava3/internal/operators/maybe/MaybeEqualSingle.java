@@ -44,7 +44,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super Boolean> observer) {
-        EqualCoordinator<T> parent = new EqualCoordinator<T>(observer, isEqual);
+        EqualCoordinator<T> parent = new EqualCoordinator<>(observer, isEqual);
         observer.onSubscribe(parent);
         parent.subscribe(source1, source2);
     }
@@ -65,8 +65,8 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
             super(2);
             this.downstream = actual;
             this.isEqual = isEqual;
-            this.observer1 = new EqualObserver<T>(this);
-            this.observer2 = new EqualObserver<T>(this);
+            this.observer1 = new EqualObserver<>(this);
+            this.observer2 = new EqualObserver<>(this);
         }
 
         void subscribe(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2) {

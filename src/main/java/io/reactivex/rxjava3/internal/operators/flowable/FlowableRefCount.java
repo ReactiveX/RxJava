@@ -84,7 +84,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
             }
         }
 
-        source.subscribe(new RefCountSubscriber<T>(s, this, conn));
+        source.subscribe(new RefCountSubscriber<>(s, this, conn));
 
         if (connect) {
             source.connect(conn);
@@ -168,7 +168,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         }
 
         @Override
-        public void accept(Disposable t) throws Exception {
+        public void accept(Disposable t) {
             DisposableHelper.replace(this, t);
             synchronized (parent) {
                 if (disconnectedEarly) {

@@ -32,7 +32,7 @@ public final class FlowableHide<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new HideSubscriber<T>(s));
+        source.subscribe(new HideSubscriber<>(s));
     }
 
     static final class HideSubscriber<T> implements FlowableSubscriber<T>, Subscription {

@@ -40,14 +40,14 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
 
     @Override
     public void subscribeActual(SingleObserver<? super Boolean> observer) {
-        EqualCoordinator<T> ec = new EqualCoordinator<T>(observer, bufferSize, first, second, comparer);
+        EqualCoordinator<T> ec = new EqualCoordinator<>(observer, bufferSize, first, second, comparer);
         observer.onSubscribe(ec);
         ec.subscribe();
     }
 
     @Override
     public Observable<Boolean> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(first, second, comparer, bufferSize));
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<>(first, second, comparer, bufferSize));
     }
 
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
@@ -76,8 +76,8 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
             @SuppressWarnings("unchecked")
             EqualObserver<T>[] as = new EqualObserver[2];
             this.observers = as;
-            as[0] = new EqualObserver<T>(this, 0, bufferSize);
-            as[1] = new EqualObserver<T>(this, 1, bufferSize);
+            as[0] = new EqualObserver<>(this, 0, bufferSize);
+            as[1] = new EqualObserver<>(this, 1, bufferSize);
             this.resources = new ArrayCompositeDisposable(2);
         }
 
@@ -230,7 +230,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
         EqualObserver(EqualCoordinator<T> parent, int index, int bufferSize) {
             this.parent = parent;
             this.index = index;
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
         }
 
         @Override

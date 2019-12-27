@@ -52,7 +52,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             return;
         }
 
-        source.subscribe(new DistinctSubscriber<T, K>(subscriber, keySelector, collection));
+        source.subscribe(new DistinctSubscriber<>(subscriber, keySelector, collection));
     }
 
     static final class DistinctSubscriber<T, K> extends BasicFuseableSubscriber<T, T> {

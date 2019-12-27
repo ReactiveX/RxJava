@@ -26,6 +26,6 @@ public enum HashMapSupplier implements Supplier<Map<Object, Object>> {
     }
 
     @Override public Map<Object, Object> get() {
-        return new HashMap<Object, Object>();
+        return new HashMap<>();
     }
 }

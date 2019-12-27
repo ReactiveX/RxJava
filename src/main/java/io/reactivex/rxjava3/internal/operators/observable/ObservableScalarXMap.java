@@ -88,7 +88,7 @@ public final class ObservableScalarXMap {
                     EmptyDisposable.complete(observer);
                     return true;
                 }
-                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, u);
+                ScalarDisposable<R> sd = new ScalarDisposable<>(observer, u);
                 observer.onSubscribe(sd);
                 sd.run();
             } else {
@@ -112,7 +112,7 @@ public final class ObservableScalarXMap {
      */
     public static <T, U> Observable<U> scalarXMap(T value,
             Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
-        return RxJavaPlugins.onAssembly(new ScalarXMapObservable<T, U>(value, mapper));
+        return RxJavaPlugins.onAssembly(new ScalarXMapObservable<>(value, mapper));
     }
 
     /**
@@ -159,7 +159,7 @@ public final class ObservableScalarXMap {
                     EmptyDisposable.complete(observer);
                     return;
                 }
-                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, u);
+                ScalarDisposable<R> sd = new ScalarDisposable<>(observer, u);
                 observer.onSubscribe(sd);
                 sd.run();
             } else {
@@ -205,7 +205,7 @@ public final class ObservableScalarXMap {
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             if (get() == FUSED) {
                 lazySet(ON_COMPLETE);
                 return value;

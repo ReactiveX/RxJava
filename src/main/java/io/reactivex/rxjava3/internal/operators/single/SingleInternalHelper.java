@@ -36,17 +36,17 @@ public final class SingleInternalHelper {
         INSTANCE;
 
         @Override
-        public NoSuchElementException call() throws Exception {
+        public NoSuchElementException call() {
             return new NoSuchElementException();
         }
 
         @Override
-        public NoSuchElementException get() throws Throwable {
+        public NoSuchElementException get() {
             return new NoSuchElementException();
         }
     }
 
-    public static <T> Supplier<NoSuchElementException> emptyThrower() {
+    public static Supplier<NoSuchElementException> emptyThrower() {
         return NoSuchElementCallable.INSTANCE;
     }
 
@@ -79,7 +79,7 @@ public final class SingleInternalHelper {
 
         @Override
         public Flowable<T> next() {
-            return new SingleToFlowable<T>(sit.next());
+            return new SingleToFlowable<>(sit.next());
         }
 
         @Override
@@ -98,12 +98,12 @@ public final class SingleInternalHelper {
 
         @Override
         public Iterator<Flowable<T>> iterator() {
-            return new ToFlowableIterator<T>(sources.iterator());
+            return new ToFlowableIterator<>(sources.iterator());
         }
     }
 
     public static <T> Iterable<? extends Flowable<T>> iterableToFlowable(final Iterable<? extends SingleSource<? extends T>> sources) {
-        return new ToFlowableIterable<T>(sources);
+        return new ToFlowableIterable<>(sources);
     }
 
     @SuppressWarnings("rawtypes")

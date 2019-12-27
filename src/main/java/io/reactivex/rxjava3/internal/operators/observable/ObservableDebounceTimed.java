@@ -37,8 +37,8 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceTimedObserver<T>(
-                new SerializedObserver<T>(t),
+        source.subscribe(new DebounceTimedObserver<>(
+                new SerializedObserver<>(t),
                 timeout, unit, scheduler.createWorker()));
     }
 
@@ -85,7 +85,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 d.dispose();
             }
 
-            DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
+            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
             timer = de;
             d = worker.schedule(de, timeout, unit);
             de.setResource(d);

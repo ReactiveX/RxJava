@@ -49,7 +49,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
     Flowable<Integer> parallel;
 
     @Override
-    public Integer apply(Integer t) throws Exception {
+    public Integer apply(Integer t) {
         Blackhole.consumeCPU(compute);
         return t;
     }
@@ -66,7 +66,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
 
         flatMap = source.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> apply(Integer v) {
                 return Flowable.just(v).subscribeOn(Schedulers.computation())
                         .map(ParallelPerf.this);
             }
@@ -75,13 +75,13 @@ public class ParallelPerf implements Function<Integer, Integer> {
         groupBy = source.groupBy(new Function<Integer, Integer>() {
             int i;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer apply(Integer v) {
                 return (i++) % cpu;
             }
         })
         .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) {
                 return g.observeOn(Schedulers.computation()).map(ParallelPerf.this);
             }
         });

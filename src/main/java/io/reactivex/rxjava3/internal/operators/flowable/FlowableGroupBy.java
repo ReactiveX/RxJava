@@ -56,10 +56,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         try {
             if (mapFactory == null) {
                 evictedGroups = null;
-                groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
+                groups = new ConcurrentHashMap<>();
             } else {
-                evictedGroups = new ConcurrentLinkedQueue<GroupedUnicast<K, V>>();
-                Consumer<Object> evictionAction = (Consumer) new EvictionAction<K, V>(evictedGroups);
+                evictedGroups = new ConcurrentLinkedQueue<>();
+                Consumer<Object> evictionAction = (Consumer) new EvictionAction<>(evictedGroups);
                 groups = (Map) mapFactory.apply(evictionAction);
             }
         } catch (Throwable e) {
@@ -69,7 +69,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             return;
         }
         GroupBySubscriber<T, K, V> subscriber =
-                new GroupBySubscriber<T, K, V>(s, keySelector, valueSelector, bufferSize, delayError, groups, evictedGroups);
+                new GroupBySubscriber<>(s, keySelector, valueSelector, bufferSize, delayError, groups, evictedGroups);
         source.subscribe(subscriber);
     }
 
@@ -327,8 +327,8 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         final State<T, K> state;
 
         public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
-            State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
-            return new GroupedUnicast<K, T>(key, state);
+            State<T, K> state = new State<>(bufferSize, parent, key, delayError);
+            return new GroupedUnicast<>(key, state);
         }
 
         protected GroupedUnicast(K key, State<T, K> state) {
@@ -370,7 +370,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        final AtomicReference<Subscriber<? super T>> actual = new AtomicReference<Subscriber<? super T>>();
+        final AtomicReference<Subscriber<? super T>> actual = new AtomicReference<>();
 
         boolean outputFused;
         int produced;
@@ -383,7 +383,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         static final int ABANDONED_HAS_SUBSCRIBER = ABANDONED | HAS_SUBSCRIBER;
 
         State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.parent = parent;
             this.key = key;
             this.delayError = delayError;

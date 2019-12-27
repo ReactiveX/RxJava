@@ -36,7 +36,7 @@ public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DoOnEventMaybeObserver<T>(observer, onEvent));
+        source.subscribe(new DoOnEventMaybeObserver<>(observer, onEvent));
     }
 
     static final class DoOnEventMaybeObserver<T> implements MaybeObserver<T>, Disposable {

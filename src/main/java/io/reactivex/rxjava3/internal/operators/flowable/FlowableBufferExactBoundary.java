@@ -41,7 +41,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        source.subscribe(new BufferExactBoundarySubscriber<T, U, B>(new SerializedSubscriber<U>(s), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundarySubscriber<>(new SerializedSubscriber<>(s), bufferSupplier, boundary));
     }
 
     static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
@@ -58,7 +58,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         BufferExactBoundarySubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                                              Publisher<B> boundary) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -84,7 +84,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
             buffer = b;
 
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
             other = bs;
 
             downstream.onSubscribe(this);

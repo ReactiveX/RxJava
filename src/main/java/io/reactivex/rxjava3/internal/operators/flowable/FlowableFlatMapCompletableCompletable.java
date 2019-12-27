@@ -53,12 +53,12 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new FlatMapCompletableMainSubscriber<T>(observer, mapper, delayErrors, maxConcurrency));
+        source.subscribe(new FlatMapCompletableMainSubscriber<>(observer, mapper, delayErrors, maxConcurrency));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<T>(source, mapper, delayErrors, maxConcurrency));
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<>(source, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapCompletableMainSubscriber<T> extends AtomicInteger

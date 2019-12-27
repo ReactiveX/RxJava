@@ -28,7 +28,7 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new OnErrorReturnObserver<T>(t, valueSupplier));
+        source.subscribe(new OnErrorReturnObserver<>(t, valueSupplier));
     }
 
     static final class OnErrorReturnObserver<T> implements Observer<T>, Disposable {

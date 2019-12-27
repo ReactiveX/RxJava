@@ -30,7 +30,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DetachMaybeObserver<T>(observer));
+        source.subscribe(new DetachMaybeObserver<>(observer));
     }
 
     static final class DetachMaybeObserver<T> implements MaybeObserver<T>, Disposable {

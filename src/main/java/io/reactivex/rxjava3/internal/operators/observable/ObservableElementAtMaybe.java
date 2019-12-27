@@ -29,12 +29,12 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
 
     @Override
     public void subscribeActual(MaybeObserver<? super T> t) {
-        source.subscribe(new ElementAtObserver<T>(t, index));
+        source.subscribe(new ElementAtObserver<>(t, index));
     }
 
     @Override
     public Observable<T> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, null, false));
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<>(source, index, null, false));
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {

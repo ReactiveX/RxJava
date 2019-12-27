@@ -36,7 +36,7 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new FilterMaybeObserver<T>(observer, predicate));
+        source.subscribe(new FilterMaybeObserver<>(observer, predicate));
     }
 
     static final class FilterMaybeObserver<T> implements MaybeObserver<T>, Disposable {

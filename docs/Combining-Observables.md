@@ -2,13 +2,13 @@ This section explains operators you can use to combine multiple Observables.
 
 # Outline
 
-- [`combineLatest`](#combineLatest)
+- [`combineLatest`](#combinelatest)
 - [`join` and `groupJoin`](#joins)
 - [`merge`](#merge)
-- [`mergeDelayError`](#mergeDelayError)
+- [`mergeDelayError`](#mergedelayerror)
 - [`rxjava-joins`](#rxjava-joins)
-- [`startWith`](#startWith)
-- [`switchOnNext`](#switchOnNext)
+- [`startWith`](#startwith)
+- [`switchOnNext`](#switchonnext)
 - [`zip`](#zip)
 
 ## startWith

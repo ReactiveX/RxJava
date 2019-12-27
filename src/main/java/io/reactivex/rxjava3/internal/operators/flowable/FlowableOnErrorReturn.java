@@ -31,7 +31,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new OnErrorReturnSubscriber<T>(s, valueSupplier));
+        source.subscribe(new OnErrorReturnSubscriber<>(s, valueSupplier));
     }
 
     static final class OnErrorReturnSubscriber<T>

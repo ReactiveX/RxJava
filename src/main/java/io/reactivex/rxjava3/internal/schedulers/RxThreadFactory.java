@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.schedulers;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -47,7 +49,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(Runnable r) {
+    public Thread newThread(@NonNull Runnable r) {
         StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
 
 //        if (CREATE_TRACE) {

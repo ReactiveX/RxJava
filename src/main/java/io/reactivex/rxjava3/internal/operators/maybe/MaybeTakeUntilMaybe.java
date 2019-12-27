@@ -38,7 +38,7 @@ public final class MaybeTakeUntilMaybe<T, U> extends AbstractMaybeWithUpstream<T
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        TakeUntilMainMaybeObserver<T, U> parent = new TakeUntilMainMaybeObserver<T, U>(observer);
+        TakeUntilMainMaybeObserver<T, U> parent = new TakeUntilMainMaybeObserver<>(observer);
         observer.onSubscribe(parent);
 
         other.subscribe(parent.other);
@@ -57,7 +57,7 @@ public final class MaybeTakeUntilMaybe<T, U> extends AbstractMaybeWithUpstream<T
 
         TakeUntilMainMaybeObserver(MaybeObserver<? super T> downstream) {
             this.downstream = downstream;
-            this.other = new TakeUntilOtherMaybeObserver<U>(this);
+            this.other = new TakeUntilOtherMaybeObserver<>(this);
         }
 
         @Override

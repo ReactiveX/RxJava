@@ -38,7 +38,7 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        BlockingObservableLatestIterator<T> lio = new BlockingObservableLatestIterator<T>();
+        BlockingObservableLatestIterator<T> lio = new BlockingObservableLatestIterator<>();
 
         Observable<Notification<T>> materialized = Observable.wrap(source).materialize();
 
@@ -52,7 +52,7 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
 
         final Semaphore notify = new Semaphore(0);
         // observer's notification
-        final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();
+        final AtomicReference<Notification<T>> value = new AtomicReference<>();
 
         @Override
         public void onNext(Notification<T> args) {

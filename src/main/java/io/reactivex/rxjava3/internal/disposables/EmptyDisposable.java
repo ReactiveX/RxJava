@@ -95,7 +95,7 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
 
     @Nullable
     @Override
-    public Object poll() throws Exception {
+    public Object poll() {
         return null; // always empty
     }
 

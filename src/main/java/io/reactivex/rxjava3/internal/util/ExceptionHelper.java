@@ -52,7 +52,7 @@ public final class ExceptionHelper {
      */
     public static final Throwable TERMINATED = new Termination();
 
-    public static <T> boolean addThrowable(AtomicReference<Throwable> field, Throwable exception) {
+    public static boolean addThrowable(AtomicReference<Throwable> field, Throwable exception) {
         for (;;) {
             Throwable current = field.get();
 
@@ -73,7 +73,7 @@ public final class ExceptionHelper {
         }
     }
 
-    public static <T> Throwable terminate(AtomicReference<Throwable> field) {
+    public static Throwable terminate(AtomicReference<Throwable> field) {
         Throwable current = field.get();
         if (current != TERMINATED) {
             current = field.getAndSet(TERMINATED);
@@ -87,8 +87,8 @@ public final class ExceptionHelper {
      * @return the list of Throwables flattened in a depth-first manner
      */
     public static List<Throwable> flatten(Throwable t) {
-        List<Throwable> list = new ArrayList<Throwable>();
-        ArrayDeque<Throwable> deque = new ArrayDeque<Throwable>();
+        List<Throwable> list = new ArrayList<>();
+        ArrayDeque<Throwable> deque = new ArrayDeque<>();
         deque.offer(t);
 
         while (!deque.isEmpty()) {

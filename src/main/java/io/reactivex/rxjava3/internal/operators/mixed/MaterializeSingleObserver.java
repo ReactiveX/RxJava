@@ -45,17 +45,17 @@ implements SingleObserver<T>, MaybeObserver<T>, CompletableObserver, Disposable 
 
     @Override
     public void onComplete() {
-        downstream.onSuccess(Notification.<T>createOnComplete());
+        downstream.onSuccess(Notification.createOnComplete());
     }
 
     @Override
     public void onSuccess(T t) {
-        downstream.onSuccess(Notification.<T>createOnNext(t));
+        downstream.onSuccess(Notification.createOnNext(t));
     }
 
     @Override
     public void onError(Throwable e) {
-        downstream.onSuccess(Notification.<T>createOnError(e));
+        downstream.onSuccess(Notification.createOnError(e));
     }
 
     @Override

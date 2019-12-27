@@ -47,7 +47,7 @@ public final class MaybeFlatMapPublisher<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new FlatMapPublisherSubscriber<T, R>(s, mapper));
+        source.subscribe(new FlatMapPublisherSubscriber<>(s, mapper));
     }
 
     static final class FlatMapPublisherSubscriber<T, R>

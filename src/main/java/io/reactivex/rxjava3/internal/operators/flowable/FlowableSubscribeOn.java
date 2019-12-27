@@ -42,7 +42,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
         Scheduler.Worker w = scheduler.createWorker();
-        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w, source, nonScheduledRequests);
+        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<>(s, w, source, nonScheduledRequests);
         s.onSubscribe(sos);
 
         w.schedule(sos);
@@ -69,7 +69,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
             this.downstream = actual;
             this.worker = worker;
             this.source = source;
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
             this.nonScheduledRequests = !requestOn;
         }

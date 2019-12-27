@@ -57,7 +57,7 @@ implements FlowableSubscriber<T>, Subscription {
         this.downstream = downstream;
         this.error = new AtomicThrowable();
         this.requested = new AtomicLong();
-        this.upstream = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<>();
         this.once = new AtomicBoolean();
     }
 

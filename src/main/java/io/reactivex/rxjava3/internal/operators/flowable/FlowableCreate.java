@@ -45,23 +45,23 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         switch (backpressure) {
         case MISSING: {
-            emitter = new MissingEmitter<T>(t);
+            emitter = new MissingEmitter<>(t);
             break;
         }
         case ERROR: {
-            emitter = new ErrorAsyncEmitter<T>(t);
+            emitter = new ErrorAsyncEmitter<>(t);
             break;
         }
         case DROP: {
-            emitter = new DropAsyncEmitter<T>(t);
+            emitter = new DropAsyncEmitter<>(t);
             break;
         }
         case LATEST: {
-            emitter = new LatestAsyncEmitter<T>(t);
+            emitter = new LatestAsyncEmitter<>(t);
             break;
         }
         default: {
-            emitter = new BufferAsyncEmitter<T>(t, bufferSize());
+            emitter = new BufferAsyncEmitter<>(t, bufferSize());
             break;
         }
         }
@@ -97,7 +97,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         SerializedEmitter(BaseEmitter<T> emitter) {
             this.emitter = emitter;
             this.errors = new AtomicThrowable();
-            this.queue = new SpscLinkedArrayQueue<T>(16);
+            this.queue = new SpscLinkedArrayQueue<>(16);
         }
 
         @Override
@@ -347,7 +347,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public final FlowableEmitter<T> serialize() {
-            return new SerializedEmitter<T>(this);
+            return new SerializedEmitter<>(this);
         }
 
         @Override
@@ -460,7 +460,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         BufferAsyncEmitter(Subscriber<? super T> actual, int capacityHint) {
             super(actual);
-            this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
+            this.queue = new SpscLinkedArrayQueue<>(capacityHint);
             this.wip = new AtomicInteger();
         }
 
@@ -598,7 +598,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         LatestAsyncEmitter(Subscriber<? super T> downstream) {
             super(downstream);
-            this.queue = new AtomicReference<T>();
+            this.queue = new AtomicReference<>();
             this.wip = new AtomicInteger();
         }
 

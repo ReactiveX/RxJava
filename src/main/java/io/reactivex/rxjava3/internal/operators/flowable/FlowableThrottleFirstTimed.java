@@ -42,8 +42,8 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new DebounceTimedSubscriber<T>(
-                new SerializedSubscriber<T>(s),
+        source.subscribe(new DebounceTimedSubscriber<>(
+                new SerializedSubscriber<>(s),
                 timeout, unit, scheduler.createWorker()));
     }
 

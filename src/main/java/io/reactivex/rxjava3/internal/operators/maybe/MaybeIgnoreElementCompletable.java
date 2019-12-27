@@ -34,12 +34,12 @@ public final class MaybeIgnoreElementCompletable<T> extends Completable implemen
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new IgnoreMaybeObserver<T>(observer));
+        source.subscribe(new IgnoreMaybeObserver<>(observer));
     }
 
     @Override
     public Maybe<T> fuseToMaybe() {
-        return RxJavaPlugins.onAssembly(new MaybeIgnoreElement<T>(source));
+        return RxJavaPlugins.onAssembly(new MaybeIgnoreElement<>(source));
     }
 
     static final class IgnoreMaybeObserver<T> implements MaybeObserver<T>, Disposable {

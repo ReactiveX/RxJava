@@ -20,7 +20,7 @@ import org.reactivestreams.Subscription;
 
 public class PerfSubscriber implements FlowableSubscriber<Object> {
 
-    public CountDownLatch latch = new CountDownLatch(1);
+    public final CountDownLatch latch = new CountDownLatch(1);
     private final Blackhole bh;
 
     public PerfSubscriber(Blackhole bh) {

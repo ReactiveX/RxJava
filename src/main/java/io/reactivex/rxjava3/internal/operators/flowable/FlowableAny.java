@@ -29,7 +29,7 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
 
     @Override
     protected void subscribeActual(Subscriber<? super Boolean> s) {
-        source.subscribe(new AnySubscriber<T>(s, predicate));
+        source.subscribe(new AnySubscriber<>(s, predicate));
     }
 
     static final class AnySubscriber<T> extends DeferredScalarSubscription<Boolean> implements FlowableSubscriber<T> {

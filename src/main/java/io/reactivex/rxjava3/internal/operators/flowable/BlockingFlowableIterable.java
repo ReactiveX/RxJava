@@ -38,7 +38,7 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        BlockingFlowableIterator<T> it = new BlockingFlowableIterator<T>(bufferSize);
+        BlockingFlowableIterator<T> it = new BlockingFlowableIterator<>(bufferSize);
         source.subscribe(it);
         return it;
     }
@@ -65,7 +65,7 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
         volatile Throwable error;
 
         BlockingFlowableIterator(int batchSize) {
-            this.queue = new SpscArrayQueue<T>(batchSize);
+            this.queue = new SpscArrayQueue<>(batchSize);
             this.batchSize = batchSize;
             this.limit = batchSize - (batchSize >> 2);
             this.lock = new ReentrantLock();

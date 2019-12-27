@@ -332,7 +332,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false));
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, false));
     }
 
     /**
@@ -429,7 +429,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false));
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, false));
     }
 
     /**
@@ -530,7 +530,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 0) {
             return empty();
         }
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true));
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, true));
     }
 
     /**
@@ -629,7 +629,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true));
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<>(sources, combiner, bufferSize, true));
     }
 
     /**
@@ -1892,7 +1892,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableError<T>(supplier));
+        return RxJavaPlugins.onAssembly(new FlowableError<>(supplier));
     }
 
     /**
@@ -1997,7 +1997,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> fromCallable(@NonNull Callable<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromCallable<T>(supplier));
+        return RxJavaPlugins.onAssembly(new FlowableFromCallable<>(supplier));
     }
 
     /**
@@ -2039,7 +2039,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> fromFuture(@NonNull Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromFuture<T>(future, 0L, null));
+        return RxJavaPlugins.onAssembly(new FlowableFromFuture<>(future, 0L, null));
     }
 
     /**
@@ -2086,7 +2086,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <@NonNull T> Flowable<T> fromFuture(@NonNull Future<? extends T> future, long timeout, @NonNull TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromFuture<T>(future, timeout, unit));
+        return RxJavaPlugins.onAssembly(new FlowableFromFuture<>(future, timeout, unit));
     }
 
     /**
@@ -2205,7 +2205,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> fromIterable(@NonNull Iterable<? extends T> source) {
         Objects.requireNonNull(source, "source is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromIterable<T>(source));
+        return RxJavaPlugins.onAssembly(new FlowableFromIterable<>(source));
     }
 
     /**
@@ -2246,7 +2246,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(source, "source is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(source));
+        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<>(source));
     }
 
     /**
@@ -2287,7 +2287,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Flowable<T> fromSupplier(@NonNull Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromSupplier<T>(supplier));
+        return RxJavaPlugins.onAssembly(new FlowableFromSupplier<>(supplier));
     }
 
     /**
@@ -2318,7 +2318,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> generate(@NonNull Consumer<@NonNull Emitter<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
         return generate(Functions.nullSupplier(),
-                FlowableInternalHelper.<T, Object>simpleGenerator(generator),
+                FlowableInternalHelper.simpleGenerator(generator),
                 Functions.emptyConsumer());
     }
 
@@ -2351,7 +2351,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(@NonNull Supplier<S> initialState, @NonNull BiConsumer<S, @NonNull Emitter<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator),
+        return generate(initialState, FlowableInternalHelper.simpleBiGenerator(generator),
                 Functions.emptyConsumer());
     }
 
@@ -2387,7 +2387,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, S> Flowable<T> generate(@NonNull Supplier<S> initialState, @NonNull BiConsumer<S, @NonNull Emitter<T>> generator,
             @NonNull Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
+        return generate(initialState, FlowableInternalHelper.simpleBiGenerator(generator), disposeState);
     }
 
     /**
@@ -4622,7 +4622,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> zip(@NonNull Iterable<? extends Publisher<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize(), false));
+        return RxJavaPlugins.onAssembly(new FlowableZip<>(null, sources, zipper, bufferSize(), false));
     }
 
     /**
@@ -4684,7 +4684,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new FlowableZip<>(null, sources, zipper, bufferSize, delayError));
     }
 
     /**
@@ -5486,7 +5486,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(zipper, "zipper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(sources, null, zipper, bufferSize, delayError));
+        return RxJavaPlugins.onAssembly(new FlowableZip<>(sources, null, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -6025,7 +6025,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Future<T> toFuture() {
-        return subscribeWith(new FutureSubscriber<T>());
+        return subscribeWith(new FutureSubscriber<>());
     }
 
     /**
@@ -6303,7 +6303,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<List<T>> buffer(int count, int skip) {
-        return buffer(count, skip, ArrayListSupplier.<T>asSupplier());
+        return buffer(count, skip, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6415,7 +6415,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
     public final Flowable<List<T>> buffer(long timespan, long timeskip, @NonNull TimeUnit unit) {
-        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.<T>asSupplier());
+        return buffer(timespan, timeskip, unit, Schedulers.computation(), ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6453,7 +6453,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Flowable<List<T>> buffer(long timespan, long timeskip, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.<T>asSupplier());
+        return buffer(timespan, timeskip, unit, scheduler, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6610,7 +6610,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Flowable<List<T>> buffer(long timespan, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, int count) {
-        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.<T>asSupplier(), false);
+        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.asSupplier(), false);
     }
 
     /**
@@ -6700,7 +6700,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final Flowable<List<T>> buffer(long timespan, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.<T>asSupplier(), false);
+        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.asSupplier(), false);
     }
 
     /**
@@ -6737,7 +6737,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
             @NonNull Flowable<? extends TOpening> openingIndicator,
             @NonNull Function<? super TOpening, ? extends Publisher<? extends TClosing>> closingIndicator) {
-        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asSupplier());
+        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6817,7 +6817,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <B> Flowable<List<T>> buffer(@NonNull Publisher<B> boundaryIndicator) {
-        return buffer(boundaryIndicator, ArrayListSupplier.<T>asSupplier());
+        return buffer(boundaryIndicator, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6855,7 +6855,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     public final <B> Flowable<List<T>> buffer(@NonNull Publisher<B> boundaryIndicator, int initialCapacity) {
         ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
-        return buffer(boundaryIndicator, Functions.<T>createArrayList(initialCapacity));
+        return buffer(boundaryIndicator, Functions.createArrayList(initialCapacity));
     }
 
     /**
@@ -7089,7 +7089,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U> Single<U> collect(@NonNull Supplier<? extends U> initialItemSupplier, @NonNull BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
-        return RxJavaPlugins.onAssembly(new FlowableCollectSingle<T, U>(this, initialItemSupplier, collector));
+        return RxJavaPlugins.onAssembly(new FlowableCollectSingle<>(this, initialItemSupplier, collector));
     }
 
     /**
@@ -8896,7 +8896,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <K> Flowable<T> distinct(@NonNull Function<? super T, K> keySelector) {
-        return distinct(keySelector, Functions.<K>createHashSet());
+        return distinct(keySelector, Functions.createHashSet());
     }
 
     /**
@@ -9063,7 +9063,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> distinctUntilChanged(@NonNull BiPredicate<? super T, ? super T> comparer) {
         Objects.requireNonNull(comparer, "comparer is null");
-        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<>(this, Functions.<T>identity(), comparer));
+        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<>(this, Functions.identity(), comparer));
     }
 
     /**
@@ -10632,7 +10632,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10664,7 +10664,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector) {
-        return groupBy(keySelector, Functions.<T>identity(), false, bufferSize());
+        return groupBy(keySelector, Functions.identity(), false, bufferSize());
     }
 
     /**
@@ -10691,7 +10691,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10724,7 +10724,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(@NonNull Function<? super T, ? extends K> keySelector, boolean delayError) {
-        return groupBy(keySelector, Functions.<T>identity(), delayError, bufferSize());
+        return groupBy(keySelector, Functions.identity(), delayError, bufferSize());
     }
 
     /**
@@ -10751,7 +10751,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10816,7 +10816,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10882,7 +10882,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10927,7 +10927,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(valueSelector, "valueSelector is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
 
-        return RxJavaPlugins.onAssembly(new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError, null));
+        return RxJavaPlugins.onAssembly(new FlowableGroupBy<>(this, keySelector, valueSelector, bufferSize, delayError, null));
     }
 
     /**
@@ -10995,7 +10995,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
      * so-called group abandonment where a group will only contain one element and the group will be
      * re-created over and over as new upstream items trigger a new group. The behavior is
-     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     * a trade-off between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -11050,7 +11050,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(evictingMapFactory, "evictingMapFactory is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError, evictingMapFactory));
+        return RxJavaPlugins.onAssembly(new FlowableGroupBy<>(this, keySelector, valueSelector, bufferSize, delayError, evictingMapFactory));
     }
 
     /**
@@ -11100,7 +11100,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(leftEnd, "leftEnd is null");
         Objects.requireNonNull(rightEnd, "rightEnd is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return RxJavaPlugins.onAssembly(new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+        return RxJavaPlugins.onAssembly(new FlowableGroupJoin<>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
 
@@ -11456,7 +11456,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> lift(@NonNull FlowableOperator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter, "lifter is null");
-        return RxJavaPlugins.onAssembly(new FlowableLift<R, T>(this, lifter));
+        return RxJavaPlugins.onAssembly(new FlowableLift<>(this, lifter));
     }
 
     /**
@@ -11486,7 +11486,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull R> Flowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new FlowableMap<T, R>(this, mapper));
+        return RxJavaPlugins.onAssembly(new FlowableMap<>(this, mapper));
     }
 
     /**
@@ -13894,7 +13894,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (s instanceof SafeSubscriber) {
             subscribe((SafeSubscriber<? super T>)s);
         } else {
-            subscribe(new SafeSubscriber<T>(s));
+            subscribe(new SafeSubscriber<>(s));
         }
     }
 
@@ -14768,7 +14768,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> sorted() {
-        return toList().toFlowable().map(Functions.listSorter(Functions.<T>naturalComparator())).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toFlowable().map(Functions.listSorter(Functions.naturalComparator())).flatMapIterable(Functions.identity());
     }
 
     /**
@@ -14797,7 +14797,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(@NonNull Comparator<@NonNull ? super T> sortFunction) {
         Objects.requireNonNull(sortFunction, "sortFunction");
-        return toList().toFlowable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toFlowable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.identity());
     }
 
     /**
@@ -15065,7 +15065,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             subscribe((FlowableSubscriber<? super T>)s);
         } else {
             Objects.requireNonNull(s, "s is null");
-            subscribe(new StrictSubscriber<T>(s));
+            subscribe(new StrictSubscriber<>(s));
         }
     }
 
@@ -17119,7 +17119,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<Timed<T>> timestamp(@NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return map(Functions.<T>timestampWith(unit, scheduler));
+        return map(Functions.timestampWith(unit, scheduler));
     }
 
     /**
@@ -17178,7 +17178,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Single<List<T>> toList() {
-        return RxJavaPlugins.onAssembly(new FlowableToListSingle<T, List<T>>(this));
+        return RxJavaPlugins.onAssembly(new FlowableToListSingle<>(this));
     }
 
     /**
@@ -17216,7 +17216,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     public final Single<List<T>> toList(int capacityHint) {
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        return RxJavaPlugins.onAssembly(new FlowableToListSingle<>(this, Functions.<T>createArrayList(capacityHint)));
+        return RxJavaPlugins.onAssembly(new FlowableToListSingle<>(this, Functions.createArrayList(capacityHint)));
     }
 
     /**
@@ -17290,7 +17290,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Single<Map<K, T>> toMap(@NonNull Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
-        return collect(HashMapSupplier.<K, T>asSupplier(), Functions.toMapKeySelector(keySelector));
+        return collect(HashMapSupplier.asSupplier(), Functions.toMapKeySelector(keySelector));
     }
 
     /**
@@ -17330,7 +17330,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Single<Map<K, V>> toMap(@NonNull Function<? super T, ? extends K> keySelector, @NonNull Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(HashMapSupplier.<K, V>asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
+        return collect(HashMapSupplier.asSupplier(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
     /**
@@ -17533,7 +17533,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             @NonNull Function<? super T, ? extends V> valueSelector,
             @NonNull Supplier<Map<K, Collection<V>>> mapSupplier
             ) {
-        return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.<V, K>asFunction());
+        return toMultimap(keySelector, valueSelector, mapSupplier, ArrayListSupplier.asFunction());
     }
 
     /**
@@ -17731,7 +17731,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window will only contain one element. The behavior is
-     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen.
+     * a trade-off between no-dataloss and ensuring upstream cancellation can happen.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17766,7 +17766,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17804,7 +17804,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17848,7 +17848,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17889,7 +17889,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17932,7 +17932,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17981,7 +17981,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18021,7 +18021,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18065,7 +18065,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18110,7 +18110,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18154,7 +18154,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18200,7 +18200,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18248,7 +18248,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -18301,7 +18301,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator does not support backpressure as it uses a {@code boundary} Publisher to control data
@@ -18337,7 +18337,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator does not support backpressure as it uses a {@code boundary} Publisher to control data
@@ -18378,7 +18378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator doesn't support backpressure because the emission of new
@@ -18421,7 +18421,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
      * so-called window abandonment where a window may not contain any elements. In this case, subsequent
      * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
-     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
+     * a trade-off for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The outer Publisher of this operator doesn't support backpressure because the emission of new
@@ -18731,7 +18731,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U, R> Flowable<R> zipWith(@NonNull Iterable<U> other,  @NonNull BiFunction<? super T, ? super U, ? extends R> zipper) {
         Objects.requireNonNull(other, "other is null");
         Objects.requireNonNull(zipper, "zipper is null");
-        return RxJavaPlugins.onAssembly(new FlowableZipIterable<T, U, R>(this, other, zipper));
+        return RxJavaPlugins.onAssembly(new FlowableZipIterable<>(this, other, zipper));
     }
 
     /**
@@ -19154,7 +19154,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).firstStage(Optional.empty());
@@ -19191,7 +19191,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).singleStage(Optional.empty());
@@ -19227,7 +19227,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).lastStage(Optional.empty());
@@ -19409,7 +19409,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Stream<T> blockingStream(int prefetch) {
         Iterator<T> iterator = blockingIterable(prefetch).iterator();
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false)
-                .onClose(() -> ((Disposable)iterator).dispose());
+                .onClose(((Disposable) iterator)::dispose);
     }
 
     /**

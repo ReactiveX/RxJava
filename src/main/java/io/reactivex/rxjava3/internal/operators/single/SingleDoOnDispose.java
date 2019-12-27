@@ -35,7 +35,7 @@ public final class SingleDoOnDispose<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        source.subscribe(new DoOnDisposeObserver<T>(observer, onDispose));
+        source.subscribe(new DoOnDisposeObserver<>(observer, onDispose));
     }
 
     static final class DoOnDisposeObserver<T>

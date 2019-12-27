@@ -30,7 +30,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new UnsubscribeSubscriber<T>(s, scheduler));
+        source.subscribe(new UnsubscribeSubscriber<>(s, scheduler));
     }
 
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {

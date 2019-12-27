@@ -87,7 +87,7 @@ public final class FlowableScalarXMap {
                     EmptySubscription.complete(subscriber);
                     return true;
                 }
-                subscriber.onSubscribe(new ScalarSubscription<R>(subscriber, u));
+                subscriber.onSubscribe(new ScalarSubscription<>(subscriber, u));
             } else {
                 r.subscribe(subscriber);
             }
@@ -108,7 +108,7 @@ public final class FlowableScalarXMap {
      * @return the new Flowable instance
      */
     public static <T, U> Flowable<U> scalarXMap(final T value, final Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return RxJavaPlugins.onAssembly(new ScalarXMapFlowable<T, U>(value, mapper));
+        return RxJavaPlugins.onAssembly(new ScalarXMapFlowable<>(value, mapper));
     }
 
     /**
@@ -155,7 +155,7 @@ public final class FlowableScalarXMap {
                     EmptySubscription.complete(s);
                     return;
                 }
-                s.onSubscribe(new ScalarSubscription<R>(s, u));
+                s.onSubscribe(new ScalarSubscription<>(s, u));
             } else {
                 other.subscribe(s);
             }

@@ -41,7 +41,7 @@ public final class FlowableConcatWithSingle<T> extends AbstractFlowableWithUpstr
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ConcatWithSubscriber<T>(s, other));
+        source.subscribe(new ConcatWithSubscriber<>(s, other));
     }
 
     static final class ConcatWithSubscriber<T>
@@ -57,7 +57,7 @@ public final class FlowableConcatWithSingle<T> extends AbstractFlowableWithUpstr
         ConcatWithSubscriber(Subscriber<? super T> actual, SingleSource<? extends T> other) {
             super(actual);
             this.other = other;
-            this.otherDisposable = new AtomicReference<Disposable>();
+            this.otherDisposable = new AtomicReference<>();
         }
 
         @Override

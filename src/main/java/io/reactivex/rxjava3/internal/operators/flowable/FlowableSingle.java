@@ -35,7 +35,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SingleElementSubscriber<T>(s, defaultValue, failOnEmpty));
+        source.subscribe(new SingleElementSubscriber<>(s, defaultValue, failOnEmpty));
     }
 
     static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T>

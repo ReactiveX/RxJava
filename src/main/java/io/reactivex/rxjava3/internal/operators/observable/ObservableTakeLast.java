@@ -29,7 +29,7 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new TakeLastObserver<T>(t, count));
+        source.subscribe(new TakeLastObserver<>(t, count));
     }
 
     static final class TakeLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {

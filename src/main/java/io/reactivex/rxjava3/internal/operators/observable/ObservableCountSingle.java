@@ -32,7 +32,7 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
 
     @Override
     public Observable<Long> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableCount<T>(source));
+        return RxJavaPlugins.onAssembly(new ObservableCount<>(source));
     }
 
     static final class CountObserver implements Observer<Object>, Disposable {

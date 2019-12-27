@@ -40,7 +40,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new DoFinallyObserver<T>(observer, onFinally));
+        source.subscribe(new DoFinallyObserver<>(observer, onFinally));
     }
 
     static final class DoFinallyObserver<T> extends BasicIntQueueDisposable<T> implements Observer<T> {

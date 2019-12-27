@@ -42,8 +42,8 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new DebounceTimedSubscriber<T>(
-                new SerializedSubscriber<T>(s),
+        source.subscribe(new DebounceTimedSubscriber<>(
+                new SerializedSubscriber<>(s),
                 timeout, unit, scheduler.createWorker()));
     }
 
@@ -93,7 +93,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                 d.dispose();
             }
 
-            DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
+            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
             timer = de;
             d = worker.schedule(de, timeout, unit);
             de.setResource(d);

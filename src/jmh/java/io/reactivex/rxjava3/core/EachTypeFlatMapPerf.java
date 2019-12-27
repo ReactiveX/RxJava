@@ -114,11 +114,11 @@ public class EachTypeFlatMapPerf {
 
     @Benchmark
     public void singleJust(Blackhole bh) {
-        singleJust.subscribe(new LatchedSingleObserver<Integer>(bh));
+        singleJust.subscribe(new LatchedSingleObserver<>(bh));
     }
 
     @Benchmark
     public void singleJustMapJust(Blackhole bh) {
-        singleJustMapJust.subscribe(new LatchedSingleObserver<Integer>(bh));
+        singleJustMapJust.subscribe(new LatchedSingleObserver<>(bh));
     }
 }

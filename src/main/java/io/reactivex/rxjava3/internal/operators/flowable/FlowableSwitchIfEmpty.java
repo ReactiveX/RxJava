@@ -27,7 +27,7 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<T>(s, other);
+        SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<>(s, other);
         s.onSubscribe(parent.arbiter);
         source.subscribe(parent);
     }

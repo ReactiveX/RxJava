@@ -33,7 +33,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(observer);
+        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<>(observer);
         observer.onSubscribe(d);
         if (!d.isDisposed()) {
             T v;

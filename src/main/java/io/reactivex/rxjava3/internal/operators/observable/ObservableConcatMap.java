@@ -48,10 +48,10 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         }
 
         if (delayErrors == ErrorMode.IMMEDIATE) {
-            SerializedObserver<U> serial = new SerializedObserver<U>(observer);
-            source.subscribe(new SourceObserver<T, U>(serial, mapper, bufferSize));
+            SerializedObserver<U> serial = new SerializedObserver<>(observer);
+            source.subscribe(new SourceObserver<>(serial, mapper, bufferSize));
         } else {
-            source.subscribe(new ConcatMapDelayErrorObserver<T, U>(observer, mapper, bufferSize, delayErrors == ErrorMode.END));
+            source.subscribe(new ConcatMapDelayErrorObserver<>(observer, mapper, bufferSize, delayErrors == ErrorMode.END));
         }
     }
 
@@ -80,7 +80,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.downstream = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
-            this.inner = new InnerObserver<U>(actual, this);
+            this.inner = new InnerObserver<>(actual, this);
         }
 
         @Override
@@ -113,7 +113,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                     }
                 }
 
-                queue = new SpscLinkedArrayQueue<T>(bufferSize);
+                queue = new SpscLinkedArrayQueue<>(bufferSize);
 
                 downstream.onSubscribe(this);
             }
@@ -305,7 +305,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.bufferSize = bufferSize;
             this.tillTheEnd = tillTheEnd;
             this.errors = new AtomicThrowable();
-            this.observer = new DelayErrorInnerObserver<R>(actual, this);
+            this.observer = new DelayErrorInnerObserver<>(actual, this);
         }
 
         @Override
@@ -338,7 +338,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                     }
                 }
 
-                queue = new SpscLinkedArrayQueue<T>(bufferSize);
+                queue = new SpscLinkedArrayQueue<>(bufferSize);
 
                 downstream.onSubscribe(this);
             }

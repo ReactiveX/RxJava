@@ -68,7 +68,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             return;
         }
 
-        AmbCoordinator<T> ac = new AmbCoordinator<T>(observer, count);
+        AmbCoordinator<T> ac = new AmbCoordinator<>(observer, count);
         ac.subscribe(sources);
     }
 
@@ -88,7 +88,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             AmbInnerObserver<T>[] as = observers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new AmbInnerObserver<T>(this, i + 1, downstream);
+                as[i] = new AmbInnerObserver<>(this, i + 1, downstream);
             }
             winner.lazySet(0); // release the contents of 'as'
             downstream.onSubscribe(this);

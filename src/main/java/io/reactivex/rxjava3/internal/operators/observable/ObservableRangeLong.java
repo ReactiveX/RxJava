@@ -68,7 +68,7 @@ public final class ObservableRangeLong extends Observable<Long> {
 
         @Nullable
         @Override
-        public Long poll() throws Exception {
+        public Long poll() {
             long i = index;
             if (i != end) {
                 index = i + 1;

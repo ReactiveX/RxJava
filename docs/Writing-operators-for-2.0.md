@@ -1,7 +1,7 @@
 ##### Table of contents
 
   - [Introduction](#introduction)
-    - [Warning on internal components](warning-on-internal-components)
+    - [Warning on internal components](#warning-on-internal-components)
   - [Atomics, serialization, deferred actions](#atomics-serialization-deferred-actions)
     - [Field updaters and Android](#field-updaters-and-android)
     - [Request accounting](#request-accounting)

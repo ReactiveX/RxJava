@@ -36,7 +36,7 @@ public final class FlowableLastMaybe<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new LastSubscriber<T>(observer));
+        source.subscribe(new LastSubscriber<>(observer));
     }
 
     static final class LastSubscriber<T> implements FlowableSubscriber<T>, Disposable {

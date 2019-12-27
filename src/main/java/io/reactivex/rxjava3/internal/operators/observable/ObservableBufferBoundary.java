@@ -43,7 +43,7 @@ extends AbstractObservableWithUpstream<T, U> {
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         BufferBoundaryObserver<T, U, Open, Close> parent =
-            new BufferBoundaryObserver<T, U, Open, Close>(
+            new BufferBoundaryObserver<>(
                 t, bufferOpen, bufferClose, bufferSupplier
             );
         t.onSubscribe(parent);
@@ -88,10 +88,10 @@ extends AbstractObservableWithUpstream<T, U> {
             this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
-            this.queue = new SpscLinkedArrayQueue<C>(bufferSize());
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
             this.observers = new CompositeDisposable();
-            this.upstream = new AtomicReference<Disposable>();
-            this.buffers = new LinkedHashMap<Long, C>();
+            this.upstream = new AtomicReference<>();
+            this.buffers = new LinkedHashMap<>();
             this.errors = new AtomicThrowable();
         }
 
@@ -99,7 +99,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this.upstream, d)) {
 
-                BufferOpenObserver<Open> open = new BufferOpenObserver<Open>(this);
+                BufferOpenObserver<Open> open = new BufferOpenObserver<>(this);
                 observers.add(open);
 
                 bufferOpen.subscribe(open);
@@ -190,7 +190,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 bufs.put(idx, buf);
             }
 
-            BufferCloseObserver<T, C> bc = new BufferCloseObserver<T, C>(this, idx);
+            BufferCloseObserver<T, C> bc = new BufferCloseObserver<>(this, idx);
             observers.add(bc);
             p.subscribe(bc);
         }

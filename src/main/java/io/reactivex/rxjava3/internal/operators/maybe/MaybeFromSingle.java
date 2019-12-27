@@ -38,7 +38,7 @@ public final class MaybeFromSingle<T> extends Maybe<T> implements HasUpstreamSin
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new FromSingleObserver<T>(observer));
+        source.subscribe(new FromSingleObserver<>(observer));
     }
 
     static final class FromSingleObserver<T> implements SingleObserver<T>, Disposable {

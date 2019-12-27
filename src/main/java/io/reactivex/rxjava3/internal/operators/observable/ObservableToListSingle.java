@@ -53,12 +53,12 @@ extends Single<U> implements FuseToObservable<U> {
             EmptyDisposable.error(e, t);
             return;
         }
-        source.subscribe(new ToListObserver<T, U>(t, coll));
+        source.subscribe(new ToListObserver<>(t, coll));
     }
 
     @Override
     public Observable<U> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableToList<T, U>(source, collectionSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableToList<>(source, collectionSupplier));
     }
 
     static final class ToListObserver<T, U extends Collection<? super T>> implements Observer<T>, Disposable {

@@ -32,7 +32,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         SubscriptionArbiter sa = new SubscriptionArbiter(false);
         s.onSubscribe(sa);
 
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sa, source);
+        RepeatSubscriber<T> rs = new RepeatSubscriber<>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sa, source);
         rs.subscribeNext();
     }
 

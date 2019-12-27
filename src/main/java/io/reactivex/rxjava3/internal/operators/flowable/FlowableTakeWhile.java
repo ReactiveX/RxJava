@@ -30,7 +30,7 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeWhileSubscriber<T>(s, predicate));
+        source.subscribe(new TakeWhileSubscriber<>(s, predicate));
     }
 
     static final class TakeWhileSubscriber<T> implements FlowableSubscriber<T>, Subscription {

@@ -45,7 +45,7 @@ public class FlowableFlatMapCompletableAsyncPerf implements Action {
     Flowable<Object> flatMap;
 
     @Override
-    public void run() throws Exception {
+    public void run() {
         Blackhole.consumeCPU(work);
     }
 

@@ -53,7 +53,7 @@ public final class FlowableConcatMapEagerPublisher<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<T, R>(
+        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<>(
                 s, mapper, maxConcurrency, prefetch, errorMode));
     }
 }

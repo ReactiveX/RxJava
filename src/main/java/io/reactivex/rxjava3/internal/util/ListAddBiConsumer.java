@@ -28,7 +28,7 @@ public enum ListAddBiConsumer implements BiFunction<List, Object, List> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List apply(List t1, Object t2) throws Exception {
+    public List apply(List t1, Object t2) {
         t1.add(t2);
         return t1;
     }

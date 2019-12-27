@@ -45,7 +45,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super R> observer) {
-        source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
+        source.subscribe(new ReduceSeedObserver<>(observer, reducer, seed));
     }
 
     static final class ReduceSeedObserver<T, R> implements Observer<T>, Disposable {

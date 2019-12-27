@@ -34,7 +34,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ElementAtObserver<T>(t, index, defaultValue, errorOnFewer));
+        source.subscribe(new ElementAtObserver<>(t, index, defaultValue, errorOnFewer));
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {

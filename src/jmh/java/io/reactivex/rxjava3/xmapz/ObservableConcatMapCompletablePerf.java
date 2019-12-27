@@ -47,24 +47,21 @@ public class ObservableConcatMapCompletablePerf {
 
         observablePlain = source.concatMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Observable.empty();
             }
         });
 
         observableConvert = source.concatMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Observable<? extends Integer> apply(Integer v) {
                 return Completable.complete().toObservable();
             }
         });
 
         observableDedicated = source.concatMapCompletable(new Function<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v)
-                    throws Exception {
+            public Completable apply(Integer v) {
                 return Completable.complete();
             }
         });

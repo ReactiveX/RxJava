@@ -48,24 +48,21 @@ public class FlowableConcatMapCompletablePerf {
 
         flowablePlain = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Flowable.empty();
             }
         });
 
         flowableConvert = source.concatMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Completable.complete().toFlowable();
             }
         });
 
         flowableDedicated = source.concatMapCompletable(new Function<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v)
-                    throws Exception {
+            public Completable apply(Integer v) {
                 return Completable.complete();
             }
         });

@@ -47,7 +47,7 @@ public final class SingleTimeout<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        TimeoutMainObserver<T> parent = new TimeoutMainObserver<T>(observer, other, timeout, unit);
+        TimeoutMainObserver<T> parent = new TimeoutMainObserver<>(observer, other, timeout, unit);
         observer.onSubscribe(parent);
 
         DisposableHelper.replace(parent.task, scheduler.scheduleDirect(parent, timeout, unit));
@@ -103,9 +103,9 @@ public final class SingleTimeout<T> extends Single<T> {
             this.other = other;
             this.timeout = timeout;
             this.unit = unit;
-            this.task = new AtomicReference<Disposable>();
+            this.task = new AtomicReference<>();
             if (other != null) {
-                this.fallback = new TimeoutFallbackObserver<T>(actual);
+                this.fallback = new TimeoutFallbackObserver<>(actual);
             } else {
                 this.fallback = null;
             }

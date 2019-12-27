@@ -32,7 +32,7 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        other.subscribe(new OtherObserver<T>(observer, source));
+        other.subscribe(new OtherObserver<>(observer, source));
     }
 
     static final class OtherObserver<T>
@@ -64,7 +64,7 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
         @Override
         public void onComplete() {
-            source.subscribe(new DelayWithMainObserver<T>(this, downstream));
+            source.subscribe(new DelayWithMainObserver<>(this, downstream));
         }
 
         @Override

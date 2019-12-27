@@ -82,11 +82,11 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
 
         if (n == 0) {
-            new FlowableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(s);
+            new FlowableMap<>(source, new SingletonArrayFunc()).subscribeActual(s);
             return;
         }
 
-        WithLatestFromSubscriber<T, R> parent = new WithLatestFromSubscriber<T, R>(s, combiner, n);
+        WithLatestFromSubscriber<T, R> parent = new WithLatestFromSubscriber<>(s, combiner, n);
         s.onSubscribe(parent);
         parent.subscribe(others, n);
 
@@ -123,8 +123,8 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 s[i] = new WithLatestInnerSubscriber(this, i);
             }
             this.subscribers = s;
-            this.values = new AtomicReferenceArray<Object>(n);
-            this.upstream = new AtomicReference<Subscription>();
+            this.values = new AtomicReferenceArray<>(n);
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
             this.error = new AtomicThrowable();
         }

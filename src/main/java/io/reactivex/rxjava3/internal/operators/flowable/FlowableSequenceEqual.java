@@ -41,7 +41,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
     @Override
     public void subscribeActual(Subscriber<? super Boolean> s) {
-        EqualCoordinator<T> parent = new EqualCoordinator<T>(s, prefetch, comparer);
+        EqualCoordinator<T> parent = new EqualCoordinator<>(s, prefetch, comparer);
         s.onSubscribe(parent);
         parent.subscribe(first, second);
     }
@@ -79,8 +79,8 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             super(actual);
             this.comparer = comparer;
             this.wip = new AtomicInteger();
-            this.first = new EqualSubscriber<T>(this, prefetch);
-            this.second = new EqualSubscriber<T>(this, prefetch);
+            this.first = new EqualSubscriber<>(this, prefetch);
+            this.second = new EqualSubscriber<>(this, prefetch);
             this.errors = new AtomicThrowable();
         }
 
@@ -289,7 +289,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 s.request(prefetch);
             }

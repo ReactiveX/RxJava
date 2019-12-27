@@ -135,7 +135,7 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
      */
     public ComputationScheduler(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
-        this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
+        this.pool = new AtomicReference<>(NONE);
         start();
     }
 

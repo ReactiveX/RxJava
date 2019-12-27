@@ -92,7 +92,7 @@ public class LinkedArrayList {
     public String toString() {
         final int cap = capacityHint;
         final int s = size;
-        final List<Object> list = new ArrayList<Object>(s + 1);
+        final List<Object> list = new ArrayList<>(s + 1);
 
         Object[] h = head();
         int j = 0;

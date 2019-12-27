@@ -35,7 +35,7 @@ public final class ObservableLastMaybe<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new LastObserver<T>(observer));
+        source.subscribe(new LastObserver<>(observer));
     }
 
     static final class LastObserver<T> implements Observer<T>, Disposable {

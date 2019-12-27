@@ -40,7 +40,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
     @Override
     public void subscribeActual(Observer<? super ObservableSource<? extends R>> t) {
-        source.subscribe(new MapNotificationObserver<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier));
+        source.subscribe(new MapNotificationObserver<>(t, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
 
     static final class MapNotificationObserver<T, R>

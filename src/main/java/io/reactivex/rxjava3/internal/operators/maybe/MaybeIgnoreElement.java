@@ -30,7 +30,7 @@ public final class MaybeIgnoreElement<T> extends AbstractMaybeWithUpstream<T, T>
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new IgnoreMaybeObserver<T>(observer));
+        source.subscribe(new IgnoreMaybeObserver<>(observer));
     }
 
     static final class IgnoreMaybeObserver<T> implements MaybeObserver<T>, Disposable {

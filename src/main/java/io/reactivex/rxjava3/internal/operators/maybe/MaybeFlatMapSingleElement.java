@@ -42,7 +42,7 @@ public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super R> downstream) {
-        source.subscribe(new FlatMapMaybeObserver<T, R>(downstream, mapper));
+        source.subscribe(new FlatMapMaybeObserver<>(downstream, mapper));
     }
 
     static final class FlatMapMaybeObserver<T, R>

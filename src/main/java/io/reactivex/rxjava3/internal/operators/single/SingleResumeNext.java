@@ -36,7 +36,7 @@ public final class SingleResumeNext<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
-        source.subscribe(new ResumeMainSingleObserver<T>(observer, nextFunction));
+        source.subscribe(new ResumeMainSingleObserver<>(observer, nextFunction));
     }
 
     static final class ResumeMainSingleObserver<T> extends AtomicReference<Disposable>

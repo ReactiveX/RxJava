@@ -32,7 +32,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ScanSubscriber<T>(s, accumulator));
+        source.subscribe(new ScanSubscriber<>(s, accumulator));
     }
 
     static final class ScanSubscriber<T> implements FlowableSubscriber<T>, Subscription {

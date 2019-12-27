@@ -48,24 +48,21 @@ public class FlowableSwitchMapSinglePerf {
 
         flowablePlain = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Flowable.just(v);
             }
         });
 
         flowableConvert = source.switchMap(new Function<Integer, Publisher<? extends Integer>>() {
             @Override
-            public Publisher<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Publisher<? extends Integer> apply(Integer v) {
                 return Single.just(v).toFlowable();
             }
         });
 
         flowableDedicated = source.switchMapSingle(new Function<Integer, Single<? extends Integer>>() {
             @Override
-            public Single<? extends Integer> apply(Integer v)
-                    throws Exception {
+            public Single<? extends Integer> apply(Integer v) {
                 return Single.just(v);
             }
         });

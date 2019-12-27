@@ -43,7 +43,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorNextMaybeObserver<T>(observer, resumeFunction, allowFatal));
+        source.subscribe(new OnErrorNextMaybeObserver<>(observer, resumeFunction, allowFatal));
     }
 
     static final class OnErrorNextMaybeObserver<T>

@@ -52,7 +52,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new SwitchMapCompletableObserver<T>(observer, mapper, delayErrors));
+        source.subscribe(new SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
     }
 
     static final class SwitchMapCompletableObserver<T> implements FlowableSubscriber<T>, Disposable {
@@ -79,7 +79,7 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapInnerObserver>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override

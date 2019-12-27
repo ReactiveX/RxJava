@@ -39,12 +39,12 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         if (skip == count) {
-            BufferExactObserver<T, U> bes = new BufferExactObserver<T, U>(t, count, bufferSupplier);
+            BufferExactObserver<T, U> bes = new BufferExactObserver<>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
                 source.subscribe(bes);
             }
         } else {
-            source.subscribe(new BufferSkipObserver<T, U>(t, count, skip, bufferSupplier));
+            source.subscribe(new BufferSkipObserver<>(t, count, skip, bufferSupplier));
         }
     }
 
@@ -157,7 +157,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
             this.count = count;
             this.skip = skip;
             this.bufferSupplier = bufferSupplier;
-            this.buffers = new ArrayDeque<U>();
+            this.buffers = new ArrayDeque<>();
         }
 
         @Override

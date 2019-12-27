@@ -33,7 +33,7 @@ public final class ObservableDematerialize<T, R> extends AbstractObservableWithU
 
     @Override
     public void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new DematerializeObserver<T, R>(observer, selector));
+        source.subscribe(new DematerializeObserver<>(observer, selector));
     }
 
     static final class DematerializeObserver<T, R> implements Observer<T>, Disposable {

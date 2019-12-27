@@ -36,7 +36,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         SubscriptionArbiter sa = new SubscriptionArbiter(false);
         s.onSubscribe(sa);
 
-        RetryBiSubscriber<T> rs = new RetryBiSubscriber<T>(s, predicate, sa, source);
+        RetryBiSubscriber<T> rs = new RetryBiSubscriber<>(s, predicate, sa, source);
         rs.subscribeNext();
     }
 

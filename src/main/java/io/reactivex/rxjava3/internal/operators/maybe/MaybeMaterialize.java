@@ -34,6 +34,6 @@ public final class MaybeMaterialize<T> extends Single<Notification<T>> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super Notification<T>> observer) {
-        source.subscribe(new MaterializeSingleObserver<T>(observer));
+        source.subscribe(new MaterializeSingleObserver<>(observer));
     }
 }

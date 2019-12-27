@@ -53,12 +53,12 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
             EmptyDisposable.error(e, observer);
             return;
         }
-        source.subscribe(new ToListSubscriber<T, U>(observer, coll));
+        source.subscribe(new ToListSubscriber<>(observer, coll));
     }
 
     @Override
     public Flowable<U> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableToList<T, U>(source, collectionSupplier));
+        return RxJavaPlugins.onAssembly(new FlowableToList<>(source, collectionSupplier));
     }
 
     static final class ToListSubscriber<T, U extends Collection<? super T>>

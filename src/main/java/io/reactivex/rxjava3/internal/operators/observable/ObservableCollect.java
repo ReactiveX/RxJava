@@ -43,7 +43,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
             return;
         }
 
-        source.subscribe(new CollectObserver<T, U>(t, u, collector));
+        source.subscribe(new CollectObserver<>(t, u, collector));
 
     }
 

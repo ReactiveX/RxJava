@@ -36,46 +36,46 @@ public final class Functions {
 
     @NonNull
     public static <T1, T2, R> Function<Object[], R> toFunction(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
-        return new Array2Func<T1, T2, R>(f);
+        return new Array2Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(@NonNull Function3<T1, T2, T3, R> f) {
-        return new Array3Func<T1, T2, T3, R>(f);
+        return new Array3Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(@NonNull Function4<T1, T2, T3, T4, R> f) {
-        return new Array4Func<T1, T2, T3, T4, R>(f);
+        return new Array4Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(@NonNull Function5<T1, T2, T3, T4, T5, R> f) {
-        return new Array5Func<T1, T2, T3, T4, T5, R>(f);
+        return new Array5Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             @NonNull Function6<T1, T2, T3, T4, T5, T6, R> f) {
-        return new Array6Func<T1, T2, T3, T4, T5, T6, R>(f);
+        return new Array6Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             @NonNull Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-        return new Array7Func<T1, T2, T3, T4, T5, T6, T7, R>(f);
+        return new Array7Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             @NonNull Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
-        return new Array8Func<T1, T2, T3, T4, T5, T6, T7, T8, R>(f);
+        return new Array8Func<>(f);
     }
 
     @NonNull
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             @NonNull Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
-        return new Array9Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(f);
+        return new Array9Func<>(f);
     }
 
     /** A singleton identity function. */
@@ -186,17 +186,17 @@ public final class Functions {
         }
 
         @Override
-        public U call() throws Exception {
+        public U call() {
             return value;
         }
 
         @Override
-        public U apply(T t) throws Exception {
+        public U apply(T t) {
             return value;
         }
 
         @Override
-        public U get() throws Throwable {
+        public U get() {
             return value;
         }
     }
@@ -209,7 +209,7 @@ public final class Functions {
      */
     @NonNull
     public static <T> Callable<T> justCallable(@NonNull T value) {
-        return new JustValue<Object, T>(value);
+        return new JustValue<>(value);
     }
 
     /**
@@ -220,7 +220,7 @@ public final class Functions {
      */
     @NonNull
     public static <T> Supplier<T> justSupplier(@NonNull T value) {
-        return new JustValue<Object, T>(value);
+        return new JustValue<>(value);
     }
 
     /**
@@ -232,7 +232,7 @@ public final class Functions {
      */
     @NonNull
     public static <T, U> Function<T, U> justFunction(@NonNull U value) {
-        return new JustValue<T, U>(value);
+        return new JustValue<>(value);
     }
 
     static final class CastToClass<T, U> implements Function<T, U> {
@@ -243,7 +243,7 @@ public final class Functions {
         }
 
         @Override
-        public U apply(T t) throws Exception {
+        public U apply(T t) {
             return clazz.cast(t);
         }
     }
@@ -257,7 +257,7 @@ public final class Functions {
      */
     @NonNull
     public static <T, U> Function<T, U> castFunction(@NonNull Class<U> target) {
-        return new CastToClass<T, U>(target);
+        return new CastToClass<>(target);
     }
 
     static final class ArrayListCapacityCallable<T> implements Supplier<List<T>> {
@@ -268,13 +268,13 @@ public final class Functions {
         }
 
         @Override
-        public List<T> get() throws Exception {
-            return new ArrayList<T>(capacity);
+        public List<T> get() {
+            return new ArrayList<>(capacity);
         }
     }
 
     public static <T> Supplier<List<T>> createArrayList(int capacity) {
-        return new ArrayListCapacityCallable<T>(capacity);
+        return new ArrayListCapacityCallable<>(capacity);
     }
 
     static final class EqualsPredicate<T> implements Predicate<T> {
@@ -285,25 +285,25 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public boolean test(T t) {
             return Objects.equals(t, value);
         }
     }
 
     public static <T> Predicate<T> equalsWith(T value) {
-        return new EqualsPredicate<T>(value);
+        return new EqualsPredicate<>(value);
     }
 
     enum HashSetCallable implements Supplier<Set<Object>>, Callable<Set<Object>> {
         INSTANCE;
         @Override
-        public Set<Object> call() throws Exception {
-            return new HashSet<Object>();
+        public Set<Object> call() {
+            return new HashSet<>();
         }
 
         @Override
-        public Set<Object> get() throws Throwable {
-            return new HashSet<Object>();
+        public Set<Object> get() {
+            return new HashSet<>();
         }
     }
 
@@ -334,7 +334,7 @@ public final class Functions {
 
         @Override
         public void accept(Throwable v) throws Throwable {
-            onNotification.accept(Notification.<T>createOnError(v));
+            onNotification.accept(Notification.createOnError(v));
         }
     }
 
@@ -347,20 +347,20 @@ public final class Functions {
 
         @Override
         public void run() throws Throwable {
-            onNotification.accept(Notification.<T>createOnComplete());
+            onNotification.accept(Notification.createOnComplete());
         }
     }
 
     public static <T> Consumer<T> notificationOnNext(Consumer<? super Notification<T>> onNotification) {
-        return new NotificationOnNext<T>(onNotification);
+        return new NotificationOnNext<>(onNotification);
     }
 
     public static <T> Consumer<Throwable> notificationOnError(Consumer<? super Notification<T>> onNotification) {
-        return new NotificationOnError<T>(onNotification);
+        return new NotificationOnError<>(onNotification);
     }
 
     public static <T> Action notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
-        return new NotificationOnComplete<T>(onNotification);
+        return new NotificationOnComplete<>(onNotification);
     }
 
     static final class ActionConsumer<T> implements Consumer<T> {
@@ -377,7 +377,7 @@ public final class Functions {
     }
 
     public static <T> Consumer<T> actionConsumer(Action action) {
-        return new ActionConsumer<T>(action);
+        return new ActionConsumer<>(action);
     }
 
     static final class ClassFilter<T, U> implements Predicate<T> {
@@ -388,13 +388,13 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public boolean test(T t) {
             return clazz.isInstance(t);
         }
     }
 
     public static <T, U> Predicate<T> isInstanceOf(Class<U> clazz) {
-        return new ClassFilter<T, U>(clazz);
+        return new ClassFilter<>(clazz);
     }
 
     static final class BooleanSupplierPredicateReverse<T> implements Predicate<T> {
@@ -411,7 +411,7 @@ public final class Functions {
     }
 
     public static <T> Predicate<T> predicateReverseFor(BooleanSupplier supplier) {
-        return new BooleanSupplierPredicateReverse<T>(supplier);
+        return new BooleanSupplierPredicateReverse<>(supplier);
     }
 
     static final class TimestampFunction<T> implements Function<T, Timed<T>> {
@@ -425,13 +425,13 @@ public final class Functions {
         }
 
         @Override
-        public Timed<T> apply(T t) throws Exception {
-            return new Timed<T>(t, scheduler.now(unit), unit);
+        public Timed<T> apply(T t) {
+            return new Timed<>(t, scheduler.now(unit), unit);
         }
     }
 
     public static <T> Function<T, Timed<T>> timestampWith(TimeUnit unit, Scheduler scheduler) {
-        return new TimestampFunction<T>(unit, scheduler);
+        return new TimestampFunction<>(unit, scheduler);
     }
 
     static final class ToMapKeySelector<K, T> implements BiConsumer<Map<K, T>, T> {
@@ -449,7 +449,7 @@ public final class Functions {
     }
 
     public static <T, K> BiConsumer<Map<K, T>, T> toMapKeySelector(final Function<? super T, ? extends K> keySelector) {
-        return new ToMapKeySelector<K, T>(keySelector);
+        return new ToMapKeySelector<>(keySelector);
     }
 
     static final class ToMapKeyValueSelector<K, V, T> implements BiConsumer<Map<K, V>, T> {
@@ -471,7 +471,7 @@ public final class Functions {
     }
 
     public static <T, K, V> BiConsumer<Map<K, V>, T> toMapKeyValueSelector(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
-        return new ToMapKeyValueSelector<K, V, T>(valueSelector, keySelector);
+        return new ToMapKeyValueSelector<>(valueSelector, keySelector);
     }
 
     static final class ToMultimapKeyValueSelector<K, V, T> implements BiConsumer<Map<K, Collection<V>>, T> {
@@ -506,7 +506,7 @@ public final class Functions {
     public static <T, K, V> BiConsumer<Map<K, Collection<V>>, T> toMultimapKeyValueSelector(
             final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector,
             final Function<? super K, ? extends Collection<? super V>> collectionFactory) {
-        return new ToMultimapKeyValueSelector<K, V, T>(collectionFactory, valueSelector, keySelector);
+        return new ToMultimapKeyValueSelector<>(collectionFactory, valueSelector, keySelector);
     }
 
     enum NaturalComparator implements Comparator<Object> {
@@ -539,7 +539,7 @@ public final class Functions {
     }
 
     public static <T> Function<List<T>, List<T>> listSorter(final Comparator<? super T> comparator) {
-        return new ListSorter<T>(comparator);
+        return new ListSorter<>(comparator);
     }
 
     public static final Consumer<Subscription> REQUEST_MAX = new MaxRequestSubscription();
@@ -762,7 +762,7 @@ public final class Functions {
         }
 
         @Override
-        public Object get() throws Throwable {
+        public Object get() {
             return null;
         }
     }
@@ -777,7 +777,7 @@ public final class Functions {
 
     static final class MaxRequestSubscription implements Consumer<Subscription> {
         @Override
-        public void accept(Subscription t) throws Exception {
+        public void accept(Subscription t) {
             t.request(Long.MAX_VALUE);
         }
     }
@@ -796,7 +796,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Subscription s) throws Exception {
+        public void accept(Subscription s) {
             s.request(bufferSize);
         }
     }

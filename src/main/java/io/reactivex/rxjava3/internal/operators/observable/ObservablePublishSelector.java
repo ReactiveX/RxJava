@@ -52,14 +52,14 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
             return;
         }
 
-        TargetObserver<T, R> o = new TargetObserver<T, R>(observer);
+        TargetObserver<R> o = new TargetObserver<>(observer);
 
         target.subscribe(o);
 
-        source.subscribe(new SourceObserver<T, R>(subject, o));
+        source.subscribe(new SourceObserver<>(subject, o));
     }
 
-    static final class SourceObserver<T, R> implements Observer<T> {
+    static final class SourceObserver<T> implements Observer<T> {
 
         final PublishSubject<T> subject;
 
@@ -91,7 +91,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         }
     }
 
-    static final class TargetObserver<T, R>
+    static final class TargetObserver<R>
     extends AtomicReference<Disposable> implements Observer<R>, Disposable {
         private static final long serialVersionUID = 854110278590336484L;
 

@@ -35,8 +35,8 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     final AtomicReference<Disposable> resource;
 
     public AsyncSubscription() {
-        resource = new AtomicReference<Disposable>();
-        actual = new AtomicReference<Subscription>();
+        resource = new AtomicReference<>();
+        actual = new AtomicReference<>();
     }
 
     public AsyncSubscription(Disposable resource) {

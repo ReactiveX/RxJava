@@ -42,12 +42,12 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
         if (delayError) {
             downstream = t;
         } else {
-            downstream = new SerializedSubscriber<T>(t);
+            downstream = new SerializedSubscriber<>(t);
         }
 
         Scheduler.Worker w = scheduler.createWorker();
 
-        source.subscribe(new DelaySubscriber<T>(downstream, delay, unit, w, delayError));
+        source.subscribe(new DelaySubscriber<>(downstream, delay, unit, w, delayError));
     }
 
     static final class DelaySubscriber<T> implements FlowableSubscriber<T>, Subscription {

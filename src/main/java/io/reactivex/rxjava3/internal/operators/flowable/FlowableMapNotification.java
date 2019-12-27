@@ -41,7 +41,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new MapNotificationSubscriber<T, R>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
+        source.subscribe(new MapNotificationSubscriber<>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
 
     static final class MapNotificationSubscriber<T, R>

@@ -29,7 +29,7 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(final Observer<? super T> observer) {
-        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(observer);
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<>(observer);
 
         observer.onSubscribe(parent);
 
@@ -45,7 +45,7 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
 
         SubscribeOnObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override

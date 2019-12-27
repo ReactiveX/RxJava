@@ -40,7 +40,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(observer);
+        MergeWithObserver<T> parent = new MergeWithObserver<>(observer);
         observer.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
@@ -75,8 +75,8 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
 
         MergeWithObserver(Observer<? super T> downstream) {
             this.downstream = downstream;
-            this.mainDisposable = new AtomicReference<Disposable>();
-            this.otherObserver = new OtherObserver<T>(this);
+            this.mainDisposable = new AtomicReference<>();
+            this.otherObserver = new OtherObserver<>(this);
             this.errors = new AtomicThrowable();
         }
 
@@ -162,7 +162,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         SimplePlainQueue<T> getOrCreateQueue() {
             SimplePlainQueue<T> q = queue;
             if (q == null) {
-                q = new SpscLinkedArrayQueue<T>(bufferSize());
+                q = new SpscLinkedArrayQueue<>(bufferSize());
                 queue = q;
             }
             return q;

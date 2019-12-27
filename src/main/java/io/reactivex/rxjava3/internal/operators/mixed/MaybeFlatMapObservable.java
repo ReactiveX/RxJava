@@ -44,7 +44,7 @@ public final class MaybeFlatMapObservable<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        FlatMapObserver<T, R> parent = new FlatMapObserver<T, R>(observer, mapper);
+        FlatMapObserver<T, R> parent = new FlatMapObserver<>(observer, mapper);
         observer.onSubscribe(parent);
         source.subscribe(parent);
     }

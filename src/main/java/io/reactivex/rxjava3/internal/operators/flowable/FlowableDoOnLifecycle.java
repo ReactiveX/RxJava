@@ -35,7 +35,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SubscriptionLambdaSubscriber<T>(s, onSubscribe, onRequest, onCancel));
+        source.subscribe(new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel));
     }
 
     static final class SubscriptionLambdaSubscriber<T> implements FlowableSubscriber<T>, Subscription {

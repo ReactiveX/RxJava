@@ -37,7 +37,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
 
     @Override
     public void subscribeActual(final Subscriber<? super T> child) {
-        MainSubscriber<T> parent = new MainSubscriber<T>(child, main);
+        MainSubscriber<T> parent = new MainSubscriber<>(child, main);
         child.onSubscribe(parent);
         other.subscribe(parent.other);
     }
@@ -58,7 +58,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
             this.downstream = downstream;
             this.main = main;
             this.other = new OtherSubscriber();
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
         }
 
         void next() {

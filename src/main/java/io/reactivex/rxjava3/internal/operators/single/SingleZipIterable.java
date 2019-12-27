@@ -61,11 +61,11 @@ public final class SingleZipIterable<T, R> extends Single<R> {
         }
 
         if (n == 1) {
-            a[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonArrayFunc()));
+            a[0].subscribe(new SingleMap.MapSingleObserver<>(observer, new SingletonArrayFunc()));
             return;
         }
 
-        ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
+        ZipCoordinator<T, R> parent = new ZipCoordinator<>(observer, n, zipper);
 
         observer.onSubscribe(parent);
 

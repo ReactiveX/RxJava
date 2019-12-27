@@ -44,7 +44,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new FlatMapCompletableMainObserver<T>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
     }
 
     static final class FlatMapCompletableMainObserver<T> extends BasicIntQueueDisposable<T>
@@ -145,7 +145,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             return null; // always empty
         }
 

@@ -653,7 +653,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> error(@NonNull Throwable exception) {
         Objects.requireNonNull(exception, "exception is null");
-        return RxJavaPlugins.onAssembly(new MaybeError<T>(exception));
+        return RxJavaPlugins.onAssembly(new MaybeError<>(exception));
     }
 
     /**
@@ -679,7 +679,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> error(@NonNull Supplier<? extends Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new MaybeErrorCallable<T>(supplier));
+        return RxJavaPlugins.onAssembly(new MaybeErrorCallable<>(supplier));
     }
 
     /**
@@ -706,7 +706,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromAction(@NonNull Action run) {
         Objects.requireNonNull(run, "run is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromAction<T>(run));
+        return RxJavaPlugins.onAssembly(new MaybeFromAction<>(run));
     }
 
     /**
@@ -726,7 +726,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromCompletable(@NonNull CompletableSource completableSource) {
         Objects.requireNonNull(completableSource, "completableSource is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<T>(completableSource));
+        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<>(completableSource));
     }
 
     /**
@@ -790,7 +790,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Maybe<T> fromCallable(@NonNull Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromCallable<T>(callable));
+        return RxJavaPlugins.onAssembly(new MaybeFromCallable<>(callable));
     }
 
     /**
@@ -824,7 +824,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Maybe<T> fromFuture(@NonNull Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromFuture<T>(future, 0L, null));
+        return RxJavaPlugins.onAssembly(new MaybeFromFuture<>(future, 0L, null));
     }
 
     /**
@@ -863,7 +863,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <@NonNull T> Maybe<T> fromFuture(@NonNull Future<? extends T> future, long timeout, @NonNull TimeUnit unit) {
         Objects.requireNonNull(future, "future is null");
         Objects.requireNonNull(unit, "unit is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromFuture<T>(future, timeout, unit));
+        return RxJavaPlugins.onAssembly(new MaybeFromFuture<>(future, timeout, unit));
     }
 
     /**
@@ -883,7 +883,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> fromRunnable(@NonNull Runnable run) {
         Objects.requireNonNull(run, "run is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromRunnable<T>(run));
+        return RxJavaPlugins.onAssembly(new MaybeFromRunnable<>(run));
     }
 
     /**
@@ -930,7 +930,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <@NonNull T> Maybe<T> fromSupplier(@NonNull Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new MaybeFromSupplier<T>(supplier));
+        return RxJavaPlugins.onAssembly(new MaybeFromSupplier<>(supplier));
     }
 
     /**
@@ -1865,7 +1865,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <T, R> Maybe<R> zip(@NonNull Iterable<? extends MaybeSource<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new MaybeZipIterable<T, R>(sources, zipper));
+        return RxJavaPlugins.onAssembly(new MaybeZipIterable<>(sources, zipper));
     }
 
     /**
@@ -2331,7 +2331,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
             return empty();
         }
         Objects.requireNonNull(zipper, "zipper is null");
-        return RxJavaPlugins.onAssembly(new MaybeZipArray<T, R>(sources, zipper));
+        return RxJavaPlugins.onAssembly(new MaybeZipArray<>(sources, zipper));
     }
 
     // ------------------------------------------------------------------
@@ -3530,7 +3530,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> lift(@NonNull MaybeOperator<? extends R, ? super T> lift) {
         Objects.requireNonNull(lift, "lift is null");
-        return RxJavaPlugins.onAssembly(new MaybeLift<T, R>(this, lift));
+        return RxJavaPlugins.onAssembly(new MaybeLift<>(this, lift));
     }
 
     /**
@@ -3554,7 +3554,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> map(@NonNull Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeMap<T, R>(this, mapper));
+        return RxJavaPlugins.onAssembly(new MaybeMap<>(this, mapper));
     }
 
     /**
@@ -4349,7 +4349,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         Objects.requireNonNull(onSuccess, "onSuccess is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
-        return subscribeWith(new MaybeCallbackObserver<T>(onSuccess, onError, onComplete));
+        return subscribeWith(new MaybeCallbackObserver<>(onSuccess, onError, onComplete));
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4925,7 +4925,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code mapOptional} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <R> the non-null output type
-     * @param mapper the function that receives the upstream success iteem and should return a <em>non-empty</em> {@code Optional}
+     * @param mapper the function that receives the upstream success item and should return a <em>non-empty</em> {@code Optional}
      * to emit as the success output or an <em>empty</em> {@code Optional} to complete the {@code Maybe}
      * @return the new Maybe instance
      * @since 3.0.0
@@ -4952,8 +4952,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
-     * {@link #toCompletionStage(Object)} with {@code null} or turn the upstrea into a sequence of {@link Optional}s and
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
+     * {@link #toCompletionStage(Object)} with {@code null} or turn the upstream into a sequence of {@link Optional}s and
      * default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());
@@ -4985,7 +4985,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());

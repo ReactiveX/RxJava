@@ -51,7 +51,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<T, R>(
+        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<>(
                 s, mapper, maxConcurrency, prefetch, errorMode));
     }
 
@@ -93,7 +93,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             this.maxConcurrency = maxConcurrency;
             this.prefetch = prefetch;
             this.errorMode = errorMode;
-            this.subscribers = new SpscLinkedArrayQueue<InnerQueuedSubscriber<R>>(Math.min(prefetch, maxConcurrency));
+            this.subscribers = new SpscLinkedArrayQueue<>(Math.min(prefetch, maxConcurrency));
             this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
         }
@@ -123,7 +123,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 return;
             }
 
-            InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<R>(this, prefetch);
+            InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<>(this, prefetch);
 
             if (cancelled) {
                 return;

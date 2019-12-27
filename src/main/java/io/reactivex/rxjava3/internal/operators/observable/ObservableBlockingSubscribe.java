@@ -41,9 +41,9 @@ public final class ObservableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, Observer<? super T> observer) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
+        final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
-        BlockingObserver<T> bs = new BlockingObserver<T>(queue);
+        BlockingObserver<T> bs = new BlockingObserver<>(queue);
         observer.onSubscribe(bs);
 
         o.subscribe(bs);
@@ -76,7 +76,7 @@ public final class ObservableBlockingSubscribe {
      */
     public static <T> void subscribe(ObservableSource<? extends T> o) {
         BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
-        LambdaObserver<T> ls = new LambdaObserver<T>(Functions.emptyConsumer(),
+        LambdaObserver<T> ls = new LambdaObserver<>(Functions.emptyConsumer(),
         callback, callback, Functions.emptyConsumer());
 
         o.subscribe(ls);

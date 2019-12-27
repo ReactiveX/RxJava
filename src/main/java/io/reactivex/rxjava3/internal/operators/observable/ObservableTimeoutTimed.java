@@ -41,12 +41,12 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         if (other == null) {
-            TimeoutObserver<T> parent = new TimeoutObserver<T>(observer, timeout, unit, scheduler.createWorker());
+            TimeoutObserver<T> parent = new TimeoutObserver<>(observer, timeout, unit, scheduler.createWorker());
             observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         } else {
-            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(observer, timeout, unit, scheduler.createWorker(), other);
+            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<>(observer, timeout, unit, scheduler.createWorker(), other);
             observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
@@ -76,7 +76,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             this.unit = unit;
             this.worker = worker;
             this.task = new SequentialDisposable();
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override
@@ -196,7 +196,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             this.fallback = fallback;
             this.task = new SequentialDisposable();
             this.index = new AtomicLong();
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override

@@ -38,11 +38,11 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        SerializedObserver<T> serial = new SerializedObserver<T>(t);
+        SerializedObserver<T> serial = new SerializedObserver<>(t);
         if (emitLast) {
-            source.subscribe(new SampleTimedEmitLast<T>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler));
         } else {
-            source.subscribe(new SampleTimedNoLast<T>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler));
         }
     }
 
@@ -55,7 +55,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         final TimeUnit unit;
         final Scheduler scheduler;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> timer = new AtomicReference<>();
 
         Disposable upstream;
 

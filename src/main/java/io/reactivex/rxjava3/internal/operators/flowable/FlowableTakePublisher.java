@@ -35,6 +35,6 @@ public final class FlowableTakePublisher<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeSubscriber<T>(s, limit));
+        source.subscribe(new TakeSubscriber<>(s, limit));
     }
 }

@@ -42,7 +42,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new TakeLastTimedObserver<T>(t, count, time, unit, scheduler, bufferSize, delayError));
+        source.subscribe(new TakeLastTimedObserver<>(t, count, time, unit, scheduler, bufferSize, delayError));
     }
 
     static final class TakeLastTimedObserver<T>
@@ -69,7 +69,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.delayError = delayError;
         }
 

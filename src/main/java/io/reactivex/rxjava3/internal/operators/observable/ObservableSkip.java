@@ -26,7 +26,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new SkipObserver<T>(observer, n));
+        source.subscribe(new SkipObserver<>(observer, n));
     }
 
     static final class SkipObserver<T> implements Observer<T>, Disposable {

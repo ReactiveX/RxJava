@@ -22,6 +22,6 @@ public final class ObservableSerialized<T> extends AbstractObservableWithUpstrea
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new SerializedObserver<T>(observer));
+        source.subscribe(new SerializedObserver<>(observer));
     }
 }

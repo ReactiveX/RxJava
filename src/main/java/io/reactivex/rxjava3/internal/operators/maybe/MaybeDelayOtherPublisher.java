@@ -40,7 +40,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DelayMaybeObserver<T, U>(observer, other));
+        source.subscribe(new DelayMaybeObserver<>(observer, other));
     }
 
     static final class DelayMaybeObserver<T, U>
@@ -52,7 +52,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
         Disposable upstream;
 
         DelayMaybeObserver(MaybeObserver<? super T> actual, Publisher<U> otherSource) {
-            this.other = new OtherSubscriber<T>(actual);
+            this.other = new OtherSubscriber<>(actual);
             this.otherSource = otherSource;
         }
 

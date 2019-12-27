@@ -40,11 +40,11 @@ public final class SingleZipArray<T, R> extends Single<R> {
         int n = sources.length;
 
         if (n == 1) {
-            sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonArrayFunc()));
+            sources[0].subscribe(new SingleMap.MapSingleObserver<>(observer, new SingletonArrayFunc()));
             return;
         }
 
-        ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
+        ZipCoordinator<T, R> parent = new ZipCoordinator<>(observer, n, zipper);
 
         observer.onSubscribe(parent);
 
@@ -83,7 +83,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
             this.zipper = zipper;
             ZipSingleObserver<T>[] o = new ZipSingleObserver[n];
             for (int i = 0; i < n; i++) {
-                o[i] = new ZipSingleObserver<T>(this, i);
+                o[i] = new ZipSingleObserver<>(this, i);
             }
             this.observers = o;
             this.values = new Object[n];

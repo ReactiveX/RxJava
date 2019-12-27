@@ -40,7 +40,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ReduceSubscriber<T>(s, reducer));
+        source.subscribe(new ReduceSubscriber<>(s, reducer));
     }
 
     static final class ReduceSubscriber<T> extends DeferredScalarSubscription<T> implements FlowableSubscriber<T> {

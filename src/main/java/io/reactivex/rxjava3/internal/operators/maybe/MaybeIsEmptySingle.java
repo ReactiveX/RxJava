@@ -41,12 +41,12 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
 
     @Override
     public Maybe<Boolean> fuseToMaybe() {
-        return RxJavaPlugins.onAssembly(new MaybeIsEmpty<T>(source));
+        return RxJavaPlugins.onAssembly(new MaybeIsEmpty<>(source));
     }
 
     @Override
     protected void subscribeActual(SingleObserver<? super Boolean> observer) {
-        source.subscribe(new IsEmptyMaybeObserver<T>(observer));
+        source.subscribe(new IsEmptyMaybeObserver<>(observer));
     }
 
     static final class IsEmptyMaybeObserver<T>

@@ -42,7 +42,7 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new SwitchIfEmptyMaybeObserver<T>(observer, other));
+        source.subscribe(new SwitchIfEmptyMaybeObserver<>(observer, other));
     }
 
     static final class SwitchIfEmptyMaybeObserver<T>

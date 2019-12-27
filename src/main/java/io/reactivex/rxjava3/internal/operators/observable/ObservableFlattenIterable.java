@@ -41,7 +41,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlattenIterableObserver<T, R>(observer, mapper));
+        source.subscribe(new FlattenIterableObserver<>(observer, mapper));
     }
 
     static final class FlattenIterableObserver<T, R> implements Observer<T>, Disposable {

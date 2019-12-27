@@ -45,7 +45,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TakeLastTimedSubscriber<T>(s, count, time, unit, scheduler, bufferSize, delayError));
+        source.subscribe(new TakeLastTimedSubscriber<>(s, count, time, unit, scheduler, bufferSize, delayError));
     }
 
     static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
@@ -74,7 +74,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.delayError = delayError;
         }
 

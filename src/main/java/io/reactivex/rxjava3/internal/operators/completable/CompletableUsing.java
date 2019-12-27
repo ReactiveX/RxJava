@@ -80,7 +80,7 @@ public final class CompletableUsing<R> extends Completable {
             return;
         }
 
-        source.subscribe(new UsingObserver<R>(observer, resource, disposer, eager));
+        source.subscribe(new UsingObserver<>(observer, resource, disposer, eager));
     }
 
     static final class UsingObserver<R>

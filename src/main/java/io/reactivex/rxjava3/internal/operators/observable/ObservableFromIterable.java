@@ -51,7 +51,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             return;
         }
 
-        FromIterableDisposable<T> d = new FromIterableDisposable<T>(observer, it);
+        FromIterableDisposable<T> d = new FromIterableDisposable<>(observer, it);
         observer.onSubscribe(d);
 
         if (!d.fusionMode) {

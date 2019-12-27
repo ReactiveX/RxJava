@@ -32,7 +32,7 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new DetachObserver<T>(observer));
+        source.subscribe(new DetachObserver<>(observer));
     }
 
     static final class DetachObserver<T> implements Observer<T>, Disposable {

@@ -56,7 +56,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     protected void subscribeActual(Observer<? super R> observer) {
 
         JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(
+                new JoinDisposable<>(
                         observer, leftEnd, rightEnd, resultSelector);
 
         observer.onSubscribe(parent);
@@ -115,10 +115,10 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
             this.downstream = actual;
             this.disposables = new CompositeDisposable();
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
-            this.lefts = new LinkedHashMap<Integer, TLeft>();
-            this.rights = new LinkedHashMap<Integer, TRight>();
-            this.error = new AtomicReference<Throwable>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
+            this.lefts = new LinkedHashMap<>();
+            this.rights = new LinkedHashMap<>();
+            this.error = new AtomicReference<>();
             this.leftEnd = leftEnd;
             this.rightEnd = rightEnd;
             this.resultSelector = resultSelector;

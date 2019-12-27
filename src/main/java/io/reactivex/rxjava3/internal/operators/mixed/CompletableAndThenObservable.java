@@ -40,7 +40,7 @@ public final class CompletableAndThenObservable<R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        AndThenObservableObserver<R> parent = new AndThenObservableObserver<R>(observer, other);
+        AndThenObservableObserver<R> parent = new AndThenObservableObserver<>(observer, other);
         observer.onSubscribe(parent);
         source.subscribe(parent);
     }

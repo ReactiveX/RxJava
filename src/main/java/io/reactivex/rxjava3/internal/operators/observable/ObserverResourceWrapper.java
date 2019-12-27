@@ -25,7 +25,7 @@ public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable
 
     final Observer<? super T> downstream;
 
-    final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     public ObserverResourceWrapper(Observer<? super T> downstream) {
         this.downstream = downstream;

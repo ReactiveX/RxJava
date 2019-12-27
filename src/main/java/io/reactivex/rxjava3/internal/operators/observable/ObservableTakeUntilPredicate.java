@@ -29,7 +29,7 @@ public final class ObservableTakeUntilPredicate<T> extends AbstractObservableWit
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new TakeUntilPredicateObserver<T>(observer, predicate));
+        source.subscribe(new TakeUntilPredicateObserver<>(observer, predicate));
     }
 
     static final class TakeUntilPredicateObserver<T> implements Observer<T>, Disposable {

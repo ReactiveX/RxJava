@@ -35,7 +35,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         SequentialDisposable sa = new SequentialDisposable();
         observer.onSubscribe(sa);
 
-        RetryBiObserver<T> rs = new RetryBiObserver<T>(observer, predicate, sa, source);
+        RetryBiObserver<T> rs = new RetryBiObserver<>(observer, predicate, sa, source);
         rs.subscribeNext();
     }
 

@@ -67,7 +67,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             return;
         }
 
-        UsingObserver<T, D> us = new UsingObserver<T, D>(observer, resource, disposer, eager);
+        UsingObserver<T, D> us = new UsingObserver<>(observer, resource, disposer, eager);
 
         source.subscribe(us);
     }

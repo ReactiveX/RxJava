@@ -50,12 +50,12 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableReduce<T>(source, reducer));
+        return RxJavaPlugins.onAssembly(new FlowableReduce<>(source, reducer));
     }
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new ReduceSubscriber<T>(observer, reducer));
+        source.subscribe(new ReduceSubscriber<>(observer, reducer));
     }
 
     static final class ReduceSubscriber<T> implements FlowableSubscriber<T>, Disposable {

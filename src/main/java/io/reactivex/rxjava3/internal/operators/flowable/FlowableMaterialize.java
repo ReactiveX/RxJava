@@ -27,7 +27,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super Notification<T>> s) {
-        source.subscribe(new MaterializeSubscriber<T>(s));
+        source.subscribe(new MaterializeSubscriber<>(s));
     }
 
     static final class MaterializeSubscriber<T> extends SinglePostCompleteSubscriber<T, Notification<T>> {
@@ -46,12 +46,12 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onError(Throwable t) {
-            complete(Notification.<T>createOnError(t));
+            complete(Notification.createOnError(t));
         }
 
         @Override
         public void onComplete() {
-            complete(Notification.<T>createOnComplete());
+            complete(Notification.createOnComplete());
         }
 
         @Override

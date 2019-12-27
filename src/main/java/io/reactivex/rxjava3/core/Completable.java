@@ -1844,7 +1844,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final <T> Single<Notification<T>> materialize() {
-        return RxJavaPlugins.onAssembly(new CompletableMaterialize<T>(this));
+        return RxJavaPlugins.onAssembly(new CompletableMaterialize<>(this));
     }
 
     /**
@@ -2239,7 +2239,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> startWith(@NonNull ObservableSource<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return Observable.wrap(other).concatWith(this.<T>toObservable());
+        return Observable.wrap(other).concatWith(this.toObservable());
     }
     /**
      * Returns a Flowable which first delivers the events
@@ -2637,7 +2637,7 @@ public abstract class Completable implements CompletableSource {
         if (this instanceof FuseToFlowable) {
             return ((FuseToFlowable<T>)this).fuseToFlowable();
         }
-        return RxJavaPlugins.onAssembly(new CompletableToFlowable<T>(this));
+        return RxJavaPlugins.onAssembly(new CompletableToFlowable<>(this));
     }
 
     /**
@@ -2661,7 +2661,7 @@ public abstract class Completable implements CompletableSource {
         if (this instanceof FuseToMaybe) {
             return ((FuseToMaybe<T>)this).fuseToMaybe();
         }
-        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<T>(this));
+        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<>(this));
     }
 
     /**
@@ -2684,7 +2684,7 @@ public abstract class Completable implements CompletableSource {
         if (this instanceof FuseToObservable) {
             return ((FuseToObservable<T>)this).fuseToObservable();
         }
-        return RxJavaPlugins.onAssembly(new CompletableToObservable<T>(this));
+        return RxJavaPlugins.onAssembly(new CompletableToObservable<>(this));
     }
 
     /**
@@ -2706,7 +2706,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <@NonNull T> Single<T> toSingle(@NonNull Supplier<? extends T> completionValueSupplier) {
         Objects.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
-        return RxJavaPlugins.onAssembly(new CompletableToSingle<T>(this, completionValueSupplier, null));
+        return RxJavaPlugins.onAssembly(new CompletableToSingle<>(this, completionValueSupplier, null));
     }
 
     /**
@@ -2848,7 +2848,7 @@ public abstract class Completable implements CompletableSource {
      * The upstream will be also cancelled if the resulting {@code CompletionStage} is converted to and
      * completed manually by {@link CompletableFuture#complete(Object)} or {@link CompletableFuture#completeExceptionally(Throwable)}.
      * <p>
-     * {@code CompletionStage}s don't have a notion of emptyness and allow {@code null}s, therefore, one can either use
+     * {@code CompletionStage}s don't have a notion of emptiness and allow {@code null}s, therefore, one can either use
      * a {@code defaultItem} of {@code null} or turn the flow into a sequence of {@link Optional}s and default to {@link Optional#empty()}:
      * <pre><code>
      * CompletionStage&lt;Optional&lt;T&gt;&gt; stage = source.map(Optional::of).toCompletionStage(Optional.empty());

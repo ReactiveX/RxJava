@@ -47,12 +47,12 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
             return;
         }
 
-        source.subscribe(new CollectObserver<T, U>(t, u, collector));
+        source.subscribe(new CollectObserver<>(t, u, collector));
     }
 
     @Override
     public Observable<U> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableCollect<T, U>(source, initialSupplier, collector));
+        return RxJavaPlugins.onAssembly(new ObservableCollect<>(source, initialSupplier, collector));
     }
 
     static final class CollectObserver<T, U> implements Observer<T>, Disposable {

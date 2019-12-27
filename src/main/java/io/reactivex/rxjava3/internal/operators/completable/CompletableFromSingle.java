@@ -26,7 +26,7 @@ public final class CompletableFromSingle<T> extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver observer) {
-        single.subscribe(new CompletableFromSingleObserver<T>(observer));
+        single.subscribe(new CompletableFromSingleObserver<>(observer));
     }
 
     static final class CompletableFromSingleObserver<T> implements SingleObserver<T> {

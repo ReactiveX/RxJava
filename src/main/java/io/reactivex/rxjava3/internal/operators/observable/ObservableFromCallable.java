@@ -36,7 +36,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Su
 
     @Override
     public void subscribeActual(Observer<? super T> observer) {
-        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(observer);
+        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<>(observer);
         observer.onSubscribe(d);
         if (d.isDisposed()) {
             return;

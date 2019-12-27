@@ -31,7 +31,7 @@ public final class FlowableJust<T> extends Flowable<T> implements ScalarSupplier
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        s.onSubscribe(new ScalarSubscription<T>(s, value));
+        s.onSubscribe(new ScalarSubscription<>(s, value));
     }
 
     @Override

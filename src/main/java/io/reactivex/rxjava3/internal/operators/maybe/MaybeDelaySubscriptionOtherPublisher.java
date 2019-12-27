@@ -40,7 +40,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        other.subscribe(new OtherSubscriber<T>(observer, source));
+        other.subscribe(new OtherSubscriber<>(observer, source));
     }
 
     static final class OtherSubscriber<T> implements FlowableSubscriber<Object>, Disposable {
@@ -51,7 +51,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
         Subscription upstream;
 
         OtherSubscriber(MaybeObserver<? super T> actual, MaybeSource<T> source) {
-            this.main = new DelayMaybeObserver<T>(actual);
+            this.main = new DelayMaybeObserver<>(actual);
             this.source = source;
         }
 

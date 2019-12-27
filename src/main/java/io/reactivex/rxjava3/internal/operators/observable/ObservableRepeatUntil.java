@@ -33,7 +33,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         SequentialDisposable sd = new SequentialDisposable();
         observer.onSubscribe(sd);
 
-        RepeatUntilObserver<T> rs = new RepeatUntilObserver<T>(observer, until, sd, source);
+        RepeatUntilObserver<T> rs = new RepeatUntilObserver<>(observer, until, sd, source);
         rs.subscribeNext();
     }
 

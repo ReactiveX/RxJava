@@ -33,7 +33,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
 
     @Override
     protected void subscribeActual(Subscriber<? super Timed<T>> s) {
-        source.subscribe(new TimeIntervalSubscriber<T>(s, unit, scheduler));
+        source.subscribe(new TimeIntervalSubscriber<>(s, unit, scheduler));
     }
 
     static final class TimeIntervalSubscriber<T> implements FlowableSubscriber<T>, Subscription {
@@ -66,7 +66,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            downstream.onNext(new Timed<T>(t, delta, unit));
+            downstream.onNext(new Timed<>(t, delta, unit));
         }
 
         @Override

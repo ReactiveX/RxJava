@@ -53,6 +53,6 @@ public final class ObservableReduceWithSingle<T, R> extends Single<R> {
             EmptyDisposable.error(ex, observer);
             return;
         }
-        source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
+        source.subscribe(new ReduceSeedObserver<>(observer, reducer, seed));
     }
 }

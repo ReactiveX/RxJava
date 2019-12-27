@@ -47,14 +47,14 @@ public class FlattenCrossMapPerf {
 
         flowable = Flowable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> apply(Integer v) {
                 return list;
             }
         });
 
         observable = Observable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> apply(Integer v) {
                 return list;
             }
         });

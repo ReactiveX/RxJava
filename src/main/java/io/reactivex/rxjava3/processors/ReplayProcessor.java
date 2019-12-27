@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 /**
  * Replays events to Subscribers.
  * <p>
- * The {@code ReplayProcessor} supports the following item retainment strategies:
+ * The {@code ReplayProcessor} supports the following item retention strategies:
  * <ul>
  * <li>{@link #create()} and {@link #create(int)}: retains and replays all events to current and
  * future {@code Subscriber}s.
@@ -173,7 +173,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> create() {
-        return new ReplayProcessor<>(new UnboundedReplayBuffer<T>(16));
+        return new ReplayProcessor<>(new UnboundedReplayBuffer<>(16));
     }
 
     /**
@@ -194,7 +194,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> create(int capacityHint) {
-        return new ReplayProcessor<>(new UnboundedReplayBuffer<T>(capacityHint));
+        return new ReplayProcessor<>(new UnboundedReplayBuffer<>(capacityHint));
     }
 
     /**
@@ -220,7 +220,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
-        return new ReplayProcessor<>(new SizeBoundReplayBuffer<T>(maxSize));
+        return new ReplayProcessor<>(new SizeBoundReplayBuffer<>(maxSize));
     }
 
     /**
@@ -238,7 +238,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      */
     @CheckReturnValue
     /* test */ static <T> ReplayProcessor<T> createUnbounded() {
-        return new ReplayProcessor<>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
+        return new ReplayProcessor<>(new SizeBoundReplayBuffer<>(Integer.MAX_VALUE));
     }
 
     /**
@@ -276,7 +276,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
+        return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
 
     /**
@@ -316,7 +316,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, int maxSize) {
-        return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
+        return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<>(maxSize, maxAge, unit, scheduler));
     }
 
     /**

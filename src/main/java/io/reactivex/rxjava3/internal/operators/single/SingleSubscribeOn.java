@@ -31,7 +31,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
-        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(observer, source);
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<>(observer, source);
         observer.onSubscribe(parent);
 
         Disposable f = scheduler.scheduleDirect(parent);

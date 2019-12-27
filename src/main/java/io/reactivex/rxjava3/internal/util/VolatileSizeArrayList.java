@@ -13,6 +13,8 @@
 
 package io.reactivex.rxjava3.internal.util;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,11 +31,11 @@ public final class VolatileSizeArrayList<T> extends AtomicInteger implements Lis
     final ArrayList<T> list;
 
     public VolatileSizeArrayList() {
-        list = new ArrayList<T>();
+        list = new ArrayList<>();
     }
 
     public VolatileSizeArrayList(int initialCapacity) {
-        list = new ArrayList<T>(initialCapacity);
+        list = new ArrayList<>(initialCapacity);
     }
 
     @Override
@@ -62,7 +64,7 @@ public final class VolatileSizeArrayList<T> extends AtomicInteger implements Lis
     }
 
     @Override
-    public <E> E[] toArray(E[] a) {
+    public <E> E[] toArray(@NonNull E[] a) {
         return list.toArray(a);
     }
 
@@ -81,33 +83,33 @@ public final class VolatileSizeArrayList<T> extends AtomicInteger implements Lis
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(@NonNull Collection<?> c) {
         return list.containsAll(c);
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(@NonNull Collection<? extends T> c) {
         boolean b = list.addAll(c);
         lazySet(list.size());
         return b;
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
+    public boolean addAll(int index, @NonNull Collection<? extends T> c) {
         boolean b = list.addAll(index, c);
         lazySet(list.size());
         return b;
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(@NonNull Collection<?> c) {
         boolean b = list.removeAll(c);
         lazySet(list.size());
         return b;
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(@NonNull Collection<?> c) {
         boolean b = list.retainAll(c);
         lazySet(list.size());
         return b;

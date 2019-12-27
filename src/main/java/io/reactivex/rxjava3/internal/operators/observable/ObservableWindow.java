@@ -36,9 +36,9 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
         if (count == skip) {
-            source.subscribe(new WindowExactObserver<T>(t, count, capacityHint));
+            source.subscribe(new WindowExactObserver<>(t, count, capacityHint));
         } else {
-            source.subscribe(new WindowSkipObserver<T>(t, count, skip, capacityHint));
+            source.subscribe(new WindowSkipObserver<>(t, count, skip, capacityHint));
         }
     }
 
@@ -81,7 +81,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             if (w == null && !cancelled) {
                 w = UnicastSubject.create(capacityHint, this);
                 window = w;
-                intercept = new ObservableWindowSubscribeIntercept<T>(w);
+                intercept = new ObservableWindowSubscribeIntercept<>(w);
                 downstream.onNext(intercept);
             }
 
@@ -169,7 +169,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             this.count = count;
             this.skip = skip;
             this.capacityHint = capacityHint;
-            this.windows = new ArrayDeque<UnicastSubject<T>>();
+            this.windows = new ArrayDeque<>();
         }
 
         @Override
@@ -194,7 +194,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             if (i % s == 0 && !cancelled) {
                 wip.getAndIncrement();
                 UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
-                intercept = new ObservableWindowSubscribeIntercept<T>(w);
+                intercept = new ObservableWindowSubscribeIntercept<>(w);
                 ws.offer(w);
                 downstream.onNext(intercept);
             }

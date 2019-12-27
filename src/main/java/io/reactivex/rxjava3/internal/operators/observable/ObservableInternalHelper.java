@@ -44,7 +44,7 @@ public final class ObservableInternalHelper {
     }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
-        return new SimpleGenerator<T, S>(consumer);
+        return new SimpleGenerator<>(consumer);
     }
 
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
@@ -62,7 +62,7 @@ public final class ObservableInternalHelper {
     }
 
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
-        return new SimpleBiGenerator<T, S>(consumer);
+        return new SimpleBiGenerator<>(consumer);
     }
 
     static final class ItemDelayFunction<T, U> implements Function<T, ObservableSource<T>> {
@@ -75,12 +75,12 @@ public final class ObservableInternalHelper {
         @Override
         public ObservableSource<T> apply(final T v) throws Throwable {
             ObservableSource<U> o = Objects.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
-            return new ObservableTake<U>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            return new ObservableTake<>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
     public static <T, U> Function<T, ObservableSource<T>> itemDelay(final Function<? super T, ? extends ObservableSource<U>> itemDelay) {
-        return new ItemDelayFunction<T, U>(itemDelay);
+        return new ItemDelayFunction<>(itemDelay);
     }
 
     static final class ObserverOnNext<T> implements Consumer<T> {
@@ -91,7 +91,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void accept(T v) throws Exception {
+        public void accept(T v) {
             observer.onNext(v);
         }
     }
@@ -104,7 +104,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
+        public void accept(Throwable v) {
             observer.onError(v);
         }
     }
@@ -117,21 +117,21 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void run() throws Exception {
+        public void run() {
             observer.onComplete();
         }
     }
 
     public static <T> Consumer<T> observerOnNext(Observer<T> observer) {
-        return new ObserverOnNext<T>(observer);
+        return new ObserverOnNext<>(observer);
     }
 
     public static <T> Consumer<Throwable> observerOnError(Observer<T> observer) {
-        return new ObserverOnError<T>(observer);
+        return new ObserverOnError<>(observer);
     }
 
     public static <T> Action observerOnComplete(Observer<T> observer) {
-        return new ObserverOnComplete<T>(observer);
+        return new ObserverOnComplete<>(observer);
     }
 
     static final class FlatMapWithCombinerInner<U, R, T> implements Function<U, R> {
@@ -163,14 +163,14 @@ public final class ObservableInternalHelper {
         public ObservableSource<R> apply(final T t) throws Throwable {
             @SuppressWarnings("unchecked")
             ObservableSource<U> u = (ObservableSource<U>)Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
-            return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
+            return new ObservableMap<>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
 
     public static <T, U, R> Function<T, ObservableSource<R>> flatMapWithCombiner(
             final Function<? super T, ? extends ObservableSource<? extends U>> mapper,
                     final BiFunction<? super T, ? super U, ? extends R> combiner) {
-        return new FlatMapWithCombinerOuter<T, R, U>(combiner, mapper);
+        return new FlatMapWithCombinerOuter<>(combiner, mapper);
     }
 
     static final class FlatMapIntoIterable<T, U> implements Function<T, ObservableSource<U>> {
@@ -182,36 +182,36 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<U> apply(T t) throws Throwable {
-            return new ObservableFromIterable<U>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
+            return new ObservableFromIterable<>(Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 
     public static <T, U> Function<T, ObservableSource<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new FlatMapIntoIterable<T, U>(mapper);
+        return new FlatMapIntoIterable<>(mapper);
     }
 
     enum MapToInt implements Function<Object, Object> {
         INSTANCE;
         @Override
-        public Object apply(Object t) throws Exception {
+        public Object apply(Object t) {
             return 0;
         }
     }
 
     public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent) {
-        return new ReplaySupplier<T>(parent);
+        return new ReplaySupplier<>(parent);
     }
 
     public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, boolean eagerTruncate) {
-        return new BufferedReplaySupplier<T>(parent, bufferSize, eagerTruncate);
+        return new BufferedReplaySupplier<>(parent, bufferSize, eagerTruncate);
     }
 
     public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
-        return new BufferedTimedReplaySupplier<T>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
+        return new BufferedTimedReplaySupplier<>(parent, bufferSize, time, unit, scheduler, eagerTruncate);
     }
 
     public static <T> Supplier<ConnectableObservable<T>> replaySupplier(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler, boolean eagerTruncate) {
-        return new TimedReplayCallable<T>(parent, time, unit, scheduler, eagerTruncate);
+        return new TimedReplayCallable<>(parent, time, unit, scheduler, eagerTruncate);
     }
 
     static final class ReplaySupplier<T> implements Supplier<ConnectableObservable<T>> {

@@ -30,7 +30,7 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new InnerSubscriber<T>(s, predicate));
+        source.subscribe(new InnerSubscriber<>(s, predicate));
     }
 
     static final class InnerSubscriber<T> implements FlowableSubscriber<T>, Subscription {

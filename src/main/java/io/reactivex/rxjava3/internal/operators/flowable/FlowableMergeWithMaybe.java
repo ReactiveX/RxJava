@@ -43,7 +43,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
     @Override
     protected void subscribeActual(Subscriber<? super T> subscriber) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(subscriber);
+        MergeWithObserver<T> parent = new MergeWithObserver<>(subscriber);
         subscriber.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
@@ -88,8 +88,8 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
         MergeWithObserver(Subscriber<? super T> downstream) {
             this.downstream = downstream;
-            this.mainSubscription = new AtomicReference<Subscription>();
-            this.otherObserver = new OtherObserver<T>(this);
+            this.mainSubscription = new AtomicReference<>();
+            this.otherObserver = new OtherObserver<>(this);
             this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
             this.prefetch = bufferSize();
@@ -211,7 +211,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         SimplePlainQueue<T> getOrCreateQueue() {
             SimplePlainQueue<T> q = queue;
             if (q == null) {
-                q = new SpscArrayQueue<T>(bufferSize());
+                q = new SpscArrayQueue<>(bufferSize());
                 queue = q;
             }
             return q;

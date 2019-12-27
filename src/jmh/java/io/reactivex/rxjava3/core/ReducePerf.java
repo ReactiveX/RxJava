@@ -40,7 +40,7 @@ public class ReducePerf implements BiFunction<Integer, Integer, Integer> {
     Maybe<Integer> flowMaybe;
 
     @Override
-    public Integer apply(Integer t1, Integer t2) throws Exception {
+    public Integer apply(Integer t1, Integer t2) {
         return t1 + t2;
     }
 

@@ -36,12 +36,12 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new SingleElementSubscriber<T>(observer, defaultValue));
+        source.subscribe(new SingleElementSubscriber<>(observer, defaultValue));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, defaultValue, true));
+        return RxJavaPlugins.onAssembly(new FlowableSingle<>(source, defaultValue, true));
     }
 
     static final class SingleElementSubscriber<T>

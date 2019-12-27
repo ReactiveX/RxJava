@@ -82,11 +82,11 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         if (n == 0) {
-            new ObservableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(observer);
+            new ObservableMap<>(source, new SingletonArrayFunc()).subscribeActual(observer);
             return;
         }
 
-        WithLatestFromObserver<T, R> parent = new WithLatestFromObserver<T, R>(observer, combiner, n);
+        WithLatestFromObserver<T, R> parent = new WithLatestFromObserver<>(observer, combiner, n);
         observer.onSubscribe(parent);
         parent.subscribe(others, n);
 
@@ -121,8 +121,8 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
                 s[i] = new WithLatestInnerObserver(this, i);
             }
             this.observers = s;
-            this.values = new AtomicReferenceArray<Object>(n);
-            this.upstream = new AtomicReference<Disposable>();
+            this.values = new AtomicReferenceArray<>(n);
+            this.upstream = new AtomicReference<>();
             this.error = new AtomicThrowable();
         }
 

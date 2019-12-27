@@ -42,7 +42,7 @@ public final class FlowableLastSingle<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new LastSubscriber<T>(observer, defaultItem));
+        source.subscribe(new LastSubscriber<>(observer, defaultItem));
     }
 
     static final class LastSubscriber<T> implements FlowableSubscriber<T>, Disposable {

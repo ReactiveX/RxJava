@@ -47,11 +47,11 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         SimpleQueueWithConsumerIndex<Object> queue;
 
         if (n <= bufferSize()) {
-            queue = new MpscFillOnceSimpleQueue<Object>(n);
+            queue = new MpscFillOnceSimpleQueue<>(n);
         } else {
-            queue = new ClqSimpleQueue<Object>();
+            queue = new ClqSimpleQueue<>();
         }
-        MergeMaybeObserver<T> parent = new MergeMaybeObserver<T>(s, n, queue);
+        MergeMaybeObserver<T> parent = new MergeMaybeObserver<>(s, n, queue);
 
         s.onSubscribe(parent);
 
@@ -110,7 +110,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         @Nullable
         @SuppressWarnings("unchecked")
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             for (;;) {
                 Object o = queue.poll();
                 if (o != NotificationLite.COMPLETE) {

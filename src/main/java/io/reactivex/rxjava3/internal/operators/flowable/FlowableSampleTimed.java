@@ -42,11 +42,11 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        SerializedSubscriber<T> serial = new SerializedSubscriber<T>(s);
+        SerializedSubscriber<T> serial = new SerializedSubscriber<>(s);
         if (emitLast) {
-            source.subscribe(new SampleTimedEmitLast<T>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedEmitLast<>(serial, period, unit, scheduler));
         } else {
-            source.subscribe(new SampleTimedNoLast<T>(serial, period, unit, scheduler));
+            source.subscribe(new SampleTimedNoLast<>(serial, period, unit, scheduler));
         }
     }
 

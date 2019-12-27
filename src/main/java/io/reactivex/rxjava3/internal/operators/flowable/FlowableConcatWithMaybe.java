@@ -41,7 +41,7 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ConcatWithSubscriber<T>(s, other));
+        source.subscribe(new ConcatWithSubscriber<>(s, other));
     }
 
     static final class ConcatWithSubscriber<T>
@@ -59,7 +59,7 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         ConcatWithSubscriber(Subscriber<? super T> actual, MaybeSource<? extends T> other) {
             super(actual);
             this.other = other;
-            this.otherDisposable = new AtomicReference<Disposable>();
+            this.otherDisposable = new AtomicReference<>();
         }
 
         @Override

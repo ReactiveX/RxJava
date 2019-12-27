@@ -38,7 +38,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        ConcatMaybeObserver<T> parent = new ConcatMaybeObserver<T>(s, sources);
+        ConcatMaybeObserver<T> parent = new ConcatMaybeObserver<>(s, sources);
         s.onSubscribe(parent);
         parent.drain();
     }
@@ -68,7 +68,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
             this.sources = sources;
             this.requested = new AtomicLong();
             this.disposables = new SequentialDisposable();
-            this.current = new AtomicReference<Object>(NotificationLite.COMPLETE); // as if a previous completed
+            this.current = new AtomicReference<>(NotificationLite.COMPLETE); // as if a previous completed
         }
 
         @Override

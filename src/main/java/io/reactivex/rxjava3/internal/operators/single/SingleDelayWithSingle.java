@@ -33,7 +33,7 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        other.subscribe(new OtherObserver<T, U>(observer, source));
+        other.subscribe(new OtherObserver<>(observer, source));
     }
 
     static final class OtherObserver<T, U>
@@ -61,7 +61,7 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
 
         @Override
         public void onSuccess(U value) {
-            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
+            source.subscribe(new ResumeSingleObserver<>(this, downstream));
         }
 
         @Override
