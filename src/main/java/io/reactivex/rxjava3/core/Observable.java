@@ -6517,6 +6517,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the scheduler where the {@code mapper} function will be executed
      * @return an Observable that emits the result of applying the transformation function to each item emitted
      *         by the source ObservableSource and concatenating the ObservableSources obtained from this transformation
+     * @since 3.0.0
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
