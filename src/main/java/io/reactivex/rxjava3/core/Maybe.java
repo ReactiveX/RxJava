@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.reactivestreams.*;
 
@@ -3152,6 +3153,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            source Maybe
      * @return the new Flowable instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @see #flattenStreamAsFlowable(Function)
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -5003,5 +5005,88 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     public final CompletionStage<T> toCompletionStage(@Nullable T defaultItem) {
         return subscribeWith(new CompletionStageConsumer<>(true, defaultItem));
+    }
+
+    /**
+     * Maps the upstream succecss value into a Java {@link Stream} and emits its
+     * items to the downstream consumer as a {@link Flowable}.
+     * <p>
+     * <img width="640" height="247" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenStreamAsFlowable.m.png" alt="">
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flattenAsFlowable(Function)}:
+     * <pre><code>
+     * source.flattenAsFlowable(item -&gt; createStream(item)::iterator);
+     * </code></pre>
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.flattenStreamAsFlowable(item -&gt; IntStream.rangeClosed(1, 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and iterates the given {@code Stream}
+     *  on demand (i.e., when requested).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flattenStreamAsFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the element type of the {@code Stream} and the output {@code Flowable}
+     * @param mapper the function that receives the upstream success item and should
+     * return a {@code Stream} of values to emit.
+     * @return the new Flowable instance
+     * @since 3.0.0
+     * @see #flattenAsFlowable(Function)
+     * @see #flattenStreamAsObservable(Function)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    @NonNull
+    public final <R> Flowable<R> flattenStreamAsFlowable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlattenStreamAsFlowable<>(this, mapper));
+    }
+
+    /**
+     * Maps the upstream succecss value into a Java {@link Stream} and emits its
+     * items to the downstream consumer as an {@link Observable}.
+     * <img width="640" height="247" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenStreamAsObservable.m.png" alt="">
+     * <p>
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
+     * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flattenAsObservable(Function)}:
+     * <pre><code>
+     * source.flattenAsObservable(item -&gt; createStream(item)::iterator);
+     * </code></pre>
+     * <p>
+     * Primitive streams are not supported and items have to be boxed manually (e.g., via {@link IntStream#boxed()}):
+     * <pre><code>
+     * source.flattenStreamAsObservable(item -&gt; IntStream.rangeClosed(1, 10).boxed());
+     * </code></pre>
+     * <p>
+     * {@code Stream} does not support concurrent usage so creating and/or consuming the same instance multiple times
+     * from multiple threads can lead to undefined behavior.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flattenStreamAsObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the element type of the {@code Stream} and the output {@code Observable}
+     * @param mapper the function that receives the upstream success item and should
+     * return a {@code Stream} of values to emit.
+     * @return the new Observable instance
+     * @since 3.0.0
+     * @see #flattenAsObservable(Function)
+     * @see #flattenStreamAsFlowable(Function)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <R> Observable<R> flattenStreamAsObservable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlattenStreamAsObservable<>(this, mapper));
     }
 }

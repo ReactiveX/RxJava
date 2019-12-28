@@ -139,8 +139,11 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Flowable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Flowable")) {
-                            e.append("java.lang.RuntimeException: Maybe doc mentions Flowable but not in the signature\r\n at io.reactivex.rxjava3.core.")
-                            .append("Maybe.method(Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            Pattern p = Pattern.compile("@see\\s+#[A-Za-z0-9 _.,()]*Flowable");
+                            if (!p.matcher(m.javadoc).find()) {
+                                e.append("java.lang.RuntimeException: Maybe doc mentions Flowable but not in the signature\r\n at io.reactivex.rxjava3.core.")
+                                .append("Maybe.method(Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            }
                         }
                         jdx = idx + 6;
                     } else {
@@ -180,8 +183,11 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Observable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Observable")) {
-                            e.append("java.lang.RuntimeException: Maybe doc mentions Observable but not in the signature\r\n at io.reactivex.rxjava3.core.")
-                            .append("Maybe.method(Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            Pattern p = Pattern.compile("@see\\s+#[A-Za-z0-9 _.,()]*Observable");
+                            if (!p.matcher(m.javadoc).find()) {
+                                e.append("java.lang.RuntimeException: Maybe doc mentions Observable but not in the signature\r\n at io.reactivex.rxjava3.core.")
+                                .append("Maybe.method(Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            }
                         }
                         jdx = idx + 6;
                     } else {
