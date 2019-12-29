@@ -316,6 +316,67 @@ public class JavadocWording {
                         break;
                     }
                 }
+
+                if (m.signature.matches("(?s).*?\\sSingle\\<.*?\\>\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
+                        if (idx >= 0) {
+                            e.append("Returns Single but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Maybe");
+                        if (idx >= 0) {
+                            e.append("Returns Single but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Publisher");
+                        if (idx >= 0) {
+                            e.append("Returns Single but docs return Publisher\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
+                if (m.signature.matches("(?s).*?\\sMaybe\\<.*\\>\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
+                        if (idx >= 0) {
+                            e.append("Returns Maybe but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Single");
+                        if (idx >= 0) {
+                            e.append("Returns Maybe but docs return Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Publisher");
+                        if (idx >= 0) {
+                            e.append("Returns Maybe but docs return Publisher\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
+                if (m.signature.matches("(?s).*?\\sCompletable\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Single");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Maybe");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
                 aOrAn(e, m, "Flowable");
                 missingClosingDD(e, m, "Flowable");
                 backpressureMentionedWithoutAnnotation(e, m, "Flowable");
@@ -417,6 +478,56 @@ public class JavadocWording {
                         break;
                     }
                 }
+                if (m.signature.matches("(?s).*?\\sSingle\\<.*?\\>\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Observable");
+                        if (idx >= 0) {
+                            e.append("Returns Single but docs return Observable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Maybe");
+                        if (idx >= 0) {
+                            e.append("Returns Single but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
+                if (m.signature.matches("(?s).*?\\sMaybe\\<.*?\\>\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Observable");
+                        if (idx >= 0) {
+                            e.append("Returns Maybe but docs return Observable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Single");
+                        if (idx >= 0) {
+                            e.append("Returns Maybe but docs return Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
+                if (m.signature.matches("(?s).*?\\sCompletable\\s+\\w+\\(.*")) {
+                    for (String at : AT_RETURN_WORDS) {
+                        int idx = m.javadoc.indexOf(at + "{@code Observable");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Observable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Single");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                        idx = m.javadoc.indexOf(at + "{@code Maybe");
+                        if (idx >= 0) {
+                            e.append("Returns Completable but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
+                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+                    }
+                }
+
                 aOrAn(e, m, "Observable");
                 missingClosingDD(e, m, "Observable");
                 backpressureMentionedWithoutAnnotation(e, m, "Observable");
@@ -949,4 +1060,6 @@ public class JavadocWording {
             .append(".java:").append(m.backpressureDocLine).append(")\r\n\r\n");
         }
     }
+
+    static final String[] AT_RETURN_WORDS = { "@return a ", "@return the new ", "@return a new " };
 }
