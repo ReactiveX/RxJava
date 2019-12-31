@@ -204,6 +204,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      *            the item that will be emitted first to any {@link Subscriber} as long as the
      *            {@link BehaviorProcessor} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorProcessor}
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      */
     @CheckReturnValue
     @NonNull

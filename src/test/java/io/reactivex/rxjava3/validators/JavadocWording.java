@@ -317,65 +317,7 @@ public class JavadocWording {
                     }
                 }
 
-                if (m.signature.matches("(?s).*?\\sSingle\\<.*?\\>\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
-                        if (idx >= 0) {
-                            e.append("Returns Single but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Maybe");
-                        if (idx >= 0) {
-                            e.append("Returns Single but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Publisher");
-                        if (idx >= 0) {
-                            e.append("Returns Single but docs return Publisher\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
-
-                if (m.signature.matches("(?s).*?\\sMaybe\\<.*\\>\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
-                        if (idx >= 0) {
-                            e.append("Returns Maybe but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Single");
-                        if (idx >= 0) {
-                            e.append("Returns Maybe but docs return Single\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Publisher");
-                        if (idx >= 0) {
-                            e.append("Returns Maybe but docs return Publisher\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
-
-                if (m.signature.matches("(?s).*?\\sCompletable\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Flowable");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Flowable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Single");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Single\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Maybe");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
-                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
+                checkAtReturnAndSignatureMatch("Flowable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
 
                 aOrAn(e, m, "Flowable");
                 missingClosingDD(e, m, "Flowable");
@@ -478,55 +420,7 @@ public class JavadocWording {
                         break;
                     }
                 }
-                if (m.signature.matches("(?s).*?\\sSingle\\<.*?\\>\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Observable");
-                        if (idx >= 0) {
-                            e.append("Returns Single but docs return Observable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Maybe");
-                        if (idx >= 0) {
-                            e.append("Returns Single but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
-
-                if (m.signature.matches("(?s).*?\\sMaybe\\<.*?\\>\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Observable");
-                        if (idx >= 0) {
-                            e.append("Returns Maybe but docs return Observable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Single");
-                        if (idx >= 0) {
-                            e.append("Returns Maybe but docs return Single\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
-
-                if (m.signature.matches("(?s).*?\\sCompletable\\s+\\w+\\(.*")) {
-                    for (String at : AT_RETURN_WORDS) {
-                        int idx = m.javadoc.indexOf(at + "{@code Observable");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Observable\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Single");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Single\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                        idx = m.javadoc.indexOf(at + "{@code Maybe");
-                        if (idx >= 0) {
-                            e.append("Returns Completable but docs return Maybe\r\n at io.reactivex.rxjava3.core.")
-                            .append("Observable.method(Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
-                        }
-                    }
-                }
+                checkAtReturnAndSignatureMatch("Observable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
 
                 aOrAn(e, m, "Observable");
                 missingClosingDD(e, m, "Observable");
@@ -890,6 +784,9 @@ public class JavadocWording {
                         break;
                     }
                 }
+
+                checkAtReturnAndSignatureMatch("Completable", m, e, "Flowable", "Observable", "Maybe", "Single", "Completable");
+
                 aOrAn(e, m, "Completable");
                 missingClosingDD(e, m, "Completable");
                 backpressureMentionedWithoutAnnotation(e, m, "Completable");
@@ -900,6 +797,38 @@ public class JavadocWording {
             System.out.println(e);
 
             fail(e.toString());
+        }
+    }
+
+    static void checkAtReturnAndSignatureMatch(String className, RxMethod m, StringBuilder e, String... types) {
+        for (String t : types) {
+            String regex;
+            if (t.contains("Completable")) {
+                regex = "(?s).*?\\s" + t + "\\s+\\w+\\(.*";
+            } else {
+                regex = "(?s).*?\\s" + t + "\\<.*?\\>\\s+\\w+\\(.*";
+            }
+            if (m.signature.matches(regex)) {
+                for (String at : AT_RETURN_WORDS) {
+                    for (String u : types) {
+                        if (!t.equals(u)) {
+                            int idx = m.javadoc.indexOf(at + "{@code " + u);
+                            if (idx >= 0) {
+                                e.append("Returns ").append(t)
+                                .append(" but docs return ")
+                                .append(u)
+                                .append("\r\n at io.reactivex.rxjava3.core.")
+                                .append(className)
+                                .append(".method(")
+                                .append(className)
+                                .append(".java:")
+                                .append(m.javadocLine + lineNumber(m.javadoc, idx) - 1)
+                                .append(")\r\n\r\n");
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

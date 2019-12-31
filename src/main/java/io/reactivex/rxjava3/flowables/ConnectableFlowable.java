@@ -249,6 +249,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Flowable instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code subscriberCount} is non-positive
      * @since 2.2
      */
     @CheckReturnValue

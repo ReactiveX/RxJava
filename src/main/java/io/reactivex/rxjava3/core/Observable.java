@@ -5261,7 +5261,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Iterable<T> blockingIterable(int capacityHint) {
-        ObjectHelper.verifyPositive(capacityHint, "bufferSize");
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         return new BlockingObservableIterable<>(this, capacityHint);
     }
 

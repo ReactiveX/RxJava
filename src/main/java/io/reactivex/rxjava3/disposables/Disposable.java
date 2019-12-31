@@ -41,6 +41,7 @@ public interface Disposable {
      * executed exactly once when the {@code Disposable} is disposed.
      * @param run the Runnable to wrap
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code run} is {@code null}
      * @since 3.0.0
      */
     @NonNull
@@ -52,14 +53,15 @@ public interface Disposable {
     /**
      * Construct a {@code Disposable} by wrapping a {@link Action} that is
      * executed exactly once when the {@code Disposable} is disposed.
-     * @param run the Action to wrap
+     * @param action the Action to wrap
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code action} is {@code null}
      * @since 3.0.0
      */
     @NonNull
-    static Disposable fromAction(@NonNull Action run) {
-        Objects.requireNonNull(run, "run is null");
-        return new ActionDisposable(run);
+    static Disposable fromAction(@NonNull Action action) {
+        Objects.requireNonNull(action, "action is null");
+        return new ActionDisposable(action);
     }
 
     /**
@@ -69,6 +71,7 @@ public interface Disposable {
      * The {@code Future} is cancelled with {@code mayInterruptIfRunning == true}.
      * @param future the Future to wrap
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code future} is {@code null}
      * @see #fromFuture(Future, boolean)
      * @since 3.0.0
      */
@@ -84,6 +87,7 @@ public interface Disposable {
      * @param future the Future to wrap
      * @param allowInterrupt if true, the future cancel happens via {@code Future.cancel(true)}
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code future} is {@code null}
      * @since 3.0.0
      */
     @NonNull
@@ -97,6 +101,7 @@ public interface Disposable {
      * cancelled exactly once when the {@code Disposable} is disposed.
      * @param subscription the Runnable to wrap
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code subscription} is {@code null}
      * @since 3.0.0
      */
     @NonNull
@@ -110,6 +115,7 @@ public interface Disposable {
      * closed exactly once when the {@code Disposable} is disposed.
      * @param autoCloseable the AutoCloseable to wrap
      * @return the new Disposable instance
+     * @throws NullPointerException if {@code autoCloseable} is {@code null}
      * @since 3.0.0
      */
     @NonNull
@@ -123,10 +129,12 @@ public interface Disposable {
      * disposed when the returned {@code AutoCloseable} is closed.
      * @param disposable the Disposable instance
      * @return the new AutoCloseable instance
+     * @throws NullPointerException if {@code disposable} is {@code null}
      * @since 3.0.0
      */
     @NonNull
     static AutoCloseable toAutoCloseable(@NonNull Disposable disposable) {
+        Objects.requireNonNull(disposable, "disposable is null");
         return disposable::dispose;
     }
 
