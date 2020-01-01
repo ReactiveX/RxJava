@@ -4461,7 +4461,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Create a {@code Flowable} by wrapping a {@link Publisher} <em>which has to be implemented according
-     * to the <em>Reactive Streams</em> specification by handling backpressure and
+     * to the <b>Reactive Streams</b> specification by handling backpressure and
      * cancellation correctly; no safeguards are provided by the {@code Flowable} itself</em>.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10967,7 +10967,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * // Emit 1000 items but ensure that the
      * // internal map never has more than 3 items in it
-     * {@code Flowable}
+     *   Flowable
      *   .range(1, 1000)
      *   // note that number of keys is 10
      *   .groupBy(x -&gt; x % 10, x -&gt; x, true, 16, evictingMapFactory)
@@ -16322,8 +16322,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a {@code Flowable} that emits only the last item emitted by the source {@link Publisher} during sequential
      * time windows of a specified duration, where the duration is governed by a specified {@link Scheduler}.
      * <p>
-     * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
-     * {@link #throttleFirst} does not tick, it just tracks the passage of time.
+     * This differs from {@link #throttleFirst(long, TimeUnit, Scheduler)} in that this ticks along at a scheduled interval whereas
+     * {@code throttleFirst} does not tick, it just tracks the passage of time.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.png" alt="">
      * <dl>

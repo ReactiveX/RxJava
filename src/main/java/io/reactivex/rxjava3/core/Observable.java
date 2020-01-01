@@ -16342,6 +16342,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *     stream.limit(3).forEach(System.out::println);
      * }
      * </code></pre>
+     * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingStream} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
