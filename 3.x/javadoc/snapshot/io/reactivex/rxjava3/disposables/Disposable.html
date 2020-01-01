@@ -143,7 +143,7 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;run)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</code>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> that is
  executed exactly once when the <code>Disposable</code> is disposed.</div>
 </td>
@@ -252,6 +252,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>run</code> - the Runnable to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>run</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -265,14 +267,16 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <h4>fromAction</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables">Disposable</a>&nbsp;fromAction(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-                                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;run)</pre>
+                                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;action)</pre>
 <div class="block">Construct a <code>Disposable</code> by wrapping a <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> that is
  executed exactly once when the <code>Disposable</code> is disposed.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>run</code> - the Action to wrap</dd>
+<dd><code>action</code> - the Action to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>action</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -296,6 +300,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>future</code> - the Future to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>future</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -321,6 +327,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>allowInterrupt</code> - if true, the future cancel happens via <code>Future.cancel(true)</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>future</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -342,6 +350,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>subscription</code> - the Runnable to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>subscription</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -363,6 +373,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>autoCloseable</code> - the AutoCloseable to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Disposable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>autoCloseable</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -384,6 +396,8 @@ static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd><code>disposable</code> - the Disposable instance</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new AutoCloseable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>disposable</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>

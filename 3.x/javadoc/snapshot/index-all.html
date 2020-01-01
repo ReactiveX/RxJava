@@ -143,8 +143,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#amb-java.lang.Iterable-">amb(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which terminates as soon as one of the source Completables
- terminates (normally or with an error) and disposes all other Completables.</div>
+<div class="block">Returns a <code>Completable</code> which terminates as soon as one of the source <code>Completable</code>s in the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence
+ terminates (normally or with an error) and disposes all other <code>Completable</code>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#amb-java.lang.Iterable-">amb(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -168,8 +168,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#ambArray-io.reactivex.rxjava3.core.CompletableSource...-">ambArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which terminates as soon as one of the source Completables
- terminates (normally or with an error) and disposes all other Completables.</div>
+<div class="block">Returns a <code>Completable</code> which terminates as soon as one of the source <code>Completable</code>s
+ terminates (normally or with an error) and disposes all other <code>Completable</code>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#ambArray-org.reactivestreams.Publisher...-">ambArray(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -193,8 +193,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#ambWith-io.reactivex.rxjava3.core.CompletableSource-">ambWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that emits the a terminated event of either this Completable
- or the other Completable whichever fires first.</div>
+<div class="block">Returns a <code>Completable</code> that emits the a terminated event of either this <code>Completable</code>
+ or the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>, whichever fires first.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#ambWith-org.reactivestreams.Publisher-">ambWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -216,28 +216,28 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-io.reactivex.rxjava3.core.ObservableSource-">andThen(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns an Observable which will subscribe to this Completable and once that is completed then
- will subscribe to the <code>next</code> ObservableSource.</div>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which will subscribe to this <code>Completable</code> and once that is completed then
+ will subscribe to the <code>next</code> <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-org.reactivestreams.Publisher-">andThen(Publisher&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Flowable which will subscribe to this Completable and once that is completed then
- will subscribe to the <code>next</code> Flowable.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which will subscribe to this <code>Completable</code> and once that is completed then
+ will subscribe to the <code>next</code> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-io.reactivex.rxjava3.core.SingleSource-">andThen(SingleSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Single which will subscribe to this Completable and once that is completed then
- will subscribe to the <code>next</code> SingleSource.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> which will subscribe to this <code>Completable</code> and once that is completed then
+ will subscribe to the <code>next</code> <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-io.reactivex.rxjava3.core.MaybeSource-">andThen(MaybeSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> which will subscribe to this Completable and once that is completed then
- will subscribe to the <code>next</code> MaybeSource.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> which will subscribe to this <code>Completable</code> and once that is completed then
+ will subscribe to the <code>next</code> <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-io.reactivex.rxjava3.core.CompletableSource-">andThen(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that first runs this Completable
- and then the other completable.</div>
+<div class="block">Returns a <code>Completable</code> that first runs this <code>Completable</code>
+ and then the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#any-io.reactivex.rxjava3.functions.Predicate-">any(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -576,12 +576,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingAwait--">blockingAwait()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to and awaits the termination of this Completable instance in a blocking manner and
+<div class="block">Subscribes to and awaits the termination of this <code>Completable</code> instance in a blocking manner and
  rethrows any exception emitted.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#blockingAwait-long-java.util.concurrent.TimeUnit-">blockingAwait(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to and awaits the termination of this Completable instance in a blocking manner
+<div class="block">Subscribes to and awaits the termination of this <code>Completable</code> instance in a blocking manner
  with a specific timeout and rethrows any exception emitted within the timeout window.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingFirst--">blockingFirst()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -965,8 +965,8 @@
 <dl>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#cache--">cache()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to this Completable only once, when the first CompletableObserver
- subscribes to the result Completable, caches its terminal event
+<div class="block">Subscribes to this <code>Completable</code> only once, when the first <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>
+ subscribes to the result <code>Completable</code>, caches its terminal event
  and relays/replays it to observers.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#cache--">cache()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -1355,7 +1355,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#complete--">complete()</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that completes immediately when subscribed to.</div>
+<div class="block">Returns a <code>Completable</code> instance that completes immediately when subscribed to.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html#completions">completions</a></span> - Variable in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava3.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -1364,7 +1364,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#compose-io.reactivex.rxjava3.core.CompletableTransformer-">compose(CompletableTransformer)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
 <div class="block">Calls the given transformer function with this instance and returns the function's resulting
- Completable.</div>
+ <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> wrapped with <a href="io/reactivex/rxjava3/core/Completable.html#wrap-io.reactivex.rxjava3.core.CompletableSource-"><code>Completable.wrap(CompletableSource)</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#compose-io.reactivex.rxjava3.core.FlowableTransformer-">compose(FlowableTransformer&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1429,15 +1429,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concat-java.lang.Iterable-">concat(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which completes only when all sources complete, one after another.</div>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concat-org.reactivestreams.Publisher-">concat(Publisher&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which completes only when all sources complete, one after another.</div>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concat-org.reactivestreams.Publisher-int-">concat(Publisher&lt;? extends CompletableSource&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which completes only when all sources complete, one after another.</div>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concat-java.lang.Iterable-">concat(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1560,7 +1560,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatArray-io.reactivex.rxjava3.core.CompletableSource...-">concatArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which completes only when all sources complete, one after another.</div>
+<div class="block">Returns a <code>Completable</code> which completes only when all sources complete, one after another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatArray-org.reactivestreams.Publisher...-">concatArray(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2079,7 +2079,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatWith-io.reactivex.rxjava3.core.CompletableSource-">concatWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Concatenates this Completable with another Completable.</div>
+<div class="block">Concatenates this <code>Completable</code> with another <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatWith-org.reactivestreams.Publisher-">concatWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2211,7 +2211,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#create-io.reactivex.rxjava3.core.CompletableOnSubscribe-">create(CompletableOnSubscribe)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.</div>
+<div class="block">Provides an API (via a cold <code>Completable</code>) that bridges the reactive world with the callback-style world.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#create-io.reactivex.rxjava3.core.FlowableOnSubscribe-io.reactivex.rxjava3.core.BackpressureStrategy-">create(FlowableOnSubscribe&lt;T&gt;, BackpressureStrategy)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2518,7 +2518,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#defer-io.reactivex.rxjava3.functions.Supplier-">defer(Supplier&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Defers the subscription to a Completable instance returned by a supplier.</div>
+<div class="block">Defers the subscription to a <code>Completable</code> instance returned by a supplier.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#defer-io.reactivex.rxjava3.functions.Supplier-">defer(Supplier&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2542,17 +2542,17 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delay-long-java.util.concurrent.TimeUnit-">delay(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which delays the emission of the completion event by the given time.</div>
+<div class="block">Returns a <code>Completable</code> which delays the emission of the completion event by the given time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delay(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which delays the emission of the completion event by the given time while
- running on the specified scheduler.</div>
+<div class="block">Returns a <code>Completable</code> which delays the emission of the completion event by the given time while
+ running on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-">delay(long, TimeUnit, Scheduler, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which delays the emission of the completion event, and optionally the error as well, by the given time while
- running on the specified scheduler.</div>
+<div class="block">Returns a <code>Completable</code> which delays the emission of the completion event, and optionally the error as well, by the given time while
+ running on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#delay-io.reactivex.rxjava3.functions.Function-">delay(Function&lt;? super T, ? extends Publisher&lt;U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2646,12 +2646,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delaySubscription-long-java.util.concurrent.TimeUnit-">delaySubscription(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time.</div>
+<div class="block">Returns a <code>Completable</code> that delays the subscription to the upstream by a given amount of time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delaySubscription-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delaySubscription(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that delays the subscription to the source CompletableSource by a given amount of time,
- both waiting and subscribing on a given Scheduler.</div>
+<div class="block">Returns a <code>Completable</code> that delays the subscription to the upstream by a given amount of time,
+ both waiting and subscribing on a given <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#delaySubscription-org.reactivestreams.Publisher-">delaySubscription(Publisher&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2937,7 +2937,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doAfterTerminate-io.reactivex.rxjava3.functions.Action-">doAfterTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that calls the given onTerminate callback after this Completable
+<div class="block">Returns a <code>Completable</code> instance that calls the given <code>onAfterTerminate</code>  <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> after this <code>Completable</code>
  completes normally or with an exception.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doAfterTerminate-io.reactivex.rxjava3.functions.Action-">doAfterTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -2966,7 +2966,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doFinally-io.reactivex.rxjava3.functions.Action-">doFinally(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Calls the specified action after this Completable signals onError or onComplete or gets disposed by
+<div class="block">Calls the specified <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> after this <code>Completable</code> signals <code>onError</code> or <code>onComplete</code> or gets disposed by
  the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doFinally-io.reactivex.rxjava3.functions.Action-">doFinally(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -3003,7 +3003,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which calls the given onComplete callback if this Completable completes.</div>
+<div class="block">Returns a <code>Completable</code> which calls the given <code>onComplete</code> <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> if this <code>Completable</code> completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3023,8 +3023,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnDispose-io.reactivex.rxjava3.functions.Action-">doOnDispose(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Calls the shared <code>Action</code> if a CompletableObserver subscribed to the current
- Completable disposes the common Disposable it received via onSubscribe.</div>
+<div class="block">Calls the shared <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> if a <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> subscribed to the current
+ <code>Completable</code> disposes the common <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> it received via <code>onSubscribe</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnDispose-io.reactivex.rxjava3.functions.Action-">doOnDispose(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3058,7 +3058,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which calls the given onError callback if this Completable emits an error.</div>
+<div class="block">Returns a <code>Completable</code> which calls the given <code>onError</code> <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> if this <code>Completable</code> emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3084,8 +3084,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnEvent-io.reactivex.rxjava3.functions.Consumer-">doOnEvent(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which calls the given onEvent callback with the (throwable) for an onError
- or (null) for an onComplete signal from this Completable before delivering said signal to the downstream.</div>
+<div class="block">Returns a <code>Completable</code> which calls the given <code>onEvent</code> <a href="io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions"><code>Consumer</code></a> with the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> for an <code>onError</code>
+ or <code>null</code> for an <code>onComplete</code> signal from this <code>Completable</code> before delivering the signal to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#doOnEvent-io.reactivex.rxjava3.functions.BiConsumer-">doOnEvent(BiConsumer&lt;? super T, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3141,8 +3141,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that calls the given onSubscribe callback with the disposable
- that child subscribers receive on subscription.</div>
+<div class="block">Returns a <code>Completable</code> instance that calls the given <code>onSubscribe</code> callback with the disposable
+ that the downstream <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a>s receive upon subscription.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Subscription&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3180,7 +3180,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that calls the given onTerminate callback just before this Completable
+<div class="block">Returns a <code>Completable</code> instance that calls the given <code>onTerminate</code> <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> just before this <code>Completable</code>
  completes normally or with an exception.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -3273,12 +3273,12 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#error-io.reactivex.rxjava3.functions.Supplier-">error(Supplier&lt;? extends Throwable&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Creates a Completable which calls the given error supplier for each subscriber
- and emits its returned Throwable.</div>
+<div class="block">Creates a <code>Completable</code> which calls the given error supplier for each subscriber
+ and emits its returned <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#error-java.lang.Throwable-">error(Throwable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Creates a Completable instance that emits the given Throwable exception to subscribers.</div>
+<div class="block">Creates a <code>Completable</code> instance that emits the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> exception to subscribers.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#error-io.reactivex.rxjava3.functions.Supplier-">error(Supplier&lt;? extends Throwable&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3932,7 +3932,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that runs the given Action for each subscriber and
+<div class="block">Returns a <code>Completable</code> instance that runs the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> for each subscriber and
  emits either an unchecked exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromAction-io.reactivex.rxjava3.functions.Action-">fromAction(Action)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -3965,8 +3965,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromCallable-java.util.concurrent.Callable-">fromCallable(Callable&lt;?&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which when subscribed, executes the callable function, ignores its
- normal result and emits onError or onComplete only.</div>
+<div class="block">Returns a <code>Completable</code> which when subscribed, executes the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html?is-external=true" title="class or interface in java.util.concurrent"><code>Callable</code></a> function, ignores its
+ normal result and emits <code>onError</code> or <code>onComplete</code> only.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromCallable-java.util.concurrent.Callable-">fromCallable(Callable&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -4015,7 +4015,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromFuture-java.util.concurrent.Future-">fromFuture(Future&lt;?&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that reacts to the termination of the given Future in a blocking fashion.</div>
+<div class="block">Returns a <code>Completable</code> instance that reacts to the termination of the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> in a blocking fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromFuture-java.util.concurrent.Future-">fromFuture(Future&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -4093,13 +4093,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromMaybe-io.reactivex.rxjava3.core.MaybeSource-">fromMaybe(MaybeSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that when subscribed to, subscribes to the <code>Maybe</code> instance and
- emits a completion event if the maybe emits <code>onSuccess</code>/<code>onComplete</code> or forwards any
+<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> instance and
+ emits an <code>onComplete</code> event if the maybe emits <code>onSuccess</code>/<code>onComplete</code> or forwards any
  <code>onError</code> events.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromObservable-io.reactivex.rxjava3.core.ObservableSource-">fromObservable(ObservableSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that subscribes to the given Observable, ignores all values and
+<div class="block">Returns a <code>Completable</code> instance that subscribes to the given <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>, ignores all values and
  emits only the terminal event.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromObservable-io.reactivex.rxjava3.core.ObservableSource-">fromObservable(ObservableSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
@@ -4123,7 +4123,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromPublisher-org.reactivestreams.Publisher-">fromPublisher(Publisher&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that subscribes to the given publisher, ignores all values and
+<div class="block">Returns a <code>Completable</code> instance that subscribes to the given <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>, ignores all values and
  emits only the terminal event.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromPublisher-org.reactivestreams.Publisher-">fromPublisher(Publisher&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -4141,7 +4141,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that runs the given Runnable for each subscriber and
+<div class="block">Returns a <code>Completable</code> instance that runs the given <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html?is-external=true" title="class or interface in java.lang"><code>Runnable</code></a> for each <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> and
  emits either its exception or simply completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -4156,8 +4156,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromSingle-io.reactivex.rxjava3.core.SingleSource-">fromSingle(SingleSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that when subscribed to, subscribes to the Single instance and
- emits a completion event if the single emits onSuccess or forwards any onError events.</div>
+<div class="block">Returns a <code>Completable</code> instance that when subscribed to, subscribes to the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instance and
+ emits a completion event if the single emits <code>onSuccess</code> or forwards any <code>onError</code> events.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromSingle-io.reactivex.rxjava3.core.SingleSource-">fromSingle(SingleSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -4178,8 +4178,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromSupplier-io.reactivex.rxjava3.functions.Supplier-">fromSupplier(Supplier&lt;?&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which when subscribed, executes the supplier function, ignores its
- normal result and emits onError or onComplete only.</div>
+<div class="block">Returns a <code>Completable</code> which when subscribed, executes the <a href="io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions"><code>Supplier</code></a> function, ignores its
+ normal result and emits <code>onError</code> or <code>onComplete</code> only.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromSupplier-io.reactivex.rxjava3.functions.Supplier-">fromSupplier(Supplier&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -4770,7 +4770,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#hide--">hide()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Hides the identity of this Completable and its Disposable.</div>
+<div class="block">Hides the identity of this <code>Completable</code> and its <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#hide--">hide()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -5404,7 +5404,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#materialize--">materialize()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Maps the signal types of this Completable into a <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> of the same kind
+<div class="block">Maps the signal types of this <code>Completable</code> into a <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> of the same kind
  and emits it as a single success value to downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#materialize--">materialize()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -5472,18 +5472,18 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#merge-java.lang.Iterable-">merge(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that subscribes to all sources at once and
- completes only when all source Completables complete or one of them emits an error.</div>
+<div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
+ completes only when all source <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#merge-org.reactivestreams.Publisher-">merge(Publisher&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that subscribes to all sources at once and
- completes only when all source Completables complete or one of them emits an error.</div>
+<div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
+ completes only when all source <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#merge-org.reactivestreams.Publisher-int-">merge(Publisher&lt;? extends CompletableSource&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that keeps subscriptions to a limited number of sources at once and
- completes only when all source Completables complete or one of them emits an error.</div>
+<div class="block">Returns a <code>Completable</code> instance that keeps subscriptions to a limited number of sources at once and
+ completes only when all source <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#merge-java.lang.Iterable-int-int-">merge(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;, int, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -5620,8 +5620,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeArray-io.reactivex.rxjava3.core.CompletableSource...-">mergeArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that subscribes to all sources at once and
- completes only when all source Completables complete or one of them emits an error.</div>
+<div class="block">Returns a <code>Completable</code> instance that subscribes to all sources at once and
+ completes only when all source <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s complete or one of them emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#mergeArray-int-int-org.reactivestreams.Publisher...-">mergeArray(int, int, Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -5648,8 +5648,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeArrayDelayError-io.reactivex.rxjava3.core.CompletableSource...-">mergeArrayDelayError(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a CompletableConsumable that subscribes to all Completables in the source array and delays
- any error emitted by either the sources observable or any of the inner Completables until all of
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s in the source array and delays
+ any error emitted by any of the inner <code>CompletableSource</code>s until all of
  them terminate in a way or another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#mergeArrayDelayError-int-int-org.reactivestreams.Publisher...-">mergeArrayDelayError(int, int, Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -5684,21 +5684,21 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeDelayError-java.lang.Iterable-">mergeDelayError(Iterable&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that subscribes to all Completables in the source sequence and delays
- any error emitted by either the sources observable or any of the inner Completables until all of
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s in the source sequence and delays
+ any error emitted by any of the inner <code>CompletableSource</code>s until all of
  them terminate in a way or another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeDelayError-org.reactivestreams.Publisher-">mergeDelayError(Publisher&lt;? extends CompletableSource&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that subscribes to all Completables in the source sequence and delays
- any error emitted by either the sources observable or any of the inner Completables until all of
+<div class="block">Returns a <code>Completable</code> that subscribes to all <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s in the source sequence and delays
+ any error emitted by either the sources <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
  them terminate in a way or another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeDelayError-org.reactivestreams.Publisher-int-">mergeDelayError(Publisher&lt;? extends CompletableSource&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that subscribes to a limited number of inner Completables at once in
+<div class="block">Returns a <code>Completable</code> that subscribes to a limited number of inner <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>s at once in
  the source sequence and delays any error emitted by either the sources
- observable or any of the inner Completables until all of
+ <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> or any of the inner <code>CompletableSource</code>s until all of
  them terminate in a way or another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#mergeDelayError-java.lang.Iterable-">mergeDelayError(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -5862,7 +5862,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeWith-io.reactivex.rxjava3.core.CompletableSource-">mergeWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which subscribes to this and the other Completable and completes
+<div class="block">Returns a <code>Completable</code> which subscribes to this and the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> and completes
  when both of them complete or one emits an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#mergeWith-org.reactivestreams.Publisher-">mergeWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -5935,7 +5935,7 @@
 <dl>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#never--">never()</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that never calls onError or onComplete.</div>
+<div class="block">Returns a <code>Completable</code> that never calls <code>onError</code> or <code>onComplete</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#never--">never()</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -6034,7 +6034,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which emits the terminal events from the thread of the specified scheduler.</div>
+<div class="block">Returns a <code>Completable</code> which emits the terminal events from the thread of the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -6346,13 +6346,13 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#onErrorComplete--">onErrorComplete()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that if this Completable emits an error, it will emit an onComplete
- and swallow the throwable.</div>
+<div class="block">Returns a <code>Completable</code> instance that if this <code>Completable</code> emits an error, it will emit an <code>onComplete</code>
+ and swallow the upstream <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#onErrorComplete-io.reactivex.rxjava3.functions.Predicate-">onErrorComplete(Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that if this Completable emits an error and the predicate returns
- true, it will emit an onComplete and swallow the throwable.</div>
+<div class="block">Returns a <code>Completable</code> instance that if this <code>Completable</code> emits an error and the <a href="io/reactivex/rxjava3/functions/Predicate.html" title="interface in io.reactivex.rxjava3.functions"><code>Predicate</code></a> returns
+ <code>true</code>, it will emit an <code>onComplete</code> and swallow the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onErrorComplete--">onErrorComplete()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -6383,8 +6383,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that when encounters an error from this Completable, calls the
- specified mapper function that returns another Completable instance for it and resumes the
+<div class="block">Returns a <code>Completable</code> instance that when encounters an error from this <code>Completable</code>, calls the
+ specified <code>mapper</code> <a href="io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions"><code>Function</code></a> that returns a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> instance for it and resumes the
  execution with it.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends Publisher&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -6722,8 +6722,8 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#onTerminateDetach--">onTerminateDetach()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Nulls out references to the upstream producer and downstream CompletableObserver if
- the sequence is terminated or downstream calls dispose().</div>
+<div class="block">Nulls out references to the upstream producer and downstream <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> if
+ the sequence is terminated or downstream calls <code>dispose()</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onTerminateDetach--">onTerminateDetach()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7020,11 +7020,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeat--">repeat()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that repeatedly subscribes to this Completable until disposed.</div>
+<div class="block">Returns a <code>Completable</code> that repeatedly subscribes to this <code>Completable</code> until disposed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeat-long-">repeat(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that subscribes repeatedly at most the given times to this Completable.</div>
+<div class="block">Returns a <code>Completable</code> that subscribes repeatedly at most the given number of times to this <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#repeat--">repeat()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7063,8 +7063,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that repeatedly subscribes to this Completable so long as the given
- stop supplier returns false.</div>
+<div class="block">Returns a <code>Completable</code> that repeatedly subscribes to this <code>Completable</code> so long as the given
+ stop <a href="io/reactivex/rxjava3/functions/BooleanSupplier.html" title="interface in io.reactivex.rxjava3.functions"><code>BooleanSupplier</code></a> returns <code>false</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7087,8 +7087,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Flowable&lt;Object&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that repeats when the Publisher returned by the handler
- emits an item or completes when this Publisher emits a completed event.</div>
+<div class="block">Returns a <code>Completable</code> instance that repeats when the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> returned by the handler <a href="io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions"><code>Function</code></a>
+ emits an item or completes when this <code>Publisher</code> emits an <code>onComplete</code> event.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Flowable&lt;Object&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7394,27 +7394,27 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retry--">retry()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that retries this Completable as long as it emits an onError event.</div>
+<div class="block">Returns a <code>Completable</code> that retries this <code>Completable</code> as long as it emits an <code>onError</code> event.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retry-io.reactivex.rxjava3.functions.BiPredicate-">retry(BiPredicate&lt;? super Integer, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that retries this Completable in case of an error as long as the predicate
- returns true.</div>
+<div class="block">Returns a <code>Completable</code> that retries this <code>Completable</code> in case of an error as long as the <code>predicate</code>
+ returns <code>true</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retry-long-">retry(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that when this Completable emits an error, retries at most the given
+<div class="block">Returns a <code>Completable</code> that when this <code>Completable</code> emits an error, retries at most the given
  number of times before giving up and emitting the last error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retry-long-io.reactivex.rxjava3.functions.Predicate-">retry(long, Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that when this Completable emits an error, retries at most times
- or until the predicate returns false, whichever happens first and emitting the last error.</div>
+<div class="block">Returns a <code>Completable</code> that when this <code>Completable</code> emits an error, retries at most times
+ or until the predicate returns <code>false</code>, whichever happens first and emitting the last error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retry-io.reactivex.rxjava3.functions.Predicate-">retry(Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that when this Completable emits an error, calls the given predicate with
- the latest exception to decide whether to resubscribe to this or not.</div>
+<div class="block">Returns a <code>Completable</code> that when this <code>Completable</code> emits an error, calls the given predicate with
+ the latest <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> to decide whether to resubscribe to the upstream or not.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#retry--">retry()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7523,8 +7523,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#retryWhen-io.reactivex.rxjava3.functions.Function-">retryWhen(Function&lt;? super Flowable&lt;Throwable&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which given a Publisher and when this Completable emits an error, delivers
- that error through a Flowable and the Publisher should signal a value indicating a retry in response
+<div class="block">Returns a <code>Completable</code> which given a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and when this <code>Completable</code> emits an error, delivers
+ that error through a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> and the <code>Publisher</code> should signal a value indicating a retry in response
  or a terminal event indicating a termination.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#retryWhen-io.reactivex.rxjava3.functions.Function-">retryWhen(Function&lt;? super Flowable&lt;Throwable&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -8372,18 +8372,18 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.CompletableSource-">startWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which first runs the other Completable
- then this completable if the other completed normally.</div>
+<div class="block">Returns a <code>Completable</code> which first runs the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ then this <code>Completable</code> if the other completed normally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-io.reactivex.rxjava3.core.ObservableSource-">startWith(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns an Observable which first delivers the events
- of the other Observable then runs this CompletableConsumable.</div>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which first delivers the events
+ of the other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> then runs this <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Flowable which first delivers the events
- of the other Publisher then runs this Completable.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which first delivers the events
+ of the other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> then runs this <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#startWith-org.reactivestreams.Publisher-">startWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -8434,18 +8434,18 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe--">subscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to this CompletableConsumable and returns a Disposable which can be used to dispose
+<div class="block">Subscribes to this <code>Completable</code> and returns a <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> which can be used to dispose
  the subscription.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe-io.reactivex.rxjava3.core.CompletableObserver-">subscribe(CompletableObserver)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe-io.reactivex.rxjava3.functions.Action-io.reactivex.rxjava3.functions.Consumer-">subscribe(Action, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to this Completable and calls back either the onError or onComplete functions.</div>
+<div class="block">Subscribes to this <code>Completable</code> and calls back either the <code>onError</code> or <code>onComplete</code> functions.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribe-io.reactivex.rxjava3.functions.Action-">subscribe(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes to this Completable and calls the given Action when this Completable
+<div class="block">Subscribes to this <code>Completable</code> and calls the given <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when this <code>Completable</code>
  completes normally.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/CompletableOnSubscribe.html#subscribe-io.reactivex.rxjava3.core.CompletableEmitter-">subscribe(CompletableEmitter)</a></span> - Method in interface io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/CompletableOnSubscribe.html" title="interface in io.reactivex.rxjava3.core">CompletableOnSubscribe</a></dt>
@@ -8627,8 +8627,8 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-">subscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which subscribes the child subscriber on the specified scheduler, making
- sure the subscription side-effects happen on that specific thread of the scheduler.</div>
+<div class="block">Returns a <code>Completable</code> which subscribes the downstream subscriber on the specified scheduler, making
+ sure the subscription side-effects happen on that specific thread of the <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-">subscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -8653,8 +8653,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribeWith-E-">subscribeWith(E)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Subscribes a given CompletableObserver (subclass) to this Completable and returns the given
- CompletableObserver as is.</div>
+<div class="block">Subscribes a given <a href="io/reactivex/rxjava3/core/CompletableObserver.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableObserver</code></a> (subclass) to this <code>Completable</code> and returns the given
+ <code>CompletableObserver</code> as is.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#subscribeWith-E-">subscribeWith(E)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9061,12 +9061,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#test--">test()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Creates a TestObserver and subscribes
- it to this Completable.</div>
+<div class="block">Creates a <a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> and subscribes
+ it to this <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#test-boolean-">test(boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Creates a TestObserver optionally in cancelled state, then subscribes it to this Completable.</div>
+<div class="block">Creates a <a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> optionally in cancelled state, then subscribes it to this <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#test--">test()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9342,25 +9342,25 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timeout-long-java.util.concurrent.TimeUnit-">timeout(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that runs this Completable and emits a TimeoutException in case
- this Completable doesn't complete within the given time.</div>
+<div class="block">Returns a <code>Completabl</code>e that runs this <code>Completable</code> and emits a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> in case
+ this <code>Completable</code> doesn't complete within the given time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.CompletableSource-">timeout(long, TimeUnit, CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that runs this Completable and switches to the other Completable
- in case this Completable doesn't complete within the given time.</div>
+<div class="block">Returns a <code>Completable</code> that runs this <code>Completable</code> and switches to the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ in case this <code>Completable</code> doesn't complete within the given time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timeout(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that runs this Completable and emits a TimeoutException in case
- this Completable doesn't complete within the given time while "waiting" on the specified
- Scheduler.</div>
+<div class="block">Returns a <code>Completable</code> that runs this <code>Completable</code> and emits a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> in case
+ this <code>Completable</code> doesn't complete within the given time while "waiting" on the specified
+ <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.core.CompletableSource-">timeout(long, TimeUnit, Scheduler, CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable that runs this Completable and switches to the other Completable
- in case this Completable doesn't complete within the given time while "waiting" on
- the specified scheduler.</div>
+<div class="block">Returns a <code>Completable</code> that runs this <code>Completable</code> and switches to the other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
+ in case this <code>Completable</code> doesn't complete within the given time while "waiting" on
+ the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#timeout-io.reactivex.rxjava3.functions.Function-">timeout(Function&lt;? super T, ? extends Publisher&lt;V&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9522,12 +9522,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timer-long-java.util.concurrent.TimeUnit-">timer(long, TimeUnit)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that fires its onComplete event after the given delay elapsed.</div>
+<div class="block">Returns a <code>Completable</code> instance that fires its <code>onComplete</code> event after the given delay elapsed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#timer-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timer(long, TimeUnit, Scheduler)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance that fires its onComplete event after the given delay elapsed
- by using the supplied scheduler.</div>
+<div class="block">Returns a <code>Completable</code> instance that fires its <code>onComplete</code> event after the given delay elapsed
+ by using the supplied <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#timer-long-java.util.concurrent.TimeUnit-">timer(long, TimeUnit)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9605,7 +9605,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#to-io.reactivex.rxjava3.core.CompletableConverter-">to(CompletableConverter&lt;? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Calls the specified converter function during assembly time and returns its resulting value.</div>
+<div class="block">Calls the specified <a href="io/reactivex/rxjava3/core/CompletableConverter.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableConverter</code></a> function during assembly time and returns its resulting value.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#to-io.reactivex.rxjava3.core.FlowableConverter-">to(FlowableConverter&lt;T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9653,8 +9653,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#toFlowable--">toFlowable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Flowable which when subscribed to subscribes to this Completable and
- relays the terminal events to the subscriber.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> which when subscribed to subscribes to this <code>Completable</code> and
+ relays the terminal events to the downstream <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#toFlowable--">toFlowable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -9744,7 +9744,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#toMaybe--">toMaybe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Converts this Completable into a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.</div>
+<div class="block">Converts this <code>Completable</code> into a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#toMaybe--">toMaybe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -9798,8 +9798,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#toObservable--">toObservable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns an Observable which when subscribed to subscribes to this Completable and
- relays the terminal events to the subscriber.</div>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> which when subscribed to subscribes to this <code>Completable</code> and
+ relays the terminal events to the downstream <a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><code>Observer</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#toObservable--">toObservable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9826,8 +9826,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#toSingle-io.reactivex.rxjava3.functions.Supplier-">toSingle(Supplier&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Converts this Completable into a Single which when this Completable completes normally,
- calls the given supplier and emits its returned value through onSuccess.</div>
+<div class="block">Converts this <code>Completable</code> into a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> which when this <code>Completable</code> completes normally,
+ calls the given <a href="io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions"><code>Supplier</code></a> and emits its returned value through <code>onSuccess</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#toSingle--">toSingle()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -9836,8 +9836,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#toSingleDefault-T-">toSingleDefault(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Converts this Completable into a Single which when this Completable completes normally,
- emits the given value through onSuccess.</div>
+<div class="block">Converts this <code>Completable</code> into a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> which when this <code>Completable</code> completes normally,
+ emits the given value through <code>onSuccess</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#toSortedList--">toSortedList()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9970,7 +9970,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#unsafeCreate-io.reactivex.rxjava3.core.CompletableSource-">unsafeCreate(CompletableSource)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Constructs a Completable instance by wrapping the given source callback
+<div class="block">Constructs a <code>Completable</code> instance by wrapping the given source callback
  <strong>without any safeguards; you should manage the lifecycle and response
  to downstream disposal</strong>.</div>
 </dd>
@@ -9998,8 +9998,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable which makes sure when a subscriber disposes the subscription, the
- dispose is called on the specified scheduler.</div>
+<div class="block">Returns a <code>Completable</code> which makes sure when an observer disposes the subscription, the
+ <code>dispose()</code> method is called on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -10023,13 +10023,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-">using(Supplier&lt;R&gt;, Function&lt;? super R, ? extends CompletableSource&gt;, Consumer&lt;? super R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance which manages a resource along
- with a custom Completable instance while the subscription is active.</div>
+<div class="block">Returns a <code>Completable</code> instance which manages a resource along
+ with a custom <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> instance while the subscription is active.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-boolean-">using(Supplier&lt;R&gt;, Function&lt;? super R, ? extends CompletableSource&gt;, Consumer&lt;? super R&gt;, boolean)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Returns a Completable instance which manages a resource along
- with a custom Completable instance while the subscription is active and performs eager or lazy
+<div class="block">Returns a <code>Completable</code> instance which manages a resource along
+ with a custom <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> instance while the subscription is active and performs eager or lazy
  resource disposition.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-">using(Supplier&lt;? extends D&gt;, Function&lt;? super D, ? extends Publisher&lt;? extends T&gt;&gt;, Consumer&lt;? super D&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -10361,8 +10361,8 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#wrap-io.reactivex.rxjava3.core.CompletableSource-">wrap(CompletableSource)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
-<div class="block">Wraps the given CompletableSource into a Completable
- if not already Completable.</div>
+<div class="block">Wraps the given <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> into a <code>Completable</code>
+ if not already <code>Completable</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#wrap-io.reactivex.rxjava3.core.MaybeSource-">wrap(MaybeSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
