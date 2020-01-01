@@ -224,6 +224,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Observable instance
+     * @throws IllegalArgumentException if {@code subscriberCount} is non-positive
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue

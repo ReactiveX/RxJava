@@ -35,6 +35,11 @@ public class JavadocCodesAndLinks {
         checkSource("Flowable");
     }
 
+    @Test
+    public void checkCompletable() throws Exception {
+        checkSource("Completable");
+    }
+
     static void checkSource(String baseClassName) throws Exception {
         File f = TestHelper.findSource(baseClassName);
         if (f == null) {
@@ -346,7 +351,7 @@ public class JavadocCodesAndLinks {
 
             "Exception", "Throwable", "NullPointerException", "IllegalStateException", "IllegalArgumentException", "MissingBackpressureException", "UndeliverableException",
             "OutOfMemoryError", "StackOverflowError", "NoSuchElementException", "ClassCastException", "CompositeException",
-            "RuntimeException", "Error", "TimeoutException",
+            "RuntimeException", "Error", "TimeoutException", "OnErrorNotImplementedException",
 
             "false", "true", "onNext", "onError", "onComplete", "onSuccess", "onSubscribe", "null",
 
@@ -354,7 +359,7 @@ public class JavadocCodesAndLinks {
 
             "Optional", "CompletionStage", "Collector", "Collectors", "Schedulers", "RxJavaPlugins", "CompletableFuture",
 
-            "Object", "Integer", "Long", "Boolean", "LongConsumer",
+            "Object", "Integer", "Long", "Boolean", "LongConsumer", "BooleanSupplier",
 
             "GroupedFlowable", "GroupedObservable", "UnicastSubject", "UnicastProcessor",
 

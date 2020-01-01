@@ -188,35 +188,90 @@ public class ParamValidationNaming {
         for (int j = 0; j < lines.size(); j++) {
             String line = lines.get(j).trim();
 
-            for (String validatorStr : VALIDATOR_STRINGS)
-            if (line.startsWith(validatorStr)) {
+            for (ValidatorStrings validatorStr : VALIDATOR_STRINGS) {
+                if (line.startsWith(validatorStr.code)) {
 
-                int comma = line.indexOf(',');
+                    int comma = line.indexOf(',');
 
-                String paramName = line.substring(validatorStr.length(), comma);
+                    String paramName = line.substring(validatorStr.code.length(), comma);
 
-                int quote = line.indexOf('"', comma);
+                    int quote = line.indexOf('"', comma);
 
-                String message = line.substring(quote + 1, quote + 2 + paramName.length());
+                    String message = line.substring(quote + 1, quote + 2 + paramName.length());
 
-                if (!line.contains("The RxJavaPlugins")
-                        && !(message.startsWith(paramName)
-                        && (message.endsWith(" ") || message.endsWith("\"")))) {
-                    errorCount++;
-                    errors.append("L")
-                    .append(j)
-                    .append(" : Wrong validator message parameter name\r\n    ")
-                    .append(line)
-                    .append("\r\n")
-                    .append("    ").append(paramName).append(" != ").append(message)
-                    .append("\r\n at ")
-                    .append(fullClassName)
-                    .append(".method(")
-                    .append(f.getName())
-                    .append(":")
-                    .append(j + 1)
-                    .append(")\r\n")
-                    ;
+                    if (!line.contains("The RxJavaPlugins")
+                            && !(message.startsWith(paramName)
+                            && (message.endsWith(" ") || message.endsWith("\"")))) {
+                        errorCount++;
+                        errors.append("L")
+                        .append(j)
+                        .append(" : Wrong validator message parameter name\r\n    ")
+                        .append(line)
+                        .append("\r\n")
+                        .append("    ").append(paramName).append(" != ").append(message)
+                        .append("\r\n at ")
+                        .append(fullClassName)
+                        .append(".method(")
+                        .append(f.getName())
+                        .append(":")
+                        .append(j + 1)
+                        .append(")\r\n")
+                        ;
+                    }
+
+                    // FIXME enable for other types in separate PR!
+                    if (!baseClassName.equals("Completable")) {
+                        continue;
+                    }
+                    // find JavaDoc of throws
+                    boolean found = false;
+                    for (int k = j - 1; k >= 0; k--) {
+                        String linek = lines.get(k).trim();
+                        if (linek.startsWith("/**")) {
+                            break;
+                        }
+                        if (linek.startsWith("}")) {
+                            found = true; // no JavaDoc
+                            break;
+                        }
+                        if (linek.startsWith(validatorStr.javadoc)) {
+                            // see if a @code paramName is present
+                            String paramStr = "{@code " + paramName + "}";
+                            for (int m = k; m < lines.size(); m++) {
+                                String linem = lines.get(m).trim();
+                                if (linem.startsWith("* @see")
+                                        || linem.startsWith("* @since")
+                                        || linem.startsWith("*/")) {
+                                    break;
+                                }
+                                if (linem.contains(paramStr)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        errorCount++;
+                        errors.append("L")
+                        .append(j)
+                        .append(" : missing '")
+                        .append(validatorStr.javadoc)
+                        .append("' for argument validation: ")
+                        .append(paramName)
+                        .append("\r\n    ")
+                        .append(line)
+                        .append("\r\n at ")
+                        .append(fullClassName)
+                        .append(".method(")
+                        .append(f.getName())
+                        .append(":")
+                        .append(j + 1)
+                        .append(")\r\n")
+                        ;
+                    }
                 }
             }
         }
@@ -228,8 +283,18 @@ public class ParamValidationNaming {
         }
     }
 
-    static final List<String> VALIDATOR_STRINGS = Arrays.asList(
-            "Objects.requireNonNull(",
-            "ObjectHelper.requirePositive("
+    static final class ValidatorStrings {
+        final String code;
+        final String javadoc;
+        ValidatorStrings(String code, String javadoc) {
+            this.code = code;
+            this.javadoc = javadoc;
+        }
+    }
+
+    static final List<ValidatorStrings> VALIDATOR_STRINGS = Arrays.asList(
+            new ValidatorStrings("Objects.requireNonNull(", "* @throws NullPointerException"),
+            new ValidatorStrings("ObjectHelper.verifyPositive(", "* @throws IllegalArgumentException")
     );
+
 }

@@ -192,10 +192,12 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * @param bufferSize the prefetch amount
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return new MulticastProcessor<>(bufferSize, false);
     }
 
@@ -207,10 +209,12 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * is cancelled
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize, boolean refCount) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return new MulticastProcessor<>(bufferSize, refCount);
     }
 
@@ -223,7 +227,6 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     MulticastProcessor(int bufferSize, boolean refCount) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         this.bufferSize = bufferSize;
         this.limit = bufferSize - (bufferSize >> 2);
         this.wip = new AtomicInteger();
