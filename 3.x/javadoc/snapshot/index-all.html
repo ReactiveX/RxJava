@@ -163,7 +163,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#amb-java.lang.Iterable-">amb(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Runs multiple SingleSources and signals the events of the first one that signals (disposing
+<div class="block">Runs multiple <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and signals the events of the first one that signals (disposing
  the rest).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#ambArray-io.reactivex.rxjava3.core.CompletableSource...-">ambArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
@@ -188,7 +188,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#ambArray-io.reactivex.rxjava3.core.SingleSource...-">ambArray(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Runs multiple SingleSources and signals the events of the first one that signals (disposing
+<div class="block">Runs multiple <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and signals the events of the first one that signals (disposing
  the rest).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#ambWith-io.reactivex.rxjava3.core.CompletableSource-">ambWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
@@ -212,7 +212,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#ambWith-io.reactivex.rxjava3.core.SingleSource-">ambWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals the event of this or the other SingleSource whichever signals first.</div>
+<div class="block">Signals the event of this or the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> whichever signals first.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#andThen-io.reactivex.rxjava3.core.ObservableSource-">andThen(ObservableSource&lt;T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -640,7 +640,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#blockingGet--">blockingGet()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Waits in a blocking fashion until the current Single signals a success value (which is returned) or
+<div class="block">Waits in a blocking fashion until the current <code>Single</code> signals a success value (which is returned) or
  an exception (which is propagated).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#blockingIterable--">blockingIterable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -986,7 +986,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#cache--">cache()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Stores the success value or exception from the current Single and replays it to late SingleObservers.</div>
+<div class="block">Stores the success value or exception from the current <code>Single</code> and replays it to late <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#cacheWithInitialCapacity-int-">cacheWithInitialCapacity(int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1043,8 +1043,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#cast-java.lang.Class-">cast(Class&lt;? extends U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Casts the success value of the current Single into the target type or signals a
- ClassCastException if not compatible.</div>
+<div class="block">Casts the success value of the current <code>Single</code> into the target type or signals a
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ClassCastException.html?is-external=true" title="class or interface in java.lang"><code>ClassCastException</code></a> if not compatible.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations"><span class="typeNameLink">CheckReturnValue</span></a> - Annotation Type in <a href="io/reactivex/rxjava3/annotations/package-summary.html">io.reactivex.rxjava3.annotations</a></dt>
 <dd>
@@ -1380,7 +1380,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#compose-io.reactivex.rxjava3.core.SingleTransformer-">compose(SingleTransformer&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Transform a Single by applying a particular Transformer function to it.</div>
+<div class="block">Transform a <code>Single</code> by applying a particular <a href="io/reactivex/rxjava3/core/SingleTransformer.html" title="interface in io.reactivex.rxjava3.core"><code>SingleTransformer</code></a> function to it.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#compose-io.reactivex.rxjava3.parallel.ParallelTransformer-">compose(ParallelTransformer&lt;T, U&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -1528,35 +1528,35 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-java.lang.Iterable-">concat(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
- an Iterable sequence.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
+ an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-io.reactivex.rxjava3.core.ObservableSource-">concat(ObservableSource&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
- an Observable sequence.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
+ an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-org.reactivestreams.Publisher-">concat(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
- a Publisher sequence.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
+ a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-org.reactivestreams.Publisher-int-">concat(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
- a Publisher sequence and prefetched by the specified amount.</div>
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided by
+ a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence and prefetched by the specified amount.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">concat(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Flowable that emits the items emitted by two Singles, one after the other.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">concat(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Flowable that emits the items emitted by three Singles, one after the other.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by three <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concat-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">concat(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Flowable that emits the items emitted by four Singles, one after the other.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the items emitted by four <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s, one after the other.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#concatArray-io.reactivex.rxjava3.core.CompletableSource...-">concatArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -1576,7 +1576,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatArray-io.reactivex.rxjava3.core.SingleSource...-">concatArray(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided in
+<div class="block">Concatenate the single values, in a non-overlapping fashion, of the <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s provided in
  an array.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatArrayDelayError-org.reactivestreams.Publisher...-">concatArrayDelayError(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -1616,7 +1616,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatArrayEager-io.reactivex.rxjava3.core.SingleSource...-">concatArrayEager(SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenates a sequence of SingleSource eagerly into a single stream of values.</div>
+<div class="block">Concatenates a sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> eagerly into a single stream of values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatArrayEagerDelayError-org.reactivestreams.Publisher...-">concatArrayEagerDelayError(Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1720,11 +1720,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatEager-org.reactivestreams.Publisher-">concatEager(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenates a Publisher sequence of SingleSources eagerly into a single stream of values.</div>
+<div class="block">Concatenates a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatEager-java.lang.Iterable-">concatEager(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Concatenates a sequence of SingleSources eagerly into a single stream of values.</div>
+<div class="block">Concatenates an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s eagerly into a single stream of values.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2128,8 +2128,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#concatWith-io.reactivex.rxjava3.core.SingleSource-">concatWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Flowable that emits the item emitted by the source Single, then the item emitted by the
- specified Single.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits the item emitted by the source <code>Single</code>, then the item emitted by the
+ specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html#connect-io.reactivex.rxjava3.functions.Consumer-">connect(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.flowables.<a href="io/reactivex/rxjava3/flowables/ConnectableFlowable.html" title="class in io.reactivex.rxjava3.flowables">ConnectableFlowable</a></dt>
 <dd>
@@ -2186,13 +2186,13 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#contains-java.lang.Object-">contains(Object)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals true if the current Single signals a success value that is Object-equals with the value
+<div class="block">Signals <code>true</code> if the current <code>Single</code> signals a success value that is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang"><code>Object.equals(Object)</code></a> with the value
  provided.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#contains-java.lang.Object-io.reactivex.rxjava3.functions.BiPredicate-">contains(Object, BiPredicate&lt;Object, Object&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals true if the current Single signals a success value that is equal with
- the value provided by calling a bi-predicate.</div>
+<div class="block">Signals <code>true</code> if the current <code>Single</code> signals a success value that is equal with
+ the value provided by calling a <a href="io/reactivex/rxjava3/functions/BiPredicate.html" title="interface in io.reactivex.rxjava3.functions"><code>BiPredicate</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#count--">count()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -2228,7 +2228,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#create-io.reactivex.rxjava3.core.SingleOnSubscribe-">create(SingleOnSubscribe&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Provides an API (via a cold Single) that bridges the reactive world with the callback-style world.</div>
+<div class="block">Provides an API (via a cold <code>Single</code>) that bridges the reactive world with the callback-style world.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/TestObserver.html#create--">create()</a></span> - Static method in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers">TestObserver</a></dt>
 <dd>
@@ -2630,19 +2630,19 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delay-long-java.util.concurrent.TimeUnit-">delay(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the emission of the success signal from the current Single by the specified amount.</div>
+<div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delay-long-java.util.concurrent.TimeUnit-boolean-">delay(long, TimeUnit, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the emission of the success or error signal from the current Single by the specified amount.</div>
+<div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delay(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the emission of the success signal from the current Single by the specified amount.</div>
+<div class="block">Delays the emission of the success signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-boolean-">delay(long, TimeUnit, Scheduler, boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the emission of the success or error signal from the current Single by the specified amount.</div>
+<div class="block">Delays the emission of the success or error signal from the current <code>Single</code> by the specified amount.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#delaySubscription-long-java.util.concurrent.TimeUnit-">delaySubscription(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -2697,31 +2697,31 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-io.reactivex.rxjava3.core.CompletableSource-">delaySubscription(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given other CompletableSource
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given other <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>
  completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-io.reactivex.rxjava3.core.SingleSource-">delaySubscription(SingleSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given other SingleSource
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>
  signals success.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-io.reactivex.rxjava3.core.ObservableSource-">delaySubscription(ObservableSource&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given other ObservableSource
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given other <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>
  signals its first value or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-org.reactivestreams.Publisher-">delaySubscription(Publisher&lt;U&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given other Publisher
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given other <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>
  signals its first value or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-long-java.util.concurrent.TimeUnit-">delaySubscription(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given time delay elapsed.</div>
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given time delay elapsed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#delaySubscription-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">delaySubscription(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Delays the actual subscription to the current Single until the given time delay elapsed.</div>
+<div class="block">Delays the actual subscription to the current <code>Single</code> until the given time delay elapsed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/CompositeDisposable.html#delete-io.reactivex.rxjava3.disposables.Disposable-">delete(Disposable)</a></span> - Method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/CompositeDisposable.html" title="class in io.reactivex.rxjava3.disposables">CompositeDisposable</a></dt>
 <dd>
@@ -2747,7 +2747,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#dematerialize-io.reactivex.rxjava3.functions.Function-">dematerialize(Function&lt;? super T, Notification&lt;R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> success value of this Single back into normal
+<div class="block">Maps the <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> success value of this <code>Single</code> back into normal
  <code>onSuccess</code>, <code>onError</code> or <code>onComplete</code> signals as a
  <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> source.</div>
 </dd>
@@ -2958,7 +2958,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doAfterTerminate-io.reactivex.rxjava3.functions.Action-">doAfterTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Registers an <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> to be called after this Single invokes either onSuccess or onError.</div>
+<div class="block">Registers an <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> to be called after this <code>Single</code> invokes either <code>onSuccess</code> or <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#doAfterTerminated-io.reactivex.rxjava3.functions.Action-">doAfterTerminated(Action)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -2986,7 +2986,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doFinally-io.reactivex.rxjava3.functions.Action-">doFinally(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the specified action after this Single signals onSuccess or onError or gets disposed by
+<div class="block">Calls the specified action after this <code>Single</code> signals <code>onSuccess</code> or <code>onError</code> or gets disposed by
  the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html#done">done</a></span> - Variable in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava3.observers">BaseTestConsumer</a></dt>
@@ -3037,8 +3037,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnDispose-io.reactivex.rxjava3.functions.Action-">doOnDispose(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the shared <code>Action</code> if a SingleObserver subscribed to the current Single
- disposes the common Disposable it received via onSubscribe.</div>
+<div class="block">Calls the shared <a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> if a <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribed to the current <code>Single</code>
+ disposes the common <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> it received via <code>onSubscribe</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnEach-io.reactivex.rxjava3.functions.Consumer-">doOnEach(Consumer&lt;? super Notification&lt;T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3075,8 +3075,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the shared consumer with the error sent via onError for each
- SingleObserver that subscribes to the current Single.</div>
+<div class="block">Calls the shared consumer with the error sent via <code>onError</code> for each
+ <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnError-io.reactivex.rxjava3.functions.Consumer-">doOnError(Consumer&lt;Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3095,8 +3095,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnEvent-io.reactivex.rxjava3.functions.BiConsumer-">doOnEvent(BiConsumer&lt;? super T, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the shared consumer with the error sent via onError or the value
- via onSuccess for each SingleObserver that subscribes to the current Single.</div>
+<div class="block">Calls the shared consumer with the error sent via <code>onError</code> or the value
+ via <code>onSuccess</code> for each <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#doOnLifecycle-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.LongConsumer-io.reactivex.rxjava3.functions.Action-">doOnLifecycle(Consumer&lt;? super Subscription&gt;, LongConsumer, Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3161,8 +3161,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Disposable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the shared consumer with the Disposable sent through the onSubscribe for each
- SingleObserver that subscribes to the current Single.</div>
+<div class="block">Calls the shared consumer with the <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> sent through the <code>onSubscribe</code> for each
+ <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe(Consumer&lt;? super Subscription&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3175,8 +3175,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnSuccess-io.reactivex.rxjava3.functions.Consumer-">doOnSuccess(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Calls the shared consumer with the success value sent via onSuccess for each
- SingleObserver that subscribes to the current Single.</div>
+<div class="block">Calls the shared consumer with the success value sent via <code>onSuccess</code> for each
+ <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes to the current <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -3200,8 +3200,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#doOnTerminate-io.reactivex.rxjava3.functions.Action-">doOnTerminate(Action)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single instance that calls the given onTerminate callback
- just before this Single completes normally or with an exception.</div>
+<div class="block">Returns a <code>Single</code> instance that calls the given <code>onTerminate</code> callback
+ just before this <code>Single</code> completes normally or with an exception.</div>
 </dd>
 </dl>
 <a name="I:E">
@@ -3267,7 +3267,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#equals-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">equals(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Compares two SingleSources and emits true if they emit the same value (compared via Object.equals).</div>
+<div class="block">Compares two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s and emits <code>true</code> if they emit the same value (compared via <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals-java.lang.Object-" title="class or interface in java.lang"><code>Object.equals(Object)</code></a>).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/schedulers/Timed.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class io.reactivex.rxjava3.schedulers.<a href="io/reactivex/rxjava3/schedulers/Timed.html" title="class in io.reactivex.rxjava3.schedulers">Timed</a></dt>
 <dd>&nbsp;</dd>
@@ -3312,11 +3312,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#error-io.reactivex.rxjava3.functions.Supplier-">error(Supplier&lt;? extends Throwable&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals a Throwable returned by the callback function for each individual SingleObserver.</div>
+<div class="block">Signals a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> returned by the callback function for each individual <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#error-java.lang.Throwable-">error(Throwable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that invokes a subscriber's <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> method when the
+<div class="block">Returns a <code>Single</code> that invokes a subscriber's <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> method when the
  subscriber subscribes to it.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html#errors">errors</a></span> - Variable in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava3.observers">BaseTestConsumer</a></dt>
@@ -3358,8 +3358,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#filter-io.reactivex.rxjava3.functions.Predicate-">filter(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Filters the success item of the Single via a predicate function and emitting it if the predicate
- returns true, completing otherwise.</div>
+<div class="block">Filters the success item of the <code>Single</code> via a predicate function and emitting it if the predicate
+ returns <code>true</code>, completing otherwise.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#filter-io.reactivex.rxjava3.functions.Predicate-">filter(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3586,8 +3586,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that is based on applying a specified function to the item emitted by the source Single,
- where that function returns a SingleSource.</div>
+<div class="block">Returns a <code>Single</code> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+ where that function returns a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -3636,7 +3636,7 @@
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapCompletable-io.reactivex.rxjava3.functions.Function-">flatMapCompletable(Function&lt;? super T, ? extends CompletableSource&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
 <div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that completes based on applying a specified function to the item emitted by the
- source <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>, where that function returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a>.</div>
+ source <code>Single</code>, where that function returns a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapIterable-io.reactivex.rxjava3.functions.Function-">flatMapIterable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3703,8 +3703,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapMaybe-io.reactivex.rxjava3.functions.Function-">flatMapMaybe(Function&lt;? super T, ? extends MaybeSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Maybe that is based on applying a specified function to the item emitted by the source Single,
- where that function returns a MaybeSource.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+ where that function returns a <a href="io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapObservable-io.reactivex.rxjava3.functions.Function-">flatMapObservable(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3713,8 +3713,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapObservable-io.reactivex.rxjava3.functions.Function-">flatMapObservable(Function&lt;? super T, ? extends ObservableSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns an Observable that is based on applying a specified function to the item emitted by the source Single,
- where that function returns an ObservableSource.</div>
+<div class="block">Returns an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> that is based on applying a specified function to the item emitted by the source <code>Single</code>,
+ where that function returns an <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flatMapPublisher-io.reactivex.rxjava3.functions.Function-">flatMapPublisher(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -3723,8 +3723,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flatMapPublisher-io.reactivex.rxjava3.functions.Function-">flatMapPublisher(Function&lt;? super T, ? extends Publisher&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Flowable that emits items based on applying a specified function to the item emitted by the
- source Single, where that function returns a Publisher.</div>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that emits items based on applying a specified function to the item emitted by the
+ source <code>Single</code>, where that function returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#flatMapSingle-io.reactivex.rxjava3.functions.Function-">flatMapSingle(Function&lt;? super T, ? extends SingleSource&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -3785,7 +3785,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flattenAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenAsFlowable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
+<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as a
  <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-">flattenAsObservable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -3795,7 +3795,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#flattenAsObservable-io.reactivex.rxjava3.functions.Function-">flattenAsObservable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the success value of the upstream <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
+<div class="block">Maps the success value of the upstream <code>Single</code> into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and emits its items as an
  <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#flattenStreamAsFlowable-io.reactivex.rxjava3.functions.Function-">flattenStreamAsFlowable(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
@@ -3987,7 +3987,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromCallable-java.util.concurrent.Callable-">fromCallable(Callable&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that invokes passed function and emits its result for each new SingleObserver that subscribes.</div>
+<div class="block">Returns a <code>Single</code> that invokes the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html?is-external=true" title="class or interface in java.util.concurrent"><code>Callable</code></a> for each incoming <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>
+ and emits its value or exception to them.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#fromCompletable-io.reactivex.rxjava3.core.CompletableSource-">fromCompletable(CompletableSource)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -4059,15 +4060,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromFuture-java.util.concurrent.Future-">fromFuture(Future&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code>.</div>
+<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code> and awaits its outcome in a blocking fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromFuture-java.util.concurrent.Future-long-java.util.concurrent.TimeUnit-">fromFuture(Future&lt;? extends T&gt;, long, TimeUnit)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code>, with a timeout on the Future.</div>
+<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code> and awaits its outcome, or timeout, in a blocking fashion.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromFuture-java.util.concurrent.Future-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">fromFuture(Future&lt;? extends T&gt;, long, TimeUnit, Scheduler)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code>, with a timeout on the Future.</div>
+<div class="block">Converts a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true" title="class or interface in java.util.concurrent"><code>Future</code></a> into a <code>Single</code>, with a timeout on the <code>Future</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromFuture-java.util.concurrent.Future-io.reactivex.rxjava3.core.Scheduler-">fromFuture(Future&lt;? extends T&gt;, Scheduler)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
@@ -4104,7 +4105,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromObservable-io.reactivex.rxjava3.core.ObservableSource-">fromObservable(ObservableSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Wraps a specific ObservableSource into a Single and signals its single element or error.</div>
+<div class="block">Wraps a specific <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a> into a <code>Single</code> and signals its single element or error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#fromOptional-java.util.Optional-">fromOptional(Optional&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -4137,7 +4138,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromPublisher-org.reactivestreams.Publisher-">fromPublisher(Publisher&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Wraps a specific Publisher into a Single and signals its single element or error.</div>
+<div class="block">Wraps a specific <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> into a <code>Single</code> and signals its single element or error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#fromRunnable-java.lang.Runnable-">fromRunnable(Runnable)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -4200,8 +4201,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#fromSupplier-io.reactivex.rxjava3.functions.Supplier-">fromSupplier(Supplier&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a> that invokes passed supplier and emits its result
- for each new SingleObserver that subscribes.</div>
+<div class="block">Returns a <code>Single</code> that invokes passed supplier and emits its result
+ for each individual <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> that subscribes.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions"><span class="typeNameLink">Function</span></a>&lt;<a href="io/reactivex/rxjava3/functions/Function.html" title="type parameter in Function">T</a>,<a href="io/reactivex/rxjava3/functions/Function.html" title="type parameter in Function">R</a>&gt; - Interface in <a href="io/reactivex/rxjava3/functions/package-summary.html">io.reactivex.rxjava3.functions</a></dt>
 <dd>
@@ -4786,7 +4787,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#hide--">hide()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Hides the identity of the current Single, including the Disposable that is sent
+<div class="block">Hides the identity of the current <code>Single</code>, including the <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a> that is sent
  to the downstream via <code>onSubscribe()</code>.</div>
 </dd>
 </dl>
@@ -4801,7 +4802,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#ignoreElement--">ignoreElement()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that ignores the success value of this <a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core"><code>Single</code></a>
+<div class="block">Returns a <a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core"><code>Completable</code></a> that ignores the success value of this <code>Single</code>
  and signals <code>onComplete</code> instead.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#ignoreElements--">ignoreElements()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -5355,7 +5356,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that applies a specified function to the item emitted by the source Single and
+<div class="block">Returns a <code>Single</code> that applies a specified function to the item emitted by the source <code>Single</code> and
  emits the result of this function application.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#map-io.reactivex.rxjava3.functions.Function-">map(Function&lt;? super T, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
@@ -5386,7 +5387,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mapOptional-io.reactivex.rxjava3.functions.Function-">mapOptional(Function&lt;? super T, Optional&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the upstream success value into an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a> and emits the contained item if not empty.</div>
+<div class="block">Maps the upstream success value into an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util"><code>Optional</code></a> and emits the contained item if not empty as a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html#mapOptional-io.reactivex.rxjava3.functions.Function-">mapOptional(Function&lt;? super T, Optional&lt;? extends R&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.parallel.<a href="io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a></dt>
 <dd>
@@ -5424,7 +5425,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#materialize--">materialize()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Maps the signal types of this Single into a <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> of the same kind
+<div class="block">Maps the signal types of this <code>Single</code> into a <a href="io/reactivex/rxjava3/core/Notification.html" title="class in io.reactivex.rxjava3.core"><code>Notification</code></a> of the same kind
  and emits it as a single success value to downstream.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><span class="typeNameLink">Maybe</span></a>&lt;<a href="io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt; - Class in <a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a></dt>
@@ -5593,30 +5594,30 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-java.lang.Iterable-">merge(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
- running all SingleSources at once.</div>
+<div class="block">Merges an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances into a single <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+ running all <code>SingleSource</code>s at once.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-org.reactivestreams.Publisher-">merge(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Merges a Flowable sequence of SingleSource instances into a single Flowable sequence,
- running all SingleSources at once.</div>
+<div class="block">Merges a sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> into a single <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+ running all <code>SingleSource</code>s at once.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-io.reactivex.rxjava3.core.SingleSource-">merge(SingleSource&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens a <code>Single</code> that emits a <code>Single</code> into a single <code>Single</code> that emits the item
- emitted by the nested <code>Single</code>, without any transformation.</div>
+<div class="block">Flattens a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> that emits a <code>SingleSingle</code> into a single <code>Single</code> that emits the item
+ emitted by the nested <code>SingleSource</code>, without any transformation.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">merge(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens two Singles into a single Flowable, without any transformation.</div>
+<div class="block">Flattens two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">merge(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens three Singles into a single Flowable, without any transformation.</div>
+<div class="block">Flattens three <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#merge-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">merge(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens four Singles into a single Flowable, without any transformation.</div>
+<div class="block">Flattens four <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, without any transformation.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeArray-io.reactivex.rxjava3.core.CompletableSource...-">mergeArray(CompletableSource...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -5837,27 +5838,27 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeDelayError-java.lang.Iterable-">mergeDelayError(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
- running all SingleSources at once and delaying any error(s) until all sources succeed or fail.</div>
+<div class="block">Merges an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+ running all <code>SingleSource</code>s at once and delaying any error(s) until all sources succeed or fail.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeDelayError-org.reactivestreams.Publisher-">mergeDelayError(Publisher&lt;? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Merges a Flowable sequence of SingleSource instances into a single Flowable sequence,
- running all SingleSources at once and delaying any error(s) until all sources succeed or fail.</div>
+<div class="block">Merges a sequence of <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instances emitted by a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> into a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence,
+ running all <code>SingleSource</code>s at once and delaying any error(s) until all sources succeed or fail.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeDelayError-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">mergeDelayError(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens two Singles into a single Flowable, without any transformation, delaying
+<div class="block">Flattens two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation, delaying
  any error(s) until all sources succeed or fail.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeDelayError-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">mergeDelayError(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens three Singles into a single Flowable, without any transformation, delaying
+<div class="block">Flattens two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation, delaying
  any error(s) until all sources succeed or fail.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeDelayError-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-">mergeDelayError(SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;, SingleSource&lt;? extends T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens four Singles into a single Flowable, without any transformation, delaying
+<div class="block">Flattens two <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation, delaying
  any error(s) until all sources succeed or fail.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#mergeWith-io.reactivex.rxjava3.core.CompletableSource-">mergeWith(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
@@ -5907,7 +5908,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#mergeWith-io.reactivex.rxjava3.core.SingleSource-">mergeWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Flattens this and another Single into a single Flowable, without any transformation.</div>
+<div class="block">Flattens this <code>Single</code> and another <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> into one <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>, without any transformation.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><span class="typeNameLink">MissingBackpressureException</span></a> - Exception in <a href="io/reactivex/rxjava3/exceptions/package-summary.html">io.reactivex.rxjava3.exceptions</a></dt>
 <dd>
@@ -5951,7 +5952,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#never--">never()</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a singleton instance of a never-signaling Single (only calls onSubscribe).</div>
+<div class="block">Returns a singleton instance of a never-signaling <code>Single</code> (only calls <code>onSubscribe</code>).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/annotations/SchedulerSupport.html#NEW_THREAD">NEW_THREAD</a></span> - Static variable in annotation type io.reactivex.rxjava3.annotations.<a href="io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">SchedulerSupport</a></dt>
 <dd>
@@ -6073,7 +6074,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#observeOn-io.reactivex.rxjava3.core.Scheduler-">observeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Modifies a Single to emit its item (or notify of its error) on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
+<div class="block">Modifies a <code>Single</code> to emit its item (or notify of its error) on a specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>,
  asynchronously.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/core/Observer.html" title="interface in io.reactivex.rxjava3.core"><span class="typeNameLink">Observer</span></a>&lt;<a href="io/reactivex/rxjava3/core/Observer.html" title="type parameter in Observer">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/core/package-summary.html">io.reactivex.rxjava3.core</a></dt>
@@ -6404,7 +6405,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorResumeNext-io.reactivex.rxjava3.functions.Function-">onErrorResumeNext(Function&lt;? super Throwable, ? extends SingleSource&lt;? extends T&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a Single to pass control to another Single rather than invoking
+<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
  <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorResumeWith-org.reactivestreams.Publisher-">onErrorResumeWith(Publisher&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -6424,7 +6425,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorResumeWith-io.reactivex.rxjava3.core.SingleSource-">onErrorResumeWith(SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a Single to pass control to another Single rather than invoking
+<div class="block">Instructs a <code>Single</code> to pass control to another <code>Single</code> rather than invoking
  <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>SingleObserver.onError(Throwable)</code></a> if it encounters an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;? super Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -6444,7 +6445,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorReturn-io.reactivex.rxjava3.functions.Function-">onErrorReturn(Function&lt;Throwable, ? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Instructs a Single to emit an item (returned by a specified function) rather than invoking
+<div class="block">Instructs a <code>Single</code> to emit an item (returned by a specified function) rather than invoking
  <a href="io/reactivex/rxjava3/core/SingleObserver.html#onError-java.lang.Throwable-"><code>onError</code></a> if it encounters an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
@@ -6464,7 +6465,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onErrorReturnItem-T-">onErrorReturnItem(T)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals the specified value as success in case the current Single signals an error.</div>
+<div class="block">Signals the specified value as success in case the current <code>Single</code> signals an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Maybe.html#onExceptionResumeNext-io.reactivex.rxjava3.core.MaybeSource-">onExceptionResumeNext(MaybeSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a></dt>
 <dd>
@@ -6742,8 +6743,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#onTerminateDetach--">onTerminateDetach()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Nulls out references to the upstream producer and downstream SingleObserver if
- the sequence is terminated or downstream calls dispose().</div>
+<div class="block">Nulls out references to the upstream producer and downstream <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> if
+ the sequence is terminated or downstream calls <code>dispose()</code>.</div>
 </dd>
 </dl>
 <a name="I:P">
@@ -7055,11 +7056,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#repeat--">repeat()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Repeatedly re-subscribes to the current Single and emits each success value.</div>
+<div class="block">Repeatedly re-subscribes to the current <code>Single</code> and emits each success value as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#repeat-long-">repeat(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribes to the current Single at most the given number of times and emits each success value.</div>
+<div class="block">Re-subscribes to the current <code>Single</code> at most the given number of times and emits each success value as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -7083,7 +7084,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#repeatUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">repeatUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribes to the current Single until the given BooleanSupplier returns true.</div>
+<div class="block">Re-subscribes to the current <code>Single</code> until the given <a href="io/reactivex/rxjava3/functions/BooleanSupplier.html" title="interface in io.reactivex.rxjava3.functions"><code>BooleanSupplier</code></a> returns <code>true</code>
+ and emits the success items as a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Flowable&lt;Object&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -7107,9 +7109,9 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#repeatWhen-io.reactivex.rxjava3.functions.Function-">repeatWhen(Function&lt;? super Flowable&lt;Object&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribes to the current Single if
- the Publisher returned by the handler function signals a value in response to a
- value signalled through the Flowable the handle receives.</div>
+<div class="block">Re-subscribes to the current <code>Single</code> if
+ the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> returned by the handler function signals a value in response to a
+ value signaled through the <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> the handler receives.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/disposables/SerialDisposable.html#replace-io.reactivex.rxjava3.disposables.Disposable-">replace(Disposable)</a></span> - Method in class io.reactivex.rxjava3.disposables.<a href="io/reactivex/rxjava3/disposables/SerialDisposable.html" title="class in io.reactivex.rxjava3.disposables">SerialDisposable</a></dt>
 <dd>
@@ -7487,27 +7489,27 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retry--">retry()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Repeatedly re-subscribes to the current Single indefinitely if it fails with an onError.</div>
+<div class="block">Repeatedly re-subscribes to the current <code>Single</code> indefinitely if it fails with an <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retry-long-">retry(long)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Repeatedly re-subscribe at most the specified times to the current Single
- if it fails with an onError.</div>
+<div class="block">Repeatedly re-subscribe at most the specified times to the current <code>Single</code>
+ if it fails with an <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retry-io.reactivex.rxjava3.functions.BiPredicate-">retry(BiPredicate&lt;? super Integer, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribe to the current Single if the given predicate returns true when the Single fails
- with an onError.</div>
+<div class="block">Re-subscribe to the current <code>Single</code> if the given predicate returns <code>true</code> when the <code>Single</code> fails
+ with an <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retry-long-io.reactivex.rxjava3.functions.Predicate-">retry(long, Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Repeatedly re-subscribe at most times or until the predicate returns false, whichever happens first
- if it fails with an onError.</div>
+<div class="block">Repeatedly re-subscribe at most times or until the predicate returns <code>false</code>, whichever happens first
+ if it fails with an <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retry-io.reactivex.rxjava3.functions.Predicate-">retry(Predicate&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribe to the current Single if the given predicate returns true when the Single fails
- with an onError.</div>
+<div class="block">Re-subscribe to the current <code>Single</code> if the given predicate returns <code>true</code> when the <code>Single</code> fails
+ with an <code>onError</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#retryUntil-io.reactivex.rxjava3.functions.BooleanSupplier-">retryUntil(BooleanSupplier)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -7544,7 +7546,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#retryWhen-io.reactivex.rxjava3.functions.Function-">retryWhen(Function&lt;? super Flowable&lt;Throwable&gt;, ? extends Publisher&lt;?&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Re-subscribes to the current Single if and when the Publisher returned by the handler
+<div class="block">Re-subscribes to the current <code>Single</code> if and when the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> returned by the handler
  function signals a value.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/functions/Action.html#run--">run()</a></span> - Method in interface io.reactivex.rxjava3.functions.<a href="io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a></dt>
@@ -8543,20 +8545,20 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe--">subscribe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Subscribes to a Single but ignore its emission or notification.</div>
+<div class="block">Subscribes to a <code>Single</code> but ignore its emission or notification.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.functions.BiConsumer-">subscribe(BiConsumer&lt;? super T, ? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Subscribes to a Single and provides a composite callback to handle the item it emits
+<div class="block">Subscribes to a <code>Single</code> and provides a composite callback to handle the item it emits
  or any error notification it issues.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.functions.Consumer-">subscribe(Consumer&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Subscribes to a Single and provides a callback to handle the item it emits.</div>
+<div class="block">Subscribes to a <code>Single</code> and provides a callback to handle the item it emits.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.functions.Consumer-io.reactivex.rxjava3.functions.Consumer-">subscribe(Consumer&lt;? super T&gt;, Consumer&lt;? super Throwable&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Subscribes to a Single and provides callbacks to handle the item it emits or any error notification it
+<div class="block">Subscribes to a <code>Single</code> and provides callbacks to handle the item it emits or any error notification it
  issues.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribe-io.reactivex.rxjava3.core.SingleObserver-">subscribe(SingleObserver&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
@@ -8649,7 +8651,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-">subscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Asynchronously subscribes subscribers to this Single on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
+<div class="block">Asynchronously subscribes subscribers to this <code>Single</code> on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#subscribeWith-E-">subscribeWith(E)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -8673,8 +8675,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#subscribeWith-E-">subscribeWith(E)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Subscribes a given SingleObserver (subclass) to this Single and returns the given
- SingleObserver as is.</div>
+<div class="block">Subscribes a given <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> (subclass) to this <code>Single</code> and returns the given
+ <code>SingleObserver</code> as is.</div>
 </dd>
 <dt><a href="io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions"><span class="typeNameLink">Supplier</span></a>&lt;<a href="io/reactivex/rxjava3/functions/Supplier.html" title="type parameter in Supplier">T</a>&gt; - Interface in <a href="io/reactivex/rxjava3/functions/package-summary.html">io.reactivex.rxjava3.functions</a></dt>
 <dd>
@@ -9039,15 +9041,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.CompletableSource-">takeUntil(CompletableSource)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the item emitted by the source Single until a Completable terminates.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="io/reactivex/rxjava3/core/CompletableSource.html" title="interface in io.reactivex.rxjava3.core"><code>CompletableSource</code></a> terminates.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-org.reactivestreams.Publisher-">takeUntil(Publisher&lt;E&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the item emitted by the source Single until a Publisher emits an item.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> emits an item or completes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#takeUntil-io.reactivex.rxjava3.core.SingleSource-">takeUntil(SingleSource&lt;? extends E&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the item emitted by the source Single until a second Single emits an item.</div>
+<div class="block">Returns a <code>Single</code> that emits the item emitted by the source <code>Single</code> until a second <code>Single</code> emits an item.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#takeWhile-io.reactivex.rxjava3.functions.Predicate-">takeWhile(Predicate&lt;? super T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9105,12 +9107,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#test--">test()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Creates a TestObserver and subscribes
- it to this Single.</div>
+<div class="block">Creates a <a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> and subscribes it to this <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#test-boolean-">test(boolean)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Creates a TestObserver optionally in cancelled state, then subscribes it to this Single.</div>
+<div class="block">Creates a <a href="io/reactivex/rxjava3/observers/TestObserver.html" title="class in io.reactivex.rxjava3.observers"><code>TestObserver</code></a> optionally in cancelled state, then subscribes it to this <code>Single</code>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/functions/BiPredicate.html#test-T1-T2-">test(T1, T2)</a></span> - Method in interface io.reactivex.rxjava3.functions.<a href="io/reactivex/rxjava3/functions/BiPredicate.html" title="interface in io.reactivex.rxjava3.functions">BiPredicate</a></dt>
 <dd>
@@ -9498,23 +9499,23 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timeout-long-java.util.concurrent.TimeUnit-">timeout(long, TimeUnit)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals a TimeoutException if the current Single doesn't signal a success value within the
+<div class="block">Signals a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> if the current <code>Single</code> doesn't signal a success value within the
  specified timeout window.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timeout(long, TimeUnit, Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals a TimeoutException if the current Single doesn't signal a success value within the
+<div class="block">Signals a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a> if the current <code>Single</code> doesn't signal a success value within the
  specified timeout window.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.core.SingleSource-">timeout(long, TimeUnit, Scheduler, SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Runs the current Single and if it doesn't signal within the specified timeout window, it is
- disposed and the other SingleSource subscribed to.</div>
+<div class="block">Runs the current <code>Single</code> and if it doesn't signal within the specified timeout window, it is
+ disposed and the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> subscribed to.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.SingleSource-">timeout(long, TimeUnit, SingleSource&lt;? extends T&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Runs the current Single and if it doesn't signal within the specified timeout window, it is
- disposed and the other SingleSource subscribed to.</div>
+<div class="block">Runs the current <code>Single</code> and if it doesn't signal within the specified timeout window, it is
+ disposed and the other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> subscribed to.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html#timeout">timeout</a></span> - Variable in class io.reactivex.rxjava3.observers.<a href="io/reactivex/rxjava3/observers/BaseTestConsumer.html" title="class in io.reactivex.rxjava3.observers">BaseTestConsumer</a></dt>
 <dd>
@@ -9557,11 +9558,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timer-long-java.util.concurrent.TimeUnit-">timer(long, TimeUnit)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals success with 0L value after the given delay for each SingleObserver.</div>
+<div class="block">Signals success with 0L value after the given delay when a <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#timer-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timer(long, TimeUnit, Scheduler)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Signals success with 0L value after the given delay for each SingleObserver.</div>
+<div class="block">Signals success with 0L value on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> after the given
+ delay when a <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> subscribes.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#timestamp--">timestamp()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9667,7 +9669,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#toFlowable--">toFlowable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts this Single into a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.</div>
+<div class="block">Converts this <code>Single</code> into a <a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#toFuture--">toFuture()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9748,7 +9750,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#toMaybe--">toMaybe()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts this Single into a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.</div>
+<div class="block">Converts this <code>Single</code> into a <a href="io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core"><code>Maybe</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#toMultimap-io.reactivex.rxjava3.functions.Function-">toMultimap(Function&lt;? super T, ? extends K&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -9812,7 +9814,7 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#toObservable--">toObservable()</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Converts this Single into an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>.</div>
+<div class="block">Converts this <code>Single</code> into an <a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core"><code>Observable</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/processors/FlowableProcessor.html#toSerialized--">toSerialized()</a></span> - Method in class io.reactivex.rxjava3.processors.<a href="io/reactivex/rxjava3/processors/FlowableProcessor.html" title="class in io.reactivex.rxjava3.processors">FlowableProcessor</a></dt>
 <dd>
@@ -9993,8 +9995,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#unsafeCreate-io.reactivex.rxjava3.core.SingleSource-">unsafeCreate(SingleSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block"><strong>Advanced use only:</strong> creates a Single instance without
- any safeguards by using a callback that is called with a SingleObserver.</div>
+<div class="block"><strong>Advanced use only:</strong> creates a <code>Single</code> instance without
+ any safeguards by using a callback that is called with a <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -10018,8 +10020,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#unsubscribeOn-io.reactivex.rxjava3.core.Scheduler-">unsubscribeOn(Scheduler)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single which makes sure when a SingleObserver disposes the Disposable,
- that call is propagated up on the specified scheduler.</div>
+<div class="block">Returns a <code>Single</code> which makes sure when a <a href="io/reactivex/rxjava3/core/SingleObserver.html" title="interface in io.reactivex.rxjava3.core"><code>SingleObserver</code></a> disposes the <a href="io/reactivex/rxjava3/disposables/Disposable.html" title="interface in io.reactivex.rxjava3.disposables"><code>Disposable</code></a>,
+ that call is propagated up on the specified <a href="io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Completable.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-">using(Supplier&lt;R&gt;, Function&lt;? super R, ? extends CompletableSource&gt;, Consumer&lt;? super R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Completable.html" title="class in io.reactivex.rxjava3.core">Completable</a></dt>
 <dd>
@@ -10066,12 +10068,12 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-">using(Supplier&lt;U&gt;, Function&lt;? super U, ? extends SingleSource&lt;? extends T&gt;&gt;, Consumer&lt;? super U&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Allows using and disposing a resource while running a SingleSource instance generated from
+<div class="block">Allows using and disposing a resource while running a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instance generated from
  that resource (similar to a try-with-resources).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#using-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.functions.Consumer-boolean-">using(Supplier&lt;U&gt;, Function&lt;? super U, ? extends SingleSource&lt;? extends T&gt;&gt;, Consumer&lt;? super U&gt;, boolean)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Allows using and disposing a resource while running a SingleSource instance generated from
+<div class="block">Allows using and disposing a resource while running a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instance generated from
  that resource (similar to a try-with-resources).</div>
 </dd>
 </dl>
@@ -10375,7 +10377,7 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#wrap-io.reactivex.rxjava3.core.SingleSource-">wrap(SingleSource&lt;T&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Wraps a SingleSource instance into a new Single instance if not already a Single
+<div class="block">Wraps a <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> instance into a new <code>Single</code> instance if not already a <code>Single</code>
  instance.</div>
 </dd>
 </dl>
@@ -10551,49 +10553,49 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-java.lang.Iterable-io.reactivex.rxjava3.functions.Function-">zip(Iterable&lt;? extends SingleSource&lt;? extends T&gt;&gt;, Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Waits until all SingleSource sources provided by the Iterable sequence signal a success
+<div class="block">Waits until all <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> sources provided by the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> sequence signal a success
  value and calls a zipper function with an array of these values to return a result
- to be emitted to downstream.</div>
+ to be emitted to the downstream.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.BiFunction-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, BiFunction&lt;? super T1, ? super T2, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to two items emitted by
- two other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to two items emitted by
+ two other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function3-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, Function3&lt;? super T1, ? super T2, ? super T3, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to three items emitted
- by three other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to three items emitted
+ by three other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function4-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, Function4&lt;? super T1, ? super T2, ? super T3, ? super T4, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to four items
- emitted by four other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to four items
+ emitted by four other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function5-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, SingleSource&lt;? extends T5&gt;, Function5&lt;? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to five items
- emitted by five other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to five items
+ emitted by five other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function6-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, SingleSource&lt;? extends T5&gt;, SingleSource&lt;? extends T6&gt;, Function6&lt;? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to six items
- emitted by six other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to six items
+ emitted by six other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function7-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, SingleSource&lt;? extends T5&gt;, SingleSource&lt;? extends T6&gt;, SingleSource&lt;? extends T7&gt;, Function7&lt;? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to seven items
- emitted by seven other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to seven items
+ emitted by seven other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function8-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, SingleSource&lt;? extends T5&gt;, SingleSource&lt;? extends T6&gt;, SingleSource&lt;? extends T7&gt;, SingleSource&lt;? extends T8&gt;, Function8&lt;? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to eight items
- emitted by eight other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to eight items
+ emitted by eight other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zip-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.Function9-">zip(SingleSource&lt;? extends T1&gt;, SingleSource&lt;? extends T2&gt;, SingleSource&lt;? extends T3&gt;, SingleSource&lt;? extends T4&gt;, SingleSource&lt;? extends T5&gt;, SingleSource&lt;? extends T6&gt;, SingleSource&lt;? extends T7&gt;, SingleSource&lt;? extends T8&gt;, SingleSource&lt;? extends T9&gt;, Function9&lt;? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the results of a specified combiner function applied to nine items
- emitted by nine other Singles.</div>
+<div class="block">Returns a <code>Single</code> that emits the results of a specified combiner function applied to nine items
+ emitted by nine other <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>s.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#zipArray-io.reactivex.rxjava3.functions.Function-boolean-int-org.reactivestreams.Publisher...-">zipArray(Function&lt;? super Object[], ? extends R&gt;, boolean, int, Publisher&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -10612,7 +10614,7 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zipArray-io.reactivex.rxjava3.functions.Function-io.reactivex.rxjava3.core.SingleSource...-">zipArray(Function&lt;? super Object[], ? extends R&gt;, SingleSource&lt;? extends T&gt;...)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Waits until all SingleSource sources provided via an array signal a success
+<div class="block">Waits until all <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a> sources provided via an array signal a success
  value and calls a zipper function with an array of these values to return a result
  to be emitted to downstream.</div>
 </dd>
@@ -10663,8 +10665,8 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Single.html#zipWith-io.reactivex.rxjava3.core.SingleSource-io.reactivex.rxjava3.functions.BiFunction-">zipWith(SingleSource&lt;U&gt;, BiFunction&lt;? super T, ? super U, ? extends R&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Single.html" title="class in io.reactivex.rxjava3.core">Single</a></dt>
 <dd>
-<div class="block">Returns a Single that emits the result of applying a specified function to the pair of items emitted by
- the source Single and another specified Single.</div>
+<div class="block">Returns a <code>Single</code> that emits the result of applying a specified function to the pair of items emitted by
+ the source <code>Single</code> and another specified <a href="io/reactivex/rxjava3/core/SingleSource.html" title="interface in io.reactivex.rxjava3.core"><code>SingleSource</code></a>.</div>
 </dd>
 </dl>
 <a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:J">J</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Z">Z</a>&nbsp;</div>
