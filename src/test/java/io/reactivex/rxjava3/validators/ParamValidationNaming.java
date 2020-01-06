@@ -189,11 +189,12 @@ public class ParamValidationNaming {
             String line = lines.get(j).trim();
 
             for (ValidatorStrings validatorStr : VALIDATOR_STRINGS) {
-                if (line.startsWith(validatorStr.code)) {
+                int strIdx = line.indexOf(validatorStr.code);
+                if (strIdx >= 0) {
 
-                    int comma = line.indexOf(',');
+                    int comma = line.indexOf(',', strIdx + validatorStr.code.length());
 
-                    String paramName = line.substring(validatorStr.code.length(), comma);
+                    String paramName = line.substring(strIdx + validatorStr.code.length(), comma);
 
                     int quote = line.indexOf('"', comma);
 
@@ -220,9 +221,10 @@ public class ParamValidationNaming {
                     }
 
                     // FIXME enable for other types in separate PR!
-                    if (!baseClassName.equals("Completable")) {
+                    if (!baseClassName.equals("Completable") && !baseClassName.equals("Single")) {
                         continue;
                     }
+
                     // find JavaDoc of throws
                     boolean found = false;
                     for (int k = j - 1; k >= 0; k--) {

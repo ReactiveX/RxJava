@@ -125,7 +125,13 @@ public class JavadocForAnnotations {
                 if (k >= 0 && k <= idx) {
 
                     int ll = sourceCode.indexOf("You specify", k);
+                    if (ll < 0) {
+                        ll = sourceCode.indexOf("you specify", k);
+                    }
                     int lm = sourceCode.indexOf("This operator", k);
+                    if (lm < 0) {
+                        lm = sourceCode.indexOf("this operator", k);
+                    }
                     if ((ll < 0 || ll > idx) && (lm < 0 || lm > idx)) {
 
                         int n = sourceCode.indexOf("{@code ", k);
@@ -138,27 +144,30 @@ public class JavadocForAnnotations {
                             if (m < idx) {
                                 String mname = sourceCode.substring(n + 7, m);
 
-                                int q = sourceCode.indexOf("@SuppressWarnings({", idx);
+                                if (!"Scheduler".equals(mname)) {
 
-                                int o = sourceCode.indexOf("{", idx);
+                                    int q = sourceCode.indexOf("@SuppressWarnings({", idx);
 
-                                if (q + 18 == o) {
-                                    o = sourceCode.indexOf("{", q + 20);
-                                }
+                                    int o = sourceCode.indexOf("{", idx);
 
-                                if (o >= 0) {
+                                    if (q + 18 == o) {
+                                        o = sourceCode.indexOf("{", q + 20);
+                                    }
 
-                                    int p = sourceCode.indexOf(" " + mname + "(", idx);
+                                    if (o >= 0) {
 
-                                    if (p < 0 || p > o) {
-                                        // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
-                                        e.append("java.lang.RuntimeException: wrong method name in description of ").append(inDoc).append(" '").append(mname).append("'\r\n")
-                                        ;
-                                        int lc = lineNumber(sourceCode, idx);
+                                        int p = sourceCode.indexOf(" " + mname + "(", idx);
 
-                                        e.append(" at io.reactivex.rxjava3.core.").append(baseClassName)
-                                        .append(".method(").append(baseClassName).append(".java:")
-                                        .append(lc).append(")").append("\r\n");
+                                        if (p < 0 || p > o) {
+                                            // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
+                                            e.append("java.lang.RuntimeException: wrong method name in description of ").append(inDoc).append(" '").append(mname).append("'\r\n")
+                                            ;
+                                            int lc = lineNumber(sourceCode, idx);
+
+                                            e.append(" at io.reactivex.rxjava3.core.").append(baseClassName)
+                                            .append(".method(").append(baseClassName).append(".java:")
+                                            .append(lc).append(")").append("\r\n");
+                                        }
                                     }
                                 }
                             }

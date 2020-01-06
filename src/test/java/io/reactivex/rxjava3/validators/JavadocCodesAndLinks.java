@@ -32,15 +32,20 @@ public class JavadocCodesAndLinks {
 
     @Test
     public void checkFlowable() throws Exception {
-        checkSource("Flowable");
+        checkSource("Flowable", "io.reactivex.rxjava3.core");
     }
 
     @Test
     public void checkCompletable() throws Exception {
-        checkSource("Completable");
+        checkSource("Completable", "io.reactivex.rxjava3.core");
     }
 
-    static void checkSource(String baseClassName) throws Exception {
+    @Test
+    public void checkSingle() throws Exception {
+        checkSource("Single", "io.reactivex.rxjava3.core");
+    }
+
+    static void checkSource(String baseClassName, String packageName) throws Exception {
         File f = TestHelper.findSource(baseClassName);
         if (f == null) {
             return;
@@ -120,6 +125,8 @@ public class JavadocCodesAndLinks {
                                     errors.append("The subsequent mention should be code: ")
                                     .append("{@code ").append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -136,6 +143,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The subsequent mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -152,6 +161,8 @@ public class JavadocCodesAndLinks {
                                     errors.append("The host type mention should be code: ")
                                     .append("{@code ").append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -175,6 +186,8 @@ public class JavadocCodesAndLinks {
                                     errors
                                     .append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -204,6 +217,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The host type mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -223,6 +238,8 @@ public class JavadocCodesAndLinks {
                                 errors
                                 .append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -234,6 +251,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The subsequent mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
