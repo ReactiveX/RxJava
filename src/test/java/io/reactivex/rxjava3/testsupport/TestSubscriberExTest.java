@@ -21,8 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -38,9 +37,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class TestSubscriberExTest extends RxJavaTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Test
     public void assertTestSubscriberEx() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
@@ -54,28 +50,28 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertNotMatchCount() {
-        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
-        oi.subscribe(ts);
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            oi.subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-
-        ts.assertValues(1);
-        ts.assertValueCount(2);
-        ts.assertTerminated();
+            ts.assertValues(1);
+            ts.assertValueCount(2);
+            ts.assertTerminated();
+        });
     }
 
     @Test
     public void assertNotMatchValue() {
-        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
-        oi.subscribe(ts);
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            oi.subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-
-        ts.assertValues(1, 3);
-        ts.assertValueCount(2);
-        ts.assertTerminated();
+            ts.assertValues(1, 3);
+            ts.assertValueCount(2);
+            ts.assertTerminated();
+        });
     }
 
     @Test
@@ -91,34 +87,34 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertNeverAtMatchingValue() {
-        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
-        oi.subscribe(ts);
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            oi.subscribe(ts);
 
-        ts.assertValues(1, 2);
+            ts.assertValues(1, 2);
 
-        thrown.expect(AssertionError.class);
-
-        ts.assertNever(2);
-        ts.assertValueCount(2);
-        ts.assertTerminated();
+            ts.assertNever(2);
+            ts.assertValueCount(2);
+            ts.assertTerminated();
+        });
     }
 
     @Test
     public void assertNeverAtMatchingPredicate() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        assertThrows(AssertionError.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.just(1, 2).subscribe(ts);
+            Flowable.just(1, 2).subscribe(ts);
 
-        ts.assertValues(1, 2);
+            ts.assertValues(1, 2);
 
-        thrown.expect(AssertionError.class);
-
-        ts.assertNever(new Predicate<Integer>() {
-            @Override
-            public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
+            ts.assertNever(new Predicate<Integer>() {
+                @Override
+                public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
         });
     }
 
@@ -138,18 +134,18 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertTerminalEventNotReceived() {
-        PublishProcessor<Integer> p = PublishProcessor.create();
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
-        p.subscribe(ts);
+        assertThrows(AssertionError.class, () -> {
+            PublishProcessor<Integer> p = PublishProcessor.create();
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+            p.subscribe(ts);
 
-        p.onNext(1);
-        p.onNext(2);
+            p.onNext(1);
+            p.onNext(2);
 
-        thrown.expect(AssertionError.class);
-
-        ts.assertValues(1, 2);
-        ts.assertValueCount(2);
-        ts.assertTerminated();
+            ts.assertValues(1, 2);
+            ts.assertValueCount(2);
+            ts.assertTerminated();
+        });
     }
 
     @Test
@@ -1587,16 +1583,16 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateEmpty() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        assertThrows("No values", AssertionError.class, () -> {
+            TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
-        Flowable.empty().subscribe(ts);
+            Flowable.empty().subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No values");
-        ts.assertValue(new Predicate<Object>() {
-            @Override public boolean test(final Object o) throws Exception {
-                return false;
-            }
+            ts.assertValue(new Predicate<Object>() {
+                @Override public boolean test(final Object o) throws Exception {
+                    return false;
+                }
+            });
         });
     }
 
@@ -1615,46 +1611,46 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        assertThrows("Value not present", AssertionError.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.just(1).subscribe(ts);
+            Flowable.just(1).subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value not present");
-        ts.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o != 1;
-            }
+            ts.assertValue(new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o != 1;
+                }
+            });
         });
     }
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.just(1, 2).subscribe(ts);
+            Flowable.just(1, 2).subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value present but other values as well");
-        ts.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
+            ts.assertValue(new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
         });
     }
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
+        assertThrows("No values", AssertionError.class, () -> {
+            TestSubscriberEx<Object> ts = new TestSubscriberEx<>();
 
-        Flowable.empty().subscribe(ts);
+            Flowable.empty().subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No values");
-        ts.assertValueAt(0, new Predicate<Object>() {
-            @Override public boolean test(final Object o) throws Exception {
-                return false;
-            }
+            ts.assertValueAt(0, new Predicate<Object>() {
+                @Override public boolean test(final Object o) throws Exception {
+                    return false;
+                }
+            });
         });
     }
 
@@ -1673,31 +1669,31 @@ public class TestSubscriberExTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        assertThrows("Value not present", AssertionError.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.just(1, 2, 3).subscribe(ts);
+            Flowable.just(1, 2, 3).subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value not present");
-        ts.assertValueAt(2, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o != 3;
-            }
+            ts.assertValueAt(2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o != 3;
+                }
+            });
         });
     }
 
     @Test
     public void assertValueAtInvalidIndex() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
+        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
-        Flowable.just(1, 2).subscribe(ts);
+            Flowable.just(1, 2).subscribe(ts);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
-        ts.assertValueAt(2, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
+            ts.assertValueAt(2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
         });
     }
 

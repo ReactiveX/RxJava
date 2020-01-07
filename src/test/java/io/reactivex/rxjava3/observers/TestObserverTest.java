@@ -20,15 +20,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Predicate;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -39,9 +38,6 @@ import io.reactivex.rxjava3.subscribers.TestSubscriber;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class TestObserverTest extends RxJavaTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void assertTestObserver() {
@@ -56,50 +52,44 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertNotMatchCount() {
-        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
-        oi.subscribe(subscriber);
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            oi.subscribe(subscriber);
 
-        thrown.expect(AssertionError.class);
-        // FIXME different message format
-//        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
-
-        subscriber.assertValue(1);
-        subscriber.assertValueCount(2);
-        subscriber.assertComplete().assertNoErrors();
+            subscriber.assertValue(1);
+            subscriber.assertValueCount(2);
+            subscriber.assertComplete().assertNoErrors();
+        });
     }
 
     @Test
     public void assertNotMatchValue() {
-        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
-        oi.subscribe(subscriber);
+        assertThrows(AssertionError.class, () -> {
+            Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            oi.subscribe(subscriber);
 
-        thrown.expect(AssertionError.class);
-        // FIXME different message format
-//        thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
-
-        subscriber.assertValues(1, 3);
-        subscriber.assertValueCount(2);
-        subscriber.assertComplete().assertNoErrors();
+            subscriber.assertValues(1, 3);
+            subscriber.assertValueCount(2);
+            subscriber.assertComplete().assertNoErrors();
+        });
     }
 
     @Test
     public void assertTerminalEventNotReceived() {
-        PublishProcessor<Integer> p = PublishProcessor.create();
-        TestSubscriber<Integer> subscriber = new TestSubscriber<>();
-        p.subscribe(subscriber);
+        assertThrows(AssertionError.class, () -> {
+            PublishProcessor<Integer> p = PublishProcessor.create();
+            TestSubscriber<Integer> subscriber = new TestSubscriber<>();
+            p.subscribe(subscriber);
 
-        p.onNext(1);
-        p.onNext(2);
+            p.onNext(1);
+            p.onNext(2);
 
-        thrown.expect(AssertionError.class);
-        // FIXME different message format
-//        thrown.expectMessage("No terminal events received.");
-
-        subscriber.assertValues(1, 2);
-        subscriber.assertValueCount(2);
-        subscriber.assertComplete().assertNoErrors();
+            subscriber.assertValues(1, 2);
+            subscriber.assertValueCount(2);
+            subscriber.assertComplete().assertNoErrors();
+        });
     }
 
     @Test
@@ -853,16 +843,16 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateEmpty() {
-        TestObserver<Object> to = new TestObserver<>();
+        assertThrows("No values", AssertionError.class, () -> {
+            TestObserver<Object> to = new TestObserver<>();
 
-        Observable.empty().subscribe(to);
+            Observable.empty().subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No values");
-        to.assertValue(new Predicate<Object>() {
-            @Override public boolean test(final Object o) throws Exception {
-                return false;
-            }
+            to.assertValue(new Predicate<Object>() {
+                @Override public boolean test(final Object o) throws Exception {
+                    return false;
+                }
+            });
         });
     }
 
@@ -881,46 +871,46 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValuePredicateNoMatch() {
-        TestObserver<Integer> to = new TestObserver<>();
+        assertThrows("Value not present", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.just(1).subscribe(to);
+            Observable.just(1).subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value not present");
-        to.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o != 1;
-            }
+            to.assertValue(new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o != 1;
+                }
+            });
         });
     }
 
     @Test
     public void assertValuePredicateMatchButMore() {
-        TestObserver<Integer> to = new TestObserver<>();
+        assertThrows("Value present but other values as well", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.just(1, 2).subscribe(to);
+            Observable.just(1, 2).subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value present but other values as well");
-        to.assertValue(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
+            to.assertValue(new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
         });
     }
 
     @Test
     public void assertValueAtPredicateEmpty() {
-        TestObserver<Object> to = new TestObserver<>();
+        assertThrows("No values", AssertionError.class, () -> {
+            TestObserver<Object> to = new TestObserver<>();
 
-        Observable.empty().subscribe(to);
+            Observable.empty().subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No values");
-        to.assertValueAt(0, new Predicate<Object>() {
-            @Override public boolean test(final Object o) throws Exception {
-                return false;
-            }
+            to.assertValueAt(0, new Predicate<Object>() {
+                @Override public boolean test(final Object o) throws Exception {
+                    return false;
+                }
+            });
         });
     }
 
@@ -939,43 +929,43 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtPredicateNoMatch() {
-        TestObserver<Integer> to = new TestObserver<>();
+        assertThrows("Value not present", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.just(1, 2, 3).subscribe(to);
+            Observable.just(1, 2, 3).subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value not present");
-        to.assertValueAt(2, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o != 3;
-            }
+            to.assertValueAt(2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o != 3;
+                }
+            });
         });
     }
 
     @Test
     public void assertValueAtInvalidIndex() {
-        TestObserver<Integer> to = new TestObserver<>();
+        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<Integer> to = new TestObserver<>();
 
-        Observable.just(1, 2).subscribe(to);
+            Observable.just(1, 2).subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
-        to.assertValueAt(2, new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
-                return o == 1;
-            }
+            to.assertValueAt(2, new Predicate<Integer>() {
+                @Override public boolean test(final Integer o) throws Exception {
+                    return o == 1;
+                }
+            });
         });
     }
 
     @Test
     public void assertValueAtIndexEmpty() {
-        TestObserver<Object> to = new TestObserver<>();
+        assertThrows("No values", AssertionError.class, () -> {
+            TestObserver<Object> to = new TestObserver<>();
 
-        Observable.empty().subscribe(to);
+            Observable.empty().subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No values");
-        to.assertValueAt(0, "a");
+            to.assertValueAt(0, "a");
+        });
     }
 
     @Test
@@ -989,24 +979,24 @@ public class TestObserverTest extends RxJavaTest {
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        TestObserver<String> to = new TestObserver<>();
+        assertThrows("expected: b (class: String) but was: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
 
-        Observable.just("a", "b", "c").subscribe(to);
+            Observable.just("a", "b", "c").subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("expected: b (class: String) but was: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
-        to.assertValueAt(2, "b");
+            to.assertValueAt(2, "b");
+        });
     }
 
     @Test
     public void assertValueAtIndexInvalidIndex() {
-        TestObserver<String> to = new TestObserver<>();
+        assertThrows("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)", AssertionError.class, () -> {
+            TestObserver<String> to = new TestObserver<>();
 
-        Observable.just("a", "b").subscribe(to);
+            Observable.just("a", "b").subscribe(to);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
-        to.assertValueAt(2, "c");
+            to.assertValueAt(2, "c");
+        });
     }
 
     @Test
