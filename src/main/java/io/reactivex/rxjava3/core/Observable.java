@@ -14692,7 +14692,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Single<@NonNull List<T>> toSortedList() {
-        return toSortedList(Functions.naturalOrder());
+        return toSortedList(Functions.naturalComparator());
     }
 
     /**
@@ -14786,7 +14786,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Single<@NonNull List<T>> toSortedList(int capacityHint) {
-        return toSortedList(Functions.naturalOrder(), capacityHint);
+        return toSortedList(Functions.naturalComparator(), capacityHint);
     }
 
     /**
