@@ -221,7 +221,9 @@ public class ParamValidationNaming {
                     }
 
                     // FIXME enable for other types in separate PR!
-                    if (!baseClassName.equals("Completable") && !baseClassName.equals("Single")) {
+                    if (!baseClassName.equals("Completable")
+                            && !baseClassName.equals("Single")
+                            && !baseClassName.equals("Maybe")) {
                         continue;
                     }
 

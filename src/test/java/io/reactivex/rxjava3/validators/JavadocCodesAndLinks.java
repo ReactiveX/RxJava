@@ -45,6 +45,11 @@ public class JavadocCodesAndLinks {
         checkSource("Single", "io.reactivex.rxjava3.core");
     }
 
+    @Test
+    public void checkMaybe() throws Exception {
+        checkSource("Maybe", "io.reactivex.rxjava3.core");
+    }
+
     static void checkSource(String baseClassName, String packageName) throws Exception {
         File f = TestHelper.findSource(baseClassName);
         if (f == null) {
@@ -388,7 +393,7 @@ public class JavadocCodesAndLinks {
 
             "List", "ArrayList", "HashMap", "HashSet", "CharSequence",
 
-            "TestSubscriber", "TestObserver"
+            "TestSubscriber", "TestObserver", "Class"
     );
 
     static final Set<String> ALWAYS_CODE = new HashSet<>(Arrays.asList(

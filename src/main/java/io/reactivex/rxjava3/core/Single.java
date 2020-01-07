@@ -689,7 +689,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
      * <p>
-     * <p>
      * The operator calls {@link Future#get(long, TimeUnit)}, which is a blocking method, on the subscription thread.
      * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
      * background thread, and if the {@link Scheduler} supports it, interrupt the wait when the flow
