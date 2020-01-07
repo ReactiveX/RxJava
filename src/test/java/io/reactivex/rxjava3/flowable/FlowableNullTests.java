@@ -253,20 +253,10 @@ public class FlowableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromFutureTimedSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
       FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Flowable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromFutureSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), null);
     }
 
     @Test(expected = NullPointerException.class)
