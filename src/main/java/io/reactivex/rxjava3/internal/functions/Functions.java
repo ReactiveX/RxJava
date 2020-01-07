@@ -124,8 +124,6 @@ public final class Functions {
 
     static final Supplier<Object> NULL_SUPPLIER = new NullProvider();
 
-    static final Comparator<Object> NATURAL_COMPARATOR = new NaturalObjectComparator();
-
     @SuppressWarnings("unchecked")
     @NonNull
     public static <T> Predicate<T> alwaysTrue() {
@@ -142,17 +140,6 @@ public final class Functions {
     @NonNull
     public static <T> Supplier<T> nullSupplier() {
         return (Supplier<T>)NULL_SUPPLIER;
-    }
-
-    /**
-     * Returns a natural order comparator which casts the parameters to Comparable.
-     * @param <T> the value type
-     * @return a natural order comparator which casts the parameters to Comparable
-     */
-    @SuppressWarnings("unchecked")
-    @NonNull
-    public static <T> Comparator<T> naturalOrder() {
-        return (Comparator<T>)NATURAL_COMPARATOR;
     }
 
     static final class FutureAction implements Action {
@@ -764,14 +751,6 @@ public final class Functions {
         @Override
         public Object get() {
             return null;
-        }
-    }
-
-    static final class NaturalObjectComparator implements Comparator<Object> {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        public int compare(Object a, Object b) {
-            return ((Comparable)a).compareTo(b);
         }
     }
 
