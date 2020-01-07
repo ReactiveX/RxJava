@@ -4073,7 +4073,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@lcode Flowable} that emits a single item T or an error.
+     * @return a {@code Flowable} that emits a single item T or an error.
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
