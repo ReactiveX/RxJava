@@ -195,30 +195,10 @@ public class SingleNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromFutureTimedSchedulerNull() {
-        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return null;
-            }
-        }), 1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
         FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f, 1, TimeUnit.SECONDS).blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromFutureSchedulerNull() {
-        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return null;
-            }
-        }), null);
     }
 
     @Test(expected = NullPointerException.class)

@@ -61,7 +61,7 @@ public class ObservableToFutureTest extends RxJavaTest {
         TestScheduler scheduler = new TestScheduler();
         TestObserver<Object> to = new TestObserver<>(o);
 
-        Observable.fromFuture(future, scheduler).subscribe(to);
+        Observable.fromFuture(future).subscribeOn(scheduler).subscribe(to);
 
         verify(o, never()).onNext(value);
 

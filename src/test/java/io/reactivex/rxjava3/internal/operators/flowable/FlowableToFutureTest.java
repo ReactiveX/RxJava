@@ -62,7 +62,7 @@ public class FlowableToFutureTest extends RxJavaTest {
         TestScheduler scheduler = new TestScheduler();
         TestSubscriber<Object> ts = new TestSubscriber<>(subscriber);
 
-        Flowable.fromFuture(future, scheduler).subscribe(ts);
+        Flowable.fromFuture(future).subscribeOn(scheduler).subscribe(ts);
 
         verify(subscriber, never()).onNext(value);
 
@@ -234,7 +234,7 @@ public class FlowableToFutureTest extends RxJavaTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.fromFuture(task, Schedulers.computation()).subscribe(ts);
+        Flowable.fromFuture(task).subscribeOn(Schedulers.computation()).subscribe(ts);
 
         task.run();
 

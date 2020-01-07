@@ -300,21 +300,10 @@ public class ObservableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromFutureTimedSchedulerNull() {
-        Observable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
         FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Observable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromFutureSchedulerNull() {
-        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
-        Observable.fromFuture(f, null);
     }
 
     @Test(expected = NullPointerException.class)

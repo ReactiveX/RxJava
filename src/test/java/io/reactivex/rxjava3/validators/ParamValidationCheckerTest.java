@@ -125,7 +125,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // null default is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "blockingLast", Object.class));
@@ -325,7 +324,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Single.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Single.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
@@ -381,7 +379,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // null default is allowed
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "blockingLast", Object.class));
