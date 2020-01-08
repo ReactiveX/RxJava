@@ -2017,7 +2017,6 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <p>
  <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
  <p>
- <p>
  The operator calls <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html?is-external=true#get-long-java.util.concurrent.TimeUnit-" title="class or interface in java.util.concurrent"><code>Future.get(long, TimeUnit)</code></a>, which is a blocking method, on the subscription thread.
  It is recommended applying <a href="../../../../io/reactivex/rxjava3/core/Single.html#subscribeOn-io.reactivex.rxjava3.core.Scheduler-"><code>subscribeOn(Scheduler)</code></a> to move this blocking wait to a
  background thread, and if the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> supports it, interrupt the wait when the flow
@@ -6096,7 +6095,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a  that emits a single item T or an error.</dd>
+<dd>a <code>Flowable</code> that emits a single item T or an error.</dd>
 </dl>
 </li>
 </ul>
