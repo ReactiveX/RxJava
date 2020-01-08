@@ -224,7 +224,8 @@ public class ParamValidationNaming {
                     if (!baseClassName.equals("Completable")
                             && !baseClassName.equals("Single")
                             && !baseClassName.equals("Maybe")
-                            && !baseClassName.equals("Observable")) {
+                            && !baseClassName.equals("Observable")
+                    ) {
                         continue;
                     }
 
