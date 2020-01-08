@@ -321,6 +321,11 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             }
             if (errors.tryAddThrowableOrReport(t)) {
                 done = true;
+                if (!delayErrors) {
+                    for (InnerSubscriber<?, ?> a : subscribers.getAndSet(CANCELLED)) {
+                        a.dispose();
+                    }
+                }
                 drain();
             }
         }

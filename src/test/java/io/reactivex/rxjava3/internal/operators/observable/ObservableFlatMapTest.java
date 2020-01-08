@@ -26,7 +26,7 @@ import org.junit.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -1078,5 +1078,39 @@ public class ObservableFlatMapTest extends RxJavaTest {
                 }, true);
             }
         });
+    }
+
+    @Test
+    public void mainErrorsInnerCancelled() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        ps1
+        .flatMap(v -> ps2)
+        .test();
+
+        ps1.onNext(1);
+        assertTrue("No subscribers?", ps2.hasObservers());
+
+        ps1.onError(new TestException());
+
+        assertFalse("Has subscribers?", ps2.hasObservers());
+    }
+
+    @Test
+    public void innerErrorsMainCancelled() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        ps1
+        .flatMap(v -> ps2)
+        .test();
+
+        ps1.onNext(1);
+        assertTrue("No subscribers?", ps2.hasObservers());
+
+        ps2.onError(new TestException());
+
+        assertFalse("Has subscribers?", ps1.hasObservers());
     }
 }
