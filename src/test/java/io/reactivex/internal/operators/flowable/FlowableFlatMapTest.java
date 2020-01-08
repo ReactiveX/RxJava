@@ -1123,4 +1123,38 @@ public class FlowableFlatMapTest {
         assertFalse(pp3.hasSubscribers());
         assertFalse(pp4.hasSubscribers());
     }
+
+    @Test
+    public void mainErrorsInnerCancelled() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        pp1
+        .flatMap(Functions.justFunction(pp2))
+        .test();
+
+        pp1.onNext(1);
+        assertTrue("No subscribers?", pp2.hasSubscribers());
+
+        pp1.onError(new TestException());
+
+        assertFalse("Has subscribers?", pp2.hasSubscribers());
+    }
+
+    @Test
+    public void innerErrorsMainCancelled() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        pp1
+        .flatMap(Functions.justFunction(pp2))
+        .test();
+
+        pp1.onNext(1);
+        assertTrue("No subscribers?", pp2.hasSubscribers());
+
+        pp2.onError(new TestException());
+
+        assertFalse("Has subscribers?", pp1.hasSubscribers());
+    }
 }
