@@ -990,5 +990,5 @@ public class JavadocWording {
         }
     }
 
-    static final String[] AT_RETURN_WORDS = { "@return a ", "@return the new ", "@return a new " };
+    static final String[] AT_RETURN_WORDS = { "@return a ", "@return an ", "@return the new ", "@return a new " };
 }

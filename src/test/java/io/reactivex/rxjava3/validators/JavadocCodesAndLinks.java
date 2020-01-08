@@ -50,8 +50,13 @@ public class JavadocCodesAndLinks {
         checkSource("Maybe", "io.reactivex.rxjava3.core");
     }
 
+    @Test
+    public void checkObservable() throws Exception {
+        checkSource("Observable", "io.reactivex.rxjava3.core");
+    }
+
     static void checkSource(String baseClassName, String packageName) throws Exception {
-        File f = TestHelper.findSource(baseClassName);
+        File f = TestHelper.findSource(baseClassName, packageName);
         if (f == null) {
             return;
         }

@@ -1925,7 +1925,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Converts an Array into a {@link Publisher} that emits the items in the Array.
+     * Converts an array into a {@link Publisher} that emits the items in the array.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
      * <dl>
@@ -1939,8 +1939,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param items
      *            the array of elements
      * @param <T>
-     *            the type of items in the Array and the type of items to be emitted by the resulting {@code Publisher}
-     * @return a {@code Flowable} that emits each item in the source Array
+     *            the type of items in the array and the type of items to be emitted by the resulting {@code Publisher}
+     * @return a {@code Flowable} that emits each item in the source array
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
@@ -2005,11 +2005,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
      * <p>
-     * You can convert any object that supports the {@code Future} interface into a {@code Publisher} that emits the
-     * return value of the {@link Future#get} method of that object by passing the object into the {@code from}
-     * method.
-     * <p>
-     * <em>Important note:</em> This {@code Publisher} is blocking on the thread it gets subscribed on; you cannot cancel it.
+     * The operator calls {@link Future#get()}, which is a blocking method, on the subscription thread.
+     * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
+     * background thread, and if the {@link Scheduler} supports it, interrupt the wait when the flow
+     * is disposed.
      * <p>
      * Also note that this operator will consume a {@link CompletionStage}-based {@code Future} subclass (such as
      * {@link CompletableFuture}) in a blocking manner as well. Use the {@link #fromCompletionStage(CompletionStage)}
@@ -2047,14 +2046,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
      * <p>
-     * You can convert any object that supports the {@code Future} interface into a {@code Publisher} that emits the
-     * return value of the {@link Future#get} method of that object by passing the object into the {@code fromFuture}
-     * method.
+     * The operator calls {@link Future#get(long, TimeUnit)}, which is a blocking method, on the subscription thread.
+     * It is recommended applying {@link #subscribeOn(Scheduler)} to move this blocking wait to a
+     * background thread, and if the {@link Scheduler} supports it, interrupt the wait when the flow
+     * is disposed.
      * <p>
      * Unlike 1.x, canceling the {@code Flowable} won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
-     * <p>
-     * <em>Important note:</em> This {@code Publisher} is blocking on the thread it gets subscribed on; you cannot cancel it.
      * <p>
      * Also note that this operator will consume a {@link CompletionStage}-based {@code Future} subclass (such as
      * {@link CompletableFuture}) in a blocking manner as well. Use the {@link #fromCompletionStage(CompletionStage)}
@@ -3042,7 +3040,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an {@link Iterable} of {@link Publisher}s into one {@code Publisher}, without any transformation, while limiting the
+     * Flattens an array of {@link Publisher}s into one {@code Publisher}, without any transformation, while limiting the
      * number of concurrent subscriptions to these {@code Publisher}s.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
@@ -3288,7 +3286,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an Array of {@link Publisher}s into one {@code Publisher}, without any transformation.
+     * Flattens an array of {@link Publisher}s into one {@code Publisher}, without any transformation.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.png" alt="">
      * <p>
@@ -4401,7 +4399,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Constructs a {@link Publisher} that creates a dependent resource object which is disposed of on cancellation.
+     * Constructs a {@code Flowable} that creates a dependent resource object, a {@link Publisher} with
+     * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
+     * downstream cancels the flow.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -4435,11 +4435,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Constructs a {@link Publisher} that creates a dependent resource object which is disposed of just before
-     * termination if you have set {@code disposeEagerly} to {@code true} and cancellation does not occur
-     * before termination. Otherwise, resource disposal will occur on cancellation.  Eager disposal is
-     * particularly appropriate for a synchronous {@code Publisher} that reuses resources. {@code disposeAction} will
-     * only be called once per subscription.
+     * Constructs an {@code Flowable} that creates a dependent resource object, an {@link Publisher} with
+     * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
+     * downstream disposes the flow; doing it before these end-states have been reached if {@code eager == true}, after otherwise.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -6824,7 +6822,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.
      * <p>
      * <em>Note:</em> You sacrifice the ability to cancel the origin when you use the {@code cache}
-     * {@code Subscriber} so be careful not to use this {@code Subscriber} on {@code Publisher}s that emit an infinite or very large number
+     * operator so be careful not to use this operator on {@code Publisher}s that emit an infinite or very large number
      * of items that will use up memory.
      * A possible workaround is to apply {@link #takeUntil(Publisher)} with a predicate or
      * another source before (and perhaps after) the application of {@code cache()}.
@@ -6860,6 +6858,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #takeUntil(Predicate)
+     * @see #takeUntil(Publisher)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -6883,7 +6883,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.
      * <p>
      * <em>Note:</em> You sacrifice the ability to cancel the origin when you use the {@code cache}
-     * {@code Subscriber} so be careful not to use this {@code Subscriber} on {@code Publisher}s that emit an infinite or very large number
+     * operator so be careful not to use this operator on {@code Publisher}s that emit an infinite or very large number
      * of items that will use up memory.
      * A possible workaround is to apply {@link #takeUntil(Publisher)} with a predicate or
      * another source before (and perhaps after) the application of {@code cacheWithInitialCapacity()}.
@@ -6923,6 +6923,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @see #takeUntil(Predicate)
+     * @see #takeUntil(Publisher)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -11940,13 +11942,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * by {@code overflowStrategy} if the buffer capacity is exceeded.
      *
      * <ul>
-     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_ERROR} (default) will call {@code onError} dropping all undelivered items,
+     *     <li>{@link BackpressureOverflowStrategy#ERROR} (default) will call {@code onError} dropping all undelivered items,
      *     canceling the source, and notifying the producer with {@code onOverflow}. </li>
-     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_DROP_LATEST} will drop any new items emitted by the producer while
+     *     <li>{@link BackpressureOverflowStrategy#DROP_LATEST} will drop any new items emitted by the producer while
      *     the buffer is full, without generating any {@code onError}.  Each drop will, however, invoke {@code onOverflow}
      *     to signal the overflow to the producer.</li>
-     *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_DROP_OLDEST} will drop the oldest items in the buffer in order to make
-     *     room for newly emitted ones. Overflow will not generate an{@code onError}, but each drop will invoke
+     *     <li>{@link BackpressureOverflowStrategy#DROP_OLDEST} will drop the oldest items in the buffer in order to make
+     *     room for newly emitted ones. Overflow will not generate an {@code onError}, but each drop will invoke
      *     {@code onOverflow} to signal the overflow to the producer.</li>
      * </ul>
      *
@@ -11961,8 +11963,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param capacity number of slots available in the buffer.
-     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.  Null is allowed.
-     * @param overflowStrategy how should the {@code Publisher} react to buffer overflows.  Null is not allowed.
+     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots, {@code null} is allowed.
+     * @param overflowStrategy how should the {@code Publisher} react to buffer overflows, {@code null} is not allowed.
      * @return the source {@code Flowable} modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 2.0
@@ -11971,7 +11973,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onBackpressureBuffer(long capacity, @NonNull Action onOverflow, @NonNull BackpressureOverflowStrategy overflowStrategy) {
+    public final Flowable<T> onBackpressureBuffer(long capacity, @Nullable Action onOverflow, @NonNull BackpressureOverflowStrategy overflowStrategy) {
         Objects.requireNonNull(overflowStrategy, "overflowStrategy is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<>(this, capacity, onOverflow, overflowStrategy));
