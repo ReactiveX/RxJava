@@ -1352,7 +1352,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources the array of source {@code Publisher}s
      * @param <T> the common base value type
      * @return the new {@code Publisher} instance
-     * @throws NullPointerException if sources is {@code null}
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1360,6 +1360,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SafeVarargs
     @NonNull
     public static <T> Flowable<T> concatArray(@NonNull Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         } else
@@ -1386,7 +1387,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources the array of source {@code Publisher}s
      * @param <T> the common base value type
      * @return the new {@code Flowable} instance
-     * @throws NullPointerException if sources is {@code null}
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1394,6 +1395,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SafeVarargs
     @NonNull
     public static <T> Flowable<T> concatArrayDelayError(@NonNull Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         } else
@@ -1981,7 +1983,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   </dd>
      * </dl>
      *
-     * @param supplier
+     * @param callable
      *         a function, the execution of which should be deferred; {@code fromCallable} will invoke this
      *         function only when a {@code Subscriber} subscribes to the {@code Publisher} that {@code fromCallable} returns
      * @param <T>
@@ -1995,9 +1997,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> fromCallable(@NonNull Callable<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableFromCallable<>(supplier));
+    public static <@NonNull T> Flowable<T> fromCallable(@NonNull Callable<? extends T> callable) {
+        Objects.requireNonNull(callable, "callable is null");
+        return RxJavaPlugins.onAssembly(new FlowableFromCallable<>(callable));
     }
 
     /**
@@ -2020,7 +2022,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromFuture} does not operate by default on a particular {@code Scheduler}.</dd>
      * </dl>
      *
      * @param future
@@ -2061,7 +2063,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromFuture} does not operate by default on a particular {@code Scheduler}.</dd>
      * </dl>
      *
      * @param future
@@ -2538,6 +2540,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param unit the unit of measure of the {@code initialDelay} and {@code period} amounts
      * @param scheduler the target {@code Scheduler} where the values and terminal signals will be emitted
      * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
+     *             {@link Long#MAX_VALUE}
      */
     @CheckReturnValue
     @NonNull
@@ -4435,7 +4440,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Constructs an {@code Flowable} that creates a dependent resource object, an {@link Publisher} with
+     * Constructs a {@code Flowable} that creates a dependent resource object, a {@link Publisher} with
      * that resource and calls the provided {@code resourceDisposer} function if this inner source terminates or the
      * downstream disposes the flow; doing it before these end-states have been reached if {@code eager == true}, after otherwise.
      * <p>
@@ -5381,6 +5386,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param bufferSize
      *            the number of elements to prefetch from each source {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5390,6 +5397,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SafeVarargs
     public static <T, R> Flowable<R> zipArray(@NonNull Function<? super Object[], ? extends R> zipper,
             boolean delayError, int bufferSize, @NonNull Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         }
@@ -5626,6 +5634,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the {@code Consumer} to invoke for each item emitted by the {@code Flowable}
      * @param bufferSize
      *            the number of items to prefetch upfront, then 75% of it after 75% received
+     * @throws NullPointerException if {@code onNext} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @throws RuntimeException
      *             if an error occurs; {@code Error}s and {@code RuntimeException}s are rethrown
      *             as they are, checked {@code Exception}s are wrapped into {@code RuntimeException}s
@@ -5635,6 +5645,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingForEach(@NonNull Consumer<? super T> onNext, int bufferSize) {
+        Objects.requireNonNull(onNext, "onNext is null");
         Iterator<T> it = blockingIterable(bufferSize).iterator();
         while (it.hasNext()) {
             try {
@@ -6141,11 +6152,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * The cancellation and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
+     * @throws NullPointerException if {@code subscriber} is {@code null}
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(@NonNull Subscriber<? super T> subscriber) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
         FlowableBlockingSubscribe.subscribe(this, subscriber);
     }
 
@@ -7203,7 +7216,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> concatMap(@NonNull Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        Objects.requireNonNull(scheduler, "scheduler");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapScheduler<>(this, mapper, prefetch, ErrorMode.IMMEDIATE, scheduler));
     }
 
@@ -9414,6 +9427,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the zero-based index of the item to retrieve
      * @return a {@code Maybe} that emits a single item: the item at the specified position in the sequence of
      *         those emitted by the source {@code Publisher}
+     * @throws IndexOutOfBoundsException if {@code index} is negative
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @CheckReturnValue
@@ -9446,7 +9460,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Single} that emits the item at the specified position in the sequence emitted by the source
      *         {@code Publisher}, or the default item if that index is outside the bounds of the source sequence
      * @throws IndexOutOfBoundsException
-     *             if {@code index} is less than 0
+     *             if {@code index} is negative
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @CheckReturnValue
@@ -10150,8 +10164,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s is
-     *  expected to honor backpressure as well. If the source {@code Publisher} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The current {@code Flowable}s is
+     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
      *  signal a {@link MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10161,7 +10175,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the output type and the element type of the {@code Iterable}s
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
-     *            source {@code Publisher}
+     *            current {@code Flowable}
      * @return the new {@code Flowable} instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -10180,8 +10194,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s is
-     *  expected to honor backpressure as well. If the source {@code Publisher} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The current {@code Flowable}s is
+     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
      *  signal a {@link MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10191,7 +10205,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of item emitted by the resulting {@code Iterable}
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
-     *            source {@code Publisher}
+     *            current {@code Flowable}
      * @param bufferSize
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return the new {@code Flowable} instance
@@ -10216,8 +10230,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.r.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream and the source {@code Publisher}s is
-     *  consumed in an unbounded manner (i.e., no backpressure is applied to it).</dd>
+     *  <dd>The operator honors backpressure from downstream and the current {@code Flowable}s is
+     *  consumed in a bounded manner (requesting {@link #bufferSize()} items upfront, then 75% of it after 75% received).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -10227,13 +10241,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <V>
      *            the output type as determined by the {@code resultSelector} function
      * @param mapper
-     *            a function that returns an {@code Iterable} sequence of values for each item emitted by the source
-     *            {@code Publisher}
+     *            a function that returns an {@code Iterable} sequence of values for each item emitted by the current
+     *            {@code Flowable}
      * @param resultSelector
-     *            a function that returns an item based on the item emitted by the source {@code Publisher} and the
+     *            a function that returns an item based on the item emitted by the current {@code Flowable} and the
      *            {@code Iterable} returned for that item by the {@code collectionSelector}
-     * @return a {@code Flowable} that emits the items returned by {@code resultSelector} for each item in the source
-     *         {@code Publisher}
+     * @return a {@code Flowable} that emits the items returned by {@code resultSelector} for each item in the current
+     *         {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
@@ -10256,8 +10270,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.r.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The source {@code Publisher}s is
-     *  expected to honor backpressure as well. If the source {@code Publisher} violates the rule, the operator will
+     *  <dd>The operator honors backpressure from downstream. The current {@code Flowable}s is
+     *  expected to honor backpressure as well. If the current {@code Flowable} violates the rule, the operator will
      *  signal a {@link MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10266,12 +10280,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U>
      *            the element type of the inner {@code Iterable} sequences
      * @param <V>
-     *            the type of item emitted by the resulting {@code Publisher}
+     *            the type of item emitted by the resulting {@code Flowable}
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
-     *            source {@code Publisher}
+     *            current {@code Flowable}
      * @param resultSelector
-     *            a function that returns an item based on the item emitted by the source {@code Publisher} and the
+     *            a function that returns an item based on the item emitted by the current {@code Flowable} and the
      *            {@code Iterable} returned for that item by the {@code collectionSelector}
      * @param prefetch
      *            the number of elements to prefetch from the current {@code Flowable}
@@ -11187,7 +11201,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> last(@NonNull T defaultItem) {
-        Objects.requireNonNull(defaultItem, "defaultItem");
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
         return RxJavaPlugins.onAssembly(new FlowableLastSingle<>(this, defaultItem));
     }
 
@@ -13639,6 +13653,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param times the number of times to resubscribe if the current {@code Flowable} fails
      * @param predicate the predicate called with the failure {@link Throwable} and should return {@code true} to trigger a retry.
+     * @throws IllegalArgumentException if {@code times} is negative
      * @return the new {@code Flowable} instance
      */
     @CheckReturnValue
@@ -14399,7 +14414,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            number of items to drop from the end of the source sequence
      * @return a {@code Flowable} that emits the items emitted by the source {@code Publisher} except for the dropped ones
      *         at the end
-     * @throws IndexOutOfBoundsException
+     * @throws IllegalArgumentException
      *             if {@code count} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
      */
@@ -14409,7 +14424,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> skipLast(int count) {
         if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
         }
         if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
@@ -14707,7 +14722,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(@NonNull Comparator<@NonNull ? super T> sortFunction) {
-        Objects.requireNonNull(sortFunction, "sortFunction");
+        Objects.requireNonNull(sortFunction, "sortFunction is null");
         return toList().toFlowable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.identity());
     }
 
@@ -15627,6 +15642,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the downstream.
      * @return a {@code Flowable} that emits only the first {@code count} items emitted by the source {@code Publisher}, or
      *         all of the items from the source {@code Publisher} if that {@code Publisher} emits fewer than {@code count} items
+     * @throws IllegalArgumentException if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
     @CheckReturnValue
@@ -15722,8 +15738,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the maximum number of items to emit from the end of the sequence of items emitted by the source
      *            {@code Publisher}
      * @return a {@code Flowable} that emits at most the last {@code count} items emitted by the source {@code Publisher}
-     * @throws IndexOutOfBoundsException
-     *             if {@code count} is less than zero
+     * @throws IllegalArgumentException
+     *             if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -15732,7 +15748,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> takeLast(int count) {
         if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
             return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<>(this));
@@ -15800,7 +15816,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits at most {@code count} items from the source {@code Publisher} that were emitted
      *         in a specified window of time before the {@code Publisher} completed, where the timing information is
      *         provided by the given {@code scheduler}
-     * @throws IndexOutOfBoundsException
+     * @throws IllegalArgumentException
      *             if {@code count} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
@@ -15842,8 +15858,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits at most {@code count} items from the source {@code Publisher} that were emitted
      *         in a specified window of time before the {@code Publisher} completed, where the timing information is
      *         provided by the given {@code scheduler}
-     * @throws IndexOutOfBoundsException
-     *             if {@code count} is less than zero
+     * @throws IllegalArgumentException
+     *             if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -15855,7 +15871,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
         }
         return RxJavaPlugins.onAssembly(new FlowableTakeLastTimed<>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
@@ -16699,7 +16715,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param timeout
      *            maximum duration between emitted items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument.
      * @return the source {@code Publisher} modified to notify {@code Subscriber}s of a {@code TimeoutException} in case of a
      *         timeout
@@ -16709,8 +16725,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit timeUnit) {
-        return timeout0(timeout, timeUnit, null, Schedulers.computation());
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit) {
+        return timeout0(timeout, unit, null, Schedulers.computation());
     }
 
     /**
@@ -16731,7 +16747,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param other
      *            the fallback {@code Publisher} to use in case of a timeout
@@ -16742,9 +16758,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull Publisher<? extends T> other) {
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, timeUnit, other, Schedulers.computation());
+        return timeout0(timeout, unit, other, Schedulers.computation());
     }
 
     /**
@@ -16766,7 +16782,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
@@ -16780,9 +16796,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull Scheduler scheduler, @NonNull Publisher<? extends T> other) {
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Publisher<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, timeUnit, other, scheduler);
+        return timeout0(timeout, unit, other, scheduler);
     }
 
     /**
@@ -16802,7 +16818,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
@@ -16814,8 +16830,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull Scheduler scheduler) {
-        return timeout0(timeout, timeUnit, null, scheduler);
+    public final Flowable<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return timeout0(timeout, unit, null, scheduler);
     }
 
     /**
@@ -16908,11 +16924,11 @@ public abstract class Flowable<T> implements Publisher<T> {
         return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, other);
     }
 
-    private Flowable<T> timeout0(long timeout, TimeUnit timeUnit, Publisher<? extends T> other,
+    private Flowable<T> timeout0(long timeout, TimeUnit unit, Publisher<? extends T> other,
             Scheduler scheduler) {
-        Objects.requireNonNull(timeUnit, "timeUnit is null");
+        Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableTimeoutTimed<>(this, timeout, timeUnit, scheduler, other));
+        return RxJavaPlugins.onAssembly(new FlowableTimeoutTimed<>(this, timeout, unit, scheduler, other));
     }
 
     private <U, V> Flowable<T> timeout0(

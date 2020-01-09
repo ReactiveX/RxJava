@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableTakeLastTimedTest extends RxJavaTest {
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void takeLastTimedWithNegativeCount() {
         Observable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
     }

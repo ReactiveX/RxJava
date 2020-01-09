@@ -36,17 +36,17 @@ public final class FlowableBlockingSubscribe {
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>
-     * @param o the source publisher
+     * @param source the source publisher
      * The cancellation and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @param <T> the value type
      */
-    public static <T> void subscribe(Publisher<? extends T> o, Subscriber<? super T> subscriber) {
+    public static <T> void subscribe(Publisher<? extends T> source, Subscriber<? super T> subscriber) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
         BlockingSubscriber<T> bs = new BlockingSubscriber<>(queue);
 
-        o.subscribe(bs);
+        source.subscribe(bs);
 
         try {
             for (;;) {
@@ -77,15 +77,15 @@ public final class FlowableBlockingSubscribe {
 
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
-     * @param o the source publisher
+     * @param source the source to await
      * @param <T> the value type
      */
-    public static <T> void subscribe(Publisher<? extends T> o) {
+    public static <T> void subscribe(Publisher<? extends T> source) {
         BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
         LambdaSubscriber<T> ls = new LambdaSubscriber<>(Functions.emptyConsumer(),
         callback, callback, Functions.REQUEST_MAX);
 
-        o.subscribe(ls);
+        source.subscribe(ls);
 
         BlockingHelper.awaitForComplete(callback, ls);
         Throwable e = callback.error;

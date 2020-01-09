@@ -890,6 +890,12 @@ public class ParamValidationCheckerTest {
                                 error = ex;
                             }
 
+                            if (!success && error.getCause() instanceof NullPointerException) {
+                                if (!error.getCause().toString().contains("is null")) {
+                                    fail++;
+                                    b.append("\r\nNPEs should indicate which argument failed: " + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                }
+                            }
                             if (success != shouldSucceed) {
                                 fail++;
                                 if (shouldSucceed) {

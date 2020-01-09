@@ -39,6 +39,7 @@ public final class ObservableBlockingSubscribe {
      * The call to dispose() is composed through.
      * @param observer the subscriber to forward events and calls to in the current thread
      * @param <T> the value type
+     * @throws NullPointerException if {@code observer} is {@code null}
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, Observer<? super T> observer) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();

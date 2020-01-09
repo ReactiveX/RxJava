@@ -229,15 +229,25 @@ public class ParamValidationNaming {
                         continue;
                     }
 
+                    int midx = j - 1;
+                    // find the method declaration
+                    for (; midx >= 0; midx--) {
+                        String linek = lines.get(midx).trim();
+                        if (linek.startsWith("public") || linek.startsWith("private")
+                                || linek.startsWith("protected")) {
+                            break;
+                        }
+                    }
+
                     // find JavaDoc of throws
                     boolean found = false;
-                    for (int k = j - 1; k >= 0; k--) {
+                    for (int k = midx - 1; k >= 0; k--) {
                         String linek = lines.get(k).trim();
                         if (linek.startsWith("/**")) {
                             break;
                         }
                         if (linek.startsWith("}")) {
-                            found = true; // no JavaDoc
+                            found = true; // no method JavaDoc present
                             break;
                         }
                         if (linek.startsWith(validatorStr.javadoc)) {
@@ -280,6 +290,56 @@ public class ParamValidationNaming {
                     }
                 }
             }
+
+            for (ValidatorStrings validatorStr : EXCEPTION_STRINGS) {
+                int strIdx = line.indexOf(validatorStr.code);
+                if (strIdx >= 0) {
+
+                    int midx = j - 1;
+                    // find the method declaration
+                    for (; midx >= 0; midx--) {
+                        String linek = lines.get(midx).trim();
+                        if (linek.startsWith("public") || linek.startsWith("private")
+                                || linek.startsWith("protected")) {
+                            break;
+                        }
+                    }
+
+                    // find JavaDoc of throws
+                    boolean found = false;
+                    for (int k = midx - 1; k >= 0; k--) {
+                        String linek = lines.get(k).trim();
+                        if (linek.startsWith("/**")) {
+                            break;
+                        }
+                        if (linek.startsWith("}")) {
+                            found = true; // no JavaDoc
+                            break;
+                        }
+                        if (linek.startsWith(validatorStr.javadoc)) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        errorCount++;
+                        errors.append("L")
+                        .append(j)
+                        .append(" : missing '")
+                        .append(validatorStr.javadoc)
+                        .append("' for exception\r\n    ")
+                        .append(line)
+                        .append("\r\n at ")
+                        .append(fullClassName)
+                        .append(".method(")
+                        .append(f.getName())
+                        .append(":")
+                        .append(j + 1)
+                        .append(")\r\n")
+                        ;
+                    }
+                }
+            }
         }
 
         if (errorCount != 0) {
@@ -301,6 +361,12 @@ public class ParamValidationNaming {
     static final List<ValidatorStrings> VALIDATOR_STRINGS = Arrays.asList(
             new ValidatorStrings("Objects.requireNonNull(", "* @throws NullPointerException"),
             new ValidatorStrings("ObjectHelper.verifyPositive(", "* @throws IllegalArgumentException")
+    );
+
+    static final List<ValidatorStrings> EXCEPTION_STRINGS = Arrays.asList(
+            new ValidatorStrings("throw new NullPointerException(", "* @throws NullPointerException"),
+            new ValidatorStrings("throw new IllegalArgumentException(", "* @throws IllegalArgumentException"),
+            new ValidatorStrings("throw new IndexOutOfBoundsException(", "* @throws IndexOutOfBoundsException")
     );
 
 }

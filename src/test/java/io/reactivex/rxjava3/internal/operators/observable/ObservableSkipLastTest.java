@@ -92,7 +92,7 @@ public class ObservableSkipLastTest extends RxJavaTest {
 
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void skipLastWithNegativeCount() {
         Observable.just("one").skipLast(-1);
     }

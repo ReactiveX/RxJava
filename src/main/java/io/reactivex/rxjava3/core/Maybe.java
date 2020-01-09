@@ -147,12 +147,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param sources the array of sources. A subscription to each source will
      *            occur in the same order as in the array.
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     @SafeVarargs
     public static <T> Maybe<T> ambArray(@NonNull MaybeSource<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
         }
@@ -402,6 +404,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SafeVarargs
     @NonNull
     public static <T> Flowable<T> concatArrayDelayError(@NonNull MaybeSource<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return Flowable.empty();
         } else
@@ -1364,6 +1367,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SafeVarargs
     @NonNull
     public static <T> Flowable<T> mergeArrayDelayError(@NonNull MaybeSource<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return Flowable.empty();
         }
@@ -1764,6 +1768,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param onSubscribe the function that is called with the subscribing {@code MaybeObserver}
      * @return the new {@code Maybe} instance
+     * @throws IllegalArgumentException if {@code onSubscribe} is a {@code Maybe}
+     * @throws NullPointerException if {@code onSubscribe} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1858,6 +1864,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param source the source to wrap
      * @return the {@code Maybe} wrapper or the source cast to {@code Maybe} (if possible)
+     * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -3522,7 +3529,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *         if (str.length() &lt; 2) {
      *             downstream.onSuccess(str);
      *         } else {
-     *             // Maybe i {@code Maybe} ly expected to produce one of the onXXX events
+     *             // Maybe is expected to produce one of the onXXX events only
      *             downstream.onComplete();
      *         }
      *     }
