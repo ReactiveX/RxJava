@@ -1084,4 +1084,38 @@ public class ObservableFlatMapTest {
         assertFalse(ps3.hasObservers());
         assertFalse(ps4.hasObservers());
     }
+
+    @Test
+    public void mainErrorsInnerCancelled() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        ps1
+        .flatMap(Functions.justFunction(ps2))
+        .test();
+
+        ps1.onNext(1);
+        assertTrue("No subscribers?", ps2.hasObservers());
+
+        ps1.onError(new TestException());
+
+        assertFalse("Has subscribers?", ps2.hasObservers());
+    }
+
+    @Test
+    public void innerErrorsMainCancelled() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        ps1
+        .flatMap(Functions.justFunction(ps2))
+        .test();
+
+        ps1.onNext(1);
+        assertTrue("No subscribers?", ps2.hasObservers());
+
+        ps2.onError(new TestException());
+
+        assertFalse("Has subscribers?", ps1.hasObservers());
+    }
 }
