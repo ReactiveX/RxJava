@@ -517,6 +517,12 @@ public class ParamValidationNaming {
             new ValidatorStrings("reducer", "* @throws NullPointerException"),
             new ValidatorStrings("seed", "* @throws NullPointerException"),
             new ValidatorStrings("seedSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("mapSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("collectionFactory", "* @throws NullPointerException"),
+            new ValidatorStrings("factory", "* @throws NullPointerException"),
+            new ValidatorStrings("stage", "* @throws NullPointerException"),
+            new ValidatorStrings("stream", "* @throws NullPointerException"),
+            new ValidatorStrings("collector", "* @throws NullPointerException"),
 
             new ValidatorStrings("parallelism", "* @throws IllegalArgumentException"),
             new ValidatorStrings("prefetch", "* @throws IllegalArgumentException"),
