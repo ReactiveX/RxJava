@@ -1655,6 +1655,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onTerminate the {@code Action} to call just before this {@code Completable} terminates
      * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
      * @see #doFinally(Action)
      */
     @CheckReturnValue
@@ -1677,6 +1678,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onAfterTerminate the {@code Action} to call after this {@code Completable} terminates
      * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onAfterTerminate} is {@code null}
      * @see #doFinally(Action)
      */
     @CheckReturnValue

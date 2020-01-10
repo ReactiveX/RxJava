@@ -241,6 +241,10 @@ public class ParamValidationNaming {
                         }
                     }
 
+                    if (line.contains("\"The RxJavaPlugins")) {
+                        continue;
+                    }
+
                     // find JavaDoc of throws
                     boolean found = false;
                     for (int k = midx - 1; k >= 0; k--) {
@@ -481,13 +485,48 @@ public class ParamValidationNaming {
             new ValidatorStrings("stop", "* @throws NullPointerException"),
             new ValidatorStrings("stopPredicate", "* @throws NullPointerException"),
             new ValidatorStrings("handler", "* @throws NullPointerException"),
+            new ValidatorStrings("bufferSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("openingIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("closingIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("boundary", "* @throws NullPointerException"),
+            new ValidatorStrings("boundaryIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("selector", "* @throws NullPointerException"),
+            new ValidatorStrings("resultSelector", "* @throws NullPointerException"),
+            new ValidatorStrings("keySelector", "* @throws NullPointerException"),
+            new ValidatorStrings("valueSelector", "* @throws NullPointerException"),
+            new ValidatorStrings("valueSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("collectionSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("onNext", "* @throws NullPointerException"),
+            new ValidatorStrings("onError", "* @throws NullPointerException"),
+            new ValidatorStrings("onComplete", "* @throws NullPointerException"),
+            new ValidatorStrings("onEvent", "* @throws NullPointerException"),
+            new ValidatorStrings("onAfterNext", "* @throws NullPointerException"),
+            new ValidatorStrings("onAfterTerminate", "* @throws NullPointerException"),
+            new ValidatorStrings("onTerminate", "* @throws NullPointerException"),
+            new ValidatorStrings("onSuccess", "* @throws NullPointerException"),
+            new ValidatorStrings("onSubscribe", "* @throws NullPointerException"),
+            new ValidatorStrings("onNotification", "* @throws NullPointerException"),
+            new ValidatorStrings("onCancel", "* @throws NullPointerException"),
+            new ValidatorStrings("onDispose", "* @throws NullPointerException"),
+            new ValidatorStrings("onRequest", "* @throws NullPointerException"),
+            new ValidatorStrings("onNextMapper", "* @throws NullPointerException"),
+            new ValidatorStrings("onErrorMapper", "* @throws NullPointerException"),
+            new ValidatorStrings("onCompleteSupplier", "* @throws NullPointerException"),
+            new ValidatorStrings("clazz", "* @throws NullPointerException"),
+            new ValidatorStrings("next", "* @throws NullPointerException"),
+            new ValidatorStrings("reducer", "* @throws NullPointerException"),
+            new ValidatorStrings("seed", "* @throws NullPointerException"),
+            new ValidatorStrings("seedSupplier", "* @throws NullPointerException"),
 
+            new ValidatorStrings("parallelism", "* @throws IllegalArgumentException"),
             new ValidatorStrings("prefetch", "* @throws IllegalArgumentException"),
             new ValidatorStrings("bufferSize", "* @throws IllegalArgumentException"),
             new ValidatorStrings("capacityHint", "* @throws IllegalArgumentException"),
+            new ValidatorStrings("capacity", "* @throws IllegalArgumentException"),
             new ValidatorStrings("count", "* @throws IllegalArgumentException"),
             new ValidatorStrings("skip", "* @throws IllegalArgumentException"),
-            new ValidatorStrings("times", "* @throws IllegalArgumentException")
+            new ValidatorStrings("times", "* @throws IllegalArgumentException"),
+            new ValidatorStrings("n", "* @throws IllegalArgumentException")
     );
 
 }

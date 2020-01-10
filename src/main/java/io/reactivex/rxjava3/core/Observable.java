@@ -5272,6 +5272,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param onNext
      *            the {@code Consumer} to invoke for each item emitted by the {@code Observable}
+     * @throws NullPointerException if {@code onNext} is {@code null}
      * @throws RuntimeException
      *             if an error occurs
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
@@ -5639,6 +5640,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param onNext the callback action for each source value
+     * @throws NullPointerException if {@code onNext} is {@code null}
      * @since 2.0
      * @see #blockingSubscribe(Consumer, Consumer)
      * @see #blockingSubscribe(Consumer, Consumer, Action)
@@ -5662,6 +5664,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
+     * @throws NullPointerException if {@code onNext} or {@code onError} is {@code null}
      * @since 2.0
      * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
@@ -5685,6 +5688,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param onComplete the callback action for the completion event.
+     * @throws NullPointerException if {@code onNext}, {@code onError} or {@code onComplete} is {@code null}
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6236,18 +6240,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary {@code ObservableSource}
      * @return an {@code Observable} that emits buffered items from the current {@code Observable} when the boundary {@code ObservableSource}
      *         emits an item
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @see #buffer(ObservableSource, int)
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary) {
-        return buffer(boundary, ArrayListSupplier.asSupplier());
+    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundaryIndicator) {
+        return buffer(boundaryIndicator, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6267,23 +6272,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary {@code ObservableSource}
      * @param initialCapacity
      *            the initial capacity of each buffer chunk
      * @return an {@code Observable} that emits buffered items from the current {@code Observable} when the boundary {@code ObservableSource}
      *         emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
-     * @throws NullPointerException if {@code boundary} is {@code null}
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @throws IllegalArgumentException if {@code initialCapacity} is non-positive
      * @see #buffer(ObservableSource)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary, int initialCapacity) {
+    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundaryIndicator, int initialCapacity) {
         ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
-        return buffer(boundary, Functions.createArrayList(initialCapacity));
+        return buffer(boundaryIndicator, Functions.createArrayList(initialCapacity));
     }
 
     /**
@@ -9766,6 +9771,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits {@code GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the current {@code Observable} that share that
      *         key value
+     * @throws NullPointerException if {@code keySelector} or {@code valueSelector} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
