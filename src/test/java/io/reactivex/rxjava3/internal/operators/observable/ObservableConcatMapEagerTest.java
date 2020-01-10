@@ -535,7 +535,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         try {
             Observable.concatEager(Arrays.asList(source, source, source), 1, -99);
         } catch (IllegalArgumentException ex) {
-            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
 
     }
@@ -547,7 +547,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         try {
             Observable.just(source, source, source).concatMapEager((Function)Functions.identity(), 10, -99);
         } catch (IllegalArgumentException ex) {
-            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+            assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
 
     }

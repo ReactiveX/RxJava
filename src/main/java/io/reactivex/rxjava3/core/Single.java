@@ -152,6 +152,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param sources the array of sources. A subscription to each source will
      *            occur in the same order as in this array.
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -159,6 +160,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SafeVarargs
     @NonNull
     public static <T> Single<T> ambArray(@NonNull SingleSource<? extends T>... sources) {
+        Objects.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return error(SingleInternalHelper.emptyThrower());
         }

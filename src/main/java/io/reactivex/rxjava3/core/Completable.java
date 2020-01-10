@@ -336,6 +336,7 @@ public abstract class Completable implements CompletableSource {
      * when the {@code Completable} is subscribed to.
      * @return the created {@code Completable} instance
      * @throws NullPointerException if {@code source} is {@code null}
+     * @throws IllegalArgumentException if {@code source} is a {@code Completable}
      */
     @CheckReturnValue
     @NonNull
@@ -364,7 +365,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable defer(@NonNull Supplier<? extends CompletableSource> completableSupplier) {
-        Objects.requireNonNull(completableSupplier, "completableSupplier");
+        Objects.requireNonNull(completableSupplier, "completableSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableDefer(completableSupplier));
     }
 

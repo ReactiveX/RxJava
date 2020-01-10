@@ -89,7 +89,7 @@ public class FlowableTakeLastTest extends RxJavaTest {
         verify(subscriber, times(1)).onComplete();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void takeLastWithNegativeCount() {
         Flowable.just("one").takeLast(-1);
     }

@@ -97,7 +97,7 @@ public class FlowableSkipLastTest extends RxJavaTest {
 
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void skipLastWithNegativeCount() {
         Flowable.just("one").skipLast(-1);
     }

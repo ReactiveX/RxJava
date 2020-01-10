@@ -83,7 +83,7 @@ public class ObservableTakeLastTest extends RxJavaTest {
         verify(observer, times(1)).onComplete();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void takeLastWithNegativeCount() {
         Observable.just("one").takeLast(-1);
     }
