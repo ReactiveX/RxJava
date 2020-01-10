@@ -176,7 +176,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> BehaviorSubject<T> create() {
-        return new BehaviorSubject<>();
+        return new BehaviorSubject<>(null);
     }
 
     /**
@@ -189,36 +189,28 @@ public final class BehaviorSubject<T> extends Subject<T> {
      *            the item that will be emitted first to any {@link Observer} as long as the
      *            {@link BehaviorSubject} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorSubject}
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     public static <@NonNull T> BehaviorSubject<T> createDefault(T defaultValue) {
+        Objects.requireNonNull(defaultValue, "defaultValue is null");
         return new BehaviorSubject<>(defaultValue);
     }
 
     /**
      * Constructs an empty BehaviorSubject.
+     * @param defaultValue the initial value, not null (verified)
      * @since 2.0
      */
     @SuppressWarnings("unchecked")
-    BehaviorSubject() {
+    BehaviorSubject(T defaultValue) {
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.subscribers = new AtomicReference<>(EMPTY);
-        this.value = new AtomicReference<>();
+        this.value = new AtomicReference<>(defaultValue);
         this.terminalEvent = new AtomicReference<>();
-    }
-
-    /**
-     * Constructs a BehaviorSubject with the given initial value.
-     * @param defaultValue the initial value, not null (verified)
-     * @throws NullPointerException if {@code defaultValue} is {@code null}
-     * @since 2.0
-     */
-    BehaviorSubject(T defaultValue) {
-        this();
-        this.value.lazySet(Objects.requireNonNull(defaultValue, "defaultValue is null"));
     }
 
     @Override

@@ -67,6 +67,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
      *          allowing the caller to synchronously disconnect a synchronous source
+     * @throws NullPointerException if {@code connection} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -168,6 +169,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Flowable instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see #refCount(long, TimeUnit, Scheduler)
      * @since 2.2
      */
@@ -195,6 +197,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Flowable instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -221,6 +224,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Flowable instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see #refCount(int, long, TimeUnit, Scheduler)
      * @since 2.2
      */
@@ -364,12 +368,14 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @return a Flowable that automatically connects to this ConnectableFlowable
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
+     * @throws NullPointerException if {@code connection} is {@code null}
      */
     @NonNull
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+        Objects.requireNonNull(connection, "connection is null");
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaPlugins.onAssembly(this);

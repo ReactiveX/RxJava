@@ -176,6 +176,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            occur in the same order as in this {@code Iterable}.
      * @return a {@code Flowable} that emits the same sequence as whichever of the source {@code Publisher}s first
      *         emitted an item or sent a termination notification
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
@@ -206,6 +207,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            occur in the same order as in this array.
      * @return a {@code Flowable} that emits the same sequence as whichever of the source {@code Publisher}s first
      *         emitted an item or sent a termination notification
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
@@ -271,6 +273,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -318,6 +321,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -369,6 +374,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -417,6 +423,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -466,6 +474,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -515,6 +524,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -568,6 +579,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -617,6 +629,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the internal buffer size and prefetch amount applied to every source {@code Flowable}
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -661,6 +675,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -710,6 +725,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -764,6 +780,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -822,6 +840,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -885,6 +905,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -952,6 +974,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -1024,6 +1049,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7}, {@code source8} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -1100,6 +1128,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the aggregation function used to combine the items emitted by the source {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of combining the items emitted by the source
      *         {@code Publisher}s by means of the given aggregation function
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7}, {@code source8}, {@code source9}
+     *                              or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SuppressWarnings("unchecked")
@@ -1144,6 +1176,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the common value type of the sources
      * @param sources the {@code Iterable} sequence of {@code Publisher}s
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -1176,6 +1209,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@code Publisher} that emits {@code Publisher}s
      * @return a {@code Flowable} that emits items all of the items emitted by the {@code Publisher}s emitted by
      *         {@code Publisher}s, one after the other, without interleaving them
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @CheckReturnValue
@@ -1208,6 +1242,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of {@code Publisher}s to prefetch from the sources sequence.
      * @return a {@code Flowable} that emits items all of the items emitted by the {@code Publisher}s emitted by
      *         {@code Publisher}s, one after the other, without interleaving them
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1241,6 +1277,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@code Publisher} to be concatenated
      * @return a {@code Flowable} that emits items emitted by the two source {@code Publisher}s, one after the other,
      *         without interleaving them
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @CheckReturnValue
@@ -1277,6 +1314,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@code Publisher} to be concatenated
      * @return a {@code Flowable} that emits items emitted by the three source {@code Publisher}s, one after the other,
      *         without interleaving them
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @CheckReturnValue
@@ -1318,6 +1356,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@code Publisher} to be concatenated
      * @return a {@code Flowable} that emits items emitted by the four source {@code Publisher}s, one after the other,
      *         without interleaving them
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @CheckReturnValue
@@ -1425,6 +1464,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1459,6 +1499,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as an indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each {@code Publisher} source
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
      * @since 2.0
      */
     @CheckReturnValue
@@ -1495,6 +1537,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
      * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.2.1 - experimental
      */
     @CheckReturnValue
@@ -1530,6 +1573,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each {@code Publisher} source
      * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
      * @since 2.2.1 - experimental
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1559,6 +1604,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the common element base type
      * @param sources the {@code Iterable} sequence of {@code Publisher}s
      * @return the new {@code Publisher} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -1584,6 +1630,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the common element base type
      * @param sources the {@code Publisher} sequence of {@code Publisher}s
      * @return the new {@code Publisher} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1610,6 +1657,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param tillTheEnd if {@code true}, exceptions from the outer and all inner {@code Publisher}s are delayed to the end
      *                   if {@code false}, exception from the outer {@code Publisher} is delayed till the current {@code Publisher} terminates
      * @return the new {@code Publisher} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is {@code null}
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
@@ -1637,6 +1686,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code Publisher}s that need to be eagerly concatenated
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1667,6 +1717,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as all inner {@code Publisher}s can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner {@code Publisher} source
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
      * @since 2.0
      */
     @CheckReturnValue
@@ -1698,6 +1750,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code Publisher}s that need to be eagerly concatenated
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1728,6 +1781,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as all inner {@code Publisher}s can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner {@code Publisher} source
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
      * @since 2.0
      */
     @CheckReturnValue
@@ -1791,6 +1846,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source the emitter that is called when a {@code Subscriber} subscribes to the returned {@code Flowable}
      * @param mode the backpressure mode to apply if the downstream {@code Subscriber} doesn't request (fast) enough
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code source} or {@code mode} is {@code null}
      * @see FlowableOnSubscribe
      * @see BackpressureStrategy
      * @see Cancellable
@@ -1830,6 +1886,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of the items emitted by the {@code Publisher}
      * @return a {@code Flowable} whose {@code Subscriber}s' subscriptions trigger an invocation of the given
      *         {@code Publisher} factory function
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
      */
     @CheckReturnValue
@@ -1886,6 +1943,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of the items (ostensibly) emitted by the {@link Publisher}
      * @return a {@code Flowable} that invokes the {@code Subscriber}'s {@link Subscriber#onError onError} method when
      *         the {@code Subscriber} subscribes to it
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
@@ -1915,6 +1973,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of the items (ostensibly) emitted by the {@link Publisher}
      * @return a {@code Flowable} that invokes the {@code Subscriber}'s {@link Subscriber#onError onError} method when
      *         the {@code Subscriber} subscribes to it
+     * @throws NullPointerException if {@code throwable} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     @CheckReturnValue
@@ -1943,6 +2002,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of items in the array and the type of items to be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits each item in the source array
+     * @throws NullPointerException if {@code items} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
@@ -1989,6 +2049,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *         the type of the item emitted by the {@code Publisher}
      * @return a {@code Flowable} whose {@code Subscriber}s' subscriptions trigger an invocation of the given function
+     * @throws NullPointerException if {@code callable} is {@code null}
      * @see #defer(Supplier)
      * @see #fromSupplier(Supplier)
      * @since 2.0
@@ -2031,6 +2092,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the item from the source {@code Future}
+     * @throws NullPointerException if {@code future} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      * @see #fromCompletionStage(CompletionStage)
      */
@@ -2076,6 +2138,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the item from the source {@code Future}
+     * @throws NullPointerException if {@code future} or {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      * @see #fromCompletionStage(CompletionStage)
      */
@@ -2107,6 +2170,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of items in the {@code Iterable} sequence and the type of items to be emitted by the
      *            resulting {@code Publisher}
      * @return a {@code Flowable} that emits each item in the source {@code Iterable} sequence
+     * @throws NullPointerException if {@code source} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      * @see #fromStream(Stream)
      */
@@ -2188,6 +2252,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *         the type of the item emitted by the {@code Publisher}
      * @return a {@code Flowable} whose {@code Subscriber}s' subscriptions trigger an invocation of the given function
+     * @throws NullPointerException if {@code supplier} is {@code null}
      * @see #defer(Supplier)
      * @see #fromCallable(Callable)
      * @since 3.0.0
@@ -2221,6 +2286,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code onComplete} to signal a value or a terminal event. Signaling multiple {@code onNext}
      * in a call will make the operator signal {@link IllegalStateException}.
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code generator} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -2255,6 +2321,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@code onComplete} to signal a value or a terminal event. Signaling multiple {@code onNext}
      * in a call will make the operator signal {@link IllegalStateException}.
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code initialState} or {@code generator} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -2290,6 +2357,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param disposeState the {@code Consumer} that is called with the current state when the generator
      * terminates the sequence or it gets canceled
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code initialState}, {@code generator} or {@code disposeState} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -2324,6 +2392,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the next invocation. Signaling multiple {@code onNext}
      * in a call will make the operator signal {@link IllegalStateException}.
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code initialState} or {@code generator} is {@code null}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -2358,6 +2427,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param disposeState the {@link Consumer} that is called with the current state when the generator
      * terminates the sequence or it gets canceled
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code initialState}, {@code generator} or {@code disposeState} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -2392,6 +2462,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the time unit for both {@code initialDelay} and {@code period}
      * @return a {@code Flowable} that emits a 0L after the {@code initialDelay} and ever-increasing numbers after
      *         each {@code period} of time thereafter
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      * @since 1.0.12
      */
@@ -2427,6 +2498,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the {@code Scheduler} on which the waiting happens and items are emitted
      * @return a {@code Flowable} that emits a 0L after the {@code initialDelay} and ever-increasing numbers after
      *         each {@code period} of time thereafter, while running on the given {@code Scheduler}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      * @since 1.0.12
      */
@@ -2457,6 +2529,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param unit
      *            time units to use for the interval size
      * @return a {@code Flowable} that emits a sequential number each time interval
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     @CheckReturnValue
@@ -2488,6 +2561,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param scheduler
      *            the {@code Scheduler} to use for scheduling the items
      * @return a {@code Flowable} that emits a sequential number each time interval
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     @CheckReturnValue
@@ -2514,6 +2588,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param period the period between subsequent values
      * @param unit the unit of measure of the {@code initialDelay} and {@code period} amounts
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
+     *             {@link Long#MAX_VALUE}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -2540,6 +2618,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param unit the unit of measure of the {@code initialDelay} and {@code period} amounts
      * @param scheduler the target {@code Scheduler} where the values and terminal signals will be emitted
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
      *             {@link Long#MAX_VALUE}
@@ -2590,6 +2669,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of that item
      * @return a {@code Flowable} that emits {@code value} as a single item and then completes
+     * @throws NullPointerException if {@code item} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      * @see #just(Object, Object)
      * @see #fromCallable(Callable)
@@ -2623,6 +2703,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1} or {@code item2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2656,6 +2737,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2} or {@code item3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2692,6 +2774,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              or {@code item4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2731,6 +2815,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4} or {@code item5} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2773,6 +2859,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4}, {@code item5} or {@code item6} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2818,6 +2906,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4}, {@code item5}, {@code item6}
+     *                              or {@code item7} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2866,6 +2957,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4}, {@code item5}, {@code item6},
+     *                              {@code item7} or {@code item8} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2917,6 +3011,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4}, {@code item5}, {@code item6},
+     *                              {@code item7}, {@code item8} or {@code item9} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -2971,6 +3068,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of these items
      * @return a {@code Flowable} that emits each item
+     * @throws NullPointerException if {@code item1}, {@code item2}, {@code item3},
+     *                              {@code item4}, {@code item5}, {@code item6},
+     *                              {@code item7}, {@code item8}, {@code item9},
+     *                              or {@code item10} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @CheckReturnValue
@@ -3030,8 +3131,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to prefetch from each inner {@code Publisher}
      * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
      *         {@code Publisher}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} is less than or equal to 0
+     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable, int, int)
      */
@@ -3082,8 +3184,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to prefetch from each inner {@code Publisher}
      * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
      *         {@code Publisher}s
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrency} is less than or equal to 0
+     *             if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeArrayDelayError(int, int, Publisher...)
      */
@@ -3130,6 +3233,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the {@code Iterable} of {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
      *         {@code Publisher}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable)
      */
@@ -3178,6 +3282,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the maximum number of {@code Publisher}s that may be subscribed to concurrently
      * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
      *         {@code Publisher}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
      *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -3227,6 +3332,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@code Publisher} that emits {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of flattening the {@code Publisher}s emitted by the
      *         {@code source} {@code Publisher}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Publisher)
      */
@@ -3275,6 +3381,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the maximum number of {@code Publisher}s that may be subscribed to concurrently
      * @return a {@code Flowable} that emits items that are the result of flattening the {@code Publisher}s emitted by the
      *         {@code source} {@code Publisher}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
      *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -3322,6 +3429,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the array of {@code Publisher}s
      * @return a {@code Flowable} that emits all of the items emitted by the {@code Publisher}s
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeArrayDelayError(Publisher...)
      */
@@ -3369,6 +3477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source2
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items emitted by the source {@code Publisher}s
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Publisher, Publisher)
      */
@@ -3419,6 +3528,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source3
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items emitted by the source {@code Publisher}s
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Publisher, Publisher, Publisher)
      */
@@ -3472,6 +3582,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source4
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items emitted by the source {@code Publisher}s
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Publisher, Publisher, Publisher, Publisher)
      */
@@ -3715,6 +3826,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the maximum number of {@code Publisher}s that may be subscribed to concurrently
      * @return a {@code Flowable} that emits all of the items emitted by the {@code Publisher}s emitted by the
      *         {@code source} {@code Publisher}
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @since 2.0
      */
@@ -3753,6 +3866,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the array of {@code Publisher}s
      * @return a {@code Flowable} that emits items that are the result of flattening the items emitted by the
      *         {@code Publisher}s
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3792,6 +3906,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source2
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items that are emitted by the two source {@code Publisher}s
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3835,6 +3950,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source3
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items that are emitted by the source {@code Publisher}s
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code source3} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3881,6 +3997,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source4
      *            a {@code Publisher} to be merged
      * @return a {@code Flowable} that emits all of the items that are emitted by the source {@code Publisher}s
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code source4} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -4032,6 +4149,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T>
      *            the type of items emitted by each {@code Publisher}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two sequences are the same
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -4066,6 +4184,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of items emitted by each {@code Publisher}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two {@code Publisher} sequences
      *         are the same according to the specified function
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -4103,6 +4222,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of items emitted by each {@code Publisher}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two {@code Publisher} sequences
      *         are the same according to the specified function
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -4360,6 +4481,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the {@code Scheduler} to use for scheduling the item
      * @return a {@code Flowable} that emits {@code 0L} after a specified delay, on a specified {@code Scheduler}, and then
      *         completes
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @CheckReturnValue
@@ -4387,6 +4509,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type emitted
      * @param onSubscribe the {@code Publisher} instance to wrap
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code onSubscribe} is {@code null}
      * @throws IllegalArgumentException if {@code onSubscribe} is a subclass of {@code Flowable}; such
      * instances don't need conversion and is possibly a port remnant from 1.x or one should use {@link #hide()}
      * instead.
@@ -4426,6 +4549,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param resourceDisposer
      *            the function that will dispose of the resource
      * @return the {@code Publisher} whose lifetime controls the lifetime of the dependent resource object
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      */
     @CheckReturnValue
@@ -4467,6 +4591,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            If {@code false} the resource disposal will happen either on a {@code cancel()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the {@code Publisher} whose lifetime controls the lifetime of the dependent resource object
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier} or {@code resourceDisposer} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @since 2.0
      */
@@ -4527,6 +4652,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4586,6 +4712,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the common source value type
      * @param <R> the zipped result type
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code sources} or {@code zipper} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4647,6 +4775,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results
      *            in an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4709,6 +4838,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            in an item that will be emitted by the resulting {@code Publisher}
      * @param delayError delay errors from any of the source {@code Publisher}s till the other terminates
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4772,6 +4902,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param delayError delay errors from any of the source {@code Publisher}s till the other terminates
      * @param bufferSize the number of elements to prefetch from each source {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4837,6 +4968,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4906,6 +5038,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -4980,6 +5114,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5057,6 +5193,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6}
+     *                              or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5138,6 +5277,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5224,6 +5366,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7}, {@code source8} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5314,6 +5459,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that, when applied to an item emitted by each of the source {@code Publisher}s, results in
      *            an item that will be emitted by the resulting {@code Publisher}
      * @return a {@code Flowable} that emits the zipped results
+     * @throws NullPointerException if {@code source1}, {@code source2}, {@code source3},
+     *                              {@code source4}, {@code source5}, {@code source6},
+     *                              {@code source7}, {@code source8}, {@code source9}
+     *                              or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5427,6 +5576,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that evaluates an item and returns a {@code Boolean}
      * @return a {@code Single} that emits {@code true} if all items emitted by the source {@code Publisher} satisfy the
      *         predicate; otherwise, {@code false}
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/all.html">ReactiveX operators documentation: All</a>
      */
     @CheckReturnValue
@@ -5456,6 +5606,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            to the current {@code Publisher}.
      * @return a {@code Flowable} that emits the same sequence as whichever of the source {@code Publisher}s first
      *         emitted an item or sent a termination notification
+     * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     @CheckReturnValue
@@ -5488,6 +5639,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the condition to test items emitted by the source {@code Publisher}
      * @return a {@code Single} that emits a {@link Boolean} that indicates whether any item emitted by the source
      *         {@code Publisher} satisfies the {@code predicate}
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @CheckReturnValue
@@ -5552,6 +5704,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a default value to return if this {@code Flowable} emits no items
      * @return the first item emitted by this {@code Flowable}, or the default value if it emits no
      *         items
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
@@ -5559,6 +5712,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final T blockingFirst(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
         BlockingFirstSubscriber<T> s = new BlockingFirstSubscriber<>();
         subscribe(s);
         T v = s.blockingGet();
@@ -5696,6 +5850,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param bufferSize the number of items to prefetch from the current {@code Flowable}
      * @return an {@code Iterable} version of this {@code Flowable}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     @CheckReturnValue
@@ -5764,6 +5919,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a default value to return if this {@code Flowable} emits no items
      * @return the last item emitted by the {@code Flowable}, or the default value if it emits no
      *         items
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
     @CheckReturnValue
@@ -5771,6 +5927,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final T blockingLast(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
         BlockingLastSubscriber<T> s = new BlockingLastSubscriber<>();
         subscribe(s);
         T v = s.blockingGet();
@@ -6257,6 +6414,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            as the buffer
      * @return a {@code Flowable} that emits buffers for every {@code skip} item from the source {@code Publisher} and
      *         containing at most {@code count} items
+     * @throws NullPointerException if {@code bufferSupplier} is {@code null}
+     * @throws IllegalArgumentException if {@code count} or {@code skip} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
@@ -7153,6 +7312,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return a {@code Flowable} that emits the result of applying the transformation function to each item emitted
      *         by the source {@code Publisher} and concatenating the {@code Publisher}s obtained from this transformation
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @see #concatMap(Function, int, Scheduler)
      */
@@ -7204,6 +7364,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the scheduler where the {@code mapper} function will be executed
      * @return a {@code Flowable} that emits the result of applying the transformation function to each item emitted
      *         by the source {@code Publisher} and concatenating the {@code Publisher}s obtained from this transformation
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 3.0.0
      * @see #concatMap(Function, int)
@@ -7269,6 +7430,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code CompletableSource}s.
      * @return a new {@link Completable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapCompletableDelayError(Function, boolean, int)
      * @since 2.2
      */
@@ -7374,6 +7536,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code CompletableSource}s.
      * @return a new {@link Completable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapCompletable(Function, int)
      * @since 2.2
      */
@@ -7449,6 +7612,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param prefetch
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return the new {@code Publisher} instance with the concatenation behavior
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
@@ -7500,6 +7664,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
      * @return the new {@code Publisher} instance with the concatenation behavior
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapDelayError(Function, boolean, int)
      * @since 3.0.0
      */
@@ -7563,6 +7728,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param maxConcurrency the maximum number of concurrent subscribed {@code Publisher}s
      * @param prefetch hints about the number of expected values from each inner {@code Publisher}, must be positive
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 2.0
      */
     @CheckReturnValue
@@ -7634,6 +7800,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param prefetch
      *               the number of elements to prefetch from each source {@code Publisher}
      * @return the new {@code Publisher} instance with the specified concatenation behavior
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 2.0
      */
     @CheckReturnValue
@@ -7700,6 +7867,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return a {@code Flowable} that emits the results of concatenating the items emitted by the source {@code Publisher} with
      *         the values in the {@code Iterable}s corresponding to those items, as generated by {@code collectionSelector}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
@@ -7768,6 +7936,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code MaybeSource}s.
      * @return a new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapMaybe(Function)
      * @see #concatMapMaybeDelayError(Function, boolean, int)
      * @since 2.2
@@ -7882,6 +8051,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code MaybeSource}s.
      * @return a new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapMaybe(Function, int)
      * @since 2.2
      */
@@ -7951,6 +8121,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code SingleSource}s.
      * @return a new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapSingle(Function)
      * @see #concatMapSingleDelayError(Function, boolean, int)
      * @since 2.2
@@ -8065,6 +8236,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code SingleSource}s.
      * @return a new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #concatMapSingle(Function, int)
      * @since 2.2
      */
@@ -9783,6 +9955,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits the result of applying the transformation function to each item emitted
      *         by the source {@code Publisher} and merging the results of the {@code Publisher}s obtained from this
      *         transformation
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
@@ -10053,6 +10226,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the inner {@code Publisher}s.
      * @return a {@code Flowable} that emits the results of applying a function to a pair of values emitted by the
      *         source {@code Publisher} and the collection {@code Publisher}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
@@ -10209,6 +10383,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param bufferSize
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @CheckReturnValue
@@ -10839,6 +11014,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Publisher} that emits {@code GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source {@code Publisher} that share that
      *         key value
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
@@ -10958,6 +11134,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Publisher} that emits {@code GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source {@code Publisher} that share that
      *         key value
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      *
      * @since 2.2
@@ -11693,6 +11870,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param bufferSize the size of the buffer.
      * @return the source {@code Publisher} modified so that its {@code Subscriber}s are notified on the specified
      *         {@code Scheduler}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
@@ -12358,6 +12536,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param parallelism the number of 'rails' to use
      * @param prefetch the number of items each 'rail' should prefetch
      * @return the new {@link ParallelFlowable} instance
+     * @throws IllegalArgumentException if {@code parallelism} or {@code prefetch} is non-positive
      * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -12455,6 +12634,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param prefetch
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return a {@code Flowable} that emits the results of invoking the selector on the items emitted by a {@code ConnectableFlowable} that shares a single subscription to the underlying sequence
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @CheckReturnValue
@@ -12486,6 +12666,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current {@code Flowable}
      * @return a {@code ConnectableFlowable} that upon connection causes the source {@code Publisher} to emit items
      *         to its {@code Subscriber}s
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @CheckReturnValue
@@ -12879,6 +13060,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits items that are the results of invoking the selector on items emitted by
      *         a {@code ConnectableFlowable} that shares a single subscription to the source {@code Publisher}
      *         replaying no more than {@code bufferSize} items
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      * @see #replay(Function, int, boolean)
      */
@@ -12923,6 +13105,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits items that are the results of invoking the selector on items emitted by
      *         a {@code ConnectableFlowable} that shares a single subscription to the source {@code Publisher}
      *         replaying no more than {@code bufferSize} items
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @CheckReturnValue
@@ -13236,6 +13419,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the buffer size that limits the number of items that can be replayed
      * @return a {@code ConnectableFlowable} that shares a single subscription to the source {@code Publisher} and
      *         replays at most {@code bufferSize} items emitted by that {@code Publisher}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      * @see #replay(int, boolean)
      */
@@ -13274,6 +13458,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            oldest item will be guaranteed dereferenced, thus avoiding unexpected retention
      * @return a {@code ConnectableFlowable} that shares a single subscription to the source {@code Publisher} and
      *         replays at most {@code bufferSize} items emitted by that {@code Publisher}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      * @since 3.0.0
      */
@@ -13369,7 +13554,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final ConnectableFlowable<T> replay(int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -13420,7 +13604,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
     public final ConnectableFlowable<T> replay(int bufferSize, long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean eagerTruncate) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -14319,6 +14502,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to skip
      * @return a {@code Flowable} that is identical to the source {@code Publisher} except that it does not emit the first
      *         {@code count} items that the source {@code Publisher} emits
+     * @throws IllegalArgumentException if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
     @CheckReturnValue
@@ -14326,7 +14510,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Flowable<T> skip(long count) {
-        if (count <= 0L) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected but it was " + count);
+        }
+        if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
         }
         return RxJavaPlugins.onAssembly(new FlowableSkip<>(this, count));
@@ -14596,6 +14783,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the hint about how many elements to expect to be skipped
      * @return a {@code Flowable} that drops those items emitted by the source {@code Publisher} in a time window before the
      *         source completes defined by {@code time} and {@code scheduler}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/skiplast.html">ReactiveX operators documentation: SkipLast</a>
      */
     @CheckReturnValue
@@ -15859,7 +16047,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         in a specified window of time before the {@code Publisher} completed, where the timing information is
      *         provided by the given {@code scheduler}
      * @throws IllegalArgumentException
-     *             if {@code count} is negative
+     *             if {@code count} is negative or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -17749,7 +17937,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the capacity hint for the buffer in the inner windows
      * @return a {@code Flowable} that emits windows every {@code skip} items containing at most {@code count} items
      *         from the source {@code Publisher}
-     * @throws IllegalArgumentException if either count or skip is non-positive
+     * @throws IllegalArgumentException if {@code count}, {@code skip} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
@@ -17882,6 +18070,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param bufferSize
      *            the capacity hint for the buffer in the inner windows
      * @return a {@code Flowable} that emits new windows periodically as a fixed timespan elapses
+     * @throws IllegalArgumentException if {@code timespan}, {@code timeskip} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
@@ -18202,6 +18391,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits connected, non-overlapping windows of items from the source {@code Publisher}
      *         that were emitted during a fixed duration of time or when the window has reached maximum capacity
      *         (whichever occurs first)
+     * @throws IllegalArgumentException if {@code count}, {@code timespan} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
@@ -18282,6 +18472,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@code Flowable} that emits non-overlapping windows of items it collects from the source {@code Publisher}
      *         where the boundary of each window is determined by the items emitted from the {@code boundary}
      *         {@code Publisher}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
@@ -18370,6 +18561,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the capacity hint for the buffer in the inner windows
      * @return a {@code Flowable} that emits windows of items emitted by the source {@code Publisher} that are governed by
      *         the specified window-governing {@code Publisher}s
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @CheckReturnValue
@@ -19432,6 +19624,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted to the downstream
      * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
      * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 3.0.0
      * @see #concatMap(Function, int)
      * @see #concatMapIterable(Function, int)
@@ -19540,6 +19733,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted to the downstream
      * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
      * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @since 3.0.0
      * @see #flatMap(Function, int)
      * @see #flatMapIterable(Function, int)

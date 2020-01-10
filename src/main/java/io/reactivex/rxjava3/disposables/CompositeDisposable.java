@@ -14,13 +14,14 @@ package io.reactivex.rxjava3.disposables;
 
 import java.util.*;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.internal.util.*;
 
 /**
- * A disposable container that can hold onto multiple other disposables and
- * offers O(1) add and removal complexity.
+ * A disposable container that can hold onto multiple other {@link Disposable}s and
+ * offers <em>O(1)</em> time complexity for {@link #add(Disposable)}, {@link #remove(Disposable)} and {@link #delete(Disposable)}
+ * operations.
  */
 public final class CompositeDisposable implements Disposable, DisposableContainer {
 
@@ -29,14 +30,14 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     volatile boolean disposed;
 
     /**
-     * Creates an empty CompositeDisposable.
+     * Creates an empty {@code CompositeDisposable}.
      */
     public CompositeDisposable() {
     }
 
     /**
-     * Creates a CompositeDisposables with the given array of initial elements.
-     * @param disposables the array of Disposables to start with
+     * Creates a {@code CompositeDisposable} with the given array of initial {@link Disposable} elements.
+     * @param disposables the array of {@code Disposable}s to start with
      * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
      */
     public CompositeDisposable(@NonNull Disposable... disposables) {
@@ -49,8 +50,8 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Creates a CompositeDisposables with the given Iterable sequence of initial elements.
-     * @param disposables the Iterable sequence of Disposables to start with
+     * Creates a {@code CompositeDisposable} with the given {@link Iterable} sequence of initial {@link Disposable} elements.
+     * @param disposables the {@code Iterable} sequence of {@code Disposable} to start with
      * @throws NullPointerException if {@code disposables} or any of its items is {@code null}
      */
     public CompositeDisposable(@NonNull Iterable<? extends Disposable> disposables) {
@@ -86,10 +87,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Adds a disposable to this container or disposes it if the
+     * Adds a {@link Disposable} to this container or disposes it if the
      * container has been disposed.
-     * @param disposable the disposable to add, not null
-     * @return true if successful, false if this container has been disposed
+     * @param disposable the {@code Disposable} to add, not {@code null}
+     * @return {@code true} if successful, {@code false} if this container has been disposed
      * @throws NullPointerException if {@code disposable} is {@code null}
      */
     @Override
@@ -113,10 +114,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Atomically adds the given array of Disposables to the container or
+     * Atomically adds the given array of {@link Disposable}s to the container or
      * disposes them all if the container has been disposed.
-     * @param disposables the array of Disposables
-     * @return true if the operation was successful, false if the container has been disposed
+     * @param disposables the array of {@code Disposable}s
+     * @return {@code true} if the operation was successful, {@code false} if the container has been disposed
      * @throws NullPointerException if {@code disposables} or any of its array items is {@code null}
      */
     public boolean addAll(@NonNull Disposable... disposables) {
@@ -144,10 +145,11 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Removes and disposes the given disposable if it is part of this
+     * Removes and disposes the given {@link Disposable} if it is part of this
      * container.
-     * @param disposable the disposable to remove and dispose, not null
-     * @return true if the operation was successful
+     * @param disposable the disposable to remove and dispose, not {@code null}
+     * @return {@code true} if the operation was successful
+     * @throws NullPointerException if {@code disposable} is {@code null}
      */
     @Override
     public boolean remove(@NonNull Disposable disposable) {
@@ -159,15 +161,15 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Removes (but does not dispose) the given disposable if it is part of this
+     * Removes (but does not dispose) the given {@link Disposable} if it is part of this
      * container.
-     * @param disposable the disposable to remove, not null
-     * @return true if the operation was successful
+     * @param disposable the disposable to remove, not {@code null}
+     * @return {@code true} if the operation was successful
      * @throws NullPointerException if {@code disposable} is {@code null}
      */
     @Override
     public boolean delete(@NonNull Disposable disposable) {
-        Objects.requireNonNull(disposable, "disposables is null");
+        Objects.requireNonNull(disposable, "disposable is null");
         if (disposed) {
             return false;
         }
@@ -185,7 +187,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Atomically clears the container, then disposes all the previously contained Disposables.
+     * Atomically clears the container, then disposes all the previously contained {@link Disposable}s.
      */
     public void clear() {
         if (disposed) {
@@ -205,8 +207,8 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Returns the number of currently held Disposables.
-     * @return the number of currently held Disposables
+     * Returns the number of currently held {@link Disposable}s.
+     * @return the number of currently held {@code Disposable}s
      */
     public int size() {
         if (disposed) {
@@ -222,11 +224,11 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Dispose the contents of the OpenHashSet by suppressing non-fatal
-     * Throwables till the end.
-     * @param set the OpenHashSet to dispose elements of
+     * Dispose the contents of the {@link OpenHashSet} by suppressing non-fatal
+     * {@link Throwable}s till the end.
+     * @param set the {@code OpenHashSet} to dispose elements of
      */
-    void dispose(OpenHashSet<Disposable> set) {
+    void dispose(@Nullable OpenHashSet<Disposable> set) {
         if (set == null) {
             return;
         }

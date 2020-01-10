@@ -186,6 +186,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources the {@code Iterable} sequence of {@code SingleSource} instances
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -235,6 +236,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources the {@code Publisher} of {@code SingleSource} instances
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -397,6 +399,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources the array of {@code SingleSource} instances
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -426,6 +429,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
      * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -455,6 +459,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code SingleSource}s that need to be eagerly concatenated
      * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -481,6 +486,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param sources an {@code Iterable} sequence of {@code SingleSource} that need to be eagerly concatenated
      * @return the new {@link Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -714,6 +720,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *            the type of object that the {@code Future} returns, and also the type of item to be emitted by
      *            the resulting {@code Single}
      * @return the new {@code Single} that emits the item from the source {@code Future}
+     * @throws NullPointerException if {@code future} or {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
@@ -1337,6 +1344,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param delay the delay amount
      * @param unit the time unit of the delay
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -2190,6 +2198,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit
      * @return the new {@code Single} instance
      * @since 2.0
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see #delay(long, TimeUnit, boolean)
      */
     @CheckReturnValue
@@ -2212,6 +2221,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit
      * @param delayError if {@code true}, both success and error signals are delayed. if {@code false}, only success signals are delayed.
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -2419,6 +2429,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit of the waiting
      * @param scheduler the {@code Scheduler} to wait on and subscribe on to the current {@code Single}
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -3418,6 +3429,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param times the number of times to re-subscribe to the current {@code Single}
      * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code times} is negative
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3446,6 +3458,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *                trigger a resubscription to the current {@code Single}, otherwise the terminal signal of
      *                the {@code Publisher} will be the terminal signal of the sequence as well.
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code handler} is {@code null}
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3470,6 +3483,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param stop the {@code BooleanSupplier} called after the current {@code Single} succeeds and if returns {@code false},
      *             the {@code Single} is re-subscribed; otherwise the sequence completes.
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code stop} is {@code null}
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3509,6 +3523,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param times the number of times to resubscribe if the current {@code Single} fails
      * @return the new {@code Single} instance
+     * @throws IllegalArgumentException if {@code times} is negative
      * @since 2.0
      */
     @CheckReturnValue
@@ -3530,6 +3545,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param predicate the predicate called with the resubscription count and the failure {@link Throwable}
      *                  and should return {@code true} if a resubscription should happen
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -3553,6 +3569,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param predicate the predicate called with the failure {@link Throwable}
      *                  and should return {@code true} if a resubscription should happen
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     * @throws IllegalArgumentException if {@code times} is negative
      * @since 2.2
      */
     @CheckReturnValue
@@ -3574,6 +3592,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param predicate the predicate called with the failure {@link Throwable}
      *                  and should return {@code true} if a resubscription should happen
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -3625,6 +3644,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *                throwable the {@code Flowable} emits) to trigger a resubscription or signal an error to
      *                be the output of the resulting {@code Single}
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code handler} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3931,6 +3951,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param timeout the timeout amount
      * @param unit the time unit
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -3954,6 +3975,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param scheduler the target {@code Scheduler} where the timeout is awaited and the {@code TimeoutException}
      *                  signaled
      * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -4195,6 +4217,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *            be emitted by the resulting {@code Single}
      * @return the new {@code Single} that pairs up values from the source {@code Single} and the {@code other} {@code SingleSource}
      *         and emits the results of {@code zipFunction} applied to these pairs
+     * @throws NullPointerException if {@code other} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue

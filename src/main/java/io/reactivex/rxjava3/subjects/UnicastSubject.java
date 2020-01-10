@@ -180,7 +180,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create() {
-        return create(bufferSize(), Functions.EMPTY_RUNNABLE, true);
+        return new UnicastSubject<>(bufferSize(), null, true);
     }
 
     /**
@@ -188,11 +188,13 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastSubject instance
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        return create(capacityHint, Functions.EMPTY_RUNNABLE, true);
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
+        return new UnicastSubject<>(capacityHint, null, true);
     }
 
     /**
@@ -207,11 +209,15 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @return an UnicastSubject instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, @NonNull Runnable onTerminate) {
-        return create(capacityHint, onTerminate, true);
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
+        Objects.requireNonNull(onTerminate, "onTerminate");
+        return new UnicastSubject<>(capacityHint, onTerminate, true);
     }
 
     /**
@@ -227,11 +233,15 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastSubject instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      * @since 2.2
      */
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, @NonNull Runnable onTerminate, boolean delayError) {
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
+        Objects.requireNonNull(onTerminate, "onTerminate");
         return new UnicastSubject<>(capacityHint, onTerminate, delayError);
     }
 
@@ -249,7 +259,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastSubject<T> create(boolean delayError) {
-        return create(bufferSize(), Functions.EMPTY_RUNNABLE, delayError);
+        return new UnicastSubject<>(bufferSize(), null, delayError);
     }
 
     /**
@@ -262,8 +272,8 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @since 2.2
      */
     UnicastSubject(int capacityHint, Runnable onTerminate, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<>(Objects.requireNonNull(onTerminate, "onTerminate"));
+        this.queue = new SpscLinkedArrayQueue<>(capacityHint);
+        this.onTerminate = new AtomicReference<>(onTerminate);
         this.delayError = delayError;
         this.downstream = new AtomicReference<>();
         this.once = new AtomicBoolean();

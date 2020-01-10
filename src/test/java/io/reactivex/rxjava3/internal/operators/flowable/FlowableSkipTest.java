@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableSkipTest extends RxJavaTest {
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void skipNegativeElements() {
 
         Flowable<String> skip = Flowable.just("one", "two", "three").skip(-99);

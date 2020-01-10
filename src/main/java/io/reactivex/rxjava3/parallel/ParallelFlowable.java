@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
 import io.reactivex.rxjava3.internal.jdk8.*;
@@ -42,7 +43,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 public abstract class ParallelFlowable<@NonNull T> {
 
     /**
-     * Subscribes an array of Subscribers to this ParallelFlowable and triggers
+     * Subscribes an array of {@link Subscriber}s to this {@code ParallelFlowable} and triggers
      * the execution chain for all 'rails'.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -52,7 +53,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param subscribers the subscribers array to run in parallel, the number
-     * of items must be equal to the parallelism level of this ParallelFlowable
+     * of items must be equal to the parallelism level of this {@code ParallelFlowable}
+     * @throws NullPointerException if {@code subscribers} is {@code null}
      * @see #parallelism()
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
@@ -60,18 +62,18 @@ public abstract class ParallelFlowable<@NonNull T> {
     public abstract void subscribe(@NonNull Subscriber<? super T>[] subscribers);
 
     /**
-     * Returns the number of expected parallel Subscribers.
-     * @return the number of expected parallel Subscribers
+     * Returns the number of expected parallel {@link Subscriber}s.
+     * @return the number of expected parallel {@code Subscriber}s
      */
     @CheckReturnValue
     public abstract int parallelism();
 
     /**
-     * Validates the number of subscribers and returns true if their number
-     * matches the parallelism level of this ParallelFlowable.
+     * Validates the number of subscribers and returns {@code true} if their number
+     * matches the parallelism level of this {@code ParallelFlowable}.
      *
-     * @param subscribers the array of Subscribers
-     * @return true if the number of subscribers equals to the parallelism level
+     * @param subscribers the array of {@link Subscriber}s
+     * @return {@code true} if the number of subscribers equals to the parallelism level
      * @throws NullPointerException if {@code subscribers} is {@code null}
      * @throws IllegalArgumentException if {@code subscribers.length} is different from {@link #parallelism()}
      */
@@ -89,7 +91,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Take a Publisher and prepare to consume it on multiple 'rails' (number of CPUs)
+     * Take a {@link Publisher} and prepare to consume it on multiple 'rails' (number of CPUs)
      * in a round-robin fashion.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -100,8 +102,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the source Publisher
-     * @return the ParallelFlowable instance
+     * @param source the source {@code Publisher}
+     * @return the {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -112,7 +115,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Take a Publisher and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
+     * Take a {@link Publisher} and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors the backpressure of the parallel rails and
@@ -122,9 +125,11 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the source Publisher
+     * @param source the source {@code Publisher}
      * @param parallelism the number of parallel rails
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @throws IllegalArgumentException if {@code parallelism} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -135,9 +140,9 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Take a Publisher and prepare to consume it on parallelism number of 'rails' ,
+     * Take a {@link Publisher} and prepare to consume it on parallelism number of 'rails' ,
      * possibly ordered and round-robin fashion and use custom prefetch amount and queue
-     * for dealing with the source Publisher's values.
+     * for dealing with the source {@code Publisher}'s values.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors the backpressure of the parallel rails and
@@ -147,11 +152,13 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the source Publisher
+     * @param source the source {@code Publisher}
      * @param parallelism the number of parallel rails
      * @param prefetch the number of values to prefetch from the source
      * the source until there is a rail ready to process it.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code source} is {@code null}
+     * @throws IllegalArgumentException if {@code parallelism} or {@code prefetch} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -169,7 +176,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     /**
      * Maps the source values on each 'rail' to another value.
      * <p>
-     * Note that the same mapper function may be called from multiple threads concurrently.
+     * Note that the same {@code mapper} function may be called from multiple threads concurrently.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -179,7 +186,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Rs.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -194,7 +202,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      * Maps the source values on each 'rail' to another value and
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
      * <p>
-     * Note that the same mapper function may be called from multiple threads concurrently.
+     * Note that the same {@code mapper} function may be called from multiple threads concurrently.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -206,8 +214,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Rs.
      * @param errorHandler the enumeration that defines how to handle errors thrown
-     *                     from the mapper function
-     * @return the new ParallelFlowable instance
+     *                     from the {@code mapper} function
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -224,7 +233,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      * Maps the source values on each 'rail' to another value and
      * handles errors based on the returned value by the handler function.
      * <p>
-     * Note that the same mapper function may be called from multiple threads concurrently.
+     * Note that the same {@code mapper} function may be called from multiple threads concurrently.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -236,9 +245,10 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Rs.
      * @param errorHandler the function called with the current repeat count and
-     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     failure {@link Throwable} and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -262,8 +272,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param predicate the function returning true to keep a value or false to drop a value
-     * @return the new ParallelFlowable instance
+     * @param predicate the function returning {@code true} to keep a value or {@code false} to drop a value
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -287,10 +298,11 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.8 - experimental
-     * @param predicate the function returning true to keep a value or false to drop a value
+     * @param predicate the function returning {@code true} to keep a value or {@code false} to drop a value
      * @param errorHandler the enumeration that defines how to handle errors thrown
-     *                     from the predicate
-     * @return the new ParallelFlowable instance
+     *                     from the {@code predicate}
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -316,11 +328,12 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.8 - experimental
-     * @param predicate the function returning true to keep a value or false to drop a value
+     * @param predicate the function returning {@code true} to keep a value or {@code false} to drop a value
      * @param errorHandler the function called with the current repeat count and
-     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     failure {@link Throwable} and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -334,19 +347,19 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Specifies where each 'rail' will observe its incoming values with
+     * Specifies where each 'rail' will observe its incoming values, specified via a {@link Scheduler}, with
      * no work-stealing and default prefetch amount.
      * <p>
-     * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
+     * This operator uses the default prefetch size returned by {@link Flowable#bufferSize()}.
      * <p>
-     * The operator will call {@code Scheduler.createWorker()} as many
-     * times as this ParallelFlowable's parallelism level is.
+     * The operator will call {@link Scheduler#createWorker()} as many
+     * times as this {@code ParallelFlowable}'s parallelism level is.
      * <p>
-     * No assumptions are made about the Scheduler's parallelism level,
-     * if the Scheduler's parallelism level is lower than the ParallelFlowable's,
+     * No assumptions are made about the {@code Scheduler}'s parallelism level,
+     * if the {@code Scheduler}'s parallelism level is lower than the {@code ParallelFlowable}'s,
      * some rails may end up on the same thread/worker.
      * <p>
-     * This operator doesn't require the Scheduler to be trampolining as it
+     * This operator doesn't require the {@code Scheduler} to be trampolining as it
      * does its own built-in trampolining logic.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -354,12 +367,13 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  requests {@link Flowable#bufferSize} amount from the upstream, followed
      *  by 75% of that amount requested after every 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code runOn} drains the upstream rails on the specified {@link Scheduler}'s
+     *  <dd>{@code runOn} drains the upstream rails on the specified {@code Scheduler}'s
      *  {@link io.reactivex.rxjava3.core.Scheduler.Worker Worker}s.</dd>
      * </dl>
      *
      * @param scheduler the scheduler to use
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -370,19 +384,19 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Specifies where each 'rail' will observe its incoming values with
+     * Specifies where each 'rail' will observe its incoming values, specified via a {@link Scheduler}, with
      * possibly work-stealing and a given prefetch amount.
      * <p>
-     * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
+     * This operator uses the default prefetch size returned by {@link Flowable#bufferSize()}.
      * <p>
-     * The operator will call {@code Scheduler.createWorker()} as many
-     * times as this ParallelFlowable's parallelism level is.
+     * The operator will call {@link Scheduler#createWorker()} as many
+     * times as this {@code ParallelFlowable}'s parallelism level is.
      * <p>
-     * No assumptions are made about the Scheduler's parallelism level,
-     * if the Scheduler's parallelism level is lower than the ParallelFlowable's,
+     * No assumptions are made about the {@code Scheduler}'s parallelism level,
+     * if the {@code Scheduler}'s parallelism level is lower than the {@code ParallelFlowable}'s,
      * some rails may end up on the same thread/worker.
      * <p>
-     * This operator doesn't require the Scheduler to be trampolining as it
+     * This operator doesn't require the {@code Scheduler} to be trampolining as it
      * does its own built-in trampolining logic.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -390,14 +404,16 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  requests the {@code prefetch} amount from the upstream, followed
      *  by 75% of that amount requested after every 75% received.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code runOn} drains the upstream rails on the specified {@link Scheduler}'s
+     *  <dd>{@code runOn} drains the upstream rails on the specified {@code Scheduler}'s
      *  {@link io.reactivex.rxjava3.core.Scheduler.Worker Worker}s.</dd>
      * </dl>
      *
      * @param scheduler the scheduler to use
      * that rail's worker has run out of work.
      * @param prefetch the number of values to request on each 'rail' from the source
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -410,8 +426,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Reduces all values within a 'rail' and across 'rails' with a reducer function into a single
-     * sequential value.
+     * Reduces all values within a 'rail' and across 'rails' with a reducer function into one
+     * {@link Flowable} sequence.
      * <p>
      * Note that the same reducer function may be called from multiple threads concurrently.
      * <dl>
@@ -422,7 +438,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param reducer the function to reduce two values into one.
-     * @return the new Flowable instance emitting the reduced value or empty if the ParallelFlowable was empty
+     * @return the new {@code Flowable} instance emitting the reduced value or empty if the current {@code ParallelFlowable} is empty
+     * @throws NullPointerException if {@code reducer} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -435,7 +452,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Reduces all values within a 'rail' to a single value (with a possibly different type) via
-     * a reducer function that is initialized on each rail from an initialSupplier value.
+     * a reducer function that is initialized on each rail from an {@code initialSupplier} value.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
      * <dl>
@@ -449,7 +466,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param initialSupplier the supplier for the initial value
      * @param reducer the function to reduce a previous output of reduce (or the initial value supplied)
      * with a current source value.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code initialSupplier} or {@code reducer} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -463,7 +481,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Merges the values from each 'rail' in a round-robin or same-order fashion and
-     * exposes it as a regular Publisher sequence, running with a default prefetch value
+     * exposes it as a regular {@link Flowable} sequence, running with a default prefetch value
      * for the rails.
      * <p>
      * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
@@ -476,7 +494,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
      * @see ParallelFlowable#sequential(int)
      * @see ParallelFlowable#sequentialDelayError()
      */
@@ -490,7 +508,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Merges the values from each 'rail' in a round-robin or same-order fashion and
-     * exposes it as a regular Publisher sequence, running with a give prefetch value
+     * exposes it as a regular {@link Flowable} sequence, running with a give prefetch value
      * for the rails.
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
@@ -502,7 +520,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param prefetch the prefetch amount to use for each rail
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see ParallelFlowable#sequential()
      * @see ParallelFlowable#sequentialDelayError(int)
      */
@@ -517,7 +536,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Merges the values from each 'rail' in a round-robin or same-order fashion and
-     * exposes it as a regular Flowable sequence, running with a default prefetch value
+     * exposes it as a regular {@link Flowable} sequence, running with a default prefetch value
      * for the rails and delaying errors from all rails till all terminate.
      * <p>
      * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
@@ -531,7 +550,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.7 - experimental
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
      * @see ParallelFlowable#sequentialDelayError(int)
      * @see ParallelFlowable#sequential()
      * @since 2.2
@@ -546,7 +565,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Merges the values from each 'rail' in a round-robin or same-order fashion and
-     * exposes it as a regular Publisher sequence, running with a give prefetch value
+     * exposes it as a regular {@link Flowable} sequence, running with a give prefetch value
      * for the rails and delaying errors from all rails till all terminate.
      * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
@@ -559,7 +578,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      * <p>History: 2.0.7 - experimental
      * @param prefetch the prefetch amount to use for each rail
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see ParallelFlowable#sequential()
      * @see ParallelFlowable#sequentialDelayError()
      * @since 2.2
@@ -574,10 +594,10 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+     * Sorts the 'rails' of this {@code ParallelFlowable} and returns a {@link Flowable} that sequentially
      * picks the smallest next value from the rails.
      * <p>
-     * This operator requires a finite source ParallelFlowable.
+     * This operator requires a finite source {@code ParallelFlowable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream and
@@ -587,7 +607,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param comparator the comparator to use
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code comparator} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -598,10 +619,10 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+     * Sorts the 'rails' of this {@code ParallelFlowable} and returns a {@link Flowable} that sequentially
      * picks the smallest next value from the rails.
      * <p>
-     * This operator requires a finite source ParallelFlowable.
+     * This operator requires a finite source {@code ParallelFlowable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream and
@@ -612,7 +633,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      *
      * @param comparator the comparator to use
      * @param capacityHint the expected number of total elements
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -629,9 +652,9 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
+     * Sorts the 'rails' according to the comparator and returns a full sorted {@link List} as a {@link Flowable}.
      * <p>
-     * This operator requires a finite source ParallelFlowable.
+     * This operator requires a finite source {@code ParallelFlowable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream and
@@ -641,7 +664,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param comparator the comparator to compare elements
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code comparator} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -651,9 +675,9 @@ public abstract class ParallelFlowable<@NonNull T> {
         return toSortedList(comparator, 16);
     }
     /**
-     * Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
+     * Sorts the 'rails' according to the comparator and returns a full sorted {@link List} as a {@link Flowable}.
      * <p>
-     * This operator requires a finite source ParallelFlowable.
+     * This operator requires a finite source {@code ParallelFlowable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream and
@@ -664,7 +688,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      *
      * @param comparator the comparator to compare elements
      * @param capacityHint the expected number of total elements
-     * @return the new Flowable instance
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -694,7 +720,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onNext the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onNext} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -727,8 +754,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the enumeration that defines how to handle errors thrown
-     *                     from the onNext consumer
-     * @return the new ParallelFlowable instance
+     *                     from the {@code onNext} consumer
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onNext} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -754,9 +782,10 @@ public abstract class ParallelFlowable<@NonNull T> {
      * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the function called with the current repeat count and
-     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     failure {@link Throwable} and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onNext} or {@code errorHandler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -781,7 +810,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onAfterNext the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onAfterNext} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -812,7 +842,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onError the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onError} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -833,7 +864,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Run the specified Action when a 'rail' completes.
+     * Run the specified {@link Action} when a 'rail' completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -843,7 +874,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onComplete the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onComplete} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -864,7 +896,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Run the specified Action when a 'rail' completes or signals an error.
+     * Run the specified {@link Action} when a 'rail' completes or signals an error.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -874,7 +906,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onAfterTerminate the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onAfterTerminate} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -895,7 +928,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Call the specified callback when a 'rail' receives a Subscription from its upstream.
+     * Call the specified callback when a 'rail' receives a {@link Subscription} from its upstream.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -905,7 +938,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onSubscribe the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onSubscribe} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -936,7 +970,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onRequest the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onRequest} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -957,7 +992,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Run the specified Action when a 'rail' receives a cancellation.
+     * Run the specified {@link Action} when a 'rail' receives a cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -967,7 +1002,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param onCancel the callback
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code onCancel} is {@code null}
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -988,7 +1024,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Collect the elements in each rail into a collection supplied via a collectionSupplier
+     * Collect the elements in each rail into a collection supplied via a {@code collectionSupplier}
      * and collected into with a collector action, emitting the collection at the end.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1001,7 +1037,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <C> the collection type
      * @param collectionSupplier the supplier of the collection in each rail
      * @param collector the collector, taking the per-rail collection and the current item
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code collectionSupplier} or {@code collector} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1014,7 +1051,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Wraps multiple Publishers into a ParallelFlowable which runs them
+     * Wraps multiple {@link Publisher}s into a {@code ParallelFlowable} which runs them
      * in parallel and unordered.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1026,7 +1063,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      *
      * @param <T> the value type
      * @param publishers the array of publishers
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code publishers} is {@code null}
      * @throws IllegalArgumentException if {@code publishers} is an empty array
      */
     @CheckReturnValue
@@ -1055,9 +1093,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
-     * @param converter the function that receives the current ParallelFlowable instance and returns a value
+     * @param converter the function that receives the current {@code ParallelFlowable} instance and returns a value
      * @return the converted value
-     * @throws NullPointerException if converter is null
+     * @throws NullPointerException if {@code converter} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -1069,8 +1107,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Allows composing operators, in assembly time, on top of this ParallelFlowable
-     * and returns another ParallelFlowable with composed features.
+     * Allows composing operators, in assembly time, on top of this {@code ParallelFlowable}
+     * and returns another {@code ParallelFlowable} with composed features.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and the behavior
@@ -1080,8 +1118,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <U> the output value type
-     * @param composer the composer function from ParallelFlowable (this) to another ParallelFlowable
-     * @return the ParallelFlowable returned by the function
+     * @param composer the composer function from {@code ParallelFlowable} (this) to another {@code ParallelFlowable}
+     * @return the {@code ParallelFlowable} returned by the function
+     * @throws NullPointerException if {@code composer} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1092,9 +1131,9 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and flattens Publishers on each 'rail'.
+     * Generates and flattens {@link Publisher}s on each 'rail'.
      * <p>
-     * Errors are not delayed and uses unbounded concurrency along with default inner prefetch.
+     * The errors are not delayed and uses unbounded concurrency along with default inner prefetch.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream rails and
@@ -1107,8 +1146,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
-     * @return the new ParallelFlowable instance
+     * @param mapper the function to map each rail's value into a {@code Publisher}
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1119,7 +1159,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and flattens Publishers on each 'rail', optionally delaying errors.
+     * Generates and flattens {@link Publisher}s on each 'rail', optionally delaying errors.
      * <p>
      * It uses unbounded concurrency along with default inner prefetch.
      * <dl>
@@ -1135,9 +1175,10 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
+     * @param mapper the function to map each rail's value into a {@code Publisher}
      * @param delayError should the errors from the main and the inner sources delayed till everybody terminates?
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1149,8 +1190,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and flattens Publishers on each 'rail', optionally delaying errors
-     * and having a total number of simultaneous subscriptions to the inner Publishers.
+     * Generates and flattens {@link Publisher}s on each 'rail', optionally delaying errors
+     * and having a total number of simultaneous subscriptions to the inner {@code Publisher}s.
      * <p>
      * It uses a default inner prefetch.
      * <dl>
@@ -1166,10 +1207,12 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
+     * @param mapper the function to map each rail's value into a {@code Publisher}
      * @param delayError should the errors from the main and the inner sources delayed till everybody terminates?
-     * @param maxConcurrency the maximum number of simultaneous subscriptions to the generated inner Publishers
-     * @return the new ParallelFlowable instance
+     * @param maxConcurrency the maximum number of simultaneous subscriptions to the generated inner {@code Publisher}s
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -1181,9 +1224,9 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and flattens Publishers on each 'rail', optionally delaying errors,
-     * having a total number of simultaneous subscriptions to the inner Publishers
-     * and using the given prefetch amount for the inner Publishers.
+     * Generates and flattens {@link Publisher}s on each 'rail', optionally delaying errors,
+     * having a total number of simultaneous subscriptions to the inner {@code Publisher}s
+     * and using the given prefetch amount for the inner {@code Publisher}s.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream rails and
@@ -1197,11 +1240,13 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
+     * @param mapper the function to map each rail's value into a {@code Publisher}
      * @param delayError should the errors from the main and the inner sources delayed till everybody terminates?
-     * @param maxConcurrency the maximum number of simultaneous subscriptions to the generated inner Publishers
-     * @param prefetch the number of items to prefetch from each inner Publisher
-     * @return the new ParallelFlowable instance
+     * @param maxConcurrency the maximum number of simultaneous subscriptions to the generated inner {@code Publisher}s
+     * @param prefetch the number of items to prefetch from each inner {@code Publisher}
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code prefetch} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -1217,7 +1262,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates Publishers on each 'rail', signalling errors immediately
+     * Generates and concatenates {@link Publisher}s on each 'rail', signalling errors immediately
      * and generating 2 publishers upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1230,9 +1275,10 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
-     * source and the inner Publishers (immediate, boundary, end)
-     * @return the new ParallelFlowable instance
+     * @param mapper the function to map each rail's value into a {@code Publisher}
+     * source and the inner {@code Publisher}s (immediate, boundary, end)
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1244,8 +1290,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates Publishers on each 'rail', signalling errors immediately
-     * and using the given prefetch amount for generating Publishers upfront.
+     * Generates and concatenates {@link Publisher}s on each 'rail', signalling errors immediately
+     * and using the given prefetch amount for generating {@code Publisher}s upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream rails and
@@ -1258,10 +1304,12 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
-     * @param prefetch the number of items to prefetch from each inner Publisher
-     * source and the inner Publishers (immediate, boundary, end)
-     * @return the new ParallelFlowable instance
+     * @param mapper the function to map each rail's value into a {@code Publisher}
+     * @param prefetch the number of items to prefetch from each inner {@code Publisher}
+     * source and the inner {@code Publisher}s (immediate, boundary, end)
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -1276,7 +1324,7 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates Publishers on each 'rail', optionally delaying errors
+     * Generates and concatenates {@link Publisher}s on each 'rail', optionally delaying errors
      * and generating 2 publishers upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1289,11 +1337,12 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
-     * @param tillTheEnd if true all errors from the upstream and inner Publishers are delayed
-     * till all of them terminate, if false, the error is emitted when an inner Publisher terminates.
-     * source and the inner Publishers (immediate, boundary, end)
-     * @return the new ParallelFlowable instance
+     * @param mapper the function to map each rail's value into a {@code Publisher}
+     * @param tillTheEnd if {@code true}, all errors from the upstream and inner {@code Publisher}s are delayed
+     * till all of them terminate, if {@code false}, the error is emitted when an inner {@code Publisher} terminates.
+     * source and the inner {@code Publisher}s (immediate, boundary, end)
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1306,8 +1355,8 @@ public abstract class ParallelFlowable<@NonNull T> {
     }
 
     /**
-     * Generates and concatenates Publishers on each 'rail', optionally delaying errors
-     * and using the given prefetch amount for generating Publishers upfront.
+     * Generates and concatenates {@link Publisher}s on each 'rail', optionally delaying errors
+     * and using the given prefetch amount for generating {@code Publisher}s upfront.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from the downstream rails and
@@ -1320,11 +1369,13 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      *
      * @param <R> the result type
-     * @param mapper the function to map each rail's value into a Publisher
-     * @param prefetch the number of items to prefetch from each inner Publisher
-     * @param tillTheEnd if true all errors from the upstream and inner Publishers are delayed
-     * till all of them terminate, if false, the error is emitted when an inner Publisher terminates.
-     * @return the new ParallelFlowable instance
+     * @param mapper the function to map each rail's value into a {@code Publisher}
+     * @param prefetch the number of items to prefetch from each inner {@code Publisher}
+     * @param tillTheEnd if {@code true}, all errors from the upstream and inner {@code Publisher}s are delayed
+     * till all of them terminate, if {@code false}, the error is emitted when an inner {@code Publisher} terminates.
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -1348,7 +1399,7 @@ public abstract class ParallelFlowable<@NonNull T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from each downstream rail. The source {@code ParallelFlowable}s is
      *  expected to honor backpressure as well. If the source {@code ParallelFlowable} violates the rule, the operator will
-     *  signal a {@code MissingBackpressureException}.</dd>
+     *  signal a {@link MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1358,10 +1409,11 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
      *            source {@code ParallelFlowable}
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @see #flatMapStream(Function)
      * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1373,14 +1425,14 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Returns a {@code ParallelFlowable} that merges each item emitted by the source {@code ParallelFlowable} with the values in an
-     * Iterable corresponding to that item that is generated by a selector.
+     * {@link Iterable} corresponding to that item that is generated by a selector.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from each downstream rail. The source {@code ParallelFlowable}s is
      *  expected to honor backpressure as well. If the source {@code ParallelFlowable} violates the rule, the operator will
-     *  signal a {@code MissingBackpressureException}.</dd>
+     *  signal a {@link MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1396,6 +1448,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @see #flatMapStream(Function, int)
      * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -1424,8 +1478,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * </dl>
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into optional of Rs.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
      * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1453,8 +1508,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param mapper the mapper function turning Ts into optional of Rs.
      * @param errorHandler the enumeration that defines how to handle errors thrown
      *                     from the mapper function
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
      * @since 3.0.0
+     * @throws NullPointerException if {@code mapper} or {@code errorHandler} is {@code null}
      */
     @CheckReturnValue
     @NonNull
@@ -1482,9 +1538,10 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into optional of Rs.
      * @param errorHandler the function called with the current repeat count and
-     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     failure {@link Throwable} and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
-     * @return the new ParallelFlowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} or {@code errorHandler} is {@code null}
      * @since 3.0.0
      */
     @CheckReturnValue
@@ -1502,11 +1559,11 @@ public abstract class ParallelFlowable<@NonNull T> {
      * <p>
      * <img width="640" height="328" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.f.png" alt="">
      * <p>
-     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * Due to the blocking and sequential nature of Java {@code Stream}s, the streams are mapped and consumed in a sequential fashion
      * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
      * {@code concatMapStream} are identical operators and are provided as aliases.
      * <p>
-     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. The exceptions raised when
      * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
      * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function)}:
      * <pre><code>
@@ -1536,7 +1593,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <R> the element type of the {@code Stream}s and the result
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
-     * @return the new Flowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
      * @see #flatMap(Function)
      * @see #flatMapIterable(Function)
      * @see #flatMapStream(Function, int)
@@ -1555,11 +1613,11 @@ public abstract class ParallelFlowable<@NonNull T> {
      * <p>
      * <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.fi.png" alt="">
      * <p>
-     * Due to the blocking and sequential nature of Java {@link Stream}s, the streams are mapped and consumed in a sequential fashion
+     * Due to the blocking and sequential nature of Java {@code Stream}s, the streams are mapped and consumed in a sequential fashion
      * without interleaving (unlike a more general {@link #flatMap(Function)}). Therefore, {@code flatMapStream} and
      * {@code concatMapStream} are identical operators and are provided as aliases.
      * <p>
-     * The operator closes the {@code Stream} upon cancellation and when it terminates. Exceptions raised when
+     * The operator closes the {@code Stream} upon cancellation and when it terminates. The exceptions raised when
      * closing a {@code Stream} are routed to the global error handler ({@link RxJavaPlugins#onError(Throwable)}.
      * If a {@code Stream} should not be closed, turn it into an {@link Iterable} and use {@link #flatMapIterable(Function, int)}:
      * <pre><code>
@@ -1589,7 +1647,9 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param mapper the function that receives an upstream item and should return a {@code Stream} whose elements
      * will be emitted to the downstream
      * @param prefetch the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received
-     * @return the new Flowable instance
+     * @return the new {@code ParallelFlowable} instance
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
      * @see #flatMap(Function, boolean, int)
      * @see #flatMapIterable(Function, int)
      * @since 3.0.0
@@ -1606,7 +1666,7 @@ public abstract class ParallelFlowable<@NonNull T> {
 
     /**
      * Reduces all values within a 'rail' and across 'rails' with a callbacks
-     * of the given {@link Collector} into a single sequential value.
+     * of the given {@link Collector} into one {@link Flowable} containing a single value.
      * <p>
      * Each parallel rail receives its own {@link Collector#accumulator()} and
      * {@link Collector#combiner()}.
@@ -1620,7 +1680,8 @@ public abstract class ParallelFlowable<@NonNull T> {
      * @param <A> the accumulator type
      * @param <R> the output value type
      * @param collector the {@code Collector} instance
-     * @return the new Flowable instance emitting the collected value.
+     * @return the new {@code Flowable} instance emitting the collected value.
+     * @throws NullPointerException if {@code collector} is {@code null}
      * @since 3.0.0
      */
     @CheckReturnValue

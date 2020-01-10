@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableSkipTest extends RxJavaTest {
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void skipNegativeElements() {
 
         Observable<String> skip = Observable.just("one", "two", "three").skip(-99);

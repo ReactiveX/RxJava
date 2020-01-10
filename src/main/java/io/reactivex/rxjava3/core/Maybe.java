@@ -308,6 +308,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param sources the {@code Publisher} of {@code MaybeSource} instances
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
@@ -433,6 +434,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
      * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -488,6 +490,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the common element base type
      * @param sources the {@code Publisher} sequence of {@code MaybeSource}s
      * @return the new {@code Flowable} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -515,6 +518,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code MaybeSource} that need to be eagerly concatenated
      * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -544,6 +548,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code MaybeSource}s that need to be eagerly concatenated
      * @return the new {@code Flowable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1044,6 +1049,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T> the common and resulting value type
      * @param sources the {@code Flowable} sequence of {@code MaybeSource} sources
      * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see #mergeDelayError(Publisher)
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1437,6 +1443,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a {@code Publisher} that emits {@code MaybeSource}s
      * @return a {@code Flowable} that emits all of the items emitted by the {@code MaybeSource}s emitted by the
      *         {@code source} {@code Publisher}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1662,6 +1669,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <T>
      *            the type of items emitted by each {@code MaybeSource}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two sequences are the same
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -1720,6 +1728,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param unit
      *            time units to use for {@code delay}
      * @return a {@code Maybe} that emits {@code 0L} after a specified delay
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @CheckReturnValue
@@ -2688,6 +2697,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param unit
      *            the {@link TimeUnit} in which {@code period} is defined
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      * @see #delay(long, TimeUnit, Scheduler)
      */
@@ -2799,6 +2809,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param unit
      *            the time unit of {@code delay}
      * @return a {@code Maybe} that delays the subscription to the source {@code Maybe} by the given amount
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      * @see #delaySubscription(long, TimeUnit, Scheduler)
      */
@@ -2827,6 +2838,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the {@code Scheduler} on which the waiting and subscription will happen
      * @return a {@code Maybe} that delays the subscription to the source {@code Maybe} by a given
      *         amount, waiting and subscribing on the given {@code Scheduler}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     @CheckReturnValue
@@ -4075,7 +4087,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return a {@code Flowable} that repeats the sequence of items emitted by the source {@code Maybe} at most
      *         {@code count} times
      * @throws IllegalArgumentException
-     *             if {@code count} is less than zero
+     *             if {@code times} is negative
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4134,6 +4146,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param handler
      *            receives a {@code Publisher} of notifications with which a user can complete or error, aborting the repeat.
      * @return the source {@code Publisher} modified with repeat logic
+     * @throws NullPointerException if {@code handler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -4181,6 +4194,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the predicate that determines if a resubscription may happen in case of a specific exception
      *            and retry count
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
      * @see #retry()
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
@@ -4205,16 +4219,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param count
+     * @param times
      *            the number of times to resubscribe if the current {@code Maybe} fails
      * @return the new {@code Maybe} instance
+     * @throws IllegalArgumentException if {@code times} is negative
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Maybe<T> retry(long count) {
-        return retry(count, Functions.alwaysTrue());
+    public final Maybe<T> retry(long times) {
+        return retry(times, Functions.alwaysTrue());
     }
 
     /**
@@ -4227,6 +4242,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param times the number of times to resubscribe if the current {@code Maybe} fails
      * @param predicate the predicate called with the failure {@link Throwable} and should return {@code true} to trigger a retry.
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     * @throws IllegalArgumentException if {@code times} is negative
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4244,6 +4261,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param predicate the predicate that receives the failure {@link Throwable} and should return {@code true} to trigger a retry.
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code predicate} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4341,6 +4359,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            receives a {@code Publisher} of notifications with which a user can complete or error, aborting the
      *            retry
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code handler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
      */
     @CheckReturnValue
@@ -4665,16 +4684,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param timeout
      *            maximum duration between emitted items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument.
      * @return the new {@code Maybe} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit timeUnit) {
-        return timeout(timeout, timeUnit, Schedulers.computation());
+    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit unit) {
+        return timeout(timeout, unit, Schedulers.computation());
     }
 
     /**
@@ -4690,20 +4710,20 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param fallback
      *            the fallback {@code MaybeSource} to use in case of a timeout
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code timeUnit} or {@code fallback} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code fallback} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull MaybeSource<? extends T> fallback) {
+    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull MaybeSource<? extends T> fallback) {
         Objects.requireNonNull(fallback, "fallback is null");
-        return timeout(timeout, timeUnit, Schedulers.computation(), fallback);
+        return timeout(timeout, unit, Schedulers.computation(), fallback);
     }
 
     /**
@@ -4720,22 +4740,22 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param fallback
      *            the {@code MaybeSource} to use as the fallback in case of a timeout
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code fallback}, {@code timeUnit} or {@code scheduler} is {@code null}
+     * @throws NullPointerException if {@code fallback}, {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull Scheduler scheduler, @NonNull MaybeSource<? extends T> fallback) {
+    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull MaybeSource<? extends T> fallback) {
         Objects.requireNonNull(fallback, "fallback is null");
-        return timeout(timer(timeout, timeUnit, scheduler), fallback);
+        return timeout(timer(timeout, unit, scheduler), fallback);
     }
 
     /**
@@ -4752,18 +4772,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param timeout
      *            maximum duration between items before a timeout occurs
-     * @param timeUnit
+     * @param unit
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the {@code Scheduler} to run the timeout timers on
      * @return the new {@code Maybe} instance
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit timeUnit, @NonNull Scheduler scheduler) {
-        return timeout(timer(timeout, timeUnit, scheduler));
+    public final Maybe<T> timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return timeout(timer(timeout, unit, scheduler));
     }
 
     /**
@@ -4909,7 +4930,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            a function that combines the pairs of items from the two {@code MaybeSource}s to generate the items to
      *            be emitted by the resulting {@code Maybe}
      * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code other} is {@code null}
+     * @throws NullPointerException if {@code other} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue

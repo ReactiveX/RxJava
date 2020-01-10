@@ -55,6 +55,16 @@ public class JavadocCodesAndLinks {
         checkSource("Observable", "io.reactivex.rxjava3.core");
     }
 
+    @Test
+    public void checkParallelFlowable() throws Exception {
+        checkSource("ParallelFlowable", "io.reactivex.rxjava3.parallel");
+    }
+
+    @Test
+    public void checkCompositeDisposable() throws Exception {
+        checkSource("CompositeDisposable", "io.reactivex.rxjava3.disposables");
+    }
+
     static void checkSource(String baseClassName, String packageName) throws Exception {
         File f = TestHelper.findSource(baseClassName, packageName);
         if (f == null) {
@@ -376,7 +386,7 @@ public class JavadocCodesAndLinks {
 
             "Supplier", "Callable", "TimeUnit",
 
-            "BackpressureOverflowStrategy",
+            "BackpressureOverflowStrategy", "ParallelFailureHandling",
 
             "Exception", "Throwable", "NullPointerException", "IllegalStateException", "IllegalArgumentException", "MissingBackpressureException", "UndeliverableException",
             "OutOfMemoryError", "StackOverflowError", "NoSuchElementException", "ClassCastException", "CompositeException",
