@@ -646,6 +646,9 @@ public abstract&nbsp;int&nbsp;parallelism()</pre>
 <dd><code>subscribers</code> - the array of Subscribers</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true if the number of subscribers equals to the parallelism level</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>subscribers</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscribers.length</code> is different from <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#parallelism--"><code>parallelism()</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -1721,6 +1724,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>publishers</code> - the array of publishers</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new ParallelFlowable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>publishers</code> is an empty array</dd>
 </dl>
 </li>
 </ul>

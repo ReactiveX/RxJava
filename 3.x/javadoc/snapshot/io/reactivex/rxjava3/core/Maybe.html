@@ -1562,6 +1562,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
             occur in the same order as in the array.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -3450,6 +3452,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>onSubscribe</code> - the function that is called with the subscribing <code>MaybeObserver</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>onSubscribe</code> is a <code>Maybe</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onSubscribe</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -3556,6 +3561,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>source</code> - the source to wrap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the <code>Maybe</code> wrapper or the source cast to <code>Maybe</code> (if possible)</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -5439,7 +5446,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
          if (str.length() &lt; 2) {
              downstream.onSuccess(str);
          } else {
-             // Maybe i <code> Maybe</code> ly expected to produce one of the onXXX events
+             // Maybe is expected to produce one of the onXXX events only
              downstream.onComplete();
          }
      }
