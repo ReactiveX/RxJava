@@ -1401,6 +1401,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the <code>Iterable</code> sequence of <code>SingleSource</code> instances</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -1467,6 +1469,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the <code>Publisher</code> of <code>SingleSource</code> instances</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -1654,6 +1658,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the array of <code>SingleSource</code> instances</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -1691,6 +1697,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1727,6 +1735,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - a sequence of <code>SingleSource</code>s that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1761,6 +1771,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - an <code>Iterable</code> sequence of <code>SingleSource</code> that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -2041,6 +2053,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>unit</code> - the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeUnit</code></a> of the <code>timeout</code> argument</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> that emits the item from the source <code>Future</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>future</code> or <code>unit</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a></dd>
 </dl>
@@ -2777,6 +2791,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dd><code>unit</code> - the time unit of the delay</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -3709,6 +3725,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -3743,6 +3761,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>delayError</code> - if <code>true</code>, both success and error signals are delayed. if <code>false</code>, only success signals are delayed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -4024,6 +4044,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>scheduler</code> - the <code>Scheduler</code> to wait on and subscribe on to the current <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5268,6 +5290,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>times</code> - the number of times to re-subscribe to the current <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5304,6 +5328,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                 the <code>Publisher</code> will be the terminal signal of the sequence as well.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>handler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5336,6 +5362,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
         the <code>Single</code> is re-subscribed; otherwise the sequence completes.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>stop</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5389,6 +5417,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>times</code> - the number of times to resubscribe if the current <code>Single</code> fails</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5418,6 +5448,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                   and should return <code>true</code> if a resubscription should happen</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5450,6 +5482,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                   and should return <code>true</code> if a resubscription should happen</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -5479,6 +5514,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                   and should return <code>true</code> if a resubscription should happen</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5537,6 +5574,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                 be the output of the resulting <code>Single</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>handler</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -5906,6 +5945,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -5939,6 +5980,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
                   signaled</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 </dl>
@@ -6233,6 +6276,8 @@ public final&nbsp;&lt;U,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/ann
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Single</code> that pairs up values from the source <code>Single</code> and the <code>other</code> <code>SingleSource</code>
          and emits the results of <code>zipFunction</code> applied to these pairs</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> or <code>zipper</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a></dd>
 </dl>

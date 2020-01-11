@@ -424,6 +424,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>capacityHint</code> - the hint to size the internal unbounded buffer</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an UnicastSubject instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -452,6 +454,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>onTerminate</code> - the callback to run when the Subject is terminated or cancelled, null not allowed</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an UnicastSubject instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onTerminate</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -483,6 +488,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>delayError</code> - deliver pending onNext events before onError</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an UnicastSubject instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onTerminate</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>

@@ -344,6 +344,8 @@ public abstract&nbsp;void&nbsp;connect(<a href="../../../../io/reactivex/rxjava3
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>connection</code> - the action that receives the connection subscription before the subscription to source happens
           allowing the caller to synchronously disconnect a synchronous source</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>connection</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a></dd>
 </dl>
@@ -486,6 +488,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Flowable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -524,6 +528,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>scheduler</code> - the target scheduler to wait on before disconnecting</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Flowable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -560,6 +566,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of the timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new Flowable instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -734,6 +742,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" 
 <dd>a Flowable that automatically connects to this ConnectableFlowable
          when the specified number of Subscribers subscribe to it and calls the
          specified callback with the Subscription associated with the established connection</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>connection</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>

@@ -453,6 +453,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>capacityHint</code> - the initial buffer capacity</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the created subject</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -484,6 +486,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>maxSize</code> - the maximum number of buffered items</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the created subject</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>maxSize</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -527,6 +531,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>scheduler</code> - the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> that provides the current time</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the created subject</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>maxAge</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -572,6 +579,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>scheduler</code> - the <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a> that provides the current time</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the created subject</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>maxAge</code> or <code>maxSize</code> is non-positive</dd>
 </dl>
 </li>
 </ul>

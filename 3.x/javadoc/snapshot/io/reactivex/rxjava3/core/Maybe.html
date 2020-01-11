@@ -1033,7 +1033,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 </tr>
 <tr id="i111" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#retry-long-">retry</a></span>(long&nbsp;count)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#retry-long-">retry</a></span>(long&nbsp;times)</code>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  up to a specified number of retries.</div>
 </td>
@@ -1180,7 +1180,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i132" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-">timeout</a></span>(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit)</code>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</code>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item.</div>
 </td>
@@ -1188,7 +1188,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i133" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.MaybeSource-">timeout</a></span>(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;fallback)</code>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item.</div>
@@ -1197,7 +1197,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i134" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-">timeout</a></span>(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item, where this policy is governed on a specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</div>
@@ -1206,7 +1206,7 @@ implements <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" titl
 <tr id="i135" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#timeout-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-io.reactivex.rxjava3.core.MaybeSource-">timeout</a></span>(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;fallback)</code>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
@@ -1744,6 +1744,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the <code>Publisher</code> of <code>MaybeSource</code> instances</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1885,6 +1887,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - a sequence of <code>MaybeSource</code>s that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1951,6 +1955,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the <code>Publisher</code> sequence of <code>MaybeSource</code>s</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> with the concatenating behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1985,6 +1991,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - a sequence of <code>MaybeSource</code> that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -2021,6 +2029,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - a sequence of <code>MaybeSource</code>s that need to be eagerly concatenated</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance with the specified concatenation behavior</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -2637,6 +2647,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>sources</code> - the <code>Flowable</code> sequence of <code>MaybeSource</code> sources</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#mergeDelayError-org.reactivestreams.Publisher-"><code>mergeDelayError(Publisher)</code></a></dd>
 </dl>
@@ -3069,6 +3081,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Flowable</code> that emits all of the items emitted by the <code>MaybeSource</code>s emitted by the
          <code>source</code> <code>Publisher</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>sources</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a></dd>
 </dl>
@@ -3324,6 +3338,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dd><code>source2</code> - the second <code>MaybeSource</code> to compare</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Single</code> that emits a <code>Boolean</code> value that indicates whether the two sequences are the same</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source1</code> or <code>source2</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a></dd>
 </dl>
@@ -3391,6 +3407,8 @@ public static&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull
 <dd><code>unit</code> - time units to use for <code>delay</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Maybe</code> that emits <code>0L</code> after a specified delay</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a></dd>
 </dl>
@@ -4451,6 +4469,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeUnit</code></a> in which <code>period</code> is defined</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>, 
 <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#delay-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>delay(long, TimeUnit, Scheduler)</code></a></dd>
@@ -4586,6 +4606,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>unit</code> - the time unit of <code>delay</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Maybe</code> that delays the subscription to the source <code>Maybe</code> by the given amount</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>, 
 <a href="../../../../io/reactivex/rxjava3/core/Maybe.html#delaySubscription-long-java.util.concurrent.TimeUnit-io.reactivex.rxjava3.core.Scheduler-"><code>delaySubscription(long, TimeUnit, Scheduler)</code></a></dd>
@@ -4620,6 +4642,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <code>Maybe</code> that delays the subscription to the source <code>Maybe</code> by a given
          amount, waiting and subscribing on the given <code>Scheduler</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a></dd>
 </dl>
@@ -6112,7 +6136,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd>a <code>Flowable</code> that repeats the sequence of items emitted by the source <code>Maybe</code> at most
          <code>count</code> times</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>count</code> is less than zero</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a></dd>
 </dl>
@@ -6183,6 +6207,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>handler</code> - receives a <code>Publisher</code> of notifications with which a user can complete or error, aborting the repeat.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the source <code>Publisher</code> modified with repeat logic</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>handler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a></dd>
 </dl>
@@ -6241,6 +6267,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
             and retry count</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/core/Maybe.html#retry--"><code>retry()</code></a>, 
 <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a></dd>
@@ -6256,7 +6284,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
-public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;retry(long&nbsp;count)</pre>
+public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;retry(long&nbsp;times)</pre>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code>, resubscribing to it if it calls <code>onError</code>
  up to a specified number of retries.
  <p>
@@ -6271,9 +6299,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>count</code> - the number of times to resubscribe if the current <code>Maybe</code> fails</dd>
+<dd><code>times</code> - the number of times to resubscribe if the current <code>Maybe</code> fails</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a></dd>
 </dl>
@@ -6302,6 +6332,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>predicate</code> - the predicate called with the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return <code>true</code> to trigger a retry.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>times</code> is negative</dd>
 </dl>
 </li>
 </ul>
@@ -6325,6 +6358,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>predicate</code> - the predicate that receives the failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return <code>true</code> to trigger a retry.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -6434,6 +6469,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
             retry</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>handler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a></dd>
 </dl>
@@ -6815,7 +6852,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="io.reactivex:computation")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit)</pre>
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit)</pre>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
  the resulting <code>Maybe</code> terminates and notifies <a href="../../../../io/reactivex/rxjava3/core/MaybeObserver.html" title="interface in io.reactivex.rxjava3.core"><code>MaybeObserver</code></a>s of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeoutException.html?is-external=true" title="class or interface in java.util.concurrent"><code>TimeoutException</code></a>.
@@ -6828,9 +6865,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - maximum duration between emitted items before a timeout occurs</dd>
-<dd><code>timeUnit</code> - the unit of time that applies to the <code>timeout</code> argument.</dd>
+<dd><code>unit</code> - the unit of time that applies to the <code>timeout</code> argument.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a></dd>
 </dl>
@@ -6846,7 +6885,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="io.reactivex:computation")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;fallback)</pre>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
@@ -6860,12 +6899,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - maximum duration between items before a timeout occurs</dd>
-<dd><code>timeUnit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
+<dd><code>unit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
 <dd><code>fallback</code> - the fallback <code>MaybeSource</code> to use in case of a timeout</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>timeUnit</code> or <code>fallback</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>fallback</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a></dd>
 </dl>
@@ -6881,7 +6920,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/MaybeSource.html" title="interface in io.reactivex.rxjava3.core">MaybeSource</a>&lt;? extends <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;fallback)</pre>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
@@ -6897,13 +6936,13 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - maximum duration between items before a timeout occurs</dd>
-<dd><code>timeUnit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
+<dd><code>unit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
 <dd><code>fallback</code> - the <code>MaybeSource</code> to use as the fallback in case of a timeout</dd>
 <dd><code>scheduler</code> - the <code>Scheduler</code> to run the timeout timers on</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>fallback</code>, <code>timeUnit</code> or <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>fallback</code>, <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a></dd>
 </dl>
@@ -6919,7 +6958,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="class in io.reactivex.rxjava3.core">Maybe</a>&lt;<a href="../../../../io/reactivex/rxjava3/core/Maybe.html" title="type parameter in Maybe">T</a>&gt;&nbsp;timeout(long&nbsp;timeout,
-        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;timeUnit,
+        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html?is-external=true" title="class or interface in java.util.concurrent">TimeUnit</a>&nbsp;unit,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
 <div class="block">Returns a <code>Maybe</code> that mirrors the source <code>Maybe</code> but applies a timeout policy for each emitted
  item, where this policy is governed on a specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>. If the next item isn't emitted within the
@@ -6934,10 +6973,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - maximum duration between items before a timeout occurs</dd>
-<dd><code>timeUnit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
+<dd><code>unit</code> - the unit of time that applies to the <code>timeout</code> argument</dd>
 <dd><code>scheduler</code> - the <code>Scheduler</code> to run the timeout timers on</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>unit</code> or <code>scheduler</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a></dd>
 </dl>
@@ -7135,7 +7176,7 @@ public final&nbsp;&lt;U,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/ann
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Maybe</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>other</code> or <code>zipper</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a></dd>
 </dl>

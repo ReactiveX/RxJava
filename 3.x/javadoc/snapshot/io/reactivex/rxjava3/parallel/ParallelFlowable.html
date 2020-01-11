@@ -163,28 +163,28 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code>&lt;A,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#collect-java.util.stream.Collector-">collect</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream">Collector</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,A,R&gt;&nbsp;collector)</code>
 <div class="block">Reduces all values within a 'rail' and across 'rails' with a callbacks
- of the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream"><code>Collector</code></a> into a single sequential value.</div>
+ of the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream"><code>Collector</code></a> into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> containing a single value.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>&lt;C&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;C&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#collect-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiConsumer-">collect</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;? extends C&gt;&nbsp;collectionSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiConsumer.html" title="interface in io.reactivex.rxjava3.functions">BiConsumer</a>&lt;? super C,? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;collector)</code>
-<div class="block">Collect the elements in each rail into a collection supplied via a collectionSupplier
+<div class="block">Collect the elements in each rail into a collection supplied via a <code>collectionSupplier</code>
  and collected into with a collector action, emitting the collection at the end.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;U&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#compose-io.reactivex.rxjava3.parallel.ParallelTransformer-">compose</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelTransformer.html" title="interface in io.reactivex.rxjava3.parallel">ParallelTransformer</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,U&gt;&nbsp;composer)</code>
-<div class="block">Allows composing operators, in assembly time, on top of this ParallelFlowable
- and returns another ParallelFlowable with composed features.</div>
+<div class="block">Allows composing operators, in assembly time, on top of this <code>ParallelFlowable</code>
+ and returns another <code>ParallelFlowable</code> with composed features.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#concatMap-io.reactivex.rxjava3.functions.Function-">concatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Generates and concatenates Publishers on each 'rail', signalling errors immediately
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', signalling errors immediately
  and generating 2 publishers upfront.</div>
 </td>
 </tr>
@@ -192,15 +192,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#concatMap-io.reactivex.rxjava3.functions.Function-int-">concatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         int&nbsp;prefetch)</code>
-<div class="block">Generates and concatenates Publishers on each 'rail', signalling errors immediately
- and using the given prefetch amount for generating Publishers upfront.</div>
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', signalling errors immediately
+ and using the given prefetch amount for generating <code>Publisher</code>s upfront.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#concatMapDelayError-io.reactivex.rxjava3.functions.Function-boolean-">concatMapDelayError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;tillTheEnd)</code>
-<div class="block">Generates and concatenates Publishers on each 'rail', optionally delaying errors
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
  and generating 2 publishers upfront.</div>
 </td>
 </tr>
@@ -209,8 +209,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#concatMapDelayError-io.reactivex.rxjava3.functions.Function-int-boolean-">concatMapDelayError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         int&nbsp;prefetch,
         boolean&nbsp;tillTheEnd)</code>
-<div class="block">Generates and concatenates Publishers on each 'rail', optionally delaying errors
- and using the given prefetch amount for generating Publishers upfront.</div>
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
+ and using the given prefetch amount for generating <code>Publisher</code>s upfront.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
@@ -223,19 +223,19 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#doAfterTerminated-io.reactivex.rxjava3.functions.Action-">doAfterTerminated</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onAfterTerminate)</code>
-<div class="block">Run the specified Action when a 'rail' completes or signals an error.</div>
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' completes or signals an error.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnCancel-io.reactivex.rxjava3.functions.Action-">doOnCancel</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onCancel)</code>
-<div class="block">Run the specified Action when a 'rail' receives a cancellation.</div>
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' receives a cancellation.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnComplete-io.reactivex.rxjava3.functions.Action-">doOnComplete</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onComplete)</code>
-<div class="block">Run the specified Action when a 'rail' completes.</div>
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' completes.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
@@ -275,7 +275,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#doOnSubscribe-io.reactivex.rxjava3.functions.Consumer-">doOnSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&gt;&nbsp;onSubscribe)</code>
-<div class="block">Call the specified callback when a 'rail' receives a Subscription from its upstream.</div>
+<div class="block">Call the specified callback when a 'rail' receives a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> from its upstream.</div>
 </td>
 </tr>
 <tr id="i17" class="rowColor">
@@ -303,14 +303,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i20" class="altColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-">flatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</code>
-<div class="block">Generates and flattens Publishers on each 'rail'.</div>
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail'.</div>
 </td>
 </tr>
 <tr id="i21" class="rowColor">
 <td class="colFirst"><code>&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-boolean-">flatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;delayError)</code>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors.</div>
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors.</div>
 </td>
 </tr>
 <tr id="i22" class="altColor">
@@ -318,8 +318,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-boolean-int-">flatMap</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;delayError,
         int&nbsp;maxConcurrency)</code>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors
- and having a total number of simultaneous subscriptions to the inner Publishers.</div>
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
+ and having a total number of simultaneous subscriptions to the inner <code>Publisher</code>s.</div>
 </td>
 </tr>
 <tr id="i23" class="rowColor">
@@ -328,9 +328,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
         boolean&nbsp;delayError,
         int&nbsp;maxConcurrency,
         int&nbsp;prefetch)</code>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors,
- having a total number of simultaneous subscriptions to the inner Publishers
- and using the given prefetch amount for the inner Publishers.</div>
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors,
+ having a total number of simultaneous subscriptions to the inner <code>Publisher</code>s
+ and using the given prefetch amount for the inner <code>Publisher</code>s.</div>
 </td>
 </tr>
 <tr id="i24" class="altColor">
@@ -345,7 +345,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMapIterable-io.reactivex.rxjava3.functions.Function-int-">flatMapIterable</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper,
         int&nbsp;bufferSize)</code>
 <div class="block">Returns a <code>ParallelFlowable</code> that merges each item emitted by the source <code>ParallelFlowable</code> with the values in an
- Iterable corresponding to that item that is generated by a selector.</div>
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
 </td>
 </tr>
 <tr id="i26" class="altColor">
@@ -364,7 +364,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i28" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#from-org.reactivestreams.Publisher-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source)</code>
-<div class="block">Take a Publisher and prepare to consume it on multiple 'rails' (number of CPUs)
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on multiple 'rails' (number of CPUs)
  in a round-robin fashion.</div>
 </td>
 </tr>
@@ -372,7 +372,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#from-org.reactivestreams.Publisher-int-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source,
         int&nbsp;parallelism)</code>
-<div class="block">Take a Publisher and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.</div>
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.</div>
 </td>
 </tr>
 <tr id="i30" class="altColor">
@@ -380,15 +380,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#from-org.reactivestreams.Publisher-int-int-">from</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source,
         int&nbsp;parallelism,
         int&nbsp;prefetch)</code>
-<div class="block">Take a Publisher and prepare to consume it on parallelism number of 'rails' ,
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on parallelism number of 'rails' ,
  possibly ordered and round-robin fashion and use custom prefetch amount and queue
- for dealing with the source Publisher's values.</div>
+ for dealing with the source <code>Publisher</code>'s values.</div>
 </td>
 </tr>
 <tr id="i31" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#fromArray-org.reactivestreams.Publisher...-">fromArray</a></span>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;T&gt;...&nbsp;publishers)</code>
-<div class="block">Wraps multiple Publishers into a ParallelFlowable which runs them
+<div class="block">Wraps multiple <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s into a <code>ParallelFlowable</code> which runs them
  in parallel and unordered.</div>
 </td>
 </tr>
@@ -439,14 +439,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i38" class="altColor">
 <td class="colFirst"><code>abstract int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#parallelism--">parallelism</a></span>()</code>
-<div class="block">Returns the number of expected parallel Subscribers.</div>
+<div class="block">Returns the number of expected parallel <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.</div>
 </td>
 </tr>
 <tr id="i39" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#reduce-io.reactivex.rxjava3.functions.BiFunction-">reduce</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;reducer)</code>
-<div class="block">Reduces all values within a 'rail' and across 'rails' with a reducer function into a single
- sequential value.</div>
+<div class="block">Reduces all values within a 'rail' and across 'rails' with a reducer function into one
+ <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.</div>
 </td>
 </tr>
 <tr id="i40" class="altColor">
@@ -454,13 +454,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#reduce-io.reactivex.rxjava3.functions.Supplier-io.reactivex.rxjava3.functions.BiFunction-">reduce</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;R&gt;&nbsp;initialSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,R&gt;&nbsp;reducer)</code>
 <div class="block">Reduces all values within a 'rail' to a single value (with a possibly different type) via
- a reducer function that is initialized on each rail from an initialSupplier value.</div>
+ a reducer function that is initialized on each rail from an <code>initialSupplier</code> value.</div>
 </td>
 </tr>
 <tr id="i41" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#runOn-io.reactivex.rxjava3.core.Scheduler-">runOn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</code>
-<div class="block">Specifies where each 'rail' will observe its incoming values with
+<div class="block">Specifies where each 'rail' will observe its incoming values, specified via a <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>, with
  no work-stealing and default prefetch amount.</div>
 </td>
 </tr>
@@ -468,7 +468,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#runOn-io.reactivex.rxjava3.core.Scheduler-int-">runOn</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;prefetch)</code>
-<div class="block">Specifies where each 'rail' will observe its incoming values with
+<div class="block">Specifies where each 'rail' will observe its incoming values, specified via a <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>, with
  possibly work-stealing and a given prefetch amount.</div>
 </td>
 </tr>
@@ -476,7 +476,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequential--">sequential</a></span>()</code>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a default prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a default prefetch value
  for the rails.</div>
 </td>
 </tr>
@@ -484,7 +484,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequential-int-">sequential</a></span>(int&nbsp;prefetch)</code>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a give prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a give prefetch value
  for the rails.</div>
 </td>
 </tr>
@@ -492,7 +492,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequentialDelayError--">sequentialDelayError</a></span>()</code>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Flowable sequence, running with a default prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a default prefetch value
  for the rails and delaying errors from all rails till all terminate.</div>
 </td>
 </tr>
@@ -500,14 +500,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequentialDelayError-int-">sequentialDelayError</a></span>(int&nbsp;prefetch)</code>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a give prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a give prefetch value
  for the rails and delaying errors from all rails till all terminate.</div>
 </td>
 </tr>
 <tr id="i47" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sorted-java.util.Comparator-">sorted</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator)</code>
-<div class="block">Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+<div class="block">Sorts the 'rails' of this <code>ParallelFlowable</code> and returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that sequentially
  picks the smallest next value from the rails.</div>
 </td>
 </tr>
@@ -515,14 +515,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sorted-java.util.Comparator-int-">sorted</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator,
         int&nbsp;capacityHint)</code>
-<div class="block">Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+<div class="block">Sorts the 'rails' of this <code>ParallelFlowable</code> and returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that sequentially
  picks the smallest next value from the rails.</div>
 </td>
 </tr>
 <tr id="i49" class="rowColor">
 <td class="colFirst"><code>abstract void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#subscribe-org.reactivestreams.Subscriber:A-">subscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;[]&nbsp;subscribers)</code>
-<div class="block">Subscribes an array of Subscribers to this ParallelFlowable and triggers
+<div class="block">Subscribes an array of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s to this <code>ParallelFlowable</code> and triggers
  the execution chain for all 'rails'.</div>
 </td>
 </tr>
@@ -535,21 +535,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i51" class="rowColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#toSortedList-java.util.Comparator-">toSortedList</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator)</code>
-<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.</div>
+<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.</div>
 </td>
 </tr>
 <tr id="i52" class="altColor">
 <td class="colFirst"><code><a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#toSortedList-java.util.Comparator-int-">toSortedList</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator,
         int&nbsp;capacityHint)</code>
-<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.</div>
+<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.</div>
 </td>
 </tr>
 <tr id="i53" class="rowColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#validate-org.reactivestreams.Subscriber:A-">validate</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;?&gt;[]&nbsp;subscribers)</code>
-<div class="block">Validates the number of subscribers and returns true if their number
- matches the parallelism level of this ParallelFlowable.</div>
+<div class="block">Validates the number of subscribers and returns <code>true</code> if their number
+ matches the parallelism level of this <code>ParallelFlowable</code>.</div>
 </td>
 </tr>
 </table>
@@ -600,7 +600,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#SPECIAL">SPECIAL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public abstract&nbsp;void&nbsp;subscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;[]&nbsp;subscribers)</pre>
-<div class="block">Subscribes an array of Subscribers to this ParallelFlowable and triggers
+<div class="block">Subscribes an array of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s to this <code>ParallelFlowable</code> and triggers
  the execution chain for all 'rails'.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -611,7 +611,9 @@ public abstract&nbsp;void&nbsp;subscribe(<a href="../../../../io/reactivex/rxjav
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>subscribers</code> - the subscribers array to run in parallel, the number
- of items must be equal to the parallelism level of this ParallelFlowable</dd>
+ of items must be equal to the parallelism level of this <code>ParallelFlowable</code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>subscribers</code> is <code>null</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#parallelism--"><code>parallelism()</code></a></dd>
 </dl>
@@ -625,10 +627,10 @@ public abstract&nbsp;void&nbsp;subscribe(<a href="../../../../io/reactivex/rxjav
 <h4>parallelism</h4>
 <pre><a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
 public abstract&nbsp;int&nbsp;parallelism()</pre>
-<div class="block">Returns the number of expected parallel Subscribers.</div>
+<div class="block">Returns the number of expected parallel <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the number of expected parallel Subscribers</dd>
+<dd>the number of expected parallel <code>Subscriber</code>s</dd>
 </dl>
 </li>
 </ul>
@@ -639,13 +641,13 @@ public abstract&nbsp;int&nbsp;parallelism()</pre>
 <li class="blockList">
 <h4>validate</h4>
 <pre>protected final&nbsp;boolean&nbsp;validate(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;?&gt;[]&nbsp;subscribers)</pre>
-<div class="block">Validates the number of subscribers and returns true if their number
- matches the parallelism level of this ParallelFlowable.</div>
+<div class="block">Validates the number of subscribers and returns <code>true</code> if their number
+ matches the parallelism level of this <code>ParallelFlowable</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>subscribers</code> - the array of Subscribers</dd>
+<dd><code>subscribers</code> - the array of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>true if the number of subscribers equals to the parallelism level</dd>
+<dd><code>true</code> if the number of subscribers equals to the parallelism level</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>subscribers</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>subscribers.length</code> is different from <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#parallelism--"><code>parallelism()</code></a></dd>
@@ -663,7 +665,7 @@ public abstract&nbsp;int&nbsp;parallelism()</pre>
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source)</pre>
-<div class="block">Take a Publisher and prepare to consume it on multiple 'rails' (number of CPUs)
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on multiple 'rails' (number of CPUs)
  in a round-robin fashion.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -677,9 +679,11 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>source</code> - the source Publisher</dd>
+<dd><code>source</code> - the source <code>Publisher</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the ParallelFlowable instance</dd>
+<dd>the <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -695,7 +699,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source,
         int&nbsp;parallelism)</pre>
-<div class="block">Take a Publisher and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors the backpressure of the parallel rails and
@@ -708,10 +712,13 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>source</code> - the source Publisher</dd>
+<dd><code>source</code> - the source <code>Publisher</code></dd>
 <dd><code>parallelism</code> - the number of parallel rails</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>parallelism</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -728,9 +735,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;from(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends T&gt;&nbsp;source,
         int&nbsp;parallelism,
         int&nbsp;prefetch)</pre>
-<div class="block">Take a Publisher and prepare to consume it on parallelism number of 'rails' ,
+<div class="block">Take a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a> and prepare to consume it on parallelism number of 'rails' ,
  possibly ordered and round-robin fashion and use custom prefetch amount and queue
- for dealing with the source Publisher's values.
+ for dealing with the source <code>Publisher</code>'s values.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors the backpressure of the parallel rails and
@@ -743,12 +750,15 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - the value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>source</code> - the source Publisher</dd>
+<dd><code>source</code> - the source <code>Publisher</code></dd>
 <dd><code>parallelism</code> - the number of parallel rails</dd>
 <dd><code>prefetch</code> - the number of values to prefetch from the source
  the source until there is a rail ready to process it.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>source</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>parallelism</code> or <code>prefetch</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -765,7 +775,7 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;map(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends R&gt;&nbsp;mapper)</pre>
 <div class="block">Maps the source values on each 'rail' to another value.
  <p>
- Note that the same mapper function may be called from multiple threads concurrently.
+ Note that the same <code>mapper</code> function may be called from multiple threads concurrently.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -779,7 +789,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - the mapper function turning Ts into Rs.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -798,7 +810,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Maps the source values on each 'rail' to another value and
  handles errors based on the given <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a> enumeration value.
  <p>
- Note that the same mapper function may be called from multiple threads concurrently.
+ Note that the same <code>mapper</code> function may be called from multiple threads concurrently.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -813,9 +825,11 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - the mapper function turning Ts into Rs.</dd>
 <dd><code>errorHandler</code> - the enumeration that defines how to handle errors thrown
-                     from the mapper function</dd>
+                     from the <code>mapper</code> function</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -836,7 +850,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <div class="block">Maps the source values on each 'rail' to another value and
  handles errors based on the returned value by the handler function.
  <p>
- Note that the same mapper function may be called from multiple threads concurrently.
+ Note that the same <code>mapper</code> function may be called from multiple threads concurrently.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -851,10 +865,12 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - the mapper function turning Ts into Rs.</dd>
 <dd><code>errorHandler</code> - the function called with the current repeat count and
-                     failure Throwable and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
+                     failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
                      enumeration values to indicate how to proceed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -883,9 +899,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>predicate</code> - the function returning true to keep a value or false to drop a value</dd>
+<dd><code>predicate</code> - the function returning <code>true</code> to keep a value or <code>false</code> to drop a value</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -915,11 +933,13 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.0.8 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>predicate</code> - the function returning true to keep a value or false to drop a value</dd>
+<dd><code>predicate</code> - the function returning <code>true</code> to keep a value or <code>false</code> to drop a value</dd>
 <dd><code>errorHandler</code> - the enumeration that defines how to handle errors thrown
-                     from the predicate</dd>
+                     from the <code>predicate</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -951,12 +971,14 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.0.8 - experimental</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>predicate</code> - the function returning true to keep a value or false to drop a value</dd>
+<dd><code>predicate</code> - the function returning <code>true</code> to keep a value or <code>false</code> to drop a value</dd>
 <dd><code>errorHandler</code> - the function called with the current repeat count and
-                     failure Throwable and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
+                     failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
                      enumeration values to indicate how to proceed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>predicate</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -973,19 +995,19 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;runOn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler)</pre>
-<div class="block">Specifies where each 'rail' will observe its incoming values with
+<div class="block">Specifies where each 'rail' will observe its incoming values, specified via a <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>, with
  no work-stealing and default prefetch amount.
  <p>
- This operator uses the default prefetch size returned by <code>Flowable.bufferSize()</code>.
+ This operator uses the default prefetch size returned by <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>Flowable.bufferSize()</code></a>.
  <p>
- The operator will call <code>Scheduler.createWorker()</code> as many
- times as this ParallelFlowable's parallelism level is.
+ The operator will call <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#createWorker--"><code>Scheduler.createWorker()</code></a> as many
+ times as this <code>ParallelFlowable</code>'s parallelism level is.
  <p>
- No assumptions are made about the Scheduler's parallelism level,
- if the Scheduler's parallelism level is lower than the ParallelFlowable's,
+ No assumptions are made about the <code>Scheduler</code>'s parallelism level,
+ if the <code>Scheduler</code>'s parallelism level is lower than the <code>ParallelFlowable</code>'s,
  some rails may end up on the same thread/worker.
  <p>
- This operator doesn't require the Scheduler to be trampolining as it
+ This operator doesn't require the <code>Scheduler</code> to be trampolining as it
  does its own built-in trampolining logic.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -993,14 +1015,16 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
   requests <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>Flowable.bufferSize()</code></a> amount from the upstream, followed
   by 75% of that amount requested after every 75% received.</dd>
   <dt><b>Scheduler:</b></dt>
-  <dd><code>runOn</code> drains the upstream rails on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>'s
+  <dd><code>runOn</code> drains the upstream rails on the specified <code>Scheduler</code>'s
   <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Worker</code></a>s.</dd>
  </dl></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>scheduler</code> - the scheduler to use</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>scheduler</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1016,19 +1040,19 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="custom")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;runOn(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core">Scheduler</a>&nbsp;scheduler,
         int&nbsp;prefetch)</pre>
-<div class="block">Specifies where each 'rail' will observe its incoming values with
+<div class="block">Specifies where each 'rail' will observe its incoming values, specified via a <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>, with
  possibly work-stealing and a given prefetch amount.
  <p>
- This operator uses the default prefetch size returned by <code>Flowable.bufferSize()</code>.
+ This operator uses the default prefetch size returned by <a href="../../../../io/reactivex/rxjava3/core/Flowable.html#bufferSize--"><code>Flowable.bufferSize()</code></a>.
  <p>
- The operator will call <code>Scheduler.createWorker()</code> as many
- times as this ParallelFlowable's parallelism level is.
+ The operator will call <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html#createWorker--"><code>Scheduler.createWorker()</code></a> as many
+ times as this <code>ParallelFlowable</code>'s parallelism level is.
  <p>
- No assumptions are made about the Scheduler's parallelism level,
- if the Scheduler's parallelism level is lower than the ParallelFlowable's,
+ No assumptions are made about the <code>Scheduler</code>'s parallelism level,
+ if the <code>Scheduler</code>'s parallelism level is lower than the <code>ParallelFlowable</code>'s,
  some rails may end up on the same thread/worker.
  <p>
- This operator doesn't require the Scheduler to be trampolining as it
+ This operator doesn't require the <code>Scheduler</code> to be trampolining as it
  does its own built-in trampolining logic.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -1036,7 +1060,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
   requests the <code>prefetch</code> amount from the upstream, followed
   by 75% of that amount requested after every 75% received.</dd>
   <dt><b>Scheduler:</b></dt>
-  <dd><code>runOn</code> drains the upstream rails on the specified <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>'s
+  <dd><code>runOn</code> drains the upstream rails on the specified <code>Scheduler</code>'s
   <a href="../../../../io/reactivex/rxjava3/core/Scheduler.Worker.html" title="class in io.reactivex.rxjava3.core"><code>Worker</code></a>s.</dd>
  </dl></div>
 <dl>
@@ -1045,7 +1069,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  that rail's worker has run out of work.</dd>
 <dd><code>prefetch</code> - the number of values to request on each 'rail' from the source</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>scheduler</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -1060,8 +1087,8 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;reduce(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;reducer)</pre>
-<div class="block">Reduces all values within a 'rail' and across 'rails' with a reducer function into a single
- sequential value.
+<div class="block">Reduces all values within a 'rail' and across 'rails' with a reducer function into one
+ <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence.
  <p>
  Note that the same reducer function may be called from multiple threads concurrently.
  <dl>
@@ -1075,7 +1102,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>reducer</code> - the function to reduce two values into one.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance emitting the reduced value or empty if the ParallelFlowable was empty</dd>
+<dd>the new <code>Flowable</code> instance emitting the reduced value or empty if the current <code>ParallelFlowable</code> is empty</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>reducer</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1092,7 +1121,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;reduce(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;R&gt;&nbsp;initialSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiFunction.html" title="interface in io.reactivex.rxjava3.functions">BiFunction</a>&lt;R,? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,R&gt;&nbsp;reducer)</pre>
 <div class="block">Reduces all values within a 'rail' to a single value (with a possibly different type) via
- a reducer function that is initialized on each rail from an initialSupplier value.
+ a reducer function that is initialized on each rail from an <code>initialSupplier</code> value.
  <p>
  Note that the same mapper function may be called from multiple threads concurrently.
  <dl>
@@ -1110,7 +1139,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>reducer</code> - the function to reduce a previous output of reduce (or the initial value supplied)
  with a current source value.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>initialSupplier</code> or <code>reducer</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1126,7 +1157,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sequential()</pre>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a default prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a default prefetch value
  for the rails.
  <p>
  This operator uses the default prefetch size returned by <code>Flowable.bufferSize()</code>.
@@ -1141,7 +1172,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  </dl></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequential-int-"><code>sequential(int)</code></a>, 
 <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequentialDelayError--"><code>sequentialDelayError()</code></a></dd>
@@ -1160,7 +1191,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sequential(int&nbsp;prefetch)</pre>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a give prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a give prefetch value
  for the rails.
  <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
  <dl>
@@ -1175,7 +1206,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>prefetch</code> - the prefetch amount to use for each rail</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequential--"><code>sequential()</code></a>, 
 <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#sequentialDelayError-int-"><code>sequentialDelayError(int)</code></a></dd>
@@ -1194,7 +1227,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sequentialDelayError()</pre>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Flowable sequence, running with a default prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a default prefetch value
  for the rails and delaying errors from all rails till all terminate.
  <p>
  This operator uses the default prefetch size returned by <code>Flowable.bufferSize()</code>.
@@ -1210,7 +1243,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <p>History: 2.0.7 - experimental</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -1231,7 +1264,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sequentialDelayError(int&nbsp;prefetch)</pre>
 <div class="block">Merges the values from each 'rail' in a round-robin or same-order fashion and
- exposes it as a regular Publisher sequence, running with a give prefetch value
+ exposes it as a regular <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> sequence, running with a give prefetch value
  for the rails and delaying errors from all rails till all terminate.
  <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
  <dl>
@@ -1247,7 +1280,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>prefetch</code> - the prefetch amount to use for each rail</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -1267,10 +1302,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sorted(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator)</pre>
-<div class="block">Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+<div class="block">Sorts the 'rails' of this <code>ParallelFlowable</code> and returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that sequentially
  picks the smallest next value from the rails.
  <p>
- This operator requires a finite source ParallelFlowable.
+ This operator requires a finite source <code>ParallelFlowable</code>.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream and
@@ -1282,7 +1317,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>comparator</code> - the comparator to use</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>comparator</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1298,10 +1335,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;sorted(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator,
         int&nbsp;capacityHint)</pre>
-<div class="block">Sorts the 'rails' of this ParallelFlowable and returns a Publisher that sequentially
+<div class="block">Sorts the 'rails' of this <code>ParallelFlowable</code> and returns a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> that sequentially
  picks the smallest next value from the rails.
  <p>
- This operator requires a finite source ParallelFlowable.
+ This operator requires a finite source <code>ParallelFlowable</code>.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream and
@@ -1314,7 +1351,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>comparator</code> - the comparator to use</dd>
 <dd><code>capacityHint</code> - the expected number of total elements</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>comparator</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -1329,9 +1369,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#UNBOUNDED_IN">UNBOUNDED_IN</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&gt;&nbsp;toSortedList(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator)</pre>
-<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
+<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.
  <p>
- This operator requires a finite source ParallelFlowable.
+ This operator requires a finite source <code>ParallelFlowable</code>.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream and
@@ -1343,7 +1383,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>comparator</code> - the comparator to compare elements</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>comparator</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1359,9 +1401,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&gt;&nbsp;toSortedList(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html?is-external=true" title="class or interface in java.util">Comparator</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;comparator,
         int&nbsp;capacityHint)</pre>
-<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted list as a Publisher.
+<div class="block">Sorts the 'rails' according to the comparator and returns a full sorted <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> as a <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a>.
  <p>
- This operator requires a finite source ParallelFlowable.
+ This operator requires a finite source <code>ParallelFlowable</code>.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream and
@@ -1374,7 +1416,10 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dd><code>comparator</code> - the comparator to compare elements</dd>
 <dd><code>capacityHint</code> - the expected number of total elements</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>Flowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>comparator</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>capacityHint</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -1401,7 +1446,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onNext</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onNext</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1431,9 +1478,11 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onNext</code> - the callback</dd>
 <dd><code>errorHandler</code> - the enumeration that defines how to handle errors thrown
-                     from the onNext consumer</dd>
+                     from the <code>onNext</code> consumer</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onNext</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -1465,10 +1514,12 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onNext</code> - the callback</dd>
 <dd><code>errorHandler</code> - the function called with the current repeat count and
-                     failure Throwable and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
+                     failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
                      enumeration values to indicate how to proceed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onNext</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -1498,7 +1549,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onAfterNext</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onAfterNext</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1525,7 +1578,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onError</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onError</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1540,7 +1595,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;doOnComplete(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onComplete)</pre>
-<div class="block">Run the specified Action when a 'rail' completes.
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' completes.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -1552,7 +1607,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onComplete</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onComplete</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1567,7 +1624,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;doAfterTerminated(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onAfterTerminate)</pre>
-<div class="block">Run the specified Action when a 'rail' completes or signals an error.
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' completes or signals an error.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -1579,7 +1636,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onAfterTerminate</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onAfterTerminate</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1594,7 +1653,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;doOnSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Consumer.html" title="interface in io.reactivex.rxjava3.functions">Consumer</a>&lt;? super <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&gt;&nbsp;onSubscribe)</pre>
-<div class="block">Call the specified callback when a 'rail' receives a Subscription from its upstream.
+<div class="block">Call the specified callback when a 'rail' receives a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscription</code></a> from its upstream.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -1606,7 +1665,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onSubscribe</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onSubscribe</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1633,7 +1694,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onRequest</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onRequest</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1648,7 +1711,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/CheckReturnValue.html" title="annotation in io.reactivex.rxjava3.annotations">@CheckReturnValue</a>
  <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
 public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;doOnCancel(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions">Action</a>&nbsp;onCancel)</pre>
-<div class="block">Run the specified Action when a 'rail' receives a cancellation.
+<div class="block">Run the specified <a href="../../../../io/reactivex/rxjava3/functions/Action.html" title="interface in io.reactivex.rxjava3.functions"><code>Action</code></a> when a 'rail' receives a cancellation.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -1660,7 +1723,9 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onCancel</code> - the callback</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>onCancel</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1676,7 +1741,7 @@ public final&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;C&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;C&gt;&nbsp;collect(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Supplier.html" title="interface in io.reactivex.rxjava3.functions">Supplier</a>&lt;? extends C&gt;&nbsp;collectionSupplier,
         <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/BiConsumer.html" title="interface in io.reactivex.rxjava3.functions">BiConsumer</a>&lt;? super C,? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>&gt;&nbsp;collector)</pre>
-<div class="block">Collect the elements in each rail into a collection supplied via a collectionSupplier
+<div class="block">Collect the elements in each rail into a collection supplied via a <code>collectionSupplier</code>
  and collected into with a collector action, emitting the collection at the end.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -1692,7 +1757,9 @@ public final&nbsp;&lt;C&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>collectionSupplier</code> - the supplier of the collection in each rail</dd>
 <dd><code>collector</code> - the collector, taking the per-rail collection and the current item</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>collectionSupplier</code> or <code>collector</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1708,7 +1775,7 @@ public final&nbsp;&lt;C&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;T&gt;&nbsp;fromArray(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;T&gt;...&nbsp;publishers)</pre>
-<div class="block">Wraps multiple Publishers into a ParallelFlowable which runs them
+<div class="block">Wraps multiple <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s into a <code>ParallelFlowable</code> which runs them
  in parallel and unordered.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -1723,8 +1790,9 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>publishers</code> - the array of publishers</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>publishers</code> is <code>null</code></dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>publishers</code> is an empty array</dd>
 </dl>
 </li>
@@ -1755,11 +1823,11 @@ public final&nbsp;&lt;R&gt;&nbsp;R&nbsp;to(<a href="../../../../io/reactivex/rxj
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the resulting object type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>converter</code> - the function that receives the current ParallelFlowable instance and returns a value</dd>
+<dd><code>converter</code> - the function that receives the current <code>ParallelFlowable</code> instance and returns a value</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the converted value</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if converter is null</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>converter</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 </dl>
@@ -1776,8 +1844,8 @@ public final&nbsp;&lt;R&gt;&nbsp;R&nbsp;to(<a href="../../../../io/reactivex/rxj
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#PASS_THROUGH">PASS_THROUGH</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;U&gt;&nbsp;compose(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelTransformer.html" title="interface in io.reactivex.rxjava3.parallel">ParallelTransformer</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,U&gt;&nbsp;composer)</pre>
-<div class="block">Allows composing operators, in assembly time, on top of this ParallelFlowable
- and returns another ParallelFlowable with composed features.
+<div class="block">Allows composing operators, in assembly time, on top of this <code>ParallelFlowable</code>
+ and returns another <code>ParallelFlowable</code> with composed features.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator is a pass-through for backpressure and the behavior
@@ -1789,9 +1857,11 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>U</code> - the output value type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>composer</code> - the composer function from ParallelFlowable (this) to another ParallelFlowable</dd>
+<dd><code>composer</code> - the composer function from <code>ParallelFlowable</code> (this) to another <code>ParallelFlowable</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the ParallelFlowable returned by the function</dd>
+<dd>the <code>ParallelFlowable</code> returned by the function</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>composer</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1806,9 +1876,9 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;flatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Generates and flattens Publishers on each 'rail'.
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail'.
  <p>
- Errors are not delayed and uses unbounded concurrency along with default inner prefetch.
+ The errors are not delayed and uses unbounded concurrency along with default inner prefetch.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream rails and
@@ -1823,9 +1893,11 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1841,7 +1913,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;flatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;delayError)</pre>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors.
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors.
  <p>
  It uses unbounded concurrency along with default inner prefetch.
  <dl>
@@ -1859,10 +1931,12 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
 <dd><code>delayError</code> - should the errors from the main and the inner sources delayed till everybody terminates?</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1879,8 +1953,8 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;flatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;delayError,
         int&nbsp;maxConcurrency)</pre>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors
- and having a total number of simultaneous subscriptions to the inner Publishers.
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
+ and having a total number of simultaneous subscriptions to the inner <code>Publisher</code>s.
  <p>
  It uses a default inner prefetch.
  <dl>
@@ -1898,11 +1972,14 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
 <dd><code>delayError</code> - should the errors from the main and the inner sources delayed till everybody terminates?</dd>
-<dd><code>maxConcurrency</code> - the maximum number of simultaneous subscriptions to the generated inner Publishers</dd>
+<dd><code>maxConcurrency</code> - the maximum number of simultaneous subscriptions to the generated inner <code>Publisher</code>s</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -1920,9 +1997,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
         boolean&nbsp;delayError,
         int&nbsp;maxConcurrency,
         int&nbsp;prefetch)</pre>
-<div class="block">Generates and flattens Publishers on each 'rail', optionally delaying errors,
- having a total number of simultaneous subscriptions to the inner Publishers
- and using the given prefetch amount for the inner Publishers.
+<div class="block">Generates and flattens <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors,
+ having a total number of simultaneous subscriptions to the inner <code>Publisher</code>s
+ and using the given prefetch amount for the inner <code>Publisher</code>s.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream rails and
@@ -1938,12 +2015,15 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
 <dd><code>delayError</code> - should the errors from the main and the inner sources delayed till everybody terminates?</dd>
-<dd><code>maxConcurrency</code> - the maximum number of simultaneous subscriptions to the generated inner Publishers</dd>
-<dd><code>prefetch</code> - the number of items to prefetch from each inner Publisher</dd>
+<dd><code>maxConcurrency</code> - the maximum number of simultaneous subscriptions to the generated inner <code>Publisher</code>s</dd>
+<dd><code>prefetch</code> - the number of items to prefetch from each inner <code>Publisher</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>maxConcurrency</code> or <code>prefetch</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -1958,7 +2038,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@BackpressureSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureSupport.html#value--">value</a>=<a href="../../../../io/reactivex/rxjava3/annotations/BackpressureKind.html#FULL">FULL</a>)
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;concatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper)</pre>
-<div class="block">Generates and concatenates Publishers on each 'rail', signalling errors immediately
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', signalling errors immediately
  and generating 2 publishers upfront.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -1973,10 +2053,12 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher
- source and the inner Publishers (immediate, boundary, end)</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code>
+ source and the inner <code>Publisher</code>s (immediate, boundary, end)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -1992,8 +2074,8 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;concatMap(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         int&nbsp;prefetch)</pre>
-<div class="block">Generates and concatenates Publishers on each 'rail', signalling errors immediately
- and using the given prefetch amount for generating Publishers upfront.
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', signalling errors immediately
+ and using the given prefetch amount for generating <code>Publisher</code>s upfront.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream rails and
@@ -2008,11 +2090,14 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
-<dd><code>prefetch</code> - the number of items to prefetch from each inner Publisher
- source and the inner Publishers (immediate, boundary, end)</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
+<dd><code>prefetch</code> - the number of items to prefetch from each inner <code>Publisher</code>
+ source and the inner <code>Publisher</code>s (immediate, boundary, end)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -2028,7 +2113,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;concatMapDelayError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         boolean&nbsp;tillTheEnd)</pre>
-<div class="block">Generates and concatenates Publishers on each 'rail', optionally delaying errors
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
  and generating 2 publishers upfront.
  <dl>
   <dt><b>Backpressure:</b></dt>
@@ -2043,12 +2128,14 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
-<dd><code>tillTheEnd</code> - if true all errors from the upstream and inner Publishers are delayed
- till all of them terminate, if false, the error is emitted when an inner Publisher terminates.
- source and the inner Publishers (immediate, boundary, end)</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
+<dd><code>tillTheEnd</code> - if <code>true</code>, all errors from the upstream and inner <code>Publisher</code>s are delayed
+ till all of them terminate, if <code>false</code>, the error is emitted when an inner <code>Publisher</code> terminates.
+ source and the inner <code>Publisher</code>s (immediate, boundary, end)</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 </dl>
 </li>
 </ul>
@@ -2065,8 +2152,8 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;R&gt;&nbsp;concatMapDelayError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams">Publisher</a>&lt;? extends R&gt;&gt;&nbsp;mapper,
         int&nbsp;prefetch,
         boolean&nbsp;tillTheEnd)</pre>
-<div class="block">Generates and concatenates Publishers on each 'rail', optionally delaying errors
- and using the given prefetch amount for generating Publishers upfront.
+<div class="block">Generates and concatenates <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s on each 'rail', optionally delaying errors
+ and using the given prefetch amount for generating <code>Publisher</code>s upfront.
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from the downstream rails and
@@ -2081,12 +2168,15 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>R</code> - the result type</dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mapper</code> - the function to map each rail's value into a Publisher</dd>
-<dd><code>prefetch</code> - the number of items to prefetch from each inner Publisher</dd>
-<dd><code>tillTheEnd</code> - if true all errors from the upstream and inner Publishers are delayed
- till all of them terminate, if false, the error is emitted when an inner Publisher terminates.</dd>
+<dd><code>mapper</code> - the function to map each rail's value into a <code>Publisher</code></dd>
+<dd><code>prefetch</code> - the number of items to prefetch from each inner <code>Publisher</code></dd>
+<dd><code>tillTheEnd</code> - if <code>true</code>, all errors from the upstream and inner <code>Publisher</code>s are delayed
+ till all of them terminate, if <code>false</code>, the error is emitted when an inner <code>Publisher</code> terminates.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 </dl>
 </li>
 </ul>
@@ -2109,7 +2199,7 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from each downstream rail. The source <code>ParallelFlowable</code>s is
   expected to honor backpressure as well. If the source <code>ParallelFlowable</code> violates the rule, the operator will
-  signal a <code>MissingBackpressureException</code>.</dd>
+  signal a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>flatMapIterable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
  </dl></div>
@@ -2120,7 +2210,9 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>mapper</code> - a function that returns an <code>Iterable</code> sequence of values for when given an item emitted by the
             source <code>ParallelFlowable</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -2142,14 +2234,14 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="class in io.reactivex.rxjava3.parallel">ParallelFlowable</a>&lt;U&gt;&nbsp;flatMapIterable(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/functions/Function.html" title="interface in io.reactivex.rxjava3.functions">Function</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,? extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang">Iterable</a>&lt;? extends U&gt;&gt;&nbsp;mapper,
         int&nbsp;bufferSize)</pre>
 <div class="block">Returns a <code>ParallelFlowable</code> that merges each item emitted by the source <code>ParallelFlowable</code> with the values in an
- Iterable corresponding to that item that is generated by a selector.
+ <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> corresponding to that item that is generated by a selector.
  <p>
  <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapIterable.f.png" alt="">
  <dl>
   <dt><b>Backpressure:</b></dt>
   <dd>The operator honors backpressure from each downstream rail. The source <code>ParallelFlowable</code>s is
   expected to honor backpressure as well. If the source <code>ParallelFlowable</code> violates the rule, the operator will
-  signal a <code>MissingBackpressureException</code>.</dd>
+  signal a <a href="../../../../io/reactivex/rxjava3/exceptions/MissingBackpressureException.html" title="class in io.reactivex.rxjava3.exceptions"><code>MissingBackpressureException</code></a>.</dd>
   <dt><b>Scheduler:</b></dt>
   <dd><code>flatMapIterable</code> does not operate by default on a particular <a href="../../../../io/reactivex/rxjava3/core/Scheduler.html" title="class in io.reactivex.rxjava3.core"><code>Scheduler</code></a>.</dd>
  </dl></div>
@@ -2162,6 +2254,9 @@ public final&nbsp;&lt;U&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>bufferSize</code> - the number of elements to prefetch from each upstream rail</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>bufferSize</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -2197,7 +2292,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - the mapper function turning Ts into optional of Rs.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2235,7 +2332,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>errorHandler</code> - the enumeration that defines how to handle errors thrown
                      from the mapper function</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2271,10 +2370,12 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mapper</code> - the mapper function turning Ts into optional of Rs.</dd>
 <dd><code>errorHandler</code> - the function called with the current repeat count and
-                     failure Throwable and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
+                     failure <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang"><code>Throwable</code></a> and should return one of the <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFailureHandling.html" title="enum in io.reactivex.rxjava3.parallel"><code>ParallelFailureHandling</code></a>
                      enumeration values to indicate how to proceed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new ParallelFlowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> or <code>errorHandler</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
@@ -2295,11 +2396,11 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <p>
  <img width="640" height="328" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.f.png" alt="">
  <p>
- Due to the blocking and sequential nature of Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a>s, the streams are mapped and consumed in a sequential fashion
+ Due to the blocking and sequential nature of Java <code>Stream</code>s, the streams are mapped and consumed in a sequential fashion
  without interleaving (unlike a more general <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-"><code>flatMap(Function)</code></a>). Therefore, <code>flatMapStream</code> and
  <code>concatMapStream</code> are identical operators and are provided as aliases.
  <p>
- The operator closes the <code>Stream</code> upon cancellation and when it terminates. Exceptions raised when
+ The operator closes the <code>Stream</code> upon cancellation and when it terminates. The exceptions raised when
  closing a <code>Stream</code> are routed to the global error handler (<a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.
  If a <code>Stream</code> should not be closed, turn it into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and use <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMapIterable-io.reactivex.rxjava3.functions.Function-"><code>flatMapIterable(Function)</code></a>:
  <pre><code>
@@ -2332,7 +2433,9 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
 <dd><code>mapper</code> - the function that receives an upstream item and should return a <code>Stream</code> whose elements
  will be emitted to the downstream</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -2358,11 +2461,11 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <p>
  <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapStream.fi.png" alt="">
  <p>
- Due to the blocking and sequential nature of Java <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream"><code>Stream</code></a>s, the streams are mapped and consumed in a sequential fashion
+ Due to the blocking and sequential nature of Java <code>Stream</code>s, the streams are mapped and consumed in a sequential fashion
  without interleaving (unlike a more general <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMap-io.reactivex.rxjava3.functions.Function-"><code>flatMap(Function)</code></a>). Therefore, <code>flatMapStream</code> and
  <code>concatMapStream</code> are identical operators and are provided as aliases.
  <p>
- The operator closes the <code>Stream</code> upon cancellation and when it terminates. Exceptions raised when
+ The operator closes the <code>Stream</code> upon cancellation and when it terminates. The exceptions raised when
  closing a <code>Stream</code> are routed to the global error handler (<a href="../../../../io/reactivex/rxjava3/plugins/RxJavaPlugins.html#onError-java.lang.Throwable-"><code>RxJavaPlugins.onError(Throwable)</code></a>.
  If a <code>Stream</code> should not be closed, turn it into an <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> and use <a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html#flatMapIterable-io.reactivex.rxjava3.functions.Function-int-"><code>flatMapIterable(Function, int)</code></a>:
  <pre><code>
@@ -2395,7 +2498,10 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  will be emitted to the downstream</dd>
 <dd><code>prefetch</code> - the number of upstream items to request upfront, then 75% of this amount after each 75% upstream items received</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance</dd>
+<dd>the new <code>ParallelFlowable</code> instance</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>mapper</code> is <code>null</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if <code>prefetch</code> is non-positive</dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -2416,7 +2522,7 @@ public final&nbsp;&lt;R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annot
  <a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html" title="annotation in io.reactivex.rxjava3.annotations">@SchedulerSupport</a>(<a href="../../../../io/reactivex/rxjava3/annotations/SchedulerSupport.html#value--">value</a>="none")
 public final&nbsp;&lt;A,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a>&lt;R&gt;&nbsp;collect(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream">Collector</a>&lt;<a href="../../../../io/reactivex/rxjava3/parallel/ParallelFlowable.html" title="type parameter in ParallelFlowable">T</a>,A,R&gt;&nbsp;collector)</pre>
 <div class="block">Reduces all values within a 'rail' and across 'rails' with a callbacks
- of the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream"><code>Collector</code></a> into a single sequential value.
+ of the given <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream"><code>Collector</code></a> into one <a href="../../../../io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core"><code>Flowable</code></a> containing a single value.
  <p>
  Each parallel rail receives its own <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true#accumulator--" title="class or interface in java.util.stream"><code>Collector.accumulator()</code></a> and
  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true#combiner--" title="class or interface in java.util.stream"><code>Collector.combiner()</code></a>.
@@ -2434,7 +2540,9 @@ public final&nbsp;&lt;A,R&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/ann
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>collector</code> - the <code>Collector</code> instance</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the new Flowable instance emitting the collected value.</dd>
+<dd>the new <code>Flowable</code> instance emitting the collected value.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang">NullPointerException</a></code> - if <code>collector</code> is <code>null</code></dd>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>3.0.0</dd>
 </dl>
