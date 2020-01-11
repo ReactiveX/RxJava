@@ -64,6 +64,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
      *          allowing the caller to synchronously disconnect a synchronous source
+     * @throws NullPointerException if {@code connection} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -155,6 +156,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Observable instance
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see #refCount(long, TimeUnit, Scheduler)
      * @since 2.2
      */
@@ -178,6 +180,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Observable instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @since 2.2
      */
     @CheckReturnValue
@@ -200,6 +203,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Observable instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see #refCount(int, long, TimeUnit, Scheduler)
      * @since 2.2
      */
@@ -224,8 +228,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Observable instance
-     * @throws IllegalArgumentException if {@code subscriberCount} is non-positive
      * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code subscriberCount} is non-positive
      * @since 2.2
      */
     @CheckReturnValue
@@ -326,11 +330,13 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
+     * @throws NullPointerException if {@code connection} is {@code null}
      */
     @NonNull
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public Observable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+        Objects.requireNonNull(connection, "connection is null");
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaPlugins.onAssembly(this);

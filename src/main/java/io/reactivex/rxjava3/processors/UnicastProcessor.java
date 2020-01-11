@@ -179,7 +179,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create() {
-        return create(bufferSize(), Functions.EMPTY_RUNNABLE, true);
+        return new UnicastProcessor<>(bufferSize(), null, true);
     }
 
     /**
@@ -187,11 +187,13 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastProcessor instance
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint) {
-        return create(capacityHint, Functions.EMPTY_RUNNABLE, true);
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
+        return new UnicastProcessor<>(capacityHint, null, true);
     }
 
     /**
@@ -205,7 +207,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
-        return create(bufferSize(), Functions.EMPTY_RUNNABLE, delayError);
+        return new UnicastProcessor<>(bufferSize(), null, delayError);
     }
 
     /**
@@ -220,6 +222,8 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onTerminate the non null callback
      * @return an UnicastProcessor instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
@@ -240,11 +244,15 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param onTerminate the non null callback
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      * @since 2.2
      */
     @CheckReturnValue
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, @NonNull Runnable onTerminate, boolean delayError) {
+        Objects.requireNonNull(onTerminate, "onTerminate");
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         return new UnicastProcessor<>(capacityHint, onTerminate, delayError);
     }
 
@@ -258,8 +266,8 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @since 2.2
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<>(Objects.requireNonNull(onTerminate, "onTerminate"));
+        this.queue = new SpscLinkedArrayQueue<>(capacityHint);
+        this.onTerminate = new AtomicReference<>(onTerminate);
         this.delayError = delayError;
         this.downstream = new AtomicReference<>();
         this.once = new AtomicBoolean();

@@ -207,6 +207,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the aggregation function used to combine the items emitted by the returned {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of combining the items emitted by the returned
      *         {@code ObservableSource}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
@@ -305,6 +306,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of combining the items emitted by the returned
      *         {@code ObservableSource}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
@@ -879,6 +881,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of combining the items emitted by the
      *         {@code ObservableSource}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
@@ -980,6 +983,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the aggregation function used to combine the items emitted by the {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of combining the items emitted by the
      *         {@code ObservableSource}s by means of the given aggregation function
+     * @throws NullPointerException if {@code sources} or {@code combiner} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @CheckReturnValue
@@ -1300,6 +1304,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1328,6 +1333,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as indication to subscribe to all sources at once
      * @param bufferSize the number of elements expected from each {@code ObservableSource} to be buffered
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @since 2.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1355,6 +1362,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources an array of {@code ObservableSource}s that need to be eagerly concatenated
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.2.1 - experimental
      */
     @CheckReturnValue
@@ -1384,6 +1392,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as indication to subscribe to all sources at once
      * @param bufferSize the number of elements expected from each {@code ObservableSource} to be buffered
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @since 2.2.1 - experimental
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1433,6 +1443,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the common element base type
      * @param sources the {@code ObservableSource} sequence of {@code ObservableSource}s
      * @return the new {@code Observable} with the concatenating behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1540,6 +1551,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources a sequence of {@code ObservableSource}s that need to be eagerly concatenated
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @since 2.0
      */
     @CheckReturnValue
@@ -1567,6 +1579,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as all inner {@code ObservableSource}s can be active at the same time
      * @param bufferSize the number of elements expected from each inner {@code ObservableSource} to be buffered
      * @return the new {@code Observable} instance with the specified concatenation behavior
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} or {@code bufferSize} is non-positive
      * @since 2.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -2247,6 +2261,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param unit
      *            time units to use for the interval size
      * @return an {@code Observable} that emits a sequential number each time interval
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     @CheckReturnValue
@@ -2273,6 +2288,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param scheduler
      *            the {@code Scheduler} to use for scheduling the items
      * @return an {@code Observable} that emits a sequential number each time interval
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     @CheckReturnValue
@@ -2298,6 +2314,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param period the period between subsequent values
      * @param unit the unit of measure of the {@code initialDelay} and {@code period} amounts
      * @return the new {@code Observable} instance
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @throws IllegalArgumentException
+     *             if {@code count} is negative, or if {@code start} + {@code count} &minus; 1 exceeds
+     *             {@link Long#MAX_VALUE}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -2801,8 +2821,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the number of items expected from each inner {@code ObservableSource} to be buffered
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrent} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable, int, int)
      */
@@ -2849,8 +2870,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the number of items expected from each inner {@code ObservableSource} to be buffered
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the array
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrent} or {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeArrayDelayError(int, int, ObservableSource...)
      */
@@ -2893,6 +2915,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the {@code Iterable} of {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable)
      */
@@ -2937,8 +2960,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(Iterable, int)
      */
@@ -3373,6 +3397,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the maximum number of {@code ObservableSource}s that may be subscribed to concurrently
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the {@code Iterable}
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3609,6 +3635,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the array of {@code ObservableSource}s
      * @return an {@code Observable} that emits items that are the result of flattening the items emitted by the
      *         {@code ObservableSource}s in the array
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3742,6 +3769,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T>
      *            the type of items emitted by each {@code ObservableSource}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two sequences are the same
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -3772,6 +3800,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the type of items emitted by each {@code ObservableSource}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two {@code ObservableSource} two sequences
      *         are the same according to the specified function
+     * @throws NullPointerException if {@code source1}, {@code source2} or {@code isEqual} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -3842,6 +3871,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T>
      *            the type of items emitted by each {@code ObservableSource}
      * @return a {@code Single} that emits a {@code Boolean} value that indicates whether the two sequences are the same
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @CheckReturnValue
@@ -3914,6 +3945,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the {@code ObservableSource} that emits {@code ObservableSource}s
      * @return an {@code Observable} that emits the items emitted by the {@code ObservableSource} most recently emitted by the {@code sources}
      *         {@code ObservableSource}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
      */
     @CheckReturnValue
@@ -3947,6 +3979,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the {@code ObservableSource} that emits {@code ObservableSource}s
      * @return an {@code Observable} that emits the items emitted by the {@code ObservableSource} most recently emitted by the {@code sources}
      *         {@code ObservableSource}
+     * @throws NullPointerException if {@code sources} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
      * @since 2.0
      */
@@ -4012,6 +4045,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param unit
      *            time units to use for {@code delay}
      * @return an {@code Observable} that {@code 0L} after a specified delay, and then completes
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @CheckReturnValue
@@ -4457,6 +4491,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param bufferSize the number of elements expected from each source {@code ObservableSource} to be buffered
      * @return an {@code Observable} that emits the zipped results
      * @throws NullPointerException if {@code source1}, {@code source2} or {@code zipper} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     @CheckReturnValue
@@ -5199,12 +5234,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a default value to return if the current {@code Observable} emits no items
      * @return the first item emitted by the current {@code Observable}, or the default value if it emits no
      *         items
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final T blockingFirst(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
         BlockingFirstObserver<T> observer = new BlockingFirstObserver<>();
         subscribe(observer);
         T v = observer.blockingGet();
@@ -5235,6 +5272,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param onNext
      *            the {@code Consumer} to invoke for each item emitted by the {@code Observable}
+     * @throws NullPointerException if {@code onNext} is {@code null}
      * @throws RuntimeException
      *             if an error occurs
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
@@ -5392,12 +5430,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a default value to return if the current {@code Observable} emits no items
      * @return the last item emitted by the {@code Observable}, or the default value if it emits no
      *         items
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final T blockingLast(@NonNull T defaultItem) {
+        Objects.requireNonNull(defaultItem, "defaultItem is null");
         BlockingLastObserver<T> observer = new BlockingLastObserver<>();
         subscribe(observer);
         T v = observer.blockingGet();
@@ -5522,6 +5562,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a default value to return if the current {@code Observable} emits no items
      * @return the single item emitted by the current {@code Observable}, or the default value if it emits no
      *         items
+     * @throws NullPointerException if {@code defaultItem} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     @CheckReturnValue
@@ -5599,6 +5640,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param onNext the callback action for each source value
+     * @throws NullPointerException if {@code onNext} is {@code null}
      * @since 2.0
      * @see #blockingSubscribe(Consumer, Consumer)
      * @see #blockingSubscribe(Consumer, Consumer, Action)
@@ -5622,6 +5664,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
+     * @throws NullPointerException if {@code onNext} or {@code onError} is {@code null}
      * @since 2.0
      * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
@@ -5645,6 +5688,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param onComplete the callback action for the completion event.
+     * @throws NullPointerException if {@code onNext}, {@code onError} or {@code onComplete} is {@code null}
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5934,6 +5978,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the unit of time that applies to the {@code timespan} argument
      * @return an {@code Observable} that emits connected, non-overlapping buffers of items emitted by the current
      *         {@code Observable} within a fixed duration
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
@@ -5968,6 +6013,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits connected, non-overlapping buffers of items emitted by the current
      *         {@code Observable}, after a fixed duration or when the buffer reaches maximum capacity (whichever occurs
      *         first)
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
@@ -6004,6 +6051,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits connected, non-overlapping buffers of items emitted by the current
      *         {@code Observable} after a fixed duration or when the buffer reaches maximum capacity (whichever occurs
      *         first)
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
@@ -6191,18 +6240,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary {@code ObservableSource}
      * @return an {@code Observable} that emits buffered items from the current {@code Observable} when the boundary {@code ObservableSource}
      *         emits an item
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @see #buffer(ObservableSource, int)
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary) {
-        return buffer(boundary, ArrayListSupplier.asSupplier());
+    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundaryIndicator) {
+        return buffer(boundaryIndicator, ArrayListSupplier.asSupplier());
     }
 
     /**
@@ -6222,23 +6272,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary {@code ObservableSource}
      * @param initialCapacity
      *            the initial capacity of each buffer chunk
      * @return an {@code Observable} that emits buffered items from the current {@code Observable} when the boundary {@code ObservableSource}
      *         emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
-     * @throws NullPointerException if {@code boundary} is {@code null}
+     * @throws NullPointerException if {@code boundaryIndicator} is {@code null}
      * @throws IllegalArgumentException if {@code initialCapacity} is non-positive
      * @see #buffer(ObservableSource)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundary, int initialCapacity) {
+    public final <B> Observable<@NonNull List<T>> buffer(@NonNull ObservableSource<B> boundaryIndicator, int initialCapacity) {
         ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
-        return buffer(boundary, Functions.createArrayList(initialCapacity));
+        return buffer(boundaryIndicator, Functions.createArrayList(initialCapacity));
     }
 
     /**
@@ -9721,6 +9771,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits {@code GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the current {@code Observable} that share that
      *         key value
+     * @throws NullPointerException if {@code keySelector} or {@code valueSelector} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
@@ -10382,6 +10433,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            from the current {@code Observable}
      * @return the current {@code Observable} modified so that its {@code Observer}s are notified on the specified
      *         {@code Scheduler}
+     * @throws NullPointerException if {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
@@ -10855,7 +10907,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that repeats the sequence of items emitted by the current {@code Observable} at most
      *         {@code count} times
      * @throws IllegalArgumentException
-     *             if {@code count} is negative
+     *             if {@code times} is negative
      * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
      */
     @CheckReturnValue
@@ -11913,6 +11965,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            if {@code true} and the upstream completes while there is still an unsampled item available,
      *            that item is emitted to downstream before completion
      *            if {@code false}, an unsampled last item is ignored.
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see #throttleLast(long, TimeUnit)
      * @since 2.1
@@ -12306,13 +12359,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the number of items to skip
      * @return an {@code Observable} that is identical to the current {@code Observable} except that it does not emit the first
      *         {@code count} items that the current {@code Observable} emits
+     * @throws IllegalArgumentException if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Observable<T> skip(long count) {
-        if (count <= 0) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected but it was " + count);
+        }
+        if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
         }
         return RxJavaPlugins.onAssembly(new ObservableSkip<>(this, count));
@@ -13534,6 +13591,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits at most {@code count} items from the current {@code Observable} that were emitted
      *         in a specified window of time before the current {@code Observable} completed
      * @throws NullPointerException if {@code unit} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is negative
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -13639,6 +13697,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @return an {@code Observable} that emits the items from the current {@code Observable} that were emitted in the window of
      *         time before the current {@code Observable} completed specified by {@code time}
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -13668,6 +13727,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            by the downstream; if {@code false}, an exception is immediately signaled and all regular elements dropped
      * @return an {@code Observable} that emits the items from the current {@code Observable} that were emitted in the window of
      *         time before the current {@code Observable} completed specified by {@code time}
+     * @throws NullPointerException if {@code unit} is {@code null}
+     * @throws IllegalArgumentException if {@code count} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -13697,6 +13758,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits the items from the current {@code Observable} that were emitted in the window of
      *         time before the current {@code Observable} completed specified by {@code time}, where the timing information is
      *         provided by {@code scheduler}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -13729,6 +13791,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits the items from the current {@code Observable} that were emitted in the window of
      *         time before the current {@code Observable} completed specified by {@code time}, where the timing information is
      *         provided by {@code scheduler}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -13763,6 +13826,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@code Observable} that emits the items from the current {@code Observable} that were emitted in the window of
      *         time before the current {@code Observable} completed specified by {@code time}, where the timing information is
      *         provided by {@code scheduler}
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code bufferSize} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     @CheckReturnValue
@@ -14458,6 +14523,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the {@code Scheduler} to run the timeout timers on
      * @return the current {@code Observable} modified to notify observers of a {@code TimeoutException} in case of a
      *         timeout
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @CheckReturnValue

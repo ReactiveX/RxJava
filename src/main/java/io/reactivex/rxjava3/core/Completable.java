@@ -235,7 +235,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param sources the sources to concatenate
      * @return the {@code Completable} instance which completes only when all sources complete
-     * @throws NullPointerException if sources is {@code null}
+     * @throws NullPointerException if {@code sources} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1655,6 +1655,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onTerminate the {@code Action} to call just before this {@code Completable} terminates
      * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onTerminate} is {@code null}
      * @see #doFinally(Action)
      */
     @CheckReturnValue
@@ -1677,6 +1678,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onAfterTerminate the {@code Action} to call after this {@code Completable} terminates
      * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onAfterTerminate} is {@code null}
      * @see #doFinally(Action)
      */
     @CheckReturnValue
@@ -2034,7 +2036,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param times the number of times the re-subscription should happen
      * @return the new {@code Completable} instance
-     * @throws IllegalArgumentException if times is less than zero
+     * @throws IllegalArgumentException if {@code times} is negative
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2076,7 +2078,7 @@ public abstract class Completable implements CompletableSource {
      * this {@code Completable} and returns a {@code Publisher} that emits items for repeating or completes to indicate the
      * repetition should stop
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code stop} is {@code null}
+     * @throws NullPointerException if {@code handler} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2619,7 +2621,7 @@ public abstract class Completable implements CompletableSource {
      * @param other the other {@code Completable} instance to switch to in case of a timeout,
      * if {@code null} a {@link TimeoutException} is emitted instead
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit} or {@code scheduler}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
      */
     @CheckReturnValue
     @NonNull

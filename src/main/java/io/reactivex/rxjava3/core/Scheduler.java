@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.core;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.*;
@@ -128,6 +129,7 @@ public abstract class Scheduler {
      * Returns the 'current time' of the Scheduler in the specified time unit.
      * @param unit the time unit
      * @return the 'current time'
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @since 2.0
      */
     public long now(@NonNull TimeUnit unit) {
@@ -172,6 +174,7 @@ public abstract class Scheduler {
      * @param run the task to execute
      *
      * @return the Disposable instance that let's one cancel this particular task.
+     * @throws NullPointerException if {@code run} is {@code null}
      * @since 2.0
      */
     @NonNull
@@ -190,6 +193,7 @@ public abstract class Scheduler {
      * @param delay the delay amount, non-positive values indicate non-delayed scheduling
      * @param unit the unit of measure of the delay amount
      * @return the Disposable that let's one cancel this particular delayed task.
+     * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
      * @since 2.0
      */
     @NonNull
@@ -222,6 +226,7 @@ public abstract class Scheduler {
      * @param period the period at which the task should be re-executed
      * @param unit the unit of measure of the delay amount
      * @return the Disposable that let's one cancel this particular delayed task.
+     * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
      * @since 2.0
      */
     @NonNull
@@ -313,11 +318,13 @@ public abstract class Scheduler {
      * @param combine the function that takes a two-level nested Flowable sequence of a Completable and returns
      * the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.
      * @return the Scheduler with the customized execution behavior
+     * @throws NullPointerException if {@code combine} is {@code null}
      * @since 2.1
      */
     @SuppressWarnings("unchecked")
     @NonNull
     public <S extends Scheduler & Disposable> S when(@NonNull Function<Flowable<Flowable<Completable>>, Completable> combine) {
+        Objects.requireNonNull(combine, "combine is null");
         return (S) new SchedulerWhen(combine, this);
     }
 
@@ -365,6 +372,7 @@ public abstract class Scheduler {
          * @param run
          *            Runnable to schedule
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
+         * @throws NullPointerException if {@code run} is {@code null}
          */
         @NonNull
         public Disposable schedule(@NonNull Runnable run) {
@@ -386,6 +394,7 @@ public abstract class Scheduler {
          * @param unit
          *            the time unit of {@code delayTime}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
+         * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
          */
         @NonNull
         public abstract Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit);
@@ -417,6 +426,7 @@ public abstract class Scheduler {
          * @param unit
          *            the time unit of {@code period}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
+         * @throws NullPointerException if {@code run} or {@code unit} is {@code null}
          */
         @NonNull
         public Disposable schedulePeriodically(@NonNull Runnable run, final long initialDelay, final long period, @NonNull final TimeUnit unit) {
@@ -445,6 +455,7 @@ public abstract class Scheduler {
          * Returns the 'current time' of the Worker in the specified time unit.
          * @param unit the time unit
          * @return the 'current time'
+         * @throws NullPointerException if {@code unit} is {@code null}
          * @since 2.0
          */
         public long now(@NonNull TimeUnit unit) {
