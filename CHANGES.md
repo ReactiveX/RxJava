@@ -2,6 +2,12 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.17 - January 12, 2020 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.17%7C))
+
+#### Bugfixes
+
+  - [Pull 6827](https://github.com/ReactiveX/RxJava/pull/6827): Fix `Flowable.flatMap` not canceling the inner sources on outer error.
+
 ### Version 2.2.16 - December 15, 2019 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.16%7C))
 
 #### Bugfixes
