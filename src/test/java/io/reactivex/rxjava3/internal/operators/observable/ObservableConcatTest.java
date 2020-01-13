@@ -879,7 +879,7 @@ public class ObservableConcatTest extends RxJavaTest {
             public Iterable<Integer> apply(Integer v) throws Exception {
                 return Arrays.asList(1, 2, 3, 4, 5);
             }
-        }, 1)
+        })
         .test()
         .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
     }
