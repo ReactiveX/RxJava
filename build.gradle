@@ -87,6 +87,10 @@ dependencies {
     testImplementation "com.google.guava:guava:$guavaVersion"
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters";
+}
+
 javadoc {
     failOnError = false
     exclude "**/internal/**"
