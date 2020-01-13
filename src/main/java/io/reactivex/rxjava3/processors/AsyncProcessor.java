@@ -150,7 +150,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (subscribers.get() == TERMINATED) {
             s.cancel();
             return;
@@ -160,7 +160,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         if (subscribers.get() == TERMINATED) {
             return;
@@ -170,7 +170,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
@@ -228,7 +228,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
         AsyncSubscription<T> as = new AsyncSubscription<>(s, this);
         s.onSubscribe(as);
         if (add(as)) {
@@ -341,7 +341,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
 
         final AsyncProcessor<T> parent;
 
-        AsyncSubscription(Subscriber<? super T> actual, AsyncProcessor<T> parent) {
+        AsyncSubscription(Subscriber<@NonNull ? super T> actual, AsyncProcessor<T> parent) {
             super(actual);
             this.parent = parent;
         }

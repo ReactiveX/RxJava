@@ -24,13 +24,12 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface SingleConverter<T, R> {
+public interface SingleConverter<@NonNull T, @NonNull R> {
     /**
      * Applies a function to the upstream {@link Single} and returns a converted value of type {@code R}.
      *
      * @param upstream the upstream {@code Single} instance
      * @return the converted value
      */
-    @NonNull
     R apply(@NonNull Single<T> upstream);
 }

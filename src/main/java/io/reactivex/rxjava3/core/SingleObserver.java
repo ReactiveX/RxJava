@@ -50,7 +50,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
  *          the type of item the SingleObserver expects to observe
  * @since 2.0
  */
-public interface SingleObserver<T> {
+public interface SingleObserver<@NonNull T> {
 
     /**
      * Provides the {@link SingleObserver} with the means of cancelling (disposing) the

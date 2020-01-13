@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the downstream value type
  */
 @FunctionalInterface
-public interface SingleTransformer<Upstream, Downstream> {
+public interface SingleTransformer<@NonNull Upstream, @NonNull Downstream> {
     /**
      * Applies a function to the upstream {@link Single} and returns a {@link SingleSource} with
      * optionally different element type.

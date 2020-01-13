@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <R> the result type
  */
 @FunctionalInterface
-public interface BiFunction<T1, T2, R> {
+public interface BiFunction<@NonNull T1, @NonNull T2, @NonNull R> {
 
     /**
      * Calculate a value based on the input values.
@@ -31,6 +31,5 @@ public interface BiFunction<T1, T2, R> {
      * @return the result value
      * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2) throws Throwable;
+    R apply(T1 t1, T2 t2) throws Throwable;
 }

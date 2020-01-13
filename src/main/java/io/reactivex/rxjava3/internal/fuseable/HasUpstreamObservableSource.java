@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 
 /**
@@ -21,11 +22,12 @@ import io.reactivex.rxjava3.core.ObservableSource;
  *
  * @param <T> the value type
  */
-public interface HasUpstreamObservableSource<T> {
+public interface HasUpstreamObservableSource<@NonNull T> {
     /**
      * Returns the upstream source of this Observable.
      * <p>Allows discovering the chain of observables.
      * @return the source ObservableSource
      */
+    @NonNull
     ObservableSource<T> source();
 }

@@ -53,7 +53,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
  *          the type of item the MaybeObserver expects to observe
  * @since 2.0
  */
-public interface MaybeObserver<T> {
+public interface MaybeObserver<@NonNull T> {
 
     /**
      * Provides the {@link MaybeObserver} with the means of cancelling (disposing) the

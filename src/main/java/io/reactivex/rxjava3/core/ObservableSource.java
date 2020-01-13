@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.0
  */
 @FunctionalInterface
-public interface ObservableSource<T> {
+public interface ObservableSource<@NonNull T> {
 
     /**
      * Subscribes the given {@link Observer} to this {@link ObservableSource} instance.

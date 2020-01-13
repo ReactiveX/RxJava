@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.core.*;
  *
  * @param <T> the item value type
  */
-public abstract class FlowableProcessor<T> extends Flowable<T> implements Processor<T, T>, FlowableSubscriber<T> {
+public abstract class FlowableProcessor<@NonNull T> extends Flowable<T> implements Processor<T, T>, FlowableSubscriber<T> {
 
     /**
      * Returns true if the FlowableProcessor has subscribers.

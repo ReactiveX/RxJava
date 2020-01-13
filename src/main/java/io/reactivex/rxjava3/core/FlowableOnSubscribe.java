@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T> the value type pushed
  */
 @FunctionalInterface
-public interface FlowableOnSubscribe<T> {
+public interface FlowableOnSubscribe<@NonNull T> {
 
     /**
      * Called for each {@link org.reactivestreams.Subscriber Subscriber} that subscribes.

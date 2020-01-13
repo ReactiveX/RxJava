@@ -918,7 +918,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> Subscriber<? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<? super T> subscriber) {
+    public static <T> Subscriber<@NonNull ? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<@NonNull ? super T> subscriber) {
         BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);

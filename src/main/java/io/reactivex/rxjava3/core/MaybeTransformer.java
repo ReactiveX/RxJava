@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the downstream value type
  */
 @FunctionalInterface
-public interface MaybeTransformer<Upstream, Downstream> {
+public interface MaybeTransformer<@NonNull Upstream, @NonNull Downstream> {
     /**
      * Applies a function to the upstream {@link Maybe} and returns a {@link MaybeSource} with
      * optionally different element type.

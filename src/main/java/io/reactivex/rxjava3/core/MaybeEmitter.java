@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.functions.*;
 
 /**
  * Abstraction over an RxJava {@link MaybeObserver} that allows associating
@@ -47,7 +47,7 @@ import io.reactivex.rxjava3.functions.Cancellable;
  *
  * @param <T> the value type to emit
  */
-public interface MaybeEmitter<T> {
+public interface MaybeEmitter<@NonNull T> {
 
     /**
      * Signal a success value.

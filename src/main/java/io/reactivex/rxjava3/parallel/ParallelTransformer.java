@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface ParallelTransformer<Upstream, Downstream> {
+public interface ParallelTransformer<@NonNull Upstream, @NonNull Downstream> {
     /**
      * Applies a function to the upstream ParallelFlowable and returns a ParallelFlowable with
      * optionally different element type.

@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Upstream> the value type of the upstream
  */
 @FunctionalInterface
-public interface FlowableOperator<Downstream, Upstream> {
+public interface FlowableOperator<@NonNull Downstream, @NonNull Upstream> {
     /**
      * Applies a function to the child {@link Subscriber} and returns a new parent {@code Subscriber}.
      * @param subscriber the child {@code Subscriber} instance

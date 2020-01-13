@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.0
  */
 @FunctionalInterface
-public interface MaybeSource<T> {
+public interface MaybeSource<@NonNull T> {
 
     /**
      * Subscribes the given {@link MaybeObserver} to this {@link MaybeSource} instance.

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 
 /**
@@ -32,12 +33,13 @@ import io.reactivex.rxjava3.core.Observable;
  *
  * @param <T> the value type
  */
-public interface FuseToObservable<T> {
+public interface FuseToObservable<@NonNull T> {
 
     /**
      * Returns a (direct) Observable for the operator.
      * <p>The implementation should handle the necessary RxJavaPlugins wrapping.
      * @return the Observable instance
      */
+    @NonNull
     Observable<T> fuseToObservable();
 }

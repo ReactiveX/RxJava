@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Downstream> the downstream value type
  */
 @FunctionalInterface
-public interface ObservableTransformer<Upstream, Downstream> {
+public interface ObservableTransformer<@NonNull Upstream, @NonNull Downstream> {
     /**
      * Applies a function to the upstream {@link Observable} and returns an {@link ObservableSource} with
      * optionally different element type.

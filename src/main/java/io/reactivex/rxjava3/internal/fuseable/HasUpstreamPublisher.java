@@ -15,13 +15,15 @@ package io.reactivex.rxjava3.internal.fuseable;
 
 import org.reactivestreams.Publisher;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * Interface indicating the implementor has an upstream Publisher-like source available
  * via {@link #source()} method.
  *
  * @param <T> the value type
  */
-public interface HasUpstreamPublisher<T> {
+public interface HasUpstreamPublisher<@NonNull T> {
     /**
      * Returns the source Publisher.
      * <p>
@@ -29,5 +31,6 @@ public interface HasUpstreamPublisher<T> {
      * graph of sequences.
      * @return the source Publisher
      */
+    @NonNull
     Publisher<T> source();
 }

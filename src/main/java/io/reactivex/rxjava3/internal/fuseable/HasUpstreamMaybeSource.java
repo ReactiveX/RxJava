@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.MaybeSource;
 
 /**
@@ -21,11 +22,12 @@ import io.reactivex.rxjava3.core.MaybeSource;
  *
  * @param <T> the value type
  */
-public interface HasUpstreamMaybeSource<T> {
+public interface HasUpstreamMaybeSource<@NonNull T> {
     /**
      * Returns the upstream source of this Maybe.
      * <p>Allows discovering the chain of observables.
      * @return the source MaybeSource
      */
+    @NonNull
     MaybeSource<T> source();
 }

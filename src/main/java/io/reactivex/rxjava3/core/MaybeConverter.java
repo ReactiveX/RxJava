@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface MaybeConverter<T, R> {
+public interface MaybeConverter<@NonNull T, @NonNull R> {
     /**
      * Applies a function to the upstream {@link Maybe} and returns a converted value of type {@code R}.
      *

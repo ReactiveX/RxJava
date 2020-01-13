@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <Upstream> the value type of the upstream
  */
 @FunctionalInterface
-public interface SingleOperator<Downstream, Upstream> {
+public interface SingleOperator<@NonNull Downstream, @NonNull Upstream> {
     /**
      * Applies a function to the child {@link SingleObserver} and returns a new parent {@code SingleObserver}.
      * @param observer the child {@code SingleObserver} instance

@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.0
  */
 @FunctionalInterface
-public interface SingleSource<T> {
+public interface SingleSource<@NonNull T> {
 
     /**
      * Subscribes the given {@link SingleObserver} to this {@link SingleSource} instance.

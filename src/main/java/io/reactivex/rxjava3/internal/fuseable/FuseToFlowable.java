@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 
 /**
@@ -32,12 +33,13 @@ import io.reactivex.rxjava3.core.Flowable;
  *
  * @param <T> the value type
  */
-public interface FuseToFlowable<T> {
+public interface FuseToFlowable<@NonNull T> {
 
     /**
      * Returns a (direct) Flowable for the operator.
      * <p>The implementation should handle the necessary RxJavaPlugins wrapping.
      * @return the Flowable instance
      */
+    @NonNull
     Flowable<T> fuseToFlowable();
 }
