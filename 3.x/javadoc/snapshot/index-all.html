@@ -1258,18 +1258,31 @@
  the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
  aggregation is defined by a specified function.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#combineLatestDelayError-org.reactivestreams.Publisher:A-io.reactivex.rxjava3.functions.Function-">combineLatestDelayError(Publisher&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#combineLatestArrayDelayError-org.reactivestreams.Publisher:A-io.reactivex.rxjava3.functions.Function-">combineLatestArrayDelayError(Publisher&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Combines a collection of source <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s by emitting an item that aggregates the latest values of each of
  the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
  aggregation is defined by a specified function.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#combineLatestDelayError-org.reactivestreams.Publisher:A-io.reactivex.rxjava3.functions.Function-int-">combineLatestDelayError(Publisher&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#combineLatestArrayDelayError-org.reactivestreams.Publisher:A-io.reactivex.rxjava3.functions.Function-int-">combineLatestArrayDelayError(Publisher&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
 <div class="block">Combines a collection of source <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" title="class or interface in org.reactivestreams"><code>Publisher</code></a>s by emitting an item that aggregates the latest values of each of
  the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
  aggregation is defined by a specified function and delays any error from the sources until
  all source <code>Publisher</code>s terminate.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#combineLatestArrayDelayError-io.reactivex.rxjava3.core.ObservableSource:A-io.reactivex.rxjava3.functions.Function-">combineLatestArrayDelayError(ObservableSource&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Combines an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
+ the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
+ aggregation is defined by a specified function.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#combineLatestArrayDelayError-io.reactivex.rxjava3.core.ObservableSource:A-io.reactivex.rxjava3.functions.Function-int-">combineLatestArrayDelayError(ObservableSource&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
+<dd>
+<div class="block">Combines an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
+ the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
+ aggregation is defined by a specified function and delays any error from the sources until
+ all source <code>ObservableSource</code>s terminate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Flowable.html#combineLatestDelayError-java.lang.Iterable-io.reactivex.rxjava3.functions.Function-">combineLatestDelayError(Iterable&lt;? extends Publisher&lt;? extends T&gt;&gt;, Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Flowable.html" title="class in io.reactivex.rxjava3.core">Flowable</a></dt>
 <dd>
@@ -1284,19 +1297,6 @@
  the source <code>Publisher</code>s each time an item is received from any of the source <code>Publisher</code>s, where this
  aggregation is defined by a specified function and delays any error from the sources until
  all source <code>Publisher</code>s terminate.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#combineLatestDelayError-io.reactivex.rxjava3.core.ObservableSource:A-io.reactivex.rxjava3.functions.Function-">combineLatestDelayError(ObservableSource&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
- the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
- aggregation is defined by a specified function.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#combineLatestDelayError-io.reactivex.rxjava3.core.ObservableSource:A-io.reactivex.rxjava3.functions.Function-int-">combineLatestDelayError(ObservableSource&lt;? extends T&gt;[], Function&lt;? super Object[], ? extends R&gt;, int)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
-<dd>
-<div class="block">Combines an array of <a href="io/reactivex/rxjava3/core/ObservableSource.html" title="interface in io.reactivex.rxjava3.core"><code>ObservableSource</code></a>s by emitting an item that aggregates the latest values of each of
- the <code>ObservableSource</code>s each time an item is received from any of the <code>ObservableSource</code>s, where this
- aggregation is defined by a specified function and delays any error from the sources until
- all source <code>ObservableSource</code>s terminate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#combineLatestDelayError-java.lang.Iterable-io.reactivex.rxjava3.functions.Function-">combineLatestDelayError(Iterable&lt;? extends ObservableSource&lt;? extends T&gt;&gt;, Function&lt;? super Object[], ? extends R&gt;)</a></span> - Static method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
@@ -1946,11 +1946,6 @@
  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMapIterable-io.reactivex.rxjava3.functions.Function-">concatMapIterable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
-<dd>
-<div class="block">Returns an <code>Observable</code> that concatenate each item emitted by the current <code>Observable</code> with the values in an
- <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/reactivex/rxjava3/core/Observable.html#concatMapIterable-io.reactivex.rxjava3.functions.Function-int-">concatMapIterable(Function&lt;? super T, ? extends Iterable&lt;? extends U&gt;&gt;, int)</a></span> - Method in class io.reactivex.rxjava3.core.<a href="io/reactivex/rxjava3/core/Observable.html" title="class in io.reactivex.rxjava3.core">Observable</a></dt>
 <dd>
 <div class="block">Returns an <code>Observable</code> that concatenate each item emitted by the current <code>Observable</code> with the values in an
  <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang"><code>Iterable</code></a> corresponding to that item that is generated by a selector.</div>
