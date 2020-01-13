@@ -789,7 +789,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSources() {
 
-        Observable.combineLatestDelayError(new ObservableSource[] {
+        Observable.combineLatestArrayDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
         }, new Function<Object[], Object>() {
             @Override
@@ -805,7 +805,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSourcesWithError() {
 
-        Observable.combineLatestDelayError(new ObservableSource[] {
+        Observable.combineLatestArrayDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
         }, new Function<Object[], Object>() {
             @Override
@@ -856,7 +856,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestDelayErrorEmpty() {
-        assertSame(Observable.empty(), Observable.combineLatestDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+        assertSame(Observable.empty(), Observable.combineLatestArrayDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
     }
 
     @Test
@@ -923,7 +923,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed() {
-        Observable.combineLatestDelayError(
+        Observable.combineLatestArrayDelayError(
                 new ObservableSource[] { Observable.error(new TestException()), Observable.just(1) },
                 new Function<Object[], Object>() {
                     @Override
@@ -940,7 +940,7 @@ public class ObservableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed2() {
-        Observable.combineLatestDelayError(
+        Observable.combineLatestArrayDelayError(
                 new ObservableSource[] { Observable.error(new TestException()).startWithItem(1), Observable.empty() },
                 new Function<Object[], Object>() {
                     @Override
