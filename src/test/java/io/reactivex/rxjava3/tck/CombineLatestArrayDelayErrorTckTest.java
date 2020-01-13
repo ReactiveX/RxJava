@@ -26,7 +26,7 @@ public class CombineLatestArrayDelayErrorTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return
-            Flowable.combineLatestDelayError(
+            Flowable.combineLatestArrayDelayError(
                 new Publisher[] { Flowable.just(1L), Flowable.fromIterable(iterate(elements)) },
                 new Function<Object[], Long>() {
                     @Override

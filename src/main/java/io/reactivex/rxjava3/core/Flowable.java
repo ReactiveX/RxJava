@@ -461,7 +461,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
      *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -481,9 +481,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static <T, @NonNull R> Flowable<R> combineLatestDelayError(@NonNull Publisher<? extends T>[] sources,
+    public static <T, @NonNull R> Flowable<R> combineLatestArrayDelayError(@NonNull Publisher<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestDelayError(sources, combiner, bufferSize());
+        return combineLatestArrayDelayError(sources, combiner, bufferSize());
     }
 
     /**
@@ -509,7 +509,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
      *   {@link MissingBackpressureException}) and may lead to {@link OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -532,7 +532,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, @NonNull R> Flowable<R> combineLatestDelayError(@NonNull Publisher<? extends T>[] sources,
+    public static <T, @NonNull R> Flowable<R> combineLatestArrayDelayError(@NonNull Publisher<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");

@@ -868,7 +868,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -887,10 +887,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T, R> Observable<R> combineLatestDelayError(
+    public static <T, R> Observable<R> combineLatestArrayDelayError(
             @NonNull ObservableSource<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner) {
-        return combineLatestDelayError(sources, combiner, bufferSize());
+        return combineLatestArrayDelayError(sources, combiner, bufferSize());
     }
 
     /**
@@ -914,7 +914,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -936,7 +936,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatestDelayError(@NonNull ObservableSource<? extends T>[] sources,
+    public static <T, R> Observable<R> combineLatestArrayDelayError(@NonNull ObservableSource<? extends T>[] sources,
             @NonNull Function<? super Object[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");

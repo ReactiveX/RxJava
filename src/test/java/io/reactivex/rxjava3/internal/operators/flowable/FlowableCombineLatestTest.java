@@ -1073,7 +1073,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
             .test()
             .assertResult(expected);
 
-            Flowable.combineLatestDelayError(sources, new Function<Object[], List<Object>>() {
+            Flowable.combineLatestArrayDelayError(sources, new Function<Object[], List<Object>>() {
                 @Override
                 public List<Object> apply(Object[] t) throws Exception {
                     return Arrays.asList(t);
@@ -1104,7 +1104,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSources() {
 
-        Flowable.combineLatestDelayError(new Flowable[] {
+        Flowable.combineLatestArrayDelayError(new Flowable[] {
                 Flowable.just(1), Flowable.just(2)
         }, new Function<Object[], Object>() {
             @Override
@@ -1120,7 +1120,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSourcesWithError() {
 
-        Flowable.combineLatestDelayError(new Flowable[] {
+        Flowable.combineLatestArrayDelayError(new Flowable[] {
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
         }, new Function<Object[], Object>() {
             @Override
@@ -1171,7 +1171,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestDelayErrorEmpty() {
-        assertSame(Flowable.empty(), Flowable.combineLatestDelayError(new Flowable[0], Functions.<Object[]>identity(), 16));
+        assertSame(Flowable.empty(), Flowable.combineLatestArrayDelayError(new Flowable[0], Functions.<Object[]>identity(), 16));
     }
 
     @Test
@@ -1295,7 +1295,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed() {
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatestArrayDelayError(
                 new Publisher[] { Flowable.error(new TestException()), Flowable.just(1) },
                 new Function<Object[], Object>() {
                     @Override
@@ -1312,7 +1312,7 @@ public class FlowableCombineLatestTest extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorDelayed2() {
-        Flowable.combineLatestDelayError(
+        Flowable.combineLatestArrayDelayError(
                 new Publisher[] { Flowable.error(new TestException()).startWithItem(1), Flowable.empty() },
                 new Function<Object[], Object>() {
                     @Override
