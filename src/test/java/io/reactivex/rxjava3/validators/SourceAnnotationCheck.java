@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 import io.reactivex.rxjava3.observables.ConnectableObservable;
 import io.reactivex.rxjava3.parallel.ParallelFlowable;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.*;
@@ -170,6 +171,11 @@ public class SourceAnnotationCheck {
     @Test
     public void checkMulticastProcessor() throws Exception {
         processFile(MulticastProcessor.class);
+    }
+
+    @Test
+    public void checkRxJavaPlugins() throws Exception {
+        processFile(RxJavaPlugins.class);
     }
 
     static void processFile(Class<?> clazz) throws Exception {
@@ -376,6 +382,26 @@ public class SourceAnnotationCheck {
                     ;
                 }
             }
+
+            for (String typeName : TYPES_REQUIRING_NONNULL_TYPEARG) {
+                String pattern = typeName + "<?";
+                if (line.contains(pattern)) {
+                    errorCount++;
+                    errors.append("L")
+                    .append(j)
+                    .append(" : Missing @NonNull type argument annotation on ")
+                    .append(typeName)
+                    .append("\r\n")
+                    .append(" at ")
+                    .append(fullClassName)
+                    .append(".method(")
+                    .append(f.getName())
+                    .append(":")
+                    .append(j + 1)
+                    .append(")\r\n")
+                    ;
+                }
+            }
         }
 
         if (errorCount != 0) {
@@ -416,5 +442,9 @@ public class SourceAnnotationCheck {
             "Subject", "Processor", "FlowableProcessor",
 
             "T", "R", "U", "V"
+    );
+
+    static final List<String> TYPES_REQUIRING_NONNULL_TYPEARG = Arrays.asList(
+            "Iterable", "Stream", "Publisher", "Subscriber", "Processor"
     );
 }

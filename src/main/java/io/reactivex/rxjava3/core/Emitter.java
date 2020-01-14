@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  *
  * @param <T> the value type emitted
  */
-public interface Emitter<T> {
+public interface Emitter<@NonNull T> {
 
     /**
      * Signal a normal value.

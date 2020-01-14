@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <R> the result type
  */
 @FunctionalInterface
-public interface Function3<T1, T2, T3, R> {
+public interface Function3<@NonNull T1, @NonNull T2, @NonNull T3, @NonNull R> {
     /**
      * Calculate a value based on the input values.
      * @param t1 the first value
@@ -32,6 +32,5 @@ public interface Function3<T1, T2, T3, R> {
      * @return the result value
      * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2, @NonNull T3 t3) throws Throwable;
+    R apply(T1 t1, T2 t2, T3 t3) throws Throwable;
 }

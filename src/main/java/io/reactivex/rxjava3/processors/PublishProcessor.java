@@ -141,7 +141,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<? super T> t) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> t) {
         PublishSubscription<T> ps = new PublishSubscription<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
@@ -336,11 +336,11 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      *
      * @param <T> the value type
      */
-    static final class PublishSubscription<T> extends AtomicLong implements Subscription {
+    static final class PublishSubscription<@NonNull T> extends AtomicLong implements Subscription {
 
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
-        final Subscriber<? super T> downstream;
+        final Subscriber<@NonNull ? super T> downstream;
         /** The parent processor servicing this subscriber. */
         final PublishProcessor<T> parent;
 
@@ -349,7 +349,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
          * @param actual the actual subscriber
          * @param parent the parent PublishProcessor
          */
-        PublishSubscription(Subscriber<? super T> actual, PublishProcessor<T> parent) {
+        PublishSubscription(Subscriber<@NonNull ? super T> actual, PublishProcessor<T> parent) {
             this.downstream = actual;
             this.parent = parent;
         }

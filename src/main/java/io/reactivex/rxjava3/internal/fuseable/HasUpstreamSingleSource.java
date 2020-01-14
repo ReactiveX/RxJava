@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleSource;
 
 /**
@@ -21,11 +22,12 @@ import io.reactivex.rxjava3.core.SingleSource;
  *
  * @param <T> the value type
  */
-public interface HasUpstreamSingleSource<T> {
+public interface HasUpstreamSingleSource<@NonNull T> {
     /**
      * Returns the upstream source of this Single.
      * <p>Allows discovering the chain of observables.
      * @return the source SingleSource
      */
+    @NonNull
     SingleSource<T> source();
 }

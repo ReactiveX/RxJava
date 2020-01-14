@@ -239,7 +239,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
         BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
         s.onSubscribe(bs);
         if (add(bs)) {
@@ -475,11 +475,11 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         wl.unlock();
     }
 
-    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, NonThrowingPredicate<Object> {
+    static final class BehaviorSubscription<@NonNull T> extends AtomicLong implements Subscription, NonThrowingPredicate<Object> {
 
         private static final long serialVersionUID = 3293175281126227086L;
 
-        final Subscriber<? super T> downstream;
+        final Subscriber<@NonNull ? super T> downstream;
         final BehaviorProcessor<T> state;
 
         boolean next;
@@ -492,7 +492,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
         long index;
 
-        BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
+        BehaviorSubscription(Subscriber<@NonNull ? super T> actual, BehaviorProcessor<T> state) {
             this.downstream = actual;
             this.state = state;
         }

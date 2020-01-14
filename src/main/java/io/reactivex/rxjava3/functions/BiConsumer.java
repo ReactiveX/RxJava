@@ -13,13 +13,15 @@
 
 package io.reactivex.rxjava3.functions;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * A functional interface (callback) that accepts two values (of possibly different types).
  * @param <T1> the first value type
  * @param <T2> the second value type
  */
 @FunctionalInterface
-public interface BiConsumer<T1, T2> {
+public interface BiConsumer<@NonNull T1, @NonNull T2> {
 
     /**
      * Performs an operation on the given values.

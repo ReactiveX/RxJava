@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <R> the result type
  */
 @FunctionalInterface
-public interface Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
+public interface Function9<@NonNull T1, @NonNull T2, @NonNull T3, @NonNull T4, @NonNull T5, @NonNull T6, @NonNull T7, @NonNull T8, @NonNull T9, @NonNull R> {
     /**
      * Calculate a value based on the input values.
      * @param t1 the first value
@@ -44,6 +44,5 @@ public interface Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
      * @return the result value
      * @throws Throwable if the implementation wishes to throw any type of exception
      */
-    @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2, @NonNull T3 t3, @NonNull T4 t4, @NonNull T5 t5, @NonNull T6 t6, @NonNull T7 t7, @NonNull T8 t8, @NonNull T9 t9) throws Throwable;
+    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) throws Throwable;
 }

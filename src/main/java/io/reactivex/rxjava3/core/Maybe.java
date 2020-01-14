@@ -129,7 +129,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> amb(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Maybe<T> amb(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new MaybeAmb<>(null, sources));
     }
@@ -186,7 +186,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concat(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new MaybeConcatIterable<>(sources));
     }
@@ -314,7 +314,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> concat(@NonNull Publisher<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return concat(sources, 2);
     }
 
@@ -343,7 +343,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Flowable<T> concat(@NonNull Publisher<? extends MaybeSource<? extends T>> sources, int prefetch) {
+    public static <T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapPublisher(sources, MaybeToPublisher.instance(), prefetch, ErrorMode.IMMEDIATE));
@@ -469,7 +469,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concatDelayError(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatDelayError(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return Flowable.fromIterable(sources).concatMapDelayError((Function)MaybeToPublisher.instance());
     }
@@ -497,7 +497,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> concatDelayError(@NonNull Publisher<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromPublisher(sources).concatMapDelayError((Function)MaybeToPublisher.instance());
     }
 
@@ -525,7 +525,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> concatEager(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromIterable(sources).concatMapEager((Function)MaybeToPublisher.instance());
     }
 
@@ -555,7 +555,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> concatEager(@NonNull Publisher<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromPublisher(sources).concatMapEager((Function)MaybeToPublisher.instance());
     }
 
@@ -1020,7 +1020,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> merge(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return merge(Flowable.fromIterable(sources));
     }
 
@@ -1056,7 +1056,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> merge(@NonNull Publisher<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return merge(sources, Integer.MAX_VALUE);
     }
 
@@ -1095,7 +1095,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Flowable<T> merge(@NonNull Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+    public static <T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, MaybeToPublisher.instance(), false, maxConcurrency, 1));
@@ -1413,7 +1413,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> mergeDelayError(@NonNull Iterable<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromIterable(sources).flatMap((Function)MaybeToPublisher.instance(), true);
     }
 
@@ -1450,7 +1450,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends MaybeSource<? extends T>> sources) {
+    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources) {
         return mergeDelayError(sources, Integer.MAX_VALUE);
     }
 
@@ -1491,7 +1491,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<@NonNull ? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, MaybeToPublisher.instance(), true, maxConcurrency, 1));
@@ -1917,7 +1917,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Maybe<R> zip(@NonNull Iterable<? extends MaybeSource<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Maybe<R> zip(@NonNull Iterable<@NonNull ? extends MaybeSource<? extends T>> sources, @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new MaybeZipIterable<>(sources, zipper));
@@ -3028,7 +3028,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Maybe<T> doOnEvent(@NonNull BiConsumer<? super T, ? super Throwable> onEvent) {
+    public final Maybe<T> doOnEvent(@NonNull BiConsumer<@Nullable ? super T, @Nullable ? super Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new MaybeDoOnEvent<>(this, onEvent));
     }
@@ -3259,7 +3259,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> flattenAsFlowable(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public final <U> Flowable<U> flattenAsFlowable(@NonNull Function<? super T, ? extends Iterable<@NonNull ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlatMapIterableFlowable<>(this, mapper));
     }
@@ -3286,7 +3286,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> flattenAsObservable(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public final <U> Observable<U> flattenAsObservable(@NonNull Function<? super T, ? extends Iterable<@NonNull ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlatMapIterableObservable<>(this, mapper));
     }
@@ -3340,7 +3340,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> flatMapPublisher(@NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public final <R> Flowable<R> flatMapPublisher(@NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlatMapPublisher<>(this, mapper));
     }
@@ -4153,7 +4153,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Flowable<T> repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
+    public final Flowable<T> repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<@NonNull ?>> handler) {
         return toFlowable().repeatWhen(handler);
     }
 
@@ -4366,7 +4366,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public final Maybe<T> retryWhen(
-            @NonNull Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
+            @NonNull Function<? super Flowable<Throwable>, ? extends Publisher<@NonNull ?>> handler) {
         return toFlowable().retryWhen(handler).singleElement();
     }
 
@@ -5188,7 +5188,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public final <R> Flowable<R> flattenStreamAsFlowable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+    public final <R> Flowable<R> flattenStreamAsFlowable(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlattenStreamAsFlowable<>(this, mapper));
     }
@@ -5228,7 +5228,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <R> Observable<R> flattenStreamAsObservable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+    public final <R> Observable<R> flattenStreamAsObservable(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlattenStreamAsObservable<>(this, mapper));
     }

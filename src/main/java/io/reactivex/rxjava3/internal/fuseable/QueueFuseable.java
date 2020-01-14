@@ -13,11 +13,13 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * Represents a SimpleQueue plus the means and constants for requesting a fusion mode.
  * @param <T> the value type returned by the SimpleQueue.poll()
  */
-public interface QueueFuseable<T> extends SimpleQueue<T> {
+public interface QueueFuseable<@NonNull T> extends SimpleQueue<T> {
     /**
      * Returned by the {@link #requestFusion(int)} if the upstream doesn't support
      * the requested mode.

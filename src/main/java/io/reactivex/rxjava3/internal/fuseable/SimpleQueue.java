@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.annotations.*;
  *
  * @param <T> the value type to offer and poll, not null
  */
-public interface SimpleQueue<T> {
+public interface SimpleQueue<@NonNull T> {
 
     /**
      * Atomically enqueue a single.

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
 
 /**
@@ -32,12 +33,13 @@ import io.reactivex.rxjava3.core.Maybe;
  *
  * @param <T> the value type
  */
-public interface FuseToMaybe<T> {
+public interface FuseToMaybe<@NonNull T> {
 
     /**
      * Returns a (direct) Maybe for the operator.
      * <p>The implementation should handle the necessary RxJavaPlugins wrapping.
      * @return the Maybe instance
      */
+    @NonNull
     Maybe<T> fuseToMaybe();
 }

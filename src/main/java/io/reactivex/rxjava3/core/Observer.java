@@ -73,7 +73,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
  * @param <T>
  *          the type of item the Observer expects to observe
  */
-public interface Observer<T> {
+public interface Observer<@NonNull T> {
 
     /**
      * Provides the {@link Observer} with the means of cancelling (disposing) the

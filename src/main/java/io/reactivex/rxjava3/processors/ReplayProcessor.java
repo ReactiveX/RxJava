@@ -345,7 +345,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
         ReplaySubscription<T> rs = new ReplaySubscription<>(s, this);
         s.onSubscribe(rs);
 
@@ -615,7 +615,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
 
         private static final long serialVersionUID = 466549804534799122L;
-        final Subscriber<? super T> downstream;
+        final Subscriber<@NonNull ? super T> downstream;
         final ReplayProcessor<T> state;
 
         Object index;
@@ -626,7 +626,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         long emitted;
 
-        ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
+        ReplaySubscription(Subscriber<@NonNull ? super T> actual, ReplayProcessor<T> state) {
             this.downstream = actual;
             this.state = state;
             this.requested = new AtomicLong();
@@ -728,7 +728,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             int missed = 1;
             final List<T> b = buffer;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
             int index;
@@ -967,7 +967,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             Node<T> index = (Node<T>)rs.index;
             if (index == null) {
@@ -1257,7 +1257,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             TimedNode<T> index = (TimedNode<T>)rs.index;
             if (index == null) {

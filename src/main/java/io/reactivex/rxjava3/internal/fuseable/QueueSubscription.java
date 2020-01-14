@@ -16,6 +16,8 @@ import java.util.Queue;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * An interface extending Queue and Subscription and allows negotiating
  * the fusion mode between subsequent operators  of the {@code Flowable} base reactive type.
@@ -53,5 +55,5 @@ import org.reactivestreams.Subscription;
  * </ul>
  * @param <T> the value type transmitted through the queue
  */
-public interface QueueSubscription<T> extends QueueFuseable<T>, Subscription {
+public interface QueueSubscription<@NonNull T> extends QueueFuseable<T>, Subscription {
 }

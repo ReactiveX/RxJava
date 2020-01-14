@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T> the value type pushed
  */
 @FunctionalInterface
-public interface ObservableOnSubscribe<T> {
+public interface ObservableOnSubscribe<@NonNull T> {
 
     /**
      * Called for each {@link Observer} that subscribes.

@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @param <T> the value type
  * @since 2.2
  */
-public interface FlowableSubscriber<T> extends Subscriber<T> {
+public interface FlowableSubscriber<@NonNull T> extends Subscriber<T> {
 
     /**
      * Implementors of this method should make sure everything that needs

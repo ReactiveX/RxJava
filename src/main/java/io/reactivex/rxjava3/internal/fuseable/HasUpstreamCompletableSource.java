@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.CompletableSource;
 
 /**
@@ -25,5 +26,6 @@ public interface HasUpstreamCompletableSource {
      * <p>Allows discovering the chain of observables.
      * @return the source CompletableSource
      */
+    @NonNull
     CompletableSource source();
 }

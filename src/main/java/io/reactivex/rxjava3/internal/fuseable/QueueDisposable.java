@@ -14,6 +14,7 @@ package io.reactivex.rxjava3.internal.fuseable;
 
 import java.util.Queue;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
@@ -51,5 +52,5 @@ import io.reactivex.rxjava3.disposables.Disposable;
  * </ul>
  * @param <T> the value type transmitted through the queue
  */
-public interface QueueDisposable<T> extends QueueFuseable<T>, Disposable {
+public interface QueueDisposable<@NonNull T> extends QueueFuseable<T>, Disposable {
 }

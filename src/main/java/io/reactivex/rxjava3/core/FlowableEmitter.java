@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Cancellable;
+import io.reactivex.rxjava3.functions.*;
 
 /**
  * Abstraction over a Reactive Streams {@link org.reactivestreams.Subscriber} that allows associating
@@ -48,7 +48,7 @@ import io.reactivex.rxjava3.functions.Cancellable;
  *
  * @param <T> the value type to emit
  */
-public interface FlowableEmitter<T> extends Emitter<T> {
+public interface FlowableEmitter<@NonNull T> extends Emitter<T> {
 
     /**
      * Sets a Disposable on this emitter; any previous {@link Disposable}

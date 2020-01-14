@@ -24,13 +24,12 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @since 2.2
  */
 @FunctionalInterface
-public interface FlowableConverter<T, R> {
+public interface FlowableConverter<@NonNull T, @NonNull R> {
     /**
      * Applies a function to the upstream {@link Flowable} and returns a converted value of type {@code R}.
      *
      * @param upstream the upstream {@code Flowable} instance
      * @return the converted value
      */
-    @NonNull
     R apply(@NonNull Flowable<T> upstream);
 }

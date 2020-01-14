@@ -375,7 +375,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
+    protected void subscribeActual(@NonNull Subscriber<@NonNull ? super T> s) {
         MulticastSubscription<T> ms = new MulticastSubscription<>(s, this);
         s.onSubscribe(ms);
         if (add(ms)) {
@@ -593,13 +593,13 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = -363282618957264509L;
 
-        final Subscriber<? super T> downstream;
+        final Subscriber<@NonNull ? super T> downstream;
 
         final MulticastProcessor<T> parent;
 
         long emitted;
 
-        MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
+        MulticastSubscription(Subscriber<@NonNull ? super T> actual, MulticastProcessor<T> parent) {
             this.downstream = actual;
             this.parent = parent;
         }

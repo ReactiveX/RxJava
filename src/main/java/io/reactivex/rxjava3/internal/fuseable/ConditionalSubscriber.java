@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.fuseable;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 
 /**
@@ -25,12 +26,12 @@ import io.reactivex.rxjava3.core.FlowableSubscriber;
  *
  * @param <T> the value type
  */
-public interface ConditionalSubscriber<T> extends FlowableSubscriber<T> {
+public interface ConditionalSubscriber<@NonNull T> extends FlowableSubscriber<T> {
     /**
      * Conditionally takes the value.
      * @param t the value to deliver
      * @return true if the value has been accepted, false if the value has been rejected
      * and the next value can be sent immediately
      */
-    boolean tryOnNext(T t);
+    boolean tryOnNext(@NonNull T t);
 }

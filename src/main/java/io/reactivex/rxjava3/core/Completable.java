@@ -151,7 +151,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable amb(@NonNull Iterable<? extends CompletableSource> sources) {
+    public static Completable amb(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
         Objects.requireNonNull(sources, "sources is null");
 
         return RxJavaPlugins.onAssembly(new CompletableAmb(null, sources));
@@ -216,7 +216,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable concat(@NonNull Iterable<? extends CompletableSource> sources) {
+    public static Completable concat(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
         Objects.requireNonNull(sources, "sources is null");
 
         return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
@@ -241,7 +241,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static Completable concat(@NonNull Publisher<? extends CompletableSource> sources) {
+    public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
         return concat(sources, 2);
     }
 
@@ -266,7 +266,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static Completable concat(@NonNull Publisher<? extends CompletableSource> sources, int prefetch) {
+    public static Completable concat(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new CompletableConcat(sources, prefetch));
@@ -733,7 +733,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable merge(@NonNull Iterable<? extends CompletableSource> sources) {
+    public static Completable merge(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources));
     }
@@ -772,7 +772,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @NonNull
-    public static Completable merge(@NonNull Publisher<? extends CompletableSource> sources) {
+    public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
         return merge0(sources, Integer.MAX_VALUE, false);
     }
 
@@ -813,7 +813,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static Completable merge(@NonNull Publisher<? extends CompletableSource> sources, int maxConcurrency) {
+    public static Completable merge(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, false);
     }
 
@@ -840,7 +840,7 @@ public abstract class Completable implements CompletableSource {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    private static Completable merge0(@NonNull Publisher<? extends CompletableSource> sources, int maxConcurrency, boolean delayErrors) {
+    private static Completable merge0(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency, boolean delayErrors) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new CompletableMerge(sources, maxConcurrency, delayErrors));
@@ -886,7 +886,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable mergeDelayError(@NonNull Iterable<? extends CompletableSource> sources) {
+    public static Completable mergeDelayError(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources));
     }
@@ -912,7 +912,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @NonNull
-    public static Completable mergeDelayError(@NonNull Publisher<? extends CompletableSource> sources) {
+    public static Completable mergeDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
         return merge0(sources, Integer.MAX_VALUE, true);
     }
 
@@ -940,7 +940,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public static Completable mergeDelayError(@NonNull Publisher<? extends CompletableSource> sources, int maxConcurrency) {
+    public static Completable mergeDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, true);
     }
 
@@ -1582,7 +1582,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnEvent(@NonNull Consumer<? super Throwable> onEvent) {
+    public final Completable doOnEvent(@NonNull Consumer<@Nullable ? super Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new CompletableDoOnEvent(this, onEvent));
     }
@@ -2083,7 +2083,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Completable repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
+    public final Completable repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<@NonNull ?>> handler) {
         return fromPublisher(toFlowable().repeatWhen(handler));
     }
 
@@ -2234,7 +2234,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Completable retryWhen(@NonNull Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
+    public final Completable retryWhen(@NonNull Function<? super Flowable<Throwable>, ? extends Publisher<@NonNull ?>> handler) {
         return fromPublisher(toFlowable().retryWhen(handler));
     }
 

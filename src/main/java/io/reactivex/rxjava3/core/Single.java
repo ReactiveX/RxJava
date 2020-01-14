@@ -113,7 +113,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * @since 2.0
  * @see io.reactivex.rxjava3.observers.DisposableSingleObserver
  */
-public abstract class Single<T> implements SingleSource<T> {
+public abstract class Single<@NonNull T> implements SingleSource<T> {
 
     /**
      * Runs multiple {@link SingleSource}s and signals the events of the first one that signals (disposing
@@ -134,7 +134,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> amb(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Single<T> amb(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new SingleAmb<>(null, sources));
     }
@@ -193,7 +193,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T> Flowable<T> concat(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> concat(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
         return concat(Flowable.fromIterable(sources));
     }
 
@@ -243,7 +243,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concat(@NonNull Publisher<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
         return concat(sources, 2);
     }
 
@@ -272,7 +272,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Flowable<T> concat(@NonNull Publisher<? extends SingleSource<? extends T>> sources, int prefetch) {
+    public static <T> Flowable<T> concat(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapPublisher(sources, SingleInternalHelper.toFlowable(), prefetch, ErrorMode.IMMEDIATE));
@@ -465,7 +465,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concatEager(@NonNull Publisher<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatEager(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
         return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.toFlowable());
     }
 
@@ -492,7 +492,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concatEager(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> concatEager(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
         return Flowable.fromIterable(sources).concatMapEager(SingleInternalHelper.toFlowable());
     }
 
@@ -765,7 +765,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<T> fromPublisher(@NonNull Publisher<? extends T> publisher) {
+    public static <T> Single<T> fromPublisher(@NonNull Publisher<@NonNull ? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
         return RxJavaPlugins.onAssembly(new SingleFromPublisher<>(publisher));
     }
@@ -898,7 +898,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> merge(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> merge(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
         return merge(Flowable.fromIterable(sources));
     }
 
@@ -938,7 +938,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Flowable<T> merge(@NonNull Publisher<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> merge(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), false, Integer.MAX_VALUE, Flowable.bufferSize()));
     }
@@ -1155,7 +1155,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> mergeDelayError(@NonNull Iterable<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> mergeDelayError(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources) {
         return mergeDelayError(Flowable.fromIterable(sources));
     }
 
@@ -1183,7 +1183,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<? extends SingleSource<? extends T>> sources) {
+    public static <T> Flowable<T> mergeDelayError(@NonNull Publisher<@NonNull ? extends SingleSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), true, Integer.MAX_VALUE, Flowable.bufferSize()));
     }
@@ -1564,7 +1564,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Single<R> zip(@NonNull Iterable<? extends SingleSource<? extends T>> sources,
+    public static <T, R> Single<R> zip(@NonNull Iterable<@NonNull ? extends SingleSource<? extends T>> sources,
             @NonNull Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
@@ -2654,7 +2654,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnEvent(@NonNull BiConsumer<? super T, ? super Throwable> onEvent) {
+    public final Single<T> doOnEvent(@NonNull BiConsumer<@Nullable ? super T, @Nullable ? super Throwable> onEvent) {
         Objects.requireNonNull(onEvent, "onEvent is null");
         return RxJavaPlugins.onAssembly(new SingleDoOnEvent<>(this, onEvent));
     }
@@ -2806,7 +2806,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> flatMapPublisher(@NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public final <R> Flowable<R> flatMapPublisher(@NonNull Function<? super T, ? extends Publisher<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMapPublisher<>(this, mapper));
     }
@@ -2837,7 +2837,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> flattenAsFlowable(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public final <U> Flowable<U> flattenAsFlowable(@NonNull Function<? super T, ? extends Iterable<@NonNull ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableFlowable<>(this, mapper));
     }
@@ -2865,7 +2865,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <@NonNull U> Observable<U> flattenAsObservable(@NonNull Function<@NonNull ? super T, @NonNull ? extends Iterable<? extends U>> mapper) {
+    public final <@NonNull U> Observable<U> flattenAsObservable(@NonNull Function<@NonNull ? super T, @NonNull ? extends Iterable<@NonNull ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableObservable<>(this, mapper));
     }
@@ -3465,7 +3465,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Flowable<T> repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
+    public final Flowable<T> repeatWhen(@NonNull Function<? super Flowable<Object>, ? extends Publisher<@NonNull ?>> handler) {
         return toFlowable().repeatWhen(handler);
     }
 
@@ -3649,7 +3649,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final Single<T> retryWhen(@NonNull Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
+    public final Single<T> retryWhen(@NonNull Function<? super Flowable<Throwable>, ? extends Publisher<@NonNull ?>> handler) {
         return toSingle(toFlowable().retryWhen(handler));
     }
 
@@ -4410,7 +4410,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     @NonNull
-    public final <R> Flowable<R> flattenStreamAsFlowable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+    public final <R> Flowable<R> flattenStreamAsFlowable(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlattenStreamAsFlowable<>(this, mapper));
     }
@@ -4451,7 +4451,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <R> Observable<R> flattenStreamAsObservable(@NonNull Function<? super T, ? extends Stream<? extends R>> mapper) {
+    public final <R> Observable<R> flattenStreamAsObservable(@NonNull Function<? super T, ? extends Stream<@NonNull ? extends R>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlattenStreamAsObservable<>(this, mapper));
     }
