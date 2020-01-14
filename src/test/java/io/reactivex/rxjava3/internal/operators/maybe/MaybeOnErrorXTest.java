@@ -99,22 +99,6 @@ public class MaybeOnErrorXTest extends RxJavaTest {
     }
 
     @Test
-    public void onExceptionResumeNext() {
-        Maybe.error(new TestException())
-        .onExceptionResumeNext(Maybe.just(1))
-        .test()
-        .assertResult(1);
-    }
-
-    @Test
-    public void onExceptionResumeNextPassthrough() {
-        Maybe.error(new AssertionError())
-        .onExceptionResumeNext(Maybe.just(1))
-        .test()
-        .assertFailure(AssertionError.class);
-    }
-
-    @Test
     public void onErrorResumeNextFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
         .onErrorResumeNext(new Function<Throwable, Maybe<Object>>() {

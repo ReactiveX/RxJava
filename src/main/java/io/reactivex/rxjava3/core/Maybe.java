@@ -3939,7 +3939,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorResumeNext(@NonNull Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction) {
         Objects.requireNonNull(resumeFunction, "resumeFunction is null");
-        return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<>(this, resumeFunction, true));
+        return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<>(this, resumeFunction));
     }
 
     /**
@@ -3994,37 +3994,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final Maybe<T> onErrorReturnItem(@NonNull T item) {
         Objects.requireNonNull(item, "item is null");
         return onErrorReturn(Functions.justFunction(item));
-    }
-
-    /**
-     * Resumes the flow with the given {@link MaybeSource} when the current {@code Maybe} fails
-     * with an {@link Exception} subclass instead of signaling the error via {@code onError}.
-     * <p>
-     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable}
-     * or {@link java.lang.Error} but lets those continue through.
-     * <p>
-     * <img width="640" height="333" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onExceptionResumeNextViaMaybe.png" alt="">
-     * <p>
-     * You can use this to prevent exceptions from propagating or to supply fallback data should exceptions be
-     * encountered.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onExceptionResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param next
-     *            the next {@code MaybeSource} that will take over if the current {@code Maybe} encounters
-     *            an exception
-     * @return the new {@code Maybe} instance
-     * @throws NullPointerException if {@code next} is {@code null}
-     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onExceptionResumeNext(@NonNull MaybeSource<? extends T> next) {
-        Objects.requireNonNull(next, "next is null");
-        return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<>(this, Functions.justFunction(next), false));
     }
 
     /**
