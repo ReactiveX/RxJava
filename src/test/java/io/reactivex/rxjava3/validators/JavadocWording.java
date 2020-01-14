@@ -250,11 +250,41 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("Observer", jdx);
+                    int idx = m.javadoc.indexOf(" Observer", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("ObservableSource")
                                 && !m.signature.contains("Observable")) {
-                            e.append("java.lang.RuntimeException: Flowable doc mentions Observer but not using Flowable\r\n at io.reactivex.rxjava3.core.")
+                            e.append("java.lang.RuntimeException: Flowable doc mentions Observer but not using Observable\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" SingleObserver", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("SingleSource")
+                                && !m.signature.contains("Single")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions SingleObserver but not using Single\r\n at io.reactivex.rxjava3.core.")
+                            .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" MaybeObserver", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("MaybeSource")
+                                && !m.signature.contains("Maybe")) {
+                            e.append("java.lang.RuntimeException: Flowable doc mentions MaybeObserver but not using Maybe\r\n at io.reactivex.rxjava3.core.")
                             .append("Flowable.method(Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
 

@@ -1596,7 +1596,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onSubscribe the consumer called when a {@link CompletableObserver} subscribes.
      * @param onError the consumer called when this emits an {@code onError} event
-     * @param onComplete the runnable called just before when the upstream {@code Completable} completes normally
+     * @param onComplete the runnable called just before when the current {@code Completable} completes normally
      * @param onAfterTerminate the runnable called after this {@code Completable} completes normally
      * @param onDispose the {@link Runnable} called when the downstream disposes the subscription
      * @return the new {@code Completable} instance
@@ -1834,7 +1834,7 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * Note also that it is not possible to stop the subscription phase in {@code lift()} as the {@code apply()} method
      * requires a non-{@code null} {@code CompletableObserver} instance to be returned, which is then unconditionally subscribed to
-     * the upstream {@code Completable}. For example, if the operator decided there is no reason to subscribe to the
+     * the current {@code Completable}. For example, if the operator decided there is no reason to subscribe to the
      * upstream source because of some optimization possibility or a failure to prepare the operator, it still has to
      * return a {@code CompletableObserver} that should immediately dispose the upstream's {@link Disposable} in its
      * {@code onSubscribe} method. Again, using a {@code CompletableTransformer} and extending the {@code Completable} is
@@ -2692,7 +2692,7 @@ public abstract class Completable implements CompletableSource {
      *
      * @param <T> the value type
      * @return a {@code Maybe} that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the source {@code Completable}.
+     *         called by the current {@code Completable}.
      */
     @CheckReturnValue
     @SuppressWarnings("unchecked")
