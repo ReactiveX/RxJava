@@ -48,7 +48,12 @@ public final class OperatorMatrixGenerator {
             Set<String> set = operatorMap.computeIfAbsent(clazz, c -> new HashSet<String>());
 
             for (Method m : clazz.getMethods()) {
-                if (!m.getName().equals("bufferSize") && !m.isSynthetic()) {
+                String name = m.getName();
+                if (!name.equals("bufferSize")
+                        && !name.equals("equals")
+                        && !name.equals("hashCode")
+                        && !name.equals("toString")
+                        && !m.isSynthetic()) {
                     operatorSet.add(m.getName());
                     set.add(m.getName());
                 }
