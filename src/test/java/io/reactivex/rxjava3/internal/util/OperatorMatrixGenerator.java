@@ -50,9 +50,7 @@ public final class OperatorMatrixGenerator {
             for (Method m : clazz.getMethods()) {
                 String name = m.getName();
                 if (!name.equals("bufferSize")
-                        && !name.equals("equals")
-                        && !name.equals("hashCode")
-                        && !name.equals("toString")
+                        && m.getDeclaringClass() == clazz
                         && !m.isSynthetic()) {
                     operatorSet.add(m.getName());
                     set.add(m.getName());
