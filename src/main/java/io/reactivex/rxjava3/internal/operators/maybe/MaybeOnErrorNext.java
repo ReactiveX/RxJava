@@ -31,19 +31,15 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
 
-    final boolean allowFatal;
-
     public MaybeOnErrorNext(MaybeSource<T> source,
-            Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
-                    boolean allowFatal) {
+            Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction) {
         super(source);
         this.resumeFunction = resumeFunction;
-        this.allowFatal = allowFatal;
     }
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorNextMaybeObserver<>(observer, resumeFunction, allowFatal));
+        source.subscribe(new OnErrorNextMaybeObserver<>(observer, resumeFunction));
     }
 
     static final class OnErrorNextMaybeObserver<T>
@@ -56,14 +52,10 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
         final Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
 
-        final boolean allowFatal;
-
         OnErrorNextMaybeObserver(MaybeObserver<? super T> actual,
-                Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
-                        boolean allowFatal) {
+                Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction) {
             this.downstream = actual;
             this.resumeFunction = resumeFunction;
-            this.allowFatal = allowFatal;
         }
 
         @Override
@@ -90,10 +82,6 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
         @Override
         public void onError(Throwable e) {
-            if (!allowFatal && !(e instanceof Exception)) {
-                downstream.onError(e);
-                return;
-            }
             MaybeSource<? extends T> m;
 
             try {
