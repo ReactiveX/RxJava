@@ -26,7 +26,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
@@ -156,11 +155,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void concatNull() {
-        Completable.concatArray((Completable[])null);
-    }
-
     @Test
     public void concatEmpty() {
         Completable c = Completable.concatArray();
@@ -215,11 +209,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void concatIterableNull() {
-        Completable.concat((Iterable<Completable>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void concatIterableIteratorNull() {
         Completable c = Completable.concat(new Iterable<Completable>() {
             @Override
@@ -227,13 +216,6 @@ public class CompletableTest extends RxJavaTest {
                 return null;
             }
         });
-
-        c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void concatIterableWithNull() {
-        Completable c = Completable.concat(Arrays.asList(normal.completable, (Completable)null));
 
         c.blockingAwait();
     }
@@ -368,11 +350,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void createNull() {
-        Completable.unsafeCreate(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
@@ -425,11 +402,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void deferNull() {
-        Completable.defer(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void deferReturnsNull() {
         Completable c = Completable.defer(new Supplier<Completable>() {
             @Override
@@ -461,11 +433,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void errorSupplierNull() {
-        Completable.error((Supplier<Throwable>)null);
     }
 
     @Test(expected = TestException.class)
@@ -502,21 +469,11 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void errorNull() {
-        Completable.error((Throwable)null);
-    }
-
     @Test(expected = TestException.class)
     public void errorNormal() {
         Completable c = Completable.error(new TestException());
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromCallableNull() {
-        Completable.fromCallable(null);
     }
 
     @Test
@@ -543,11 +500,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromFlowableNull() {
-        Completable.fromPublisher(null);
     }
 
     @Test
@@ -578,11 +530,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fromObservableNull() {
-        Completable.fromObservable(null);
-    }
-
     @Test
     public void fromObservableEmpty() {
         Completable c = Completable.fromObservable(Observable.empty());
@@ -611,11 +558,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fromActionNull() {
-        Completable.fromAction(null);
-    }
-
     @Test
     public void fromActionNormal() {
         final AtomicInteger calls = new AtomicInteger();
@@ -642,11 +584,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fromSingleNull() {
-        Completable.fromSingle(null);
-    }
-
     @Test
     public void fromSingleNormal() {
         Completable c = Completable.fromSingle(Single.just(1));
@@ -664,11 +601,6 @@ public class CompletableTest extends RxJavaTest {
         }));
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void mergeNull() {
-        Completable.mergeArray((Completable[])null);
     }
 
     @Test
@@ -725,11 +657,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void mergeIterableNull() {
-        Completable.merge((Iterable<Completable>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void mergeIterableIteratorNull() {
         Completable c = Completable.merge(new Iterable<Completable>() {
             @Override
@@ -737,13 +664,6 @@ public class CompletableTest extends RxJavaTest {
                 return null;
             }
         });
-
-        c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void mergeIterableWithNull() {
-        Completable c = Completable.merge(Arrays.asList(normal.completable, (Completable)null));
 
         c.blockingAwait();
     }
@@ -878,11 +798,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void mergeDelayErrorNull() {
-        Completable.mergeArrayDelayError((Completable[])null);
-    }
-
     @Test
     public void mergeDelayErrorEmpty() {
         Completable c = Completable.mergeArrayDelayError();
@@ -941,11 +856,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void mergeDelayErrorIterableNull() {
-        Completable.mergeDelayError((Iterable<Completable>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableIteratorNull() {
         Completable c = Completable.mergeDelayError(new Iterable<Completable>() {
             @Override
@@ -953,13 +863,6 @@ public class CompletableTest extends RxJavaTest {
                 return null;
             }
         });
-
-        c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void mergeDelayErrorIterableWithNull() {
-        Completable c = Completable.mergeDelayError(Arrays.asList(normal.completable, (Completable)null));
 
         c.blockingAwait();
     }
@@ -1204,16 +1107,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(0, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void timerUnitNull() {
-        Completable.timer(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void timerSchedulerNull() {
-        Completable.timer(1, TimeUnit.SECONDS, null);
-    }
-
     @Test
     public void usingNormalEager() {
         final AtomicInteger dispose = new AtomicInteger();
@@ -1399,32 +1292,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void usingResourceSupplierNull() {
-        Completable.using(null, new Function<Object, Completable>() {
-            @Override
-            public Completable apply(Object v) {
-                return normal.completable;
-            }
-        }, new Consumer<Object>() {
-            @Override
-            public void accept(Object v) { }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void usingMapperNull() {
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() {
-                return 1;
-            }
-        }, null, new Consumer<Object>() {
-            @Override
-            public void accept(Object v) { }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
     public void usingMapperReturnsNull() {
         Completable c = Completable.using(new Supplier<Object>() {
             @Override
@@ -1442,21 +1309,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void usingDisposeNull() {
-        Completable.using(new Supplier<Object>() {
-            @Override
-            public Object get() {
-                return 1;
-            }
-        }, new Function<Object, Completable>() {
-            @Override
-            public Completable apply(Object v) {
-                return normal.completable;
-            }
-        }, null);
     }
 
     @Test(expected = TestException.class)
@@ -1530,11 +1382,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void composeNull() {
-        error.completable.compose(null);
-    }
-
     @Test
     public void concatWithNormal() {
         Completable c = normal.completable.concatWith(normal.completable);
@@ -1549,21 +1396,6 @@ public class CompletableTest extends RxJavaTest {
         Completable c = normal.completable.concatWith(error.completable);
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void concatWithNull() {
-        normal.completable.concatWith(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void delayUnitNull() {
-        normal.completable.delay(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void delaySchedulerNull() {
-        normal.completable.delay(1, TimeUnit.SECONDS, null);
     }
 
     @Test
@@ -1712,11 +1544,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(0, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doOnCompleteNull() {
-        normal.completable.doOnComplete(null);
-    }
-
     @Test(expected = TestException.class)
     public void doOnCompleteThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
@@ -1794,11 +1621,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(1, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doOnDisposeNull() {
-        normal.completable.doOnDispose(null);
-    }
-
     @Test
     public void doOnDisposeThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1868,11 +1690,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertTrue(err.get() instanceof TestException);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doOnErrorNull() {
-        normal.completable.doOnError(null);
-    }
-
     @Test
     public void doOnErrorThrows() {
         Completable c = error.completable.doOnError(new Consumer<Throwable>() {
@@ -1906,11 +1723,6 @@ public class CompletableTest extends RxJavaTest {
         }
 
         Assert.assertEquals(10, calls.get());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnSubscribeNull() {
-        normal.completable.doOnSubscribe(null);
     }
 
     @Test(expected = TestException.class)
@@ -1958,11 +1770,6 @@ public class CompletableTest extends RxJavaTest {
         }
 
         Assert.assertEquals(1, calls.get());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void liftNull() {
-        normal.completable.lift(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2015,11 +1822,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void mergeWithNull() {
-        normal.completable.mergeWith(null);
-    }
-
     @Test
     public void mergeWithNormal() {
         Completable c = normal.completable.mergeWith(normal.completable);
@@ -2027,11 +1829,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
 
         normal.assertSubscriptions(2);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void observeOnNull() {
-        normal.completable.observeOn(null);
     }
 
     @Test
@@ -2118,16 +1915,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorCompleteNull() {
-        error.completable.onErrorComplete(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextNull() {
-        error.completable.onErrorResumeNext(null);
     }
 
     @Test
@@ -2314,16 +2101,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(5, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void repeatUntilNull() {
-        normal.completable.repeatUntil(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void repeatWhenNull() {
-        normal.completable.repeatWhen(null);
-    }
-
     @Test
     public void retryNormal() {
         Completable c = normal.completable.retry();
@@ -2400,11 +2177,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void retryPredicateNull() {
-        error.completable.retry((Predicate<Throwable>)null);
     }
 
     @Test
@@ -2538,22 +2310,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertFalse("Not completed", complete.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void subscribeTwoCallbacksFirstNull() {
-        normal.completable.subscribe(new Action() {
-            @Override
-            public void run() { }
-        }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeTwoCallbacksSecondNull() {
-        normal.completable.subscribe(new Action() {
-            @Override
-            public void run() { }
-        }, null);
-    }
-
     @Test
     public void subscribeTwoCallbacksCompleteThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -2651,26 +2407,6 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
-    public void subscribeActionNull() {
-        normal.completable.subscribe((Action)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeSubscriberNull() {
-        normal.completable.toFlowable().subscribe((Subscriber<Object>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeObserverNull() {
-        normal.completable.toObservable().subscribe((Observer<Object>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeCompletableSubscriberNull() {
-        normal.completable.subscribe((CompletableObserver)null);
-    }
-
     @Test
     public void subscribeSubscriberNormal() {
         TestSubscriber<Object> ts = new TestSubscriber<>();
@@ -2691,11 +2427,6 @@ public class CompletableTest extends RxJavaTest {
         ts.assertNotComplete();
         ts.assertNoValues();
         ts.assertError(TestException.class);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeOnNull() {
-        normal.completable.subscribeOn(null);
     }
 
     @Test
@@ -2763,21 +2494,6 @@ public class CompletableTest extends RxJavaTest {
         normal.assertSubscriptions(0);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void timeoutUnitNull() {
-        normal.completable.timeout(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void timeoutSchedulerNull() {
-        normal.completable.timeout(1, TimeUnit.SECONDS, (Scheduler)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void timeoutOtherNull() {
-        normal.completable.timeout(1, TimeUnit.SECONDS, (Completable)null);
-    }
-
     @Test
     public void toNormal() {
         normal.completable
@@ -2816,11 +2532,6 @@ public class CompletableTest extends RxJavaTest {
         })
         .test()
         .assertComplete();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void toNull() {
-        normal.completable.to(null);
     }
 
     @Test
@@ -2864,11 +2575,6 @@ public class CompletableTest extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void toSingleSupplierNull() {
-        normal.completable.toSingle(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void toSingleSupplierReturnsNull() {
         normal.completable.toSingle(new Supplier<Object>() {
             @Override
@@ -2894,11 +2600,6 @@ public class CompletableTest extends RxJavaTest {
     @Test
     public void toSingleDefaultNormal() {
         Assert.assertEquals((Integer)1, normal.completable.toSingleDefault(1).blockingGet());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void toSingleDefaultNull() {
-        normal.completable.toSingleDefault(null);
     }
 
     @Test
@@ -2940,11 +2641,6 @@ public class CompletableTest extends RxJavaTest {
         cdl.await();
 
         Assert.assertTrue(name.get().startsWith("RxComputation"));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void ambArrayNull() {
-        Completable.ambArray((Completable[])null);
     }
 
     @Test
@@ -3106,11 +2802,6 @@ public class CompletableTest extends RxJavaTest {
         c.blockingAwait();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void ambIterableNull() {
-        Completable.amb((Iterable<Completable>)null);
-    }
-
     @Test
     public void ambIterableIteratorNull() {
         Completable.amb(new Iterable<Completable>() {
@@ -3182,11 +2873,6 @@ public class CompletableTest extends RxJavaTest {
         Completable.amb(new IterableIteratorNextThrows())
                 .test()
                 .assertError(TestException.class);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void ambWithNull() {
-        normal.completable.ambWith(null);
     }
 
     @Test
@@ -3422,21 +3108,6 @@ public class CompletableTest extends RxJavaTest {
         to.assertNoValues();
         to.assertError(TestException.class);
         to.assertNotComplete();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithCompletableNull() {
-        normal.completable.startWith((Completable)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithFlowableNull() {
-        normal.completable.startWith((Flowable<Object>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithObservableNull() {
-        normal.completable.startWith((Observable<Object>)null);
     }
 
     @Test
@@ -3830,11 +3501,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertEquals(0, calls.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doOnCompletedNull() {
-        normal.completable.doOnComplete(null);
-    }
-
     @Test(expected = TestException.class)
     public void doOnCompletedThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
@@ -3901,11 +3567,6 @@ public class CompletableTest extends RxJavaTest {
         Assert.assertTrue("Closure not called", doneAfter.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doAfterTerminateNull() {
-        normal.completable.doAfterTerminate(null);
-    }
-
     @Test
     public void subscribeEmptyOnError() {
         expectUncaughtTestException(new Action() {
@@ -3937,16 +3598,6 @@ public class CompletableTest extends RxJavaTest {
                 error.completable.toSingleDefault(0).subscribe();
             }
         });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void andThenCompletableNull() {
-        normal.completable.andThen((Completable)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void andThenFlowableNull() {
-        normal.completable.andThen((Observable<Object>)null);
     }
 
     @Test
@@ -4286,11 +3937,6 @@ public class CompletableTest extends RxJavaTest {
         ts.assertNoErrors();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fromFutureNull() {
-        Completable.fromFuture(null);
-    }
-
     @Test
     public void fromFutureNormal() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -4333,11 +3979,6 @@ public class CompletableTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fromRunnableNull() {
-        Completable.fromRunnable(null);
-    }
-
     @Test
     public void fromRunnableNormal() {
         final AtomicInteger calls = new AtomicInteger();
@@ -4362,41 +4003,6 @@ public class CompletableTest extends RxJavaTest {
         });
 
         c.blockingAwait();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnErrorNullValue() {
-        Completable.complete().doOnError(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnSubscribeNullValue() {
-        Completable.complete().doOnSubscribe(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doAfterTerminateNullValue() {
-        Completable.complete().doAfterTerminate(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnTerminateNullValue() {
-        Completable.complete().doOnTerminate(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnCompleteNullValue() {
-        Completable.complete().doOnComplete(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnDisposeNullValue() {
-        Completable.complete().doOnDispose(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnEventNullValue() {
-        Completable.complete().doOnEvent(null);
     }
 
     @Test

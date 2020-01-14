@@ -32,11 +32,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableFromCallableTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromCallableNull() {
-        Completable.fromCallable(null);
-    }
-
     @Test
     public void fromCallable() {
         final AtomicInteger atomicInteger = new AtomicInteger();

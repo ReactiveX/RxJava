@@ -65,11 +65,6 @@ public class CompletableDoFinallyTest extends RxJavaTest implements Action {
         });
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullAction() {
-        Completable.complete().doFinally(null);
-    }
-
     @Test
     public void actionThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

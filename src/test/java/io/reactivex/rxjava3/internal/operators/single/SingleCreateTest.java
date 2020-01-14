@@ -29,11 +29,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SingleCreateTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Single.create(null);
-    }
-
     @Test
     public void basic() {
         final Disposable d = Disposable.empty();

@@ -28,12 +28,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableAndThenCompletableabTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void andThenCompletableCompleteNull() {
-        Completable.complete()
-                .andThen((Completable) null);
-    }
-
     @Test
     public void andThenCompletableCompleteComplete() {
         Completable.complete()

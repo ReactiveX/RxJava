@@ -115,11 +115,6 @@ public class MaybeDoFinallyTest extends RxJavaTest implements Action {
         assertEquals(1, calls);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullAction() {
-        Maybe.just(1).doFinally(null);
-    }
-
     @Test
     public void actionThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

@@ -30,11 +30,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeFromRunnableTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromRunnableNull() {
-        Maybe.fromRunnable(null);
-    }
-
     @Test
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();

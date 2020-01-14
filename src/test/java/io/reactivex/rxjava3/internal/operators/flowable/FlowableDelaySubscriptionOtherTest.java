@@ -308,11 +308,6 @@ public class FlowableDelaySubscriptionOtherTest extends RxJavaTest {
         Assert.assertFalse(subscribed.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void otherNull() {
-        Flowable.just(1).delaySubscription((Flowable<Integer>)null);
-    }
-
     @Test
     public void badSourceOther() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {

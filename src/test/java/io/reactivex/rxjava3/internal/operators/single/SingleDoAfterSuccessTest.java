@@ -67,11 +67,6 @@ public class SingleDoAfterSuccessTest extends RxJavaTest {
         assertTrue(values.isEmpty());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void consumerNull() {
-        Single.just(1).doAfterSuccess(null);
-    }
-
     @Test
     public void justConditional() {
         Single.just(1)

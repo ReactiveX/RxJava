@@ -31,19 +31,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableCreateTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void sourceNull() {
-        Flowable.create(null, BackpressureStrategy.BUFFER);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void modeNull() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception { }
-        }, null);
-    }
-
     @Test
     public void basic() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -765,11 +752,6 @@ public class FlowableCreateTest extends RxJavaTest {
                 RxJavaPlugins.reset();
             }
         }
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Flowable.create(null, BackpressureStrategy.MISSING);
     }
 
     @Test

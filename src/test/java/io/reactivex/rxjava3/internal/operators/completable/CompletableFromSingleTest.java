@@ -18,11 +18,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 
 public class CompletableFromSingleTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromSingleNull() {
-        Completable.fromSingle(null);
-    }
-
     @Test
     public void fromSingle() {
         Completable.fromSingle(Single.just(1))

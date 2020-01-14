@@ -145,11 +145,6 @@ public class ObservableDoAfterNextTest extends RxJavaTest {
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void consumerNull() {
-        Observable.just(1).doAfterNext(null);
-    }
-
     @Test
     public void justConditional() {
         Observable.just(1)

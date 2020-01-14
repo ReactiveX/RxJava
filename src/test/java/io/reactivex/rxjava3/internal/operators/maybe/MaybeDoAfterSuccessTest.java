@@ -77,11 +77,6 @@ public class MaybeDoAfterSuccessTest extends RxJavaTest {
         assertTrue(values.isEmpty());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void consumerNull() {
-        Maybe.just(1).doAfterSuccess(null);
-    }
-
     @Test
     public void justConditional() {
         Maybe.just(1)

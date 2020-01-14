@@ -29,11 +29,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableCreateTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Completable.create(null);
-    }
-
     @Test
     public void basic() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

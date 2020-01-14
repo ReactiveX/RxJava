@@ -53,16 +53,6 @@ public class MaybeDelayTest extends RxJavaTest {
         .assertResult();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullUnit() {
-        Maybe.just(1).delay(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void nullScheduler() {
-        Maybe.just(1).delay(1, TimeUnit.MILLISECONDS, null);
-    }
-
     @Test
     public void disposeDuringDelay() {
         TestScheduler scheduler = new TestScheduler();

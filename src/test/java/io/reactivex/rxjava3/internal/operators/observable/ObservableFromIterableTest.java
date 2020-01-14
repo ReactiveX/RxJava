@@ -36,11 +36,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableFromIterableTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullValue() {
-        Observable.fromIterable(null);
-    }
-
     @Test
     public void listIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));

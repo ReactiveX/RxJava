@@ -651,12 +651,6 @@ public class ObservableSwitchTest extends RxJavaTest {
         .assertError(NullPointerException.class);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void switchMapSingleMapperIsNull() {
-        Observable.just(0)
-        .switchMapSingle(null);
-    }
-
     @Test
     public void switchMapSingleFunctionDoesntReturnSingle() {
         Observable.just(0)

@@ -21,11 +21,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SingleMapTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void mapNull() {
-        Single.just(1).map(null);
-    }
-
     @Test
     public void mapValue() {
         Single.just(1).map(new Function<Integer, Integer>() {
