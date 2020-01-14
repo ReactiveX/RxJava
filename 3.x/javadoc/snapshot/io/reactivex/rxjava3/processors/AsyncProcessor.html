@@ -283,7 +283,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#onError-java.lang.Throwable-">onError</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#onError-java.lang.Throwable-">onError</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</code>&nbsp;</td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -291,7 +291,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#onSubscribe-org.reactivestreams.Subscription-">onSubscribe</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</code>
 <div class="block">Implementors of this method should make sure everything that needs
  to be visible in <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
  calling <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true#request-long-" title="class or interface in org.reactivestreams"><code>Subscription.request(long)</code></a>.</div>
@@ -299,7 +299,7 @@ extends <a href="../../../../io/reactivex/rxjava3/processors/FlowableProcessor.h
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#subscribeActual-org.reactivestreams.Subscriber-">subscribeActual</a></span>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&gt;&nbsp;s)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html#subscribeActual-org.reactivestreams.Subscriber-">subscribeActual</a></span>(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&gt;&nbsp;s)</code>
 <div class="block">Operator implementations (both source and intermediate) should implement this method that
  performs the necessary business logic and handles the incoming <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.</div>
 </td>
@@ -371,7 +371,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onSubscribe</h4>
-<pre>public&nbsp;void&nbsp;onSubscribe(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</pre>
+<pre>public&nbsp;void&nbsp;onSubscribe(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                        <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html?is-external=true" title="class or interface in org.reactivestreams">Subscription</a>&nbsp;s)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/FlowableSubscriber.html#onSubscribe-org.reactivestreams.Subscription-">FlowableSubscriber</a></code></span></div>
 <div class="block">Implementors of this method should make sure everything that needs
  to be visible in <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true#onNext-T-" title="class or interface in org.reactivestreams"><code>Subscriber.onNext(Object)</code></a> is established before
@@ -390,7 +391,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onNext</h4>
-<pre>public&nbsp;void&nbsp;onNext(<a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&nbsp;t)</pre>
+<pre>public&nbsp;void&nbsp;onNext(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                   <a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&nbsp;t)</pre>
 </li>
 </ul>
 <a name="onError-java.lang.Throwable-">
@@ -399,7 +401,8 @@ public static&nbsp;&lt;T&gt;&nbsp;<a href="../../../../io/reactivex/rxjava3/anno
 <ul class="blockList">
 <li class="blockList">
 <h4>onError</h4>
-<pre>public&nbsp;void&nbsp;onError(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
+<pre>public&nbsp;void&nbsp;onError(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                    <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang">Throwable</a>&nbsp;t)</pre>
 </li>
 </ul>
 <a name="onComplete--">
@@ -501,7 +504,8 @@ public&nbsp;<a href="../../../../io/reactivex/rxjava3/annotations/Nullable.html"
 <ul class="blockList">
 <li class="blockList">
 <h4>subscribeActual</h4>
-<pre>protected&nbsp;void&nbsp;subscribeActual(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&gt;&nbsp;s)</pre>
+<pre>protected&nbsp;void&nbsp;subscribeActual(<a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a>
+                               <a href="../../../../io/reactivex/rxjava3/annotations/NonNull.html" title="annotation in io.reactivex.rxjava3.annotations">@NonNull</a> <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams">Subscriber</a>&lt;? super <a href="../../../../io/reactivex/rxjava3/processors/AsyncProcessor.html" title="type parameter in AsyncProcessor">T</a>&gt;&nbsp;s)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../io/reactivex/rxjava3/core/Flowable.html#subscribeActual-org.reactivestreams.Subscriber-">Flowable</a></code></span></div>
 <div class="block">Operator implementations (both source and intermediate) should implement this method that
  performs the necessary business logic and handles the incoming <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html?is-external=true" title="class or interface in org.reactivestreams"><code>Subscriber</code></a>s.
