@@ -7270,9 +7270,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Transform a {@link Publisher} by applying a particular Transformer function to it.
+     * Transform the current {@code Flowable} by applying a particular {@link FlowableTransformer} function to it.
      * <p>
-     * This method operates on the {@code Publisher} itself whereas {@link #lift} operates on the {@code Publisher}'s
+     * This method operates on the {@code Flowable} itself whereas {@link #lift} operates on the {@code Flowable}'s
      * {@link Subscriber}s.
      * <p>
      * If the operator you are creating is designed to act on the individual items emitted by a current
@@ -7281,7 +7281,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with the backpressure behavior which only depends
-     *  on what kind of {@code Publisher} the transformer returns.</dd>
+     *  on what kind of {@link Publisher} the {@code FlowableTransformer} returns.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9392,7 +9392,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes an action when it calls {@code onComplete}.
+     * Invokes an {@link Action} just before the current {@code Flowable} calls {@code onComplete}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
      * <dl>
@@ -9449,7 +9449,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes an action for each item it emits.
+     * Invokes a {@link Consumer} with a {@link Notification} instances matching the signals emitted by the current {@code Flowable}
+     * before they are forwarded to the downstream.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <dl>
@@ -9481,7 +9482,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it notifies a {@link Subscriber} for each item and terminal event it emits.
+     * Calls the appropriate methods of the given {@link Subscriber} when the current {@code Flowable} signals events before forwarding it
+     * to the downstream.
      * <p>
      * In case the {@code onError} of the supplied {@code Subscriber} throws, the downstream will receive a composite
      * exception containing the original exception and the exception thrown by {@code onError}. If either the
@@ -9518,7 +9520,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes an action if it calls {@code onError}.
+     * Calls the given {@link Consumer} with the error {@link Throwable} if the current {@code Flowable} failed before forwarding it to
+     * the downstream.
      * <p>
      * In case the {@code onError} action throws, the downstream will receive a composite exception containing
      * the original exception and the exception thrown by {@code onError}.
@@ -9583,7 +9586,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes an action when it calls {@code onNext}.
+     * Calls the given {@link Consumer} with the value emitted by the current {@code Flowable} before forwarding it to the downstream.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
      * <dl>
@@ -9599,6 +9602,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @return the current {@code Flowable} with the side-effecting behavior applied
      * @throws NullPointerException if {@code onNext} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @see #doAfterNext(Consumer)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -9610,8 +9614,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes the given action when it receives a
-     * request for more items.
+     * Calls the given {@link LongConsumer} with the request amount from the downstream before forwarding it
+     * to the current {@code Flowable}.
      * <p>
      * <b>Note:</b> This operator is for tracing the internal behavior of back-pressure request
      * patterns and generally intended for debugging use.
@@ -9641,10 +9645,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes the given action when it is subscribed from
-     * its subscribers. Each subscription will result in an invocation of the given action except when the
-     * current {@code Flowable} is reference counted, in which case the current {@code Flowable} will invoke
-     * the given action for the first subscription.
+     * Calls the given {@link Consumer} with the {@link Subscription} provided by the current {@code Flowable} upon
+     * subscription from the downstream before forwarding it to the subscriber's
+     * {@link Subscriber#onSubscribe(Subscription) onSubscribe} method.
      * <p>
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
      * <dl>
@@ -9656,7 +9659,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param onSubscribe
-     *            the {@link Consumer} that gets called when a {@link Subscriber} subscribes to the current {@code Flowable}
+     *            the {@code Consumer} that gets called when a {@link Subscriber} subscribes to the current {@code Flowable}
      * @return the current {@code Flowable} modified so as to call this {@code Consumer} when appropriate
      * @throws NullPointerException if {@code onSubscribe} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -9670,8 +9673,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that it invokes an action when it calls {@code onComplete} or
-     * {@code onError}.
+     * Calls the given {@link Action} when the current {@code Flowable} completes normally or with an error before those signals
+     * are forwarded to the downstream.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
      * <p>
@@ -9798,7 +9801,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Filters items emitted by a {@link Publisher} by only emitting those that satisfy a specified predicate.
+     * Filters items emitted by the current {@code Flowable} by only emitting those that satisfy a specified predicate.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
      * <dl>
@@ -10917,7 +10920,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by a {@link Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by the current {@code Flowable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedFlowable} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -10978,7 +10981,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by a {@link Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by the current {@code Flowable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedFlowable} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -11044,7 +11047,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by a {@link Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by the current {@code Flowable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedFlowable} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -11111,7 +11114,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by a {@link Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by the current {@code Flowable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedFlowable} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -11185,7 +11188,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by a {@link Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by the current {@code Flowable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedFlowable} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -11893,7 +11896,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies a {@link Publisher} to perform its emissions and notifications on a specified {@link Scheduler},
+     * Signals the items and terminal signals of the current {@code Flowable} on the specified {@link Scheduler},
      * asynchronously with a bounded buffer of {@link #bufferSize()} slots.
      *
      * <p>Note that {@code onError} notifications will cut ahead of {@code onNext} notifications on the emission thread if {@code Scheduler} is truly
@@ -11945,7 +11948,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies a {@link Publisher} to perform its emissions and notifications on a specified {@link Scheduler},
+     * Signals the items and terminal signals of the current {@code Flowable} on the specified {@link Scheduler},
      * asynchronously with a bounded buffer and optionally delays {@code onError} notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
@@ -11998,7 +12001,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies a {@link Publisher} to perform its emissions and notifications on a specified {@link Scheduler},
+     * Signals the items and terminal signals of the current {@code Flowable} on the specified {@link Scheduler},
      * asynchronously with a bounded buffer of configurable size and optionally delays {@code onError} notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
@@ -12055,7 +12058,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Filters the items emitted by a {@link Publisher}, only emitting those of the specified type.
+     * Filters the items emitted by the current {@code Flowable}, only emitting those of the specified type.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ofClass.png" alt="">
      * <dl>
@@ -12083,10 +12086,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer these
-     * items indefinitely until they can be emitted.
+     * Buffers an unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <p>
+     * An error from the current {@code Flowable} will cut ahead of any unconsumed item. Use {@link #onBackpressureBuffer(boolean)}
+     * to have the operator keep the original signal order.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12097,6 +12103,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * @return the current {@code Flowable} modified to buffer items to the extent system resources allow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
+     * #see {@link #onBackpressureBuffer(boolean)}
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -12107,8 +12114,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer these
-     * items indefinitely until they can be emitted.
+     * Buffers an unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place, optionally delaying an error until all buffered items have been consumed.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -12134,12 +12141,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will signal
-     * a {@code BufferOverflowException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and canceling the source.
+     * Buffers an limited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place, however, the resulting {@code Flowable} will signal a
+     * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, and canceling the flow.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
+     * <p>
+     * An error from the current {@code Flowable} will cut ahead of any unconsumed item. Use {@link #onBackpressureBuffer(int, boolean)}
+     * to have the operator keep the original signal order.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12153,6 +12163,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws IllegalArgumentException if {@code capacity} is non-positive
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 1.1.0
+     * @see #onBackpressureBuffer(long, Action, BackpressureOverflowStrategy)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -12163,10 +12174,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will signal
-     * a {@code BufferOverflowException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and canceling the source.
+     * Buffers an limited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place, however, the resulting {@code Flowable} will signal a
+     * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, and canceling the flow.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -12196,10 +12207,11 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will signal
-     * a {@code BufferOverflowException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and canceling the source.
+     * Buffers an optionally unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place.
+     * If {@code unbounded} is {@code true}, the resulting {@code Flowable} will signal a
+     * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, and canceling the flow.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -12232,10 +12244,11 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will signal
-     * a {@code BufferOverflowException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, canceling the source, and notifying the producer with {@code onOverflow}.
+     * Buffers an optionally unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place.
+     * If {@code unbounded} is {@code true}, the resulting {@code Flowable} will signal a
+     * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, canceling the flow and calling the {@code onOverflow} action.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -12253,7 +12266,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *                any buffered element
      * @param unbounded
      *                if {@code true}, the capacity value is interpreted as the internal "island" size of the unbounded buffer
-     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.  Null is allowed.
+     * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.
      * @return the current {@code Flowable} modified to buffer items up to the given capacity
      * @throws NullPointerException if {@code onOverflow} is {@code null}
      * @throws IllegalArgumentException if {@code capacity} is non-positive
@@ -12272,10 +12285,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will signal
-     * a {@code BufferOverflowException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, canceling the source, and notifying the producer with {@code onOverflow}.
+     * Buffers an limited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place, however, the resulting {@code Flowable} will signal a
+     * {@link MissingBackpressureException} via {@code onError} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, canceling the flow and calling the {@code onOverflow} action.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -12303,10 +12316,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to buffer up to
-     * a given amount of items until they can be emitted. The resulting {@code Flowable} will behave as determined
-     * by {@code overflowStrategy} if the buffer capacity is exceeded.
-     *
+     * Buffers an optionally unlimited number of items from the current {@code Flowable} and allows it to emit as fast it can while allowing the
+     * downstream to consume the items at its own place.
+     * The resulting {@code Flowable} will behave as determined by {@code overflowStrategy} if the buffer capacity is exceeded:
      * <ul>
      *     <li>{@link BackpressureOverflowStrategy#ERROR} (default) will call {@code onError} dropping all undelivered items,
      *     canceling the source, and notifying the producer with {@code onOverflow}. </li>
@@ -12330,7 +12342,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * @param capacity number of slots available in the buffer.
      * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots, {@code null} is allowed.
-     * @param overflowStrategy how should the {@code Publisher} react to buffer overflows, {@code null} is not allowed.
+     * @param overflowStrategy how should the resulting {@code Flowable} react to buffer overflows, {@code null} is not allowed.
      * @return the source {@code Flowable} modified to buffer items up to the given capacity
      * @throws NullPointerException if {@code onOverflow} or {@code overflowStrategy} is {@code null}
      * @throws IllegalArgumentException if {@code capacity} is non-positive
@@ -12348,13 +12360,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to discard,
-     * rather than emit, those items that its {@code Subscriber} is not prepared to observe.
+     * Drops items from the current {@code Flowable} if the downstream is not ready to receive new items (indicated
+     * by a lack of {@link Subscription#request(long)} calls from it).
      * <p>
      * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
      * <p>
-     * If the downstream request count hits 0 then the {@code Publisher} will refrain from calling {@code onNext} until
-     * the {@code Subscriber} invokes {@code request(n)} again to increase the request count.
+     * If the downstream request count hits 0 then the resulting {@code Flowable} will refrain from calling {@code onNext} until
+     * the {@link Subscriber} invokes {@code request(n)} again to increase the request count.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12375,13 +12387,14 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to discard,
-     * rather than emit, those items that its {@code Subscriber} is not prepared to observe.
+     * Drops items from the current {@code Flowable} if the downstream is not ready to receive new items (indicated
+     * by a lack of {@link Subscription#request(long)} calls from it) and calls the given {@link Consumer} with such
+     * dropped items.
      * <p>
      * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
      * <p>
-     * If the downstream request count hits 0 then the {@code Publisher} will refrain from calling {@code onNext} until
-     * the {@code Subscriber} invokes {@code request(n)} again to increase the request count.
+     * If the downstream request count hits 0 then the resulting {@code Flowable} will refrain from calling {@code onNext} until
+     * the {@link Subscriber} invokes {@code request(n)} again to increase the request count.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in an unbounded
@@ -12406,8 +12419,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} that is emitting items faster than its {@link Subscriber} can consume them to
-     * hold onto the latest value and emit that on request.
+     * Drops all but the latest item emitted by the current {@code Flowable} if the downstream is not ready to receive
+     * new items (indicated by a lack of {@link Subscription#request(long)} calls from it) and emits this latest
+     * item when the downstream becomes ready.
      * <p>
      * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.png" alt="">
      * <p>
@@ -12439,8 +12453,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} to pass control to another {@code Publisher} rather than invoking
-     * {@link Subscriber#onError onError} if it encounters an error.
+     * Resumes the flow with a {@link Publisher} returned for the failure {@link Throwable} of the current {@code Flowable} by a
+     * function instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
@@ -12484,8 +12498,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} to pass control to another {@code Publisher} rather than invoking
-     * {@link Subscriber#onError onError} if it encounters an error.
+     * Resumes the flow with the given {@link Publisher} when the current {@code Flowable} fails instead of
+     * signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
@@ -12529,12 +12543,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} to emit an item (returned by a specified function) rather than invoking
-     * {@link Subscriber#onError onError} if it encounters an error.
+     * Ends the flow with a last item returned by a function for the {@link Throwable} error signaled by the current
+     * {@code Flowable} instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
      * <p>
-     * By default, when a {@code Publisher} encounters an error that prevents it from emitting the expected item to
+     * By default, when a {@link Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
      * without invoking any more of its {@code Subscriber}'s methods. The {@code onErrorReturn} method changes this
      * behavior. If you pass a function ({@code resumeFunction}) to a {@code Publisher}'s {@code onErrorReturn}
@@ -12570,12 +12584,11 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Instructs a {@link Publisher} to emit an item (returned by a specified function) rather than invoking
-     * {@link Subscriber#onError onError} if it encounters an error.
+     * Ends the flow with the given last item when the current {@code Flowable} fails instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
      * <p>
-     * By default, when a {@code Publisher} encounters an error that prevents it from emitting the expected item to
+     * By default, when a {@link Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
      * without invoking any more of its {@code Subscriber}'s methods. The {@code onErrorReturn} method changes this
      * behavior. If you pass a function ({@code resumeFunction}) to a {@code Publisher}'s {@code onErrorReturn}
@@ -14562,10 +14575,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Forces a {@link Publisher}'s emissions and notifications to be serialized and for it to obey
+     * Forces the current {@code Flowable}'s emissions and notifications to be serialized and for it to obey
      * <a href="http://reactivex.io/documentation/contract.html">the {@code Publisher} contract</a> in other ways.
      * <p>
-     * It is possible for a {@code Publisher} to invoke its {@link Subscriber}s' methods asynchronously, perhaps from
+     * It is possible for a {@link Publisher} to invoke its {@link Subscriber}s' methods asynchronously, perhaps from
      * different threads. This could make such a {@code Publisher} poorly-behaved, in that it might try to invoke
      * {@code onComplete} or {@code onError} before one of its {@code onNext} invocations, or it might call
      * {@code onNext} from two different threads concurrently. You can force such a {@code Publisher} to be
@@ -15273,7 +15286,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Subscribes to a {@link Publisher} and ignores {@code onNext} and {@code onComplete} emissions.
+     * Subscribes to the current {@code Flowable} and ignores {@code onNext} and {@code onComplete} emissions.
      * <p>
      * If the {@code Flowable} emits an error, it is wrapped into an
      * {@link io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
@@ -15287,7 +15300,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Publisher} has finished sending them
+     *         the current {@code Flowable} has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -15298,7 +15311,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Subscribes to a {@link Publisher} and provides a callback to handle the items it emits.
+     * Subscribes to the current {@code Flowable} and provides a callback to handle the items it emits.
      * <p>
      * If the {@code Flowable} emits an error, it is wrapped into an
      * {@link io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
@@ -15312,9 +15325,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *             the {@code Consumer<T>} you have designed to accept emissions from the {@code Publisher}
+     *             the {@code Consumer<T>} you have designed to accept emissions from the current {@code Flowable}
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Publisher} has finished sending them
+     *         the current {@code Flowable} has finished sending them
      * @throws NullPointerException
      *             if {@code onNext} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
@@ -15328,7 +15341,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Subscribes to a {@link Publisher} and provides callbacks to handle the items it emits and any error
+     * Subscribes to the current {@code Flowable} and provides callbacks to handle the items it emits and any error
      * notification it issues.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -15339,12 +15352,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *             the {@code Consumer<T>} you have designed to accept emissions from the {@code Publisher}
+     *             the {@code Consumer<T>} you have designed to accept emissions from the current {@code Flowable}
      * @param onError
      *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
-     *             {@code Publisher}
+     *             current {@code Flowable}
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Publisher} has finished sending them
+     *         the current {@code Flowable} has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onNext} or {@code onError} is {@code null}
@@ -15358,7 +15371,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Subscribes to a {@link Publisher} and provides callbacks to handle the items it emits and any error or
+     * Subscribes to the current {@code Flowable} and provides callbacks to handle the items it emits and any error or
      * completion notification it issues.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -15369,15 +15382,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *             the {@code Consumer<T>} you have designed to accept emissions from the {@code Publisher}
+     *             the {@code Consumer<T>} you have designed to accept emissions from the current {@code Flowable}
      * @param onError
      *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
-     *             {@code Publisher}
+     *             current {@code Flowable}
      * @param onComplete
      *             the {@link Action} you have designed to accept a completion notification from the
-     *             {@code Publisher}
+     *             the current {@code Flowable}
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
-     *         the {@code Publisher} has finished sending them
+     *         the current {@code Flowable} has finished sending them
      * @throws NullPointerException
      *             if {@code onNext}, {@code onError} or {@code onComplete} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
@@ -17549,9 +17562,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
-     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code Publisher} to compose a list of all of these items and then to invoke the {@code Subscriber}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code Publisher}'s {@code toList} method prior to
+     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator compose a list of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire list, by calling the {@code Flowable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
@@ -17584,9 +17597,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
-     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code Publisher} to compose a list of all of these items and then to invoke the {@code Subscriber}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code Publisher}'s {@code toList} method prior to
+     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator compose a list of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire list, by calling the {@code Flowable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
@@ -17623,9 +17636,9 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
      * Normally, a {@code Publisher} that returns multiple items will do so by invoking its {@link Subscriber}'s
-     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code Publisher} to compose a list of all of these items and then to invoke the {@code Subscriber}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code Publisher}'s {@code toList} method prior to
+     * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator compose a collection of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire collection, by calling the {@code Flowable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated collection to
@@ -18105,8 +18118,12 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the current {@code Flowable} so that subscribers will cancel it on a specified
-     * {@link Scheduler}.
+     * Cancels the current {@code Flowable} asynchronously by invoking {@link Subscription#cancel()}
+     * on the specified {@link Scheduler}.
+     * <p>
+     * The operator suppresses signals from the current {@code Flowable} immediately when the
+     * downstream cancels the flow because the actual cancellation itself could take an arbitrary amount of time
+     * to take effect and make the flow stop producing items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the current {@code Flowable}'s backpressure

@@ -2092,7 +2092,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * This method operates on the {@code Single} itself whereas {@link #lift} operates on {@link SingleObserver}s.
      * <p>
      * If the operator you are creating is designed to act on the individual item emitted by a {@code Single}, use
-     * {@link #lift}. If your operator is designed to transform the source {@code Single} as a whole (for instance, by
+     * {@link #lift}. If your operator is designed to transform the current {@code Single} as a whole (for instance, by
      * applying a particular set of existing RxJava operators to it) use {@code compose}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -2158,7 +2158,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@link Flowable} that emits the item emitted by the source {@code Single}, then the item emitted by the
+     * Returns a {@link Flowable} that emits the item emitted by the current {@code Single}, then the item emitted by the
      * specified {@link SingleSource}.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
@@ -2171,7 +2171,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param other
      *            a {@code SingleSource} to be concatenated after the current
-     * @return the new {@code Flowable} that emits the item emitted by the source {@code Single}, followed by the item emitted by
+     * @return the new {@code Flowable} that emits the item emitted by the current {@code Single}, followed by the item emitted by
      *         {@code other}
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
@@ -2520,8 +2520,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * <p>History: 2.0.6 - experimental
      * @param onAfterTerminate
-     *            an {@code Action} to be invoked when the source {@code Single} finishes
-     * @return the new {@code Single} that emits the same items as the source {@code Single}, then invokes the
+     *            an {@code Action} to be invoked when the current {@code Single} finishes
+     * @return the new {@code Single} that emits the same items as the current {@code Single}, then invokes the
      *         {@code Action}
      * @throws NullPointerException if {@code onAfterTerminate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -2716,9 +2716,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      *
      * @param predicate
-     *            a function that evaluates the item emitted by the source {@code Single}, returning {@code true}
+     *            a function that evaluates the item emitted by the current {@code Single}, returning {@code true}
      *            if it passes the filter
-     * @return the new {@link Maybe} that emit the item emitted by the source {@code Single} that the filter
+     * @return the new {@link Maybe} that emit the item emitted by the current {@code Single} that the filter
      *         evaluates as {@code true}
      * @throws NullPointerException if {@code predicate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
@@ -2732,7 +2732,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Single} that is based on applying a specified function to the item emitted by the source {@code Single},
+     * Returns a {@code Single} that is based on applying a specified function to the item emitted by the current {@code Single},
      * where that function returns a {@link SingleSource}.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
@@ -2743,8 +2743,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source {@code Single}, returns a {@code SingleSource}
-     * @return the new {@code Single} returned from {@code mapper} when applied to the item emitted by the source {@code Single}
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a {@code SingleSource}
+     * @return the new {@code Single} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -2757,7 +2757,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@link Maybe} that is based on applying a specified function to the item emitted by the source {@code Single},
+     * Returns a {@link Maybe} that is based on applying a specified function to the item emitted by the current {@code Single},
      * where that function returns a {@link MaybeSource}.
      * <p>
      * <img width="640" height="191" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapMaybe.png" alt="">
@@ -2768,8 +2768,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source {@code Single}, returns a {@code MaybeSource}
-     * @return the new {@code Maybe} returned from {@code mapper} when applied to the item emitted by the source {@code Single}
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a {@code MaybeSource}
+     * @return the new {@code Maybe} returned from {@code mapper} when applied to the item emitted by the current {@code Single}
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -2783,7 +2783,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
 
     /**
      * Returns a {@link Flowable} that emits items based on applying a specified function to the item emitted by the
-     * source {@code Single}, where that function returns a {@link Publisher}.
+     * current {@code Single}, where that function returns a {@link Publisher}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
      * <dl>
@@ -2796,7 +2796,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source {@code Single}, returns a
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a
      *            {@code Publisher}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
@@ -2812,7 +2812,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Maps the success value of the upstream {@code Single} into an {@link Iterable} and emits its items as a
+     * Maps the success value of the current {@code Single} into an {@link Iterable} and emits its items as a
      * {@link Flowable} sequence.
      * <p>
      * <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenAsFlowable.png" alt="">
@@ -2827,7 +2827,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            the type of item emitted by the resulting {@code Iterable}
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
-     *            source {@code Single}
+     *            current {@code Single}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -2843,7 +2843,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Maps the success value of the upstream {@code Single} into an {@link Iterable} and emits its items as an
+     * Maps the success value of the current {@code Single} into an {@link Iterable} and emits its items as an
      * {@link Observable} sequence.
      * <p>
      * <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flattenAsObservable.png" alt="">
@@ -2856,7 +2856,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *            the type of item emitted by the resulting {@code Iterable}
      * @param mapper
      *            a function that returns an {@code Iterable} sequence of values for when given an item emitted by the
-     *            source {@code Single}
+     *            current {@code Single}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -2871,7 +2871,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns an {@link Observable} that is based on applying a specified function to the item emitted by the source {@code Single},
+     * Returns an {@link Observable} that is based on applying a specified function to the item emitted by the current {@code Single},
      * where that function returns an {@link ObservableSource}.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
@@ -2882,7 +2882,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source {@code Single}, returns an {@code ObservableSource}
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns an {@code ObservableSource}
      * @return the new {@code Observable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -2897,7 +2897,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
 
     /**
      * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
-     * source {@code Single}, where that function returns a {@link CompletableSource}.
+     * current {@code Single}, where that function returns a {@link CompletableSource}.
      * <p>
      * <img width="640" height="267" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
      * <dl>
@@ -2906,7 +2906,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      *
      * @param mapper
-     *            a function that, when applied to the item emitted by the source {@code Single}, returns a
+     *            a function that, when applied to the item emitted by the current {@code Single}, returns a
      *            {@code CompletableSource}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code mapper} is {@code null}
@@ -3069,7 +3069,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <p>
      * Note also that it is not possible to stop the subscription phase in {@code lift()} as the {@code apply()} method
      * requires a non-{@code null} {@code SingleObserver} instance to be returned, which is then unconditionally subscribed to
-     * the upstream {@code Single}. For example, if the operator decided there is no reason to subscribe to the
+     * the current {@code Single}. For example, if the operator decided there is no reason to subscribe to the
      * upstream source because of some optimization possibility or a failure to prepare the operator, it still has to
      * return a {@code SingleObserver} that should immediately dispose the upstream's {@link Disposable} in its
      * {@code onSubscribe} method. Again, using a {@code SingleTransformer} and extending the {@code Single} is
@@ -3098,7 +3098,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Single} that applies a specified function to the item emitted by the source {@code Single} and
+     * Returns a {@code Single} that applies a specified function to the item emitted by the current {@code Single} and
      * emits the result of this function application.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.png" alt="">
@@ -3110,7 +3110,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function to apply to the item emitted by the {@code Single}
-     * @return the new {@code Single} that emits the item from the source {@code Single}, transformed by the specified function
+     * @return the new {@code Single} that emits the item from the current {@code Single}, transformed by the specified function
      * @throws NullPointerException if {@code mapper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
@@ -3206,7 +3206,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param other
      *            a {@code SingleSource} to be merged
-     * @return  that emits all of the items emitted by the source {@code Single}s
+     * @return  that emits all of the items emitted by the current {@code Single}s
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -3219,7 +3219,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Modifies a {@code Single} to emit its item (or notify of its error) on a specified {@link Scheduler},
+     * Signals the success item or the terminal signals of the current {@code Single} on the specified {@link Scheduler},
      * asynchronously.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
@@ -3230,8 +3230,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param scheduler
      *            the {@code Scheduler} to notify subscribers on
-     * @return the source {@code Single} modified so that its subscribers are notified on the specified
-     *         {@code Scheduler}
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
@@ -3246,8 +3245,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Instructs a {@code Single} to emit an item (returned by a specified function) rather than invoking
-     * {@link SingleObserver#onError onError} if it encounters an error.
+     * Ends the flow with a success item returned by a function for the {@link Throwable} error signaled by the current
+     * {@code Single} instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
      * <p>
@@ -3266,7 +3265,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      *
      * @param resumeFunction
-     *            a function that returns an item that the new {@code Single} will emit if the source {@code Single} encounters
+     *            a function that returns an item that the new {@code Single} will emit if the current {@code Single} encounters
      *            an error
      * @return the new {@code Single} instance
      * @throws NullPointerException if {@code resumeFunction} is {@code null}
@@ -3302,8 +3301,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Instructs a {@code Single} to pass control to another {@code Single} rather than invoking
-     * {@link SingleObserver#onError(Throwable)} if it encounters an error.
+     * Resumes the flow with the given {@link SingleSource} when the current {@code Single} fails instead of
+     * signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeWith.png" alt="">
      * <p>
@@ -3338,8 +3337,8 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Instructs a {@code Single} to pass control to another {@code Single} rather than invoking
-     * {@link SingleObserver#onError(Throwable)} if it encounters an error.
+     * Resumes the flow with a {@link SingleSource} returned for the failure {@link Throwable} of the current {@code Single} by a
+     * function instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorResumeNext.f.png" alt="">
      * <p>
@@ -3828,7 +3827,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Asynchronously subscribes subscribers to this {@code Single} on the specified {@link Scheduler}.
+     * Asynchronously subscribes {@link SingleObserver}s to this {@code Single} on the specified {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
      * <dl>
@@ -3838,7 +3837,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param scheduler
      *            the {@code Scheduler} to perform subscription actions on
-     * @return the source {@code Single} modified so that its subscriptions happen on the specified {@code Scheduler}
+     * @return the new {@code Single} instance
      * @throws NullPointerException if {@code scheduler} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
@@ -3853,7 +3852,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Single} that emits the item emitted by the source {@code Single} until a {@link CompletableSource} terminates. Upon
+     * Returns a {@code Single} that emits the item emitted by the current {@code Single} until a {@link CompletableSource} terminates. Upon
      * termination of {@code other}, this will emit a {@link CancellationException} rather than go to
      * {@link SingleObserver#onSuccess(Object)}.
      * <p>
@@ -3864,9 +3863,9 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * </dl>
      *
      * @param other
-     *            the {@code CompletableSource} whose termination will cause {@code takeUntil} to emit the item from the source
+     *            the {@code CompletableSource} whose termination will cause {@code takeUntil} to emit the item from the current
      *            {@code Single}
-     * @return the new {@code Single} that emits the item emitted by the source {@code Single} until such time as {@code other} terminates.
+     * @return the new {@code Single} that emits the item emitted by the current {@code Single} until such time as {@code other} terminates.
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
@@ -3879,7 +3878,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Single} that emits the item emitted by the source {@code Single} until a {@link Publisher} emits an item or completes. Upon
+     * Returns a {@code Single} that emits the item emitted by the current {@code Single} until a {@link Publisher} emits an item or completes. Upon
      * emission of an item from {@code other}, this will emit a {@link CancellationException} rather than go to
      * {@link SingleObserver#onSuccess(Object)}.
      * <p>
@@ -3894,10 +3893,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param other
      *            the {@code Publisher} whose first emitted item or completion will cause {@code takeUntil} to emit {@code CancellationException}
-     *            if the upstream {@code Single} hasn't completed till then
+     *            if the current {@code Single} hasn't completed till then
      * @param <E>
      *            the type of items emitted by {@code other}
-     * @return the new {@code Single} that emits the item emitted by the source {@code Single} until such time as {@code other} emits
+     * @return the new {@code Single} that emits the item emitted by the current {@code Single} until such time as {@code other} emits
      * its first item
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
@@ -3912,7 +3911,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@code Single} that emits the item emitted by the source {@code Single} until a second {@code Single} emits an item. Upon
+     * Returns a {@code Single} that emits the item emitted by the current {@code Single} until a second {@code Single} emits an item. Upon
      * emission of an item from {@code other}, this will emit a {@link CancellationException} rather than go to
      * {@link SingleObserver#onSuccess(Object)}.
      * <p>
@@ -3924,10 +3923,10 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      *
      * @param other
      *            the {@code Single} whose emitted item will cause {@code takeUntil} to emit {@code CancellationException}
-     *            if the upstream {@code Single} hasn't completed till then
+     *            if the current {@code Single} hasn't completed till then
      * @param <E>
      *            the type of item emitted by {@code other}
-     * @return the new {@code Single} that emits the item emitted by the source {@code Single} until such time as {@code other} emits its item
+     * @return the new {@code Single} that emits the item emitted by the current {@code Single} until such time as {@code other} emits its item
      * @throws NullPointerException if {@code other} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
@@ -4075,7 +4074,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@code Completable} that signals {@code onComplete} on it's observer when the source {@code Single}
+     * @return a {@code Completable} that signals {@code onComplete} on it's observer when the current {@code Single}
      *         calls {@code onSuccess}.
      * @since 2.1.13
      */
@@ -4198,7 +4197,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
 
     /**
      * Returns a {@code Single} that emits the result of applying a specified function to the pair of items emitted by
-     * the source {@code Single} and another specified {@link SingleSource}.
+     * the current {@code Single} and another specified {@link SingleSource}.
      * <p>
      * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zipWith.png" alt="">
      * <dl>
@@ -4215,7 +4214,7 @@ public abstract class Single<@NonNull T> implements SingleSource<T> {
      * @param zipper
      *            a function that combines the pairs of items from the two {@code SingleSource}s to generate the items to
      *            be emitted by the resulting {@code Single}
-     * @return the new {@code Single} that pairs up values from the source {@code Single} and the {@code other} {@code SingleSource}
+     * @return the new {@code Single} that pairs up values from the current {@code Single} and the {@code other} {@code SingleSource}
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @throws NullPointerException if {@code other} or {@code zipper} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>

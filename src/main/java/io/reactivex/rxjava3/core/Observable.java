@@ -8493,7 +8493,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Modifies the current {@code Observable} so that it invokes an action if it calls {@code onError}.
+     * Calls the given {@link Consumer} with the error {@link Throwable} if the current {@code Observable} failed before forwarding it to
+     * the downstream.
      * <p>
      * In case the {@code onError} action throws, the downstream will receive a composite exception containing
      * the original exception and the exception thrown by {@code onError}.
@@ -8545,7 +8546,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Modifies the current {@code Observable} so that it invokes an action when it calls {@code onNext}.
+     * Calls the given {@link Consumer} with the value emitted by the current {@code Observable} before forwarding it to the downstream.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png" alt="">
      * <dl>
@@ -10484,8 +10485,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Instructs the current {@code Observable} to pass control to another {@link ObservableSource} rather than invoking
-     * {@link Observer#onError onError} if it encounters an error.
+     * Resumes the flow with an {@link ObservableSource} returned for the failure {@link Throwable} of the current {@code Observable} by a
+     * function instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
@@ -10522,8 +10523,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Instructs the current {@code Observable} to pass control to another {@link ObservableSource} rather than invoking
-     * {@link Observer#onError onError} if it encounters an error.
+     * Resumes the flow with the given {@link ObservableSource} when the current {@code Observable} fails instead of
+     * signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
@@ -10560,8 +10561,8 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Instructs the current {@code Observable} to emit an item (returned by a specified function) and complete normally
-     * rather than invoking {@link Observer#onError onError} when it encounters an error.
+     * Ends the flow with a last item returned by a function for the {@link Throwable} error signaled by the current
+     * {@code Observable} instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.o.png" alt="">
      * <p>
@@ -10595,8 +10596,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     }
 
     /**
-     * Instructs the current {@code Observable} to emit an item (returned by a specified function) and complete normally
-     * rather than invoking {@link Observer#onError onError} if it encounters an error.
+     * Ends the flow with the given last item when the current {@code Observable} fails instead of signaling the error via {@code onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturnItem.o.png" alt="">
      * <p>
@@ -14724,9 +14724,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
      * <p>
      * Normally, an {@link ObservableSource} that returns multiple items will do so by invoking its {@link Observer}'s
-     * {@link Observer#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code ObservableSource} to compose a list of all of these items and then to invoke the {@code Observer}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code ObservableSource}'s {@code toList} method prior to
+     * {@link Observer#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator to compose a list of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire list, by calling the {@code Observable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
@@ -14755,9 +14755,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
      * <p>
      * Normally, an {@link ObservableSource} that returns multiple items will do so by invoking its {@link Observer}'s
-     * {@link Observer#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code ObservableSource} to compose a list of all of these items and then to invoke the {@code Observer}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code ObservableSource}'s {@code toList} method prior to
+     * {@link Observer#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator to compose a list of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire list, by calling the {@code Observable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
@@ -14790,9 +14790,9 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.o.c.png" alt="">
      * <p>
      * Normally, an {@link ObservableSource} that returns multiple items will do so by invoking its {@link Observer}'s
-     * {@link Observer#onNext onNext} method for each such item. You can change this behavior, instructing the
-     * {@code ObservableSource} to compose a list of all of these items and then to invoke the {@code Observer}'s {@code onNext}
-     * function once, passing it the entire list, by calling the {@code ObservableSource}'s {@code toList} method prior to
+     * {@link Observer#onNext onNext} method for each such item. You can change this behavior by having the
+     * operator to compose a collection of all of these items and then to invoke the {@link SingleObserver}'s {@code onSuccess}
+     * method once, passing it the entire collection, by calling the {@code Observable}'s {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
      * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated collection to
