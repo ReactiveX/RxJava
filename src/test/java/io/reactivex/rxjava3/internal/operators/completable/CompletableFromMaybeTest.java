@@ -18,11 +18,6 @@ import org.junit.Test;
 import io.reactivex.rxjava3.core.*;
 
 public class CompletableFromMaybeTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromMaybeNull() {
-        Completable.fromMaybe(null);
-    }
-
     @Test
     public void fromMaybe() {
         Completable.fromMaybe(Maybe.just(1))

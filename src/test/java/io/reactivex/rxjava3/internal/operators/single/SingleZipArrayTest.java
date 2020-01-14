@@ -151,17 +151,6 @@ public class SingleZipArrayTest extends RxJavaTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
-    public void zipArrayOneIsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, Single.just(1), null)
-        .blockingGet();
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {

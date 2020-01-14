@@ -27,10 +27,6 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeCreateTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Maybe.create(null);
-    }
 
     @Test
     public void basic() {

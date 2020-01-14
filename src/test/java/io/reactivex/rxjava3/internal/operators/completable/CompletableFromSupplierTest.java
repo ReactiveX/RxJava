@@ -34,11 +34,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableFromSupplierTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void fromSupplierNull() {
-        Completable.fromSupplier(null);
-    }
-
     @Test
     public void fromSupplier() {
         final AtomicInteger atomicInteger = new AtomicInteger();

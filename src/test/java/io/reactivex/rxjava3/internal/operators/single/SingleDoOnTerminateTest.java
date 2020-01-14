@@ -27,11 +27,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class SingleDoOnTerminateTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void doOnTerminate() {
-        Single.just(1).doOnTerminate(null);
-    }
-
     @Test
     public void doOnTerminateSuccess() {
         final AtomicBoolean atomicBoolean = new AtomicBoolean();

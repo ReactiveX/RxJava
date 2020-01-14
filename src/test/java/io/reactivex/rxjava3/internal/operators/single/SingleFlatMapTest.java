@@ -129,11 +129,6 @@ public class SingleFlatMapTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void flatMapPublisherMapperNull() {
-        Single.just(1).flatMapPublisher(null);
-    }
-
     @Test
     public void flatMapPublisherMapperThrows() {
         final TestException ex = new TestException();
@@ -213,12 +208,6 @@ public class SingleFlatMapTest extends RxJavaTest {
         ts.cancel();
         assertTrue(disposed.get());
         ts.assertNotTerminated();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void flatMapNull() {
-        Single.just(1)
-            .flatMap(null);
     }
 
     @Test

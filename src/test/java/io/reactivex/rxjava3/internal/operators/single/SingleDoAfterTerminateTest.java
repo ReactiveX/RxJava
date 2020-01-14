@@ -61,11 +61,6 @@ public class SingleDoAfterTerminateTest extends RxJavaTest {
         assertAfterTerminateCalledOnce();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void afterTerminateActionNull() {
-        Single.just(1).doAfterTerminate(null);
-    }
-
     @Test
     public void justConditional() {
         Single.just(1)

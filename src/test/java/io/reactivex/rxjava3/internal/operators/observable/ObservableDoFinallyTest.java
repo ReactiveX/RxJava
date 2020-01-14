@@ -299,11 +299,6 @@ public class ObservableDoFinallyTest extends RxJavaTest implements Action {
         assertEquals(1, calls);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullAction() {
-        Observable.just(1).doFinally(null);
-    }
-
     @Test
     public void actionThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

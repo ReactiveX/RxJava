@@ -19,12 +19,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class CompletableAndThenTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void andThenMaybeNull() {
-        Completable.complete()
-            .andThen((Maybe<Object>) null);
-    }
-
     @Test
     public void andThenMaybeCompleteValue() {
         Completable.complete()

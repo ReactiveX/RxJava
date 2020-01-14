@@ -21,12 +21,6 @@ import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class SingleFlatMapMaybeTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void flatMapMaybeNull() {
-        Single.just(1)
-            .flatMapMaybe(null);
-    }
-
     @Test
     public void flatMapMaybeValue() {
         Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {

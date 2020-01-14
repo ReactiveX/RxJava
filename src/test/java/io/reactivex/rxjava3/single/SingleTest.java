@@ -457,11 +457,6 @@ public class SingleTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void doOnEventNullEvent() {
-        Single.just(1).doOnEvent(null);
-    }
-
     @Test
     public void doOnEventComplete() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
@@ -542,11 +537,6 @@ public class SingleTest extends RxJavaTest {
         })
         .test()
         .assertResult(1);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromObservableNull() {
-        Single.fromObservable(null);
     }
 
     @Test

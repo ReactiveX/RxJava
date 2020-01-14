@@ -999,13 +999,6 @@ public class FlowableTests extends RxJavaTest {
         verify(w, never()).onError(any(Throwable.class));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void forEachWithNull() {
-        Flowable.error(new Exception("boo"))
-        //
-        .forEach(null);
-    }
-
     @Test
     public void extend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();

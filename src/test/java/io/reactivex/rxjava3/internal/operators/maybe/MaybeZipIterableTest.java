@@ -183,28 +183,6 @@ public class MaybeZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void zipIterableOneIsNull() {
-        Maybe.zip(Arrays.asList(null, Maybe.just(1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
-        .blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipIterableTwoIsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), null), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
-        .blockingGet();
-    }
-
     @Test
     public void singleSourceZipperReturnsNull() {
         Maybe.zipArray(Functions.justFunction(null), Maybe.just(1))

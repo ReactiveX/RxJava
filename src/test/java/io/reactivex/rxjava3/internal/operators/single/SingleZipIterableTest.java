@@ -183,28 +183,6 @@ public class SingleZipIterableTest extends RxJavaTest {
         .assertFailureAndMessage(TestException.class, "next()");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, Single.just(1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
-        .blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(Single.just(1), null), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        })
-        .blockingGet();
-    }
-
     @Test
     public void emptyIterable() {
         Single.zip(Collections.<SingleSource<Integer>>emptyList(), new Function<Object[], Object[]>() {

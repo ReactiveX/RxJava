@@ -133,11 +133,6 @@ public class FlowableDoAfterNextTest extends RxJavaTest {
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void consumerNull() {
-        Flowable.just(1).doAfterNext(null);
-    }
-
     @Test
     public void justConditional() {
         Flowable.just(1)

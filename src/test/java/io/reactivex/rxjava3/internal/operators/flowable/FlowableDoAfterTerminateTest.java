@@ -62,29 +62,6 @@ public class FlowableDoAfterTerminateTest extends RxJavaTest {
     }
 
     @Test
-    public void nullActionShouldBeCheckedInConstructor() {
-        try {
-            Flowable.empty().doAfterTerminate(null);
-            fail("Should have thrown NullPointerException");
-        } catch (NullPointerException expected) {
-            assertEquals("onAfterTerminate is null", expected.getMessage());
-        }
-    }
-
-    @Test
-    public void nullFinallyActionShouldBeCheckedASAP() {
-        try {
-            Flowable
-                    .just("value")
-                    .doAfterTerminate(null);
-
-            fail();
-        } catch (NullPointerException expected) {
-
-        }
-    }
-
-    @Test
     public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Throwable {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

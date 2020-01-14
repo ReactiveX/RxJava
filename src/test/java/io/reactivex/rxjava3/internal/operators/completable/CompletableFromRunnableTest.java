@@ -23,11 +23,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.TestException;
 
 public class CompletableFromRunnableTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromRunnableNull() {
-        Completable.fromRunnable(null);
-    }
-
     @Test
     public void fromRunnable() {
         final AtomicInteger atomicInteger = new AtomicInteger();
