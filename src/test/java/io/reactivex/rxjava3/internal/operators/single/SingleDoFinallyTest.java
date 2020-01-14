@@ -65,11 +65,6 @@ public class SingleDoFinallyTest extends RxJavaTest implements Action {
         });
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullAction() {
-        Single.just(1).doFinally(null);
-    }
-
     @Test
     public void actionThrows() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

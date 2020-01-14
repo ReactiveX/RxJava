@@ -1039,13 +1039,6 @@ public class ObservableTest extends RxJavaTest {
 //            }});
 //    }
 
-    @Test(expected = NullPointerException.class)
-    public void forEachWithNull() {
-        Observable.error(new Exception("boo"))
-        //
-        .forEach(null);
-    }
-
     @Test
     public void extend() {
         final TestObserver<Object> to = new TestObserver<>();

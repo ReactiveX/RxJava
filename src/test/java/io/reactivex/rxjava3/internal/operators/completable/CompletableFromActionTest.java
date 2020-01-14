@@ -24,11 +24,6 @@ import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 
 public class CompletableFromActionTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromActionNull() {
-        Completable.fromAction(null);
-    }
-
     @Test
     public void fromAction() {
         final AtomicInteger atomicInteger = new AtomicInteger();

@@ -172,11 +172,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void justNull() {
-        Maybe.just(null);
-    }
-
     @Test
     public void empty() {
         Maybe.empty()
@@ -192,16 +187,6 @@ public class MaybeTest extends RxJavaTest {
         .assertNoValues()
         .assertNoErrors()
         .assertNotComplete();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void errorNull() {
-        Maybe.error((Throwable)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void errorSupplierNull() {
-        Maybe.error((Supplier<Throwable>)null);
     }
 
     @Test
@@ -243,11 +228,6 @@ public class MaybeTest extends RxJavaTest {
         assertSame(Maybe.empty(), Maybe.wrap(Maybe.empty()));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void wrapNull() {
-        Maybe.wrap(null);
-    }
-
     @Test
     public void emptySingleton() {
         assertSame(Maybe.empty(), Maybe.empty());
@@ -256,11 +236,6 @@ public class MaybeTest extends RxJavaTest {
     @Test
     public void neverSingleton() {
         assertSame(Maybe.never(), Maybe.never());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void liftNull() {
-        Maybe.just(1).lift(null);
     }
 
     @Test
@@ -285,11 +260,6 @@ public class MaybeTest extends RxJavaTest {
         })
         .test()
         .assertFailure(TestException.class);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void deferNull() {
-        Maybe.defer(null);
     }
 
     @Test
@@ -364,11 +334,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void unsafeCreateNull() {
-        Maybe.unsafeCreate(null);
-    }
-
     @Test
     public void to() {
         Maybe.just(1).to(new MaybeConverter<Integer, Flowable<Integer>>() {
@@ -393,16 +358,6 @@ public class MaybeTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void toNull() {
-        Maybe.just(1).to(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void asNull() {
-        Maybe.just(1).to(null);
-    }
-
     @Test
     public void compose() {
         Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
@@ -418,16 +373,6 @@ public class MaybeTest extends RxJavaTest {
         })
         .test()
         .assertResult(2);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void composeNull() {
-        Maybe.just(1).compose(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void mapNull() {
-        Maybe.just(1).map(null);
     }
 
     @Test
@@ -458,11 +403,6 @@ public class MaybeTest extends RxJavaTest {
                 return v.toString();
             }
         }).test().assertResult("1");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void filterNull() {
-        Maybe.just(1).filter(null);
     }
 
     @Test
@@ -505,11 +445,6 @@ public class MaybeTest extends RxJavaTest {
         }).test().assertResult();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void singleFilterNull() {
-        Single.just(1).filter(null);
-    }
-
     @Test
     public void singleFilterThrows() {
         Single.just(1).filter(new Predicate<Integer>() {
@@ -545,16 +480,6 @@ public class MaybeTest extends RxJavaTest {
         TestObserver<Number> to = Maybe.just(1).cast(Number.class).test();
         // don'n inline this due to the generic type
         to.assertResult((Number)1);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void observeOnNull() {
-        Maybe.just(1).observeOn(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void subscribeOnNull() {
-        Maybe.just(1).observeOn(null);
     }
 
     @Test
@@ -1488,11 +1413,6 @@ public class MaybeTest extends RxJavaTest {
         Maybe.concat(Flowable.just(Maybe.just(1), Maybe.just(2)), 1).test().assertResult(1, 2);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Maybe.create(null);
-    }
-
     @Test
     public void basic() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -1926,11 +1846,6 @@ public class MaybeTest extends RxJavaTest {
         assertFalse(pp2.hasSubscribers());
 
         to.assertResult();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void ambIterableNull() {
-        Maybe.amb((Iterable<Maybe<Integer>>)null);
     }
 
     @Test
@@ -2390,11 +2305,6 @@ public class MaybeTest extends RxJavaTest {
         .subscribe().isDisposed());
 
         assertEquals(Arrays.asList(null, null), list);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void doOnEventNull() {
-        Maybe.just(1).doOnEvent(null);
     }
 
     @Test

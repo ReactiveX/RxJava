@@ -38,11 +38,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class FlowableFromIterableTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullValue() {
-        Flowable.fromIterable(null);
-    }
-
     @Test
     public void listIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));

@@ -24,11 +24,6 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeFromCompletableTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromCompletableNull() {
-        Maybe.fromCompletable(null);
-    }
-
     @Test
     public void fromCompletable() {
         Maybe.fromCompletable(Completable.complete())

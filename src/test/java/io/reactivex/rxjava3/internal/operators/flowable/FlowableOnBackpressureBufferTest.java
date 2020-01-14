@@ -215,14 +215,6 @@ public class FlowableOnBackpressureBufferTest extends RxJavaTest {
         Flowable.empty().onBackpressureBuffer(0);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void fixBackpressureBufferNullStrategy() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(10, new Action() {
-            @Override
-            public void run() { }
-        }, null);
-    }
-
     @Test
     public void noDelayError() {
 

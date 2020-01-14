@@ -35,11 +35,6 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeFromSupplierTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void fromSupplierNull() {
-        Maybe.fromSupplier(null);
-    }
-
     @Test
     public void fromSupplier() {
         final AtomicInteger atomicInteger = new AtomicInteger();

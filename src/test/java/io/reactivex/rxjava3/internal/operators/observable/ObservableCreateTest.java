@@ -29,11 +29,6 @@ import io.reactivex.rxjava3.testsupport.*;
 
 public class ObservableCreateTest extends RxJavaTest {
 
-    @Test(expected = NullPointerException.class)
-    public void nullArgument() {
-        Observable.create(null);
-    }
-
     @Test
     public void basic() {
         final Disposable d = Disposable.empty();

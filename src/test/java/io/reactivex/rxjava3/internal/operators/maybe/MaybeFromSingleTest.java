@@ -24,11 +24,6 @@ import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.testsupport.TestHelper;
 
 public class MaybeFromSingleTest extends RxJavaTest {
-    @Test(expected = NullPointerException.class)
-    public void fromSingleNull() {
-        Maybe.fromSingle(null);
-    }
-
     @Test
     public void fromSingle() {
         Maybe.fromSingle(Single.just(1))
