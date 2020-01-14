@@ -21,6 +21,7 @@
   * [Transformation](https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables)
   * [Utility](https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators)
   * [Notable 3rd party Operators (Alphabetical List)](https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-3rd-party-Operators)
+  * [Operator matrix](https://github.com/ReactiveX/RxJava/wiki/Operator-Matrix)
 * [Plugins](https://github.com/ReactiveX/RxJava/wiki/Plugins)
 * [How to Contribute](https://github.com/ReactiveX/RxJava/wiki/How-to-Contribute)
 * [Writing operators](https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0)

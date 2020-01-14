@@ -61,7 +61,7 @@ public final class OperatorMatrixGenerator {
         List<String> sortedOperators = new ArrayList<>(operatorSet);
         sortedOperators.sort(Comparator.naturalOrder());
 
-        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(Paths.get("docs", "Operator-Matrix.md"), StandardOpenOption.CREATE))) {
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(Paths.get("docs", "Operator-Matrix.md"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
             out.print("Operator |");
             for (Class<?> clazz : CLASSES) {
                 out.print(" `");
